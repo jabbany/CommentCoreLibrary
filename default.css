@@ -1,0 +1,42 @@
+div.abp{
+	position:relative;
+}
+.abp .container{
+	overflow:hidden;
+	display:block;
+	z-index:9999;
+	position:absolute;
+	top:0;
+	left:0;
+	width:100%;
+	height:100%;
+	transform:rotate3d(0,0,0,0);
+	-webkit-transform:rotate3d(0,0,0,0);
+	-o-transform:rotate3d(0,0,0,0);
+	-moz-transform:rotate3d(0,0,0,0);
+	-ms-transform:rotate3d(0,0,0,0);
+}
+.abp .container .cmt{
+	padding:0;margin:0;
+	font-family:Simhei,"宋体",Heiti,"MS Mincho","Meiryo","Microsoft Yahei",monospace;
+	font-weight:bold;
+	text-decoration:none;
+	text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+	color:#fff;
+	letter-spacing:0;
+	font-size:25px;
+	position:absolute;
+	word-break:none;
+	text-wrap:none;
+	border:0 !important;
+}
+.webkit-helper{
+	text-shadow: none;
+	-webkit-text-stroke: 0.2px black;
+	font-weight:bold;
+}
+#player{
+	position:relative;
+	width:640px;height:480px;
+	background:#000;
+}
