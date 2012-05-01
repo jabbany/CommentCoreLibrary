@@ -5,6 +5,8 @@ Licensed Under MIT License
 
 function CommentFilter(){
 	this.rulebook = {"all":[]};
+	this.modifiers = [];
+	this.runtime = null;
 	this.allowTypes = {
 		"1":true,
 		"4":true,
@@ -12,6 +14,12 @@ function CommentFilter(){
 		"6":true,
 		"7":true,
 		"17":true
+	};
+	this.doModify = function(cmt){
+		for(var k=0;k<this.modifiers.length;k++){
+			cmt = this.modifiers[k](cmt);
+		}
+		return cmt;
 	};
 	this.isMatchRule = function(cmtData,rule){
 		switch(rule['operator']){
@@ -60,7 +68,6 @@ function CommentFilter(){
 		abstCmtData = {
 			text:cmtData.text,
 			mode:cmtData.mode,
-			length:cmtData.text.length,
 			color:cmtData.color,
 			size:cmtData.size,
 			stime:cmtData.stime,
@@ -72,7 +79,7 @@ function CommentFilter(){
 					return false;
 			}
 		}
-		or(var i=0;i<this.rulebook[cmtData.mode];i++){
+		for(var i=0;i<this.rulebook[cmtData.mode];i++){
 			if(!this.isMatchRule(abstCmtData,this.rulebook[cmtData.mode][i]))
 				return false;
 		}
@@ -95,4 +102,15 @@ function CommentFilter(){
 		this.rulebook[rule.mode].push(rule);
 		return (this.rulebook[rule.mode].length - 1);
 	};
+	this.addModifier = function(f){
+		this.modifiers.push(f);
+	};
+	this.runtimeFilter = function(cmt){
+		if(this.runtime == null)
+			return cmt;
+		return this.runtime(cmt);
+	};
+	this.setRuntimeFilter = function(f){
+		this.runtime = f;
+	}
 }

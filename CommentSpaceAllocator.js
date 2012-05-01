@@ -203,3 +203,33 @@ function ReverseCommentSpaceAllocator(w,h){
 	this.add = function(what){csa.add(what);};
 	this.remove = function(d){csa.remove(d);};
 }
+function BottomScrollCommentSpaceAllocator(w,h){
+	var csa = new CommentSpaceAllocator(w,h);
+	csa.validateCmt = function(cmt){
+		cmt.y = csa.height - (cmt.offsetTop + cmt.offsetHeight);
+		cmt.bottom = cmt.y + cmt.offsetHeight;
+		cmt.x = cmt.offsetLeft;
+		cmt.right = cmt.offsetLeft + cmt.offsetWidth;
+		cmt.height = cmt.offsetHeight;
+		cmt.width = cmt.offsetWidth;
+		cmt.top = cmt.y;
+		cmt.left = cmt.offsetLeft;
+		return cmt;
+	};
+	csa.add = function (cmt){
+		cmt.style.top = "";
+		cmt.style.bottom = "0px";
+		csa.validateCmt(cmt);
+		cmt.style.left = csa.width + "px";
+		if(cmt.height >= csa.height){
+			cmt.cindex = csa.pools.indexOf(csa.pool);
+			cmt.style.bottom = "0px";
+		}else{
+			cmt.cindex = csa.pools.indexOf(csa.pool);
+			cmt.style.bottom = csa.setY(cmt) + "px";
+		}
+	};
+	this.setBounds = function(w,h){csa.setBounds(w,h);};
+	this.add = function(what){csa.add(what);};
+	this.remove = function(d){csa.remove(d);};
+}

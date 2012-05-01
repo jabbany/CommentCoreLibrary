@@ -10,28 +10,71 @@
 <script src="CommentCoreLibrary.js"></script>
 <!-- A few helpers to do some decoding/fetching below-->
 <script src="libxml.js"></script>
+
 <!-- Graphical Elements Maybe-->
+
+<!-- Extend-->
+<script src="extend/fefx.js"></script>
+
 <title>Testrun Sandbox For Comment Core Library</title>
 </head>
 <body>
 
 <div class="m20 abp" id="player">
 	<div id="commentCanvas" class="container" onresize="cm.setBounds();"></div>
-	<video id="abpVideo" autobuffer="true" data-setup="{}" width="100%" height="100%" style="z-index:1;width:100%;height:100%;top:0;left:0;right:0;bottom:0;" preload="auto">
+	<video id="abpVideo" autobuffer="true" data-setup="{}" width="100%" height="100%" style="z-index:-1;width:100%;height:100%;top:0;left:0;right:0;bottom:0;" preload="auto">
 	</video>
 </div>
-<a onclick="stop();">Stop</a>
+<a onclick="stop();" href="javascript:;">Stop</a>
+<a onclick="resume();" href="javascript:;">Resume</a>
+<a onclick="load('tests/test.xml');" href="javascript:;">Run Test 1</a>
+<a onclick="load('tests/test2.xml');" href="javascript:;">Run Test 2</a>
+<a onclick="load('tests/rokubunnoichi.xml');" href="javascript:;">Run Test 3</a>
+<a onclick="load('tests/mikunoshoushitsu.xml');" href="javascript:;">Run Test 4</a>
+<a onclick="load('tests/unowen.xml');" href="javascript:;">Run Test 5</a>
+<a onclick="load('tests/comment.xml');" href="javascript:;">Run Test 6</a>
+<p>Filters: <a onclick="cm.filter.setRuntimeFilter(fefx.center_dim);" href="javascript:;">Apply Center-Transparency</a>
+<a onclick="cm.filter.setRuntimeFilter(fefx.center_speedup);" href="javascript:;">Apply Center-Speedup</a>
+<a onclick="cm.filter.setRuntimeFilter(null);" href="javascript:;">Clear Runtime Filters</a>
+</p>
 <script>
 var cm = new CommentManager($('commentCanvas'));
-CommentLoader('test.xml',cm);
 cm.init();
-var start = new Date().getTime();
-var tmr = setInterval(function(){
-	cm.time(new Date().getTime() - start);
-},10);
+/*
+cm.filter.addModifier(function(cmt){
+	if(cmt.mode == 1)
+		cmt.mode = 2;
+	return cmt;
+});*/
+cm.filter.setRuntimeFilter(fefx.center_speedup);
+var tmr=0;
+var start=0;
+var playhead = 0;
+function load(dmf){
+	cm.clear();
+	start = 0;
+	try{
+	clearTimeout(tmr);
+	}catch(e){}
+	CommentLoader(dmf,cm);
+	cm.startTimer();
+	start = new Date().getTime();
+	tmr = setInterval(function(){
+		playhead = new Date().getTime() - start;
+		cm.time(playhead);
+	},10);
+}
 function stop(){
 	cm.stopTimer();
 	clearTimeout(tmr);
+}
+function resume(){
+	cm.startTimer();
+	start = new Date().getTime() - playhead;
+	tmr = setInterval(function(){
+		playhead = new Date().getTime() - start;
+		cm.time(playhead);
+	},10);
 }
 </script>
 </body>

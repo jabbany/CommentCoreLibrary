@@ -54,13 +54,14 @@ function CommentManager(stageObject){
 	this.timeline = [];
 	this.runline = [];
 	this.position = 0;
-	this.zindex = 0;
+	this.limiter = 0;
 	this.filter = null;
 	this.csa = {
 		scroll: new CommentSpaceAllocator(0,0),
 		top:new TopCommentSpaceAllocator(0,0),
 		bottom:new BottomCommentSpaceAllocator(0,0),
-		reverse:new ReverseCommentSpaceAllocator(0,0)
+		reverse:new ReverseCommentSpaceAllocator(0,0),
+		scrollbtm:new BottomScrollCommentSpaceAllocator(0,0)
 	};
 	/** Private **/
 	this.initCmt = function(cmt,data){
@@ -69,16 +70,17 @@ function CommentManager(stageObject){
 		cmt.stime = data.stime;
 		cmt.mode = data.mode;
 		cmt.data = data;
+		cmt.appendChild(document.createTextNode(data.text));
 		cmt.innerText = data.text;
 		cmt.style.fontSize = data.size + "px";
 		if(data.color != null)
 			cmt.style.color = data.color;
 		if(this.def.opacity != 1 && data.mode == 1)
 			cmt.style.opacity = this.def.opacity;
+		if(data.alphaFrom != null)
+			cmt.style.opacity = data.alphaFrom;
 		cmt.ttl = 4000;
 		cmt.dur = 4000;
-		this.zindex ++;
-		cmt.style.zIndex = this.zindex;
 		return cmt;
 	};
 	this.startTimer = function(){
@@ -137,8 +139,8 @@ CommentManager.prototype.setBounds = function(){
 };
 CommentManager.prototype.init = function(){
 	this.setBounds();
-	this.startTimer();
-	this.filter = new CommentFilter();
+	if(this.filter == null)
+		this.filter = new CommentFilter(); //Only create a filter if none exist
 };
 CommentManager.prototype.time = function(time){
 	time = time - 1;
@@ -155,12 +157,16 @@ CommentManager.prototype.time = function(time){
 };
 CommentManager.prototype.sendComment = function(data){
 	var cmt = document.createElement('div');
+	if(this.filter != null){
+		data = this.filter.doModify(data);
+		if(data == null) return;
+	}
 	cmt = this.initCmt(cmt,data);
 	this.stage.appendChild(cmt);
 	cmt.style.width = (cmt.offsetWidth + 1) + "px";
 	cmt.style.height = (cmt.offsetHeight + 1) + "px";
 	cmt.style.left = this.stage.offsetWidth + "px";
-	if(!this.filter.beforeSend(cmt)){
+	if(this.filter != null && !this.filter.beforeSend(cmt)){
 		this.stage.removeChild(cmt);
 		cmt = null;
 		return;
@@ -168,6 +174,7 @@ CommentManager.prototype.sendComment = function(data){
 	switch(cmt.mode){
 		default:
 		case 1:{this.csa.scroll.add(cmt);}break;
+		case 2:{this.csa.scrollbtm.add(cmt);}break;
 		case 4:{this.csa.bottom.add(cmt);}break;
 		case 5:{this.csa.top.add(cmt);}break;
 		case 6:{this.csa.reverse.add(cmt);}break;
@@ -198,6 +205,7 @@ CommentManager.prototype.finish = function(cmt){
 	switch(cmt.mode){
 		default:
 		case 1:{this.csa.scroll.remove(cmt);}break;
+		case 2:{this.csa.scrollbtm.remove(cmt);}break;
 		case 4:{this.csa.bottom.remove(cmt);}break;
 		case 5:{this.csa.top.remove(cmt);}break;
 		case 6:{this.csa.reverse.remove(cmt);}break;
@@ -209,7 +217,7 @@ CommentManager.prototype.onTimerEvent = function(timePassed,cmObj){
 	for(var i=0;i<cmObj.runline.length;i++){
 		var cmt = cmObj.runline[i];
 		cmt.ttl -= timePassed;
-		if(cmt.mode == 1) cmt.style.left = (cmt.ttl / cmt.dur) * (cmObj.stage.offsetWidth + cmt.offsetWidth) - cmt.offsetWidth + "px";
+		if(cmt.mode == 1 || cmt.mode == 2) cmt.style.left = (cmt.ttl / cmt.dur) * (cmObj.stage.offsetWidth + cmt.offsetWidth) - cmt.offsetWidth + "px";
 		else if(cmt.mode == 6) cmt.style.left = (1 - cmt.ttl / cmt.dur) * (cmObj.stage.offsetWidth + cmt.offsetWidth) - cmt.offsetWidth + "px";
 		else if(cmt.mode == 4 || cmt.mode == 5 || cmt.mode >= 7){
 			if(cmt.dur == null)
@@ -221,6 +229,11 @@ CommentManager.prototype.onTimerEvent = function(timePassed,cmObj){
 				cmt.style.top = ((cmt.data.toY - cmt.data.y) * (Math.min(Math.max(cmt.dur - cmt.data.moveDelay - cmt.ttl,0),cmt.data.moveDuration) / cmt.data.moveDuration) + parseInt(cmt.data.y)) + "px";
 				cmt.style.left = ((cmt.data.toX - cmt.data.x) * (Math.min(Math.max(cmt.dur - cmt.data.moveDelay - cmt.ttl,0),cmt.data.moveDuration) / cmt.data.moveDuration) + parseInt(cmt.data.x)) + "px";
 			}
+		}
+		if(cmObj.filter != null){
+			var tcmt = cmObj.filter.runtimeFilter(cmt);
+			if(tcmt != null)	
+				cmt=tcmt;
 		}
 		if(cmt.ttl <= 0){
 			cmObj.stage.removeChild(cmt);

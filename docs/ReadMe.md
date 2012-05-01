@@ -4,8 +4,11 @@
 
 ## 许可
 本程序为教学用意，采取非常宽松的MIT许可。该许可允许你把本项目运用在任何开源或是闭源的，非营利或商业性的项目中。您只需在使用到的地方添加下面一行注释：
-    CommentCoreLibrary - github.com/jabbany/accl
+    CommentCoreLibrary - github.com/jabbany/CommentCoreLibrary
 
 ## 使用
 如何扩展本程序将在 /docs/Extending.md 里面进行介绍
+
+## 开发
+对本项目的改进开发，可以通过发送 GitHub下的 Pull请求实现。二次开发和新模块都是被接受的
 
