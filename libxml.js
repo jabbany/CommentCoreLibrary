@@ -77,6 +77,8 @@ function BilibiliParser(xmlDoc){
 			obj.mode = parseInt(opt[1]);
 			obj.date = parseInt(opt[4]);
 			obj.pool = parseInt(opt[5]);
+			if(opt[7] != null)
+				obj.dbid = parseInt(opt[7]);
 			obj.hash = opt[6];
 			obj.border = false;
 			if(obj.mode < 7){
@@ -85,6 +87,7 @@ function BilibiliParser(xmlDoc){
 				if(obj.mode == 7){
 					try{
 						adv = JSON.parse(text);
+						obj.shadow = true;
 						obj.x = adv[0];
 						obj.y = adv[1];
 						obj.text = adv[4].replace(/(\/n|\\n|\n|\r\n)/g, "\n");
@@ -105,9 +108,14 @@ function BilibiliParser(xmlDoc){
 								obj.moveDuration = adv[9];
 							if(adv[10]!="")
 								obj.moveDelay = adv[10];
+							if(adv.length > 11){
+								obj.shadow = adv[11] == 'false' ? false : true;
+								if(adv[12]!=null)
+									obj.font = adv[12];
+							}
 						}
 						obj.duration = 2500;
-						if(adv[3] < 12 && adv[3] != 1){
+						if(adv[3] < 12){
 							obj.duration = adv[3] * 1000;
 						}
 						obj.alphaFrom = 1;

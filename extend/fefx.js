@@ -23,5 +23,16 @@ var fefx = {
 		if(cmtPos > 0.3 && cmtPos < 0.7)
 			cmt.ttl -= 10;
 		return cmt;
-	}
+	},
+	offset_dim:function(cmt){
+		/** Does not work yet, we need to fetch some comment stage parameters **/
+		if(cmt.data.mode != 1 && cmt.data.mode !=2) return cmt;
+		if(cmt.offsetRight > 60 && cmt.offsetLeft > 60){
+			cmt.style.opacity = 0.2;
+			return cmt;
+		}else{
+			cmt.style.opacity = 1;
+		}
+		return cmt;
+	},
 }

@@ -33,6 +33,7 @@
 <a onclick="load('tests/mikunoshoushitsu.xml');" href="javascript:;">Run Test 4</a>
 <a onclick="load('tests/unowen.xml');" href="javascript:;">Run Test 5</a>
 <a onclick="load('tests/comment.xml');" href="javascript:;">Run Test 6</a>
+<a onclick="load('tests/extended.xml');" href="javascript:;">Run Test 7</a>
 <p>Filters: <a onclick="cm.filter.setRuntimeFilter(fefx.center_dim);" href="javascript:;">Apply Center-Transparency</a>
 <a onclick="cm.filter.setRuntimeFilter(fefx.center_speedup);" href="javascript:;">Apply Center-Speedup</a>
 <a onclick="cm.filter.setRuntimeFilter(null);" href="javascript:;">Clear Runtime Filters</a>
@@ -46,7 +47,7 @@ cm.filter.addModifier(function(cmt){
 		cmt.mode = 2;
 	return cmt;
 });*/
-cm.filter.setRuntimeFilter(fefx.center_speedup);
+cm.filter.setRuntimeFilter(fefx.offset_dim);
 var tmr=0;
 var start=0;
 var playhead = 0;

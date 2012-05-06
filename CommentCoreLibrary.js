@@ -73,6 +73,10 @@ function CommentManager(stageObject){
 		cmt.appendChild(document.createTextNode(data.text));
 		cmt.innerText = data.text;
 		cmt.style.fontSize = data.size + "px";
+		if(data.font != null && data.font != '')
+			cmt.style.fontFamily = data.font;
+		if(data.shadow == false && data.shadow != null)
+			cmt.className = 'cmt noshadow';
 		if(data.color != null)
 			cmt.style.color = data.color;
 		if(this.def.opacity != 1 && data.mode == 1)
@@ -121,7 +125,12 @@ CommentManager.prototype.load = function(a){
 		else{
 			if(a.date > b.date) return 1;
 			else if(a.date < b.date) return -1;
-			else return 0;
+			else if(a.dbid != null && b.dbid != null){
+				if(a.dbid > b.dbid) return 1;
+				else if(a.dbid < b.dbid) return -1;
+				return 0;
+			}else
+				return 0;
 		}
 	});
 };
@@ -231,9 +240,7 @@ CommentManager.prototype.onTimerEvent = function(timePassed,cmObj){
 			}
 		}
 		if(cmObj.filter != null){
-			var tcmt = cmObj.filter.runtimeFilter(cmt);
-			if(tcmt != null)	
-				cmt=tcmt;
+			cmt = cmObj.filter.runtimeFilter(cmt);
 		}
 		if(cmt.ttl <= 0){
 			cmObj.stage.removeChild(cmt);
