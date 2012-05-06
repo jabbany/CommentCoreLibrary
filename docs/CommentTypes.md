@@ -41,9 +41,10 @@
 注意这里没有移动效果。
 
 ### 定位移动弹幕模式
-    可选参量：Array[x,y,opacity,duration,text,rotateZ,rotateY,toX,toY,(dur),(delay)]
+    可选参量：Array[x,y,opacity,duration,text,rotateZ,rotateY,toX,toY,(dur),(delay),(shadow),(font),(linear)]
 定位移动弹幕允许用户指定了扩展弹幕后进行移动，由初始位置(x,y)线性移动到(toX,toY)，同时 dur 表示整个移动的时长（默认500ms），delay 表示移动的滞后时间（默认为0ms)。
 定位移动开始于弹幕生命周期的delay，并完结于生命周期的 (delay+dur) 时间。如果(delay+dur)>duration，则移动会在duration到达时终止（注意此时可能并未到达移动终点）
+定位弹幕的Shadow为"true"或"false"字符串，若为false则文字不钩边。font如果指定，则会改变当前弹幕的字体。linear目前暂时不起作用。
 
 ## 图片定位弹幕
 ### 标准模式

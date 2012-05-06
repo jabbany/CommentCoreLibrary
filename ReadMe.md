@@ -5,7 +5,7 @@ alongside videos. The CCL is intended for education purposes (in contrast to [AB
 which focuses on real use) and is separated into sections that help developers understand how the library works.
 
 Developers willing to incorporate similar comment streaming functionalities inside their own projects
-(whether web based or not) are free to learn and extend from the CommentCoreLibrary.
+(whether web based or not) are free to learn from and extend from the CommentCoreLibrary.
 
 ## Licensing
 The CommentCoreLibrary is licensed under the permissive MIT License. If you wish to use this in any project, you can simply
