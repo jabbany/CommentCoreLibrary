@@ -26,6 +26,8 @@
 * moveDelay 移动延时
 * alphaFrom 初始透明度
 * alphaTo 结束透明度
+* shadow 文字钩边
+* font 文字字体
 
 ## 必选参数介绍
 ### text
@@ -97,3 +99,11 @@
 ### alphaFrom, alphaTo
     类型限制：mode > 6 or mode == 4 or mode == 5
 透明度渐变，alphaFrom为初始透明度，alphaTo为终止透明度。注意本设置在顶部和底部渐隐弹幕中也可用。
+
+### shadow
+    类型限制：无
+设定弹幕的钩边，如果是 false 则禁用弹幕钩边。
+
+### font
+    类型限制：无
+设定弹幕渲染字体（如果为空，则使用默认字体）。

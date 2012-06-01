@@ -10,6 +10,8 @@
 <script src="CommentCoreLibrary.js"></script>
 <!-- A few helpers to do some decoding/fetching below-->
 <script src="libxml.js"></script>
+<script src="parsers/BilibiliFormat.js"></script>
+<script src="parsers/AcfunFormat.js"></script>
 
 <!-- Graphical Elements Maybe-->
 
@@ -34,6 +36,7 @@
 <a onclick="load('tests/unowen.xml');" href="javascript:;">Run Test 5</a>
 <a onclick="load('tests/comment.xml');" href="javascript:;">Run Test 6</a>
 <a onclick="load('tests/extended.xml');" href="javascript:;">Run Test 7</a>
+<p>AcFun (Experimental) <a onclick="load('tests/AcFun.json','acfun');" href="javascript:;">Run Test 1</a></p>
 <p>Filters: <a onclick="cm.filter.setRuntimeFilter(fefx.center_dim);" href="javascript:;">Apply Center-Transparency</a>
 <a onclick="cm.filter.setRuntimeFilter(fefx.center_speedup);" href="javascript:;">Apply Center-Speedup</a>
 <a onclick="cm.filter.setRuntimeFilter(null);" href="javascript:;">Clear Runtime Filters</a>
@@ -51,13 +54,15 @@ cm.filter.setRuntimeFilter(fefx.offset_dim);
 var tmr=0;
 var start=0;
 var playhead = 0;
-function load(dmf){
+function load(dmf,dmfmd){
+	if(dmfmd == null)
+		dmfmd = 'bilibili';
 	cm.clear();
 	start = 0;
 	try{
 	clearTimeout(tmr);
 	}catch(e){}
-	CommentLoader(dmf,cm);
+	CommentLoader(dmf,cm,dmfmd);
 	cm.startTimer();
 	start = new Date().getTime();
 	tmr = setInterval(function(){
