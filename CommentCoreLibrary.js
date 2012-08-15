@@ -3,7 +3,7 @@
 * Author : Jim Chen
 * Licensing : MIT License
 ******/
-$ = function(a){return document.getElementById(a);};
+$_ = function(a){return document.getElementById(a);};				//return the dom object?
 var ABGlobal = {
 	is_webkit:function(){
 		try{

@@ -1,10 +1,23 @@
+/* ==============================
+	CommentCoreLibrary Styles
+============================== */
+
+/* {padding: 0;margin: 0;}		/* Browser Reset */
+
 div.abp{
 	position:relative;
 }
+
+#player{
+	position:relative;
+	width:640px;height:480px;
+	background:#000;
+}
+
 .abp .container{
 	overflow:hidden;
 	display:block;
-	z-index:9999;
+	z-index:1;
 	position:absolute;
 	top:0;
 	left:0;
@@ -16,6 +29,7 @@ div.abp{
 	-moz-transform:rotate3d(0,0,0,0);
 	-ms-transform:rotate3d(0,0,0,0);
 }
+
 .abp .container .cmt{
 	padding:0;margin:0;
 	font-family:Simhei,"宋体",Heiti,"MS Mincho","Meiryo","Microsoft Yahei",monospace;
@@ -28,19 +42,34 @@ div.abp{
 	position:absolute;
 	word-break:none;
 	text-wrap:none;
+	pointer-events: none;
 	border:0 !important;
 }
+
+.abp #ytTitleFix{ /*info bar*/
+	position: absolute;
+	width: 100%;
+	height: 30px;
+	z-index: 2;
+	/*border: 1px solid yellow;*/
+}
+
+.abp #ytFullHide{ /*info bar*/
+	position: absolute;
+	right: 0px;
+	width: 138px;
+	height: 30px;
+	z-index: 3;
+	/*border: 1px solid red;*/
+}
+
 .cmt.noshadow{
 	text-shadow: none !important;
 	-webkit-text-stroke: none !important;
 }
+
 .webkit-helper{
 	text-shadow: none;
 	-webkit-text-stroke: 0.2px black;
 	font-weight:bold;
-}
-#player{
-	position:relative;
-	width:640px;height:480px;
-	background:#000;
 }
