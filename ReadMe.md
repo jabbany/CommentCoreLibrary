@@ -1,3 +1,8 @@
+### Note
+This version incorporates the library with player API(IFrame) from popular video sites such as YouTube, Dailymotion and etc..
+
+Compliance to the ToS of these video sites is particularly noted.
+
 # Readme
 The CommentCoreLibrary is a set of javascript 'classes' that make up the core controller for comment 
 streaming on top of a video. It is intended as a catalyst for the future development of comment streaming

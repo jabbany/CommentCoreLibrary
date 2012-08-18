@@ -9,9 +9,9 @@
 <link rel="stylesheet" href="style.css" />
 
 <!-- Files Below May Be Combined/Concated into one on Deployment Servers -->
-<script src="CommentFilter.js"></script>
-<script src="CommentSpaceAllocator.js"></script>
 <script src="CommentCoreLibrary.js"></script>
+<script src="CommentSpaceAllocator.js"></script>
+<script src="CommentFilter.js"></script>
 
 <!-- A few helpers to do some decoding/fetching below-->
 <script src="libxml.js"></script>
@@ -20,23 +20,32 @@
 <script src="extend/fefx.js"></script>
 
 <!-- jQuery -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script src="extend/jquery-1.8.0.min.js"></script>
 
 <!-- YouTube -->
-<script src="yt.js"></script>
+<script src="video/yt.js"></script>
 
 <!-- DailyMotion -->
-<!--<script src="dm.js"></script>-->
+<script src="video/dm.js"></script>
+
+<!-- Vimeo -->
+<script src="video/vm.js"></script>
+
+<!-- Comment Setup -->
+<script src="CommentInit.js"></script>
 
 </head>
 
 
 <body>
-
 <div class="abp" id="player">
 	<div id="commentCanvas" class="container" onresize="cm.setBounds();">
+		<!--
+		
+		<video id="dmPlayer"><script>dmid='xqcwbi'; cid='comment';</script></video>
+		<video id="vmPlayer"><script>vmid='5838112'; cid='comment';</script></video>
+		-->
 		<video id="ytPlayer"><script>ytid='AEV8cBND7EY'; cid='sweetdevil';</script></video>
-		<!--<video id="dmPlayer"><script>dmid='xqcwbi'; cid='comment';</script></video>-->
 	</div>
 </div>
 
@@ -54,44 +63,5 @@
 <a onclick="cm.filter.setRuntimeFilter(fefx.center_speedup);" href="javascript:;">Apply Center-Speedup</a>
 <a onclick="cm.filter.setRuntimeFilter(null);" href="javascript:;">Clear Runtime Filters</a>
 </p>
-<script>
-var cm = new CommentManager($_('commentCanvas'));
-cm.init();
-/*
-cm.filter.addModifier(function(cmt){
-	if(cmt.mode == 1)
-		cmt.mode = 2;
-	return cmt;
-});*/
-cm.filter.setRuntimeFilter(fefx.offset_dim);
-var tmr=0;
-var start=0;
-var playhead = 0;
-function load(dmf){						//glitchy.. initial load is fine.
-	cm.clear();
-	start = 0;
-	try{
-	clearInterval(tmr);
-	}catch(e){}
-	CommentLoader(dmf,cm);
-	//resume();							//use when switching between dm, comment autostart..
-}
-function stop(){
-	cm.stopTimer();
-	clearTimeout(tmr);
-}
-function resume(){
-	cm.startTimer();
-	start = new Date().getTime() - playhead;
-	try{
-		clearInterval(tmr);				//make sure interval is cleared when switching dm
-	}catch(e){}							//a try catch block -.- does basically nothing...
-	tmr = setInterval(function(){
-		playhead = new Date().getTime() - start;
-		cm.time(playhead);
-		//console.log('Interval: '+playhead);
-	},10);
-}
-</script>
 </body>
 </html>

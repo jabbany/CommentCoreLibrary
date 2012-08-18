@@ -6,11 +6,7 @@
 
 div.abp{
 	position:relative;
-}
-
-#player{
-	position:relative;
-	width:640px;height:480px;
+	width:540px;height:380px;
 	background:#000;
 }
 
@@ -44,6 +40,7 @@ div.abp{
 	text-wrap:none;
 	pointer-events: none;
 	border:0 !important;
+	/*display: none;				/* hide comments */
 }
 
 .abp #ytTitleFix{ /*info bar*/
