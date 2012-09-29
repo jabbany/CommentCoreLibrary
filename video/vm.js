@@ -33,52 +33,42 @@ iframe.frameborder = 0;
 //iframe.wmode = 'opaque';
 tag.parentNode.replaceChild(iframe, tag);
 
-	$('iframe#vmPlayer').each(function(){
+	$('iframe#vmPlayer').each(function(){	//there will only be one player...
 
-		player = $f('vmPlayer') // = Froogaloop(this);
+		var player = $f('vmPlayer') // = Froogaloop(this);
 		
 		player.addEvent('ready', function(id) {
 			//$(function(){
-				load('tests/'+cid+'.xml');
 				//player.api('play');
+				load('tests/'+cid+'.xml');
 				
-				player.addEvent('play', onPlay);
-				player.addEvent('pause', onPause);
-				player.addEvent('finish', onFinish);
-				player.addEvent('seek', onSeek);
-				player.addEvent('playProgress', onPlayProgress);
+				player.addEvent('play', function(id){
+					toSync();
+				});
+				player.addEvent('pause', function(id){
+					stop();
+				});
+				player.addEvent('finish', function(id){
+					cm.clear();
+				});
+				player.addEvent('seek', function(data, id){
+					toSync();
+				});
+				player.addEvent('playProgress', function(data, id){
+					window.data = data;
+				});
+				
+				window.data = {seconds: 0};	//sometime onPlayProgress is called after play
+				
+				function toSync(){
+					cm.clear();
+					setTimeout(function(){
+						playhead = data.seconds * 1000;
+						resume();
+					},550);		//At least 500, higher to be safe..
+				}
+				
 			//});
 		});
 	})
 };
-
-function onPlay(id){
-	toSync();
-}
-
-function onPause(id) {
-    stop();
-}
-
-function onSeek(data, id){
-	toSync();
-}
-
-function onFinish(id) {
-	cm.clear();
-}
-
-var data = {seconds: 0};	//just in case, because sometime onPlayProgress is called after play
-
-function onPlayProgress(data, id) {
-	window.data = data;		//set to global
-	//console.log("player time: " + data.seconds + '		playhead: ' + playhead);
-}
-
-function toSync(){
-	cm.clear();
-	setTimeout(function(){
-		playhead = data.seconds * 1000;
-		resume();
-	},550);		//At least 500, higher to be safe..
-}

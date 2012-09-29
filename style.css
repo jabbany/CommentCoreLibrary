@@ -2,15 +2,62 @@
 	CommentCoreLibrary Styles
 ============================== */
 
-/* {padding: 0;margin: 0;}		/* Browser Reset */
+#chrome{						/* danmaku player */
+	height: 410px;
+	width: 950px;
+}
 
-div.abp{
+:-webkit-full-screen#chrome{
+	height: 100%;
+	width: 100%;
+}
+
+div.abp{						/* screen */
 	position:relative;
-	width:540px;height:380px;
+	width:540px;
+	height:380px;
 	background:#000;
 }
 
-.abp .container{
+:-moz-full-screen div.abp{
+	/*height:97%				/* not needed since Fx15 */
+	width: 100%;
+}
+
+:-webkit-full-screen div.abp{
+	height: 97%;
+	width: 100%;
+}
+
+div.abp #ytTitleFix{ /*info bar*/
+	position: absolute;
+	width: 100%;
+	height: 60px;				/* 30px default height */
+	z-index: 2;
+	/*border: 1px solid yellow;*/
+}
+
+div.abp #ytFullHide{
+	position: absolute;
+	right: 0px;
+	width: 138px;
+	height: 30px;
+	z-index: 3;
+	/*border: 1px solid red;*/
+}
+
+/* Input */
+div form#danmu input[type="text"][name="comment"]{
+	width: 410px;
+}
+
+div form#danmu input[type="submit"][value="comment"]{
+	width: 80px;
+}
+
+
+/* Comment Overlay */
+.abp .container{	
 	overflow:hidden;
 	display:block;
 	z-index:1;
@@ -40,24 +87,7 @@ div.abp{
 	text-wrap:none;
 	pointer-events: none;
 	border:0 !important;
-	/*display: none;				/* hide comments */
-}
-
-.abp #ytTitleFix{ /*info bar*/
-	position: absolute;
-	width: 100%;
-	height: 30px;
-	z-index: 2;
-	/*border: 1px solid yellow;*/
-}
-
-.abp #ytFullHide{ /*info bar*/
-	position: absolute;
-	right: 0px;
-	width: 138px;
-	height: 30px;
-	z-index: 3;
-	/*border: 1px solid red;*/
+	/*display: none;			/* hide comments */
 }
 
 .cmt.noshadow{
