@@ -40,7 +40,8 @@ function AcfunParser(jsond){
 				console.log(x);
 				data.text = x.n.replace(/\ /g,"&nbsp;");
 				data.raw = true;
-				if(/<(script|embed|object|canvas|meta|video|audio).*?>/g.test(data.text)){
+				if(/<(script|embed|object|canvas|meta|video|audio).*?>/g.test(data.text) ||
+					/<.*on\w+=.*>/.test(data.txt)){
 					//Unsafe scripting embed
 					console.log('Unsafe attempt to embed script through text!');
 					data.text = data.text.replace(/<.+?>/g,'');//Remove all HTML

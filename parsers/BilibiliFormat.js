@@ -75,6 +75,9 @@ function BilibiliParser(xmlDoc){
 					}catch(e){console.log('Error occurred in JSON parsing');}
 				}
 			}
+			//Before we push
+			if(obj.text != null)
+				obj.text = obj.text.replace(/\u25a0/g,"\u2588");
 			tlist.push(obj);
 		}
 	}
