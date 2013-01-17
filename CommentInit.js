@@ -55,12 +55,14 @@ var tmr=0;
 var start=0;
 var playhead = 0;
 
-function load(dmf){						// glitchy.. initial load is fine.
+function load(dmf,dmfmd){              // glitchy.. initial load is fine.
+    if(dmfmd == null)
+        dmfmd = 'bilibili';
 	cm.clear();
 	start = 0;
-	try{clearInterval(tmr);}catch(e){}	// unnecessary try-catch block?
-	CommentLoader(dmf,cm);
-	//resume();							// use when switching between dm, comment autostart..
+	try{clearInterval(tmr);}catch(e){}  // unnecessary try-catch block?
+	CommentLoader(dmf,cm,dmfmd);
+	//resume();                         // use when switching between dm, comment autostart..
 }
 
 function stop(){
