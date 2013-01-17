@@ -15,9 +15,11 @@ setTimeout(function recursive(){			//wait for the required node to be created
 		if(typeof dmid != 'undefined') dm_init();
 		if(typeof vmid != 'undefined') vm_init();
 		
-		//track fullscreen
-		$(document).bind('fullscreenchange mozfullscreenchange webkitfullscreenchange', function(){
-			if (document.mozFullScreen || document.webkitIsFullScreen){
+		//	track fullscreen
+		$(document).on('fullscreenchange mozfullscreenchange webkitfullscreenchange', function(){
+			//	use css calc on supported browser instead
+			//	like Opera..
+			/* if (document.mozFullScreen || document.webkitIsFullScreen){
 				$('div.abp').css('height', function(){
 					return screen.height - 25 + 'px';
 				})
@@ -25,17 +27,17 @@ setTimeout(function recursive(){			//wait for the required node to be created
 				$('div.abp').css('height', function(){
 					return 380 + 'px';
 				})
-			}
-			cm.setBounds();
+			} */
+			cm.setBounds();		// reset canvas
 		})
 		
 		//$.holdReady(false);
 		
-		//fullscreen comment bar width adjustment
-		document.styleSheets[0].insertRule(':-moz-full-screen form#danmu input[type="text"][name="comment"]{width: '+(screen.width-150)+'px;}', 0)
+		//	fullscreen comment bar width adjustment for browser without flex
+		document.styleSheets[0].insertRule(':fullscreen form#danmu input[type="text"][name="comment"]{width: '+(screen.width-150)+'px;}', 0)
 		
 	}/*else{
-		setTimeout(resursive, 10);			//loop if needed
+		setTimeout(resursive, 10);			// loop if needed
 		console.log('loopy');
 	}*/
 }, 1);
@@ -53,12 +55,12 @@ var tmr=0;
 var start=0;
 var playhead = 0;
 
-function load(dmf){						//glitchy.. initial load is fine.
+function load(dmf){						// glitchy.. initial load is fine.
 	cm.clear();
 	start = 0;
-	try{clearInterval(tmr);}catch(e){}	//unnecessary try-catch block?
+	try{clearInterval(tmr);}catch(e){}	// unnecessary try-catch block?
 	CommentLoader(dmf,cm);
-	//resume();							//use when switching between dm, comment autostart..
+	//resume();							// use when switching between dm, comment autostart..
 }
 
 function stop(){
@@ -70,24 +72,50 @@ function resume(){
 	cm.startTimer();
 	start = new Date().getTime() - playhead;
 	try{
-		clearInterval(tmr);				//make sure interval is cleared when switching dm
-	}catch(e){}							//a try catch block -.- does basically nothing...
+		clearInterval(tmr);				// make sure interval is cleared when switching dm
+	}catch(e){}							// does nothing.
 	tmr = setInterval(function(){
-		playhead = new Date().getTime() - start;
+		playhead = new Date().getTime() - start;	// Date object to accurately track time
 		cm.time(playhead);
 		//console.log('Interval: '+playhead);
 	},10);
 }
 
-function basicComment(){
-	cm.sendComment({
-		//stime:Math.floor(player.getCurrentTime())+1,
-		mode:1,
-		text:$('input[type="text"][name="comment"]').val(),
-		//size:25
-	});
-	$('input[type="text"][name="comment"]').val('');
-	return false;
+function basicComment(){		// not so basic anymore..
+
+	// special commands
+	if($('input:text[name="comment"]').val() == 'fs'){
+		toggleFullScreen();
+		$('input:text[name="comment"]').val('');
+	}
+
+	if($('input:text[name="comment"]').val() != ''){
+		//stime = Math.floor(player.getCurrentTime())+1	// youtube specific call!
+		stime = parseFloat(Math.round(playhead/1000))	// decimal: .toFixed(2);
+		sec = stime%60;
+		if(sec<10) sec = '0'+sec;
+		min = Math.floor(stime/60);
+		// need to do some time conversion
+		text = $('input:text[name="comment"]').val()
+		time = new Date()
+		date = time.getFullYear() + '-' + (time.getMonth() + 1) + '-' + time.getDate()
+					+ '-' + time.getHours()+':'+time.getMinutes()
+
+		// show it on screen
+		cm.sendComment({	// only 'mode' and 'text' are required
+			//stime:Math.floor(player.getCurrentTime())+1,
+			mode:1,
+			text:text,
+			size:$('select#fontsize').val(),
+			//date = new Date().getTime()		//get timestamp?
+		});
+
+		// add to cmtList
+		$('div.cmtList table#cmtTable').append('<tr><td>'+min+':'+sec+'</td><td>'+text+'</td><td>'+date+'</td></tr>')
+		// reset
+		$('input:text[name="comment"]').val('');
+	}
+	return false;		// prevent refresh
 }
 
 /* ======================================== Full Screen Utilities ======================================== */

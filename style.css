@@ -2,33 +2,100 @@
 	CommentCoreLibrary Styles
 ============================== */
 
-#chrome{						/* danmaku player */
+/* danmaku player */
+#chrome{
 	height: 410px;
 	width: 950px;
 }
 
+/* FullScreen */
 :-webkit-full-screen#chrome{
 	height: 100%;
 	width: 100%;
 }
 
-div.abp{						/* screen */
-	position:relative;
-	width:540px;
-	height:380px;
-	background:#000;
-}
-
 :-moz-full-screen div.abp{
-	/*height:97%				/* not needed since Fx15 */
+	height: -moz-calc(100% - 25px);		/* No prefix from Fx16 onwards */
 	width: 100%;
 }
 
 :-webkit-full-screen div.abp{
-	height: 97%;
+	height: -webkit-calc(100% - 25px);	/* Untested yet */
 	width: 100%;
 }
 
+/* left */
+div.ls{
+	float: left;						/* this made form width the same as abp width..? */
+}
+
+:-moz-full-screen div.ls{
+	height: 100%;
+	width: 100%;
+}
+
+/* display */
+div.abp{
+	position:relative;
+	width:540px;						/* inherit from .ls */
+	height:380px;						/* absolute inherits from this (probably) */
+	background:#000;
+}
+
+/* Input */
+div form#danmu{
+	display: -moz-box;
+	width: 100%;
+}
+
+div form#danmu input[type="text"][name="comment"]{
+	-moz-box-flex: 1;
+}
+
+/* cmt list */
+div.cmtList{
+	border: 1px solid gray;
+	border-radius:3px;
+	overflow-y: scroll;
+	/*font-family: Tahoma;*/
+	font-size: 0.9em;
+	height: 380px;			/* random */
+}
+
+table#cmtTable{
+	width: 100%;
+	table-layout: fixed;
+}
+
+table#cmtTable tr th{		/* more specific overrides hover  */
+	background-color: #EEE;
+}
+
+table#cmtTable tr td{
+	white-space: nowrap;	/* one liner */
+	overflow: hidden;		/* cuts it out */
+	padding: 1px 5px;
+}
+
+table#cmtTable tr:hover{
+	background-color: lightblue;
+}
+
+/* very confused on how tables work with width.. */
+table#cmtTable tr th:nth-child(1),
+table#cmtTable tr td:nth-child(1){
+	width: 50px;
+}
+table#cmtTable tr td:nth-child(1){
+	text-align: right;
+}
+table#cmtTable tr th:nth-child(3),
+table#cmtTable tr td:nth-child(3){
+	width: 110px;
+}
+
+
+/* yt fix */
 div.abp #ytTitleFix{ /*info bar*/
 	position: absolute;
 	width: 100%;
@@ -45,16 +112,6 @@ div.abp #ytFullHide{
 	z-index: 3;
 	/*border: 1px solid red;*/
 }
-
-/* Input */
-div form#danmu input[type="text"][name="comment"]{
-	width: 410px;
-}
-
-div form#danmu input[type="submit"][value="comment"]{
-	width: 80px;
-}
-
 
 /* Comment Overlay */
 .abp .container{	

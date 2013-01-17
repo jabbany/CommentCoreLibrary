@@ -39,23 +39,56 @@
 
 <body>
 <div id="chrome">
-	<div class="abp">
-		<div id="commentCanvas" class="container">
-			<!--
-			
-			<video id="dmPlayer"><script>dmid='xqcwbi'; cid='comment';</script></video>
-			<video id="vmPlayer"><script>vmid='5838112'; cid='comment';</script></video>
-			-->
-			<video id="ytPlayer"><script>ytid='AEV8cBND7EY'; cid='sweetdevil';</script></video>
+	<div class="ls">
+		<div class="abp">
+			<div id="commentCanvas" class="container">
+				<!--
+				<video id="dmPlayer"><script>dmid='xqcwbi'; cid='comment';</script></video>
+				<video id="vmPlayer"><script>vmid='5838112'; cid='comment';</script></video>
+				<video id="ytPlayer"><script>ytid='AEV8cBND7EY'; cid='sweetdevil';</script></video>
+				-->
+				<video id="ytPlayer"><script>ytid='AEV8cBND7EY'; cid='sweetdevil';</script></video>
+			</div>
 		</div>
+		<form id="danmu" onsubmit="return basicComment(); ">
+			<!-- must use block for box model -->
+			<span style="display: block">
+				Size:
+				<select name="fontsize" id="fontsize">
+					<option value="15">Small</option>
+					<option value="25" selected>Medium</option>
+					<option value="38">Large</option>
+				</select>
+			</span>
+			<input type="text" placeholder="comment here" name="comment" maxlength="50" />
+			<input type="submit" value="Comment" />
+		</form>
 	</div>
-	<form id="danmu" onsubmit="return basicComment(); ">
-		<input type="text" placeholder="comment here" name="comment" maxlength="30" />
-		<input type="submit" value="Comment"/>
-		<input type="button" value="FS" onclick="toggleFullScreen()" />
-	</form>
+	<!-- rs -->
+	<div>Welcome Sunny[CA], Time: <span id=time></span>	&copySunnyok 2012</div>
+	<script>
+	setInterval(function(){
+		time = new Date();
+		display = time.getHours()+':'+time.getMinutes()+':'+time.getSeconds();
+		document.getElementById('time').innerHTML = display},1000);
+	</script>
+	<div class="cmtList">
+		<table id="cmtTable">
+			<tr>
+				<th>Time</th><th>Content</th><th>Date</th>
+			</tr>
+			<!-- need to pull in dynamically -->
+			<tr>
+				<td>1:00:00</td><td>some very long content, testing123, 1234567890</td><td>2012-01-01 00:00</td>
+			</tr>
+			<tr>
+				<td>00:00</td><td>some very long content, testing123</td><td>2012-01-01 00:00</td>
+			</tr>
+		</table>
+	</div>
 </div>
 
+<br />
 <a onclick="stop();" href="javascript:;">Stop</a>
 <a onclick="resume();" href="javascript:;">Resume</a>
 <a onclick="load('tests/test.xml');" href="javascript:;">Run Test 1</a>
