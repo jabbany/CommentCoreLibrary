@@ -14,7 +14,7 @@ function dm_init(){
 // This function init the player once the SDK is loaded
 window.dmAsyncInit = function(){
 	// PARAMS is a javascript object containing parameters to pass to the player if any (eg: {autoplay: 1})
-	window.player = DM.player('dmPlayer', {
+	var player = DM.player('dmPlayer', {
 		video: dmid, 
 		width: '100%', 
 		height: '100%', 
@@ -34,19 +34,17 @@ window.dmAsyncInit = function(){
 			},
 			//play
 			'playing': function(event){
-				playhead = event.target.currentTime*1000;		//	<------------
-				resume();													//	|
-			},																//	|
-			//pause															//	|
-			'pause': function(){											//	|
-				stop();														//	|
-			},																//	|
-			//finish														//	|
-			'ended': function(e){											//	|
-				stop();														//	|
-				cm.clear();													//	|
-				//playhead=0;													|
-				e.target.currentTime = 0;	//need to reset this.. -.-  ---------
+				playhead = event.target.currentTime*1000;
+				resume();
+			},
+			//pause
+			'pause': function(){
+				stop();
+			},
+			//finish
+			'ended': function(e){
+				stop();
+				cm.clear();
 			},
 			//'timeupdate': function(event){console.log(event.target.currentTime);},
 			//'seeked': function(event){playhead = event.target.currentTime*1000; resume();},

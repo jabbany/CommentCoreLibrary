@@ -94,6 +94,10 @@ function CommentManager(stageObject){
 			cmt.style.opacity = data.alphaFrom;
 		cmt.ttl = 4000;
 		cmt.dur = 4000;
+        if (cmt.mode == 1 && this.stage.offsetWidth > 640){
+            cmt.ttl = 12000;
+            cmt.dur = 12000;
+        }
 		return cmt;
 	};
 	this.startTimer = function(){

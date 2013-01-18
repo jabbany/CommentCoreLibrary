@@ -1,7 +1,6 @@
-### Note
-This version incorporates the library with player API(IFrame) from popular video sites such as YouTube, Dailymotion and etc..
-
-Compliance to the ToS of these video sites is particularly noted.
+## Note
+This is a modified version of Comment Core Library which incorporates native player (IFrame API)
+from popular video sites such as YouTube, Dailymotion, etc..
 
 # Readme
 The CommentCoreLibrary is a set of javascript 'classes' that make up the core controller for comment 

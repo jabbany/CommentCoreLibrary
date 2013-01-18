@@ -16,7 +16,7 @@ function yt_init(){
 // 2. This function creates an <iframe> (and YouTube player)
 //    after the API code downloads.
 function onYouTubeIframeAPIReady() {
-	window.player = new YT.Player('ytPlayer', {		//replace #ytPlayer with iframe
+	var player = new YT.Player('ytPlayer', {    //replace #ytPlayer with iframe
 		videoId: ytid,
 		height: '100%',
 		width: '100%',
@@ -24,11 +24,12 @@ function onYouTubeIframeAPIReady() {
 			autohide: 1,
 			//autoplay: 0,
 			//controls: 0,
-			html5: 1,				//unoffical api call
+            fs: 0,                  // no fullscreen button
+			html5: 1,
 			//modestbranding: 1,
 			rel: 0,
 			//showinfo: 0,
-			wmode: 'opaque'			//enable z-indexing for flash
+			wmode: 'opaque'         // enable z-indexing for flash
 		},
 		events: {
 		// 3. The API will call this function when the video player is ready.

@@ -1,24 +1,40 @@
-//Initializing the Comment Core Library and video component
-//requires jQuery
+// Initializing the Comment Core Library and video component
+// requires jQuery
 
-//$.holdReady(true);	//delay jQuery ready event
-var cm;					//global scope
+//$.holdReady(true);	// delay jQuery ready event
+var cm, cl;				// global scope
 
-setTimeout(function recursive(){			//wait for the required node to be created
-	if($('div#commentCanvas').length){		//check node existence
-		//	create comment overlay
+setTimeout(function recursive(){			// wait for the required node to be created
+	if($('div#commentCanvas').length){		// check node existence
+		// create comment overlay
 		cm = new CommentManager($_('commentCanvas'));
 		cm.init();
 		
-		//	video loader
+        // add tabs
+        var tm = new TabManager($_('sidebar'));
+        tm.bindAction(['commentlist',"commentListTab"]);
+        tm.bindAction(['playersettings',"playerSettingsTab"]);
+        
+        // create comment list
+        cl = new FlexDataGrid($_('CommentList'));
+        cl.colWidthMap = [30,$_('tb-ref2').offsetWidth-12,110];
+        
+        //  opacity scroll bar
+        var scrollbar = new SimpleSlider({targetId:'opacitySettings',barCss:"scrollbar-floater",sliderCss:"scrollbar-track",max:100,def:100});
+        scrollbar.create();
+        scrollbar.onchange = function(){
+            cm.def.opacity = Math.min(scrollbar.getValue(),100)/100;
+        };
+        scrollbar.setValue(100);
+        
+		// video loader
 		if(typeof ytid != 'undefined') yt_init();
 		if(typeof dmid != 'undefined') dm_init();
 		if(typeof vmid != 'undefined') vm_init();
 		
-		//	track fullscreen
+		// track fullscreen
 		$(document).on('fullscreenchange mozfullscreenchange webkitfullscreenchange', function(){
-			//	use css calc on supported browser instead
-			//	like Opera..
+			// use css calc on supported browsers
 			/* if (document.mozFullScreen || document.webkitIsFullScreen){
 				$('div.abp').css('height', function(){
 					return screen.height - 25 + 'px';
@@ -33,8 +49,8 @@ setTimeout(function recursive(){			//wait for the required node to be created
 		
 		//$.holdReady(false);
 		
-		//	fullscreen comment bar width adjustment for browser without flex
-		document.styleSheets[0].insertRule(':fullscreen form#danmu input[type="text"][name="comment"]{width: '+(screen.width-150)+'px;}', 0)
+		// fullscreen comment bar width adjustment for browser without flex
+		document.styleSheets[0].insertRule(':fullscreen form#danmu input[type="text"][name="comment"]{width: '+ (screen.width - 150) +'px;}', 0)
 		
 	}/*else{
 		setTimeout(resursive, 10);			// loop if needed
@@ -42,26 +58,53 @@ setTimeout(function recursive(){			//wait for the required node to be created
 	}*/
 }, 1);
 
+
 /*
 cm.filter.addModifier(function(cmt){
 	if(cmt.mode == 1)
 		cmt.mode = 2;
 	return cmt;
 });
+*/
 
-cm.filter.setRuntimeFilter(fefx.offset_dim);*/
+// helper func
+function zerofill(number, width) {
+    var input = number + "";  // make sure it's a string
+    return("00000000".slice(0, width - input.length) + input);
+}
 
 var tmr=0;
 var start=0;
 var playhead = 0;
 
-function load(dmf,dmfmd){              // glitchy.. initial load is fine.
-    if(dmfmd == null)
+function load(dmf,dmfmd){               // glitchy.. initial load is fine.
+    if(dmfmd == null)                   // not needed, checked again in CommentLoader
         dmfmd = 'bilibili';
+
 	cm.clear();
 	start = 0;
 	try{clearInterval(tmr);}catch(e){}  // unnecessary try-catch block?
-	CommentLoader(dmf,cm,dmfmd);
+    
+    var cbfunc = function(){
+        // rebuild comment list
+        // reset comment list if already created
+        document.getElementById('CommentList').innerHTML = '';
+        
+        cl.bind(cm.timeline,['stime','text','date'],function(dobj){
+            var newObj = {};
+            newObj.stime = Math.floor((dobj.stime / 1000)/60)+":" + (Math.floor((dobj.stime / 1000)%60)>=10 ? Math.floor((dobj.stime / 1000)%60):"0"+Math.floor((dobj.stime / 1000)%60));
+            newObj.text = dobj.text;
+            var dt = new Date();
+            dt.setTime(dobj.date * 1000);
+            newObj.date = dt.getFullYear() + "-" + zerofill(dt.getMonth()+1, 2) + "-" + zerofill(dt.getDate(), 2) + " " + zerofill(dt.getHours(), 2) + ":" + zerofill(dt.getMinutes(), 2);
+            return newObj;
+        });
+        
+        // draw table
+        cl.init();
+    }
+    
+	CommentLoader(dmf,cm,cbfunc,dmfmd);
 	//resume();                         // use when switching between dm, comment autostart..
 }
 
@@ -80,7 +123,7 @@ function resume(){
 		playhead = new Date().getTime() - start;	// Date object to accurately track time
 		cm.time(playhead);
 		//console.log('Interval: '+playhead);
-	},10);
+	}, 10);
 }
 
 function basicComment(){		// not so basic anymore..
@@ -93,15 +136,14 @@ function basicComment(){		// not so basic anymore..
 
 	if($('input:text[name="comment"]').val() != ''){
 		//stime = Math.floor(player.getCurrentTime())+1	// youtube specific call!
-		stime = parseFloat(Math.round(playhead/1000))	// decimal: .toFixed(2);
-		sec = stime%60;
-		if(sec<10) sec = '0'+sec;
-		min = Math.floor(stime/60);
+		stime = parseFloat(Math.round(playhead / 1000))	// decimal: .toFixed(2);
+		sec = zerofill(stime % 60, 2);
+		min = Math.floor(stime / 60);
 		// need to do some time conversion
-		text = $('input:text[name="comment"]').val()
-		time = new Date()
-		date = time.getFullYear() + '-' + (time.getMonth() + 1) + '-' + time.getDate()
-					+ '-' + time.getHours()+':'+time.getMinutes()
+		text = $('input:text[name="comment"]').val();
+		time = new Date();
+		date = time.getFullYear() + '-' + zerofill(time.getMonth() + 1, 2) + '-' + zerofill(time.getDate(), 2)
+					+ ' ' + zerofill(time.getHours(), 2) + ':' + zerofill(time.getMinutes(), 2);
 
 		// show it on screen
 		cm.sendComment({	// only 'mode' and 'text' are required
@@ -113,7 +155,7 @@ function basicComment(){		// not so basic anymore..
 		});
 
 		// add to cmtList
-		$('div.cmtList table#cmtTable').append('<tr><td>'+min+':'+sec+'</td><td>'+text+'</td><td>'+date+'</td></tr>')
+		$('div.cmtList table#CommentList tbody').append('<tr><td><div>'+min+':'+sec+'</div></td><td><div>'+text+'</div></td><td><div>'+date+'</div></td></tr>');
 		// reset
 		$('input:text[name="comment"]').val('');
 	}
