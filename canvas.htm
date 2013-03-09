@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" value="IE=9">
+<style>
+	.abp{background:#000;}
+	#player{
+		width:640px;
+		height:480px;
+	}
+</style>
+<!-- Files Below May Be Combined/Concated into one on Deployment Servers -->
+<script src="CommentCanvasLibrary.js"></script>
+<script src="CommentSpaceAllocator.js"></script>
+<script>
+$ = function(x){return document.getElementById(x);};
+var cdata = {
+	text:"测试弹幕",
+	font:"simhei",
+	size:25,
+	mode:1,
+	color:"#ffffff",
+	border:true,
+	alpha:1
+};
+</script>
+
+<title>CommentCanvasLibrary - TestImplementation</title>
+</head>
+<body>
+
+<div class="m20 abp" id="player">
+	<canvas id="commentCanvas" class="container" width="640" height="480"></canvas>
+</div>
+<script>
+var x = new CommentCore($('commentCanvas'));
+</script>
+</body>
+</html>
