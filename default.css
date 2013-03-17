@@ -17,7 +17,8 @@ div.abp{
 	-ms-transform:rotate3d(0,0,0,0);
 }
 .abp .container .cmt{
-	padding:0;margin:0;
+	padding:3px 0 0 0;margin:0;
+	line-height:100%;
 	font-family:Simhei,"宋体",Heiti,"MS Mincho","Meiryo","Microsoft Yahei",monospace;
 	font-weight:bold;
 	text-decoration:none;

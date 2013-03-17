@@ -65,6 +65,7 @@ toScale为形如"[Int]x[Int]"的参数，标记了缩放末位置的大小。缩
 ## 高阶定位混合弹幕组
     可选设置：Object
 高阶定位将支撑一个“定位体”（Position Effect Element），在可能的情况下最大限度的允许用户进行发挥。
+
     {
         "start":[0,0],
         "object":{"value":"This is only a Test Run","mode":"text"},
@@ -73,7 +74,9 @@ toScale为形如"[Int]x[Int]"的参数，标记了缩放末位置的大小。缩
             {en:}
         ],
     }
+    
 说明如下：
+
     $.start为一个数组，定义了(x,y)坐标，当 x,y中一方小于0时，则按照舞台另一端进行运动。（假定窗口为640x480，则[-50,-50]的弹幕初始位置是 590,430）
     $.object为一个移动体，移动体有如下几种模式(mode)：
         "text":纯文字

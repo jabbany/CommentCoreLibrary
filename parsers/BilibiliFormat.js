@@ -11,6 +11,12 @@ function BilibiliParser(xmlDoc){
 		}
 		return string;
 	}
+	
+	//Format the bili output to be json-valid
+	function format(string){
+		return string.replace(/\t/,"\\t");	
+	}
+	
 	var elems = xmlDoc.getElementsByTagName('d');
 	var tlist = [];
 	for(var i=0;i<elems.length;i++){
@@ -33,7 +39,7 @@ function BilibiliParser(xmlDoc){
 			}else{
 				if(obj.mode == 7){
 					try{
-						adv = JSON.parse(text);
+						adv = JSON.parse(format(text));
 						obj.shadow = true;
 						obj.x = adv[0];
 						obj.y = adv[1];
@@ -72,7 +78,10 @@ function BilibiliParser(xmlDoc){
 							obj.alphaFrom = parseFloat(tmp[0]);
 							obj.alphaTo = parseFloat(tmp[1]);
 						}
-					}catch(e){console.log('Error occurred in JSON parsing');}
+					}catch(e){
+						console.log('[Err] Error occurred in JSON parsing');
+						console.log('[Dbg] ' + text);
+					}
 				}
 			}
 			//Before we push
