@@ -44,12 +44,12 @@
 <script>
 function launchFullScreen(element) {
 	cm.setBounds();
-	if(element.requestFullScreen) {
-		element.requestFullScreen();
-	} else if(element.mozRequestFullScreen) {
-		element.mozRequestFullScreen();
-	} else if(element.webkitRequestFullScreen) {
-		element.webkitRequestFullScreen();
+	if(element.requestFullscreen) {
+		element.requestFullscreen();
+	} else if(element.mozRequestFullscreen) {
+		element.mozRequestFullscreen();
+	} else if(element.webkitRequestFullscreen) {
+		element.webkitRequestFullscreen();
 	}
 }
 var cm = new CommentManager($('commentCanvas'));
