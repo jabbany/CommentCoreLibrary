@@ -8,18 +8,13 @@ div.abp{
 	position:absolute;
 	top:0;
 	left:0;
-	width:100%;
-	height:100%;
-	transform:rotate3d(0,0,0,0);
-	-webkit-transform:rotate3d(0,0,0,0);
-	-o-transform:rotate3d(0,0,0,0);
-	-moz-transform:rotate3d(0,0,0,0);
-	-ms-transform:rotate3d(0,0,0,0);
+	bottom:0;
+	right:0;
 }
 .abp .container .cmt{
 	padding:3px 0 0 0;margin:0;
 	line-height:100%;
-	font-family:Simhei,"宋体",Heiti,"MS Mincho","Meiryo","Microsoft Yahei",monospace;
+	font-family:Simhei,Simsun,Heiti,"MS Mincho","Meiryo","Microsoft Yahei",monospace;
 	font-weight:bold;
 	text-decoration:none;
 	text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
@@ -42,6 +37,12 @@ div.abp{
 }
 #player{
 	position:relative;
+	margin:0;padding:0;
 	width:640px;height:480px;
 	background:#000;
 }
+
+#player:full-screen{ margin:10px 0 0 0; width:100%; height:100%;}
+#player:-webkit-full-screen{ margin:10px 0 0 0; width:100%; height:100%;}
+#player:-moz-full-screen{ margin:10px 0 0 0; width:100%; height:100%;}
+#player:-ms-full-screen{ margin:10px 0 0 0; width:100%; height:100%;}

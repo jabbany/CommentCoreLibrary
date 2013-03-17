@@ -21,9 +21,8 @@
 <title>Testrun Sandbox For Comment Core Library</title>
 </head>
 <body>
-
 <div class="m20 abp" id="player">
-	<div id="commentCanvas" class="container" onresize="cm.setBounds();"></div>
+	<div id="commentCanvas" class="container"></div>
 	<video id="abpVideo" autobuffer="true" data-setup="{}" width="100%" height="100%" style="z-index:-1;width:100%;height:100%;top:0;left:0;right:0;bottom:0;" preload="auto">
 	</video>
 </div>
@@ -41,7 +40,18 @@
 <a onclick="cm.filter.setRuntimeFilter(fefx.center_speedup);" href="javascript:;">Apply Center-Speedup</a>
 <a onclick="cm.filter.setRuntimeFilter(null);" href="javascript:;">Clear Runtime Filters</a>
 </p>
+<p>APIs: <a onclick="launchFullScreen($('player'))" href="javascript:;">Fullscreen</a>
 <script>
+function launchFullScreen(element) {
+	cm.setBounds();
+	if(element.requestFullScreen) {
+		element.requestFullScreen();
+	} else if(element.mozRequestFullScreen) {
+		element.mozRequestFullScreen();
+	} else if(element.webkitRequestFullScreen) {
+		element.webkitRequestFullScreen();
+	}
+}
 var cm = new CommentManager($('commentCanvas'));
 cm.init();
 /*
