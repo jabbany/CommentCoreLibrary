@@ -20,7 +20,7 @@ var fefx = {
 		if(cmt.data.mode != 1 && cmt.data.mode !=2)
 			return cmt;//Pass through all comments aside scrollers
 		var cmtPos = cmt.ttl / cmt.dur;
-		if(cmtPos > 0.3 && cmtPos < 0.7)
+		if(cmtPos > 0.2 && cmtPos < 0.8)
 			cmt.ttl -= 10;
 		return cmt;
 	},

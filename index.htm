@@ -41,7 +41,9 @@
 <a onclick="cm.filter.setRuntimeFilter(null);" href="javascript:;">Clear Runtime Filters</a>
 </p>
 <p>APIs: <a onclick="launchFullScreen($('player'))" href="javascript:;">Fullscreen</a>
+<a onclick="launchWindowFull($('player'))" href="javascript:;">Windowed Fullscreen</a>
 <script>
+var isWindowedFullscreen = false;
 function launchFullScreen(element) {
 	cm.setBounds();
 	if(element.requestFullscreen) {
@@ -51,6 +53,26 @@ function launchFullScreen(element) {
 	} else if(element.webkitRequestFullscreen) {
 		element.webkitRequestFullscreen();
 	}
+}
+
+function launchWindowFull(element){
+	if(!isWindowedFullscreen){
+		element.style.position = "fixed";
+		element.style.top = "0";
+		element.style.bottom = "0";
+		element.style.left = "0";
+		element.style.right = "0";
+		element.style.width = "auto";
+		element.style.height = "auto";
+	}else{
+		element.style.position = "";
+		element.style.top = "";
+		element.style.bottom = "";
+		element.style.left = "";
+		element.style.right = "";
+	}
+	cm.getBounds();
+	isWindowedFullscreen = !isWindowedFullscreen;
 }
 var cm = new CommentManager($('commentCanvas'));
 cm.init();
