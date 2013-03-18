@@ -43,8 +43,8 @@ function AcfunParser(jsond){
 					console.log('[Dbg] ' + data.text);
 					continue;
 				}
-				data.text = data.text.replace(/\r/g,"\n");
-				data.text = x.n.replace(/\ /g,"\u00a0");
+				data.text = x.n.replace(/\r/g,"\n");
+				data.text = data.text.replace(/\ /g,"\u00a0");
 				console.log(data.text);
 				if(x.p != null){
 					data.x = x.p.x;
