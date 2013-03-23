@@ -11,6 +11,11 @@ which focuses on real use) and is separated into sections that help developers u
 Developers willing to incorporate similar comment streaming functionalities inside their own projects
 (whether web based or not) are free to learn from and extend from the CommentCoreLibrary.
 
+## Testing on your browser
+You can see a live demo (most current source) [here](http://jabbany.github.com/CommentCoreLibrary). Feel free to open tickets
+if this demo test has bugs. Remember to tell me your browser vendor/version info though. PS, just a heads up, due to lack of
+fonts, Linux systems may render some fixed point animations wrong, this is normal, you just need the fonts.
+
 ## Licensing
 The CommentCoreLibrary is licensed under the permissive MIT License. If you wish to use this in any project, you can simply
 include the following line:
@@ -26,6 +31,10 @@ Please feel free to fork the project on GitHub. Also, bug reports and feature re
 # 读我
 弹幕播放核心是一套原始的基于JavaScript构建的弹幕控制器，意在催化HTML5下弹幕播放器的发展，和为希望了解弹幕播放器弹幕组件运作原理的开发者提供简单
 但是深入的入门。该播放器核心由ABPlayerHTML5衍生，并被其使用。开发者们可以根据弹幕播放核心来自定义自己的流媒体注视播放模式。
+
+## 测试
+项目开放测试于[这里](http://jabbany.github.com/CommentCoreLibrary)。可以随时通过浏览器进行测试，如果有任何BUG等，非常欢迎提交Bug Ticket！
+不过记得告诉我你的浏览器版本和系统信息。PS，如果你在用Linux，请确保你有标准中文字体（宋体 Simsun【必需】，黑体 Simhei【必需】，雅黑 Microsoft YaHei，幼圆 YouYuan，隶书），和日文字体（Mincho， Gothic）。
 
 ## 许可
 本程序为教学用意，采取非常宽松的MIT许可。该许可允许你把本项目运用在任何开源或是闭源的，非营利或商业性的项目中。

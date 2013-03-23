@@ -55,6 +55,9 @@
 				<video id="dmPlayer"><script>dmid='xqcwbi'; cid='comment';</script></video>
 				<video id="vmPlayer"><script>vmid='5838112'; cid='comment';</script></video>
 				<video id="ytPlayer"><script>ytid='AEV8cBND7EY'; cid='sweetdevil';</script></video>
+                <video style="height: 100%; width: 100%;">
+                    <source src="http://content.bitsontherun.com/videos/bkaovAYt-27m5HpIu.webm" type="video/webm">
+                </video>
 				-->
 				<video id="ytPlayer"><script>ytid='AEV8cBND7EY'; cid='sweetdevil';</script></video>
 			</div>
@@ -129,11 +132,14 @@
 <a onclick="load('tests/comment.xml');" href="javascript:;">Run Test 6</a>
 <a onclick="load('tests/extended.xml');" href="javascript:;">Run Test 7</a>
 <a onclick="load('tests/sweetdevil.xml');" href="javascript:;">Run Test 8</a>
-<p>AcFun (Experimental) <a onclick="load('tests/AcFun.json','acfun');" href="javascript:;">Run Test 1</a></p>
+<p>AcFun (Experimental) <a onclick="load('tests/ACFun.json','acfun');" href="javascript:;">Run Test 1</a></p>
 <p>Filters: <a onclick="cm.filter.setRuntimeFilter(fefx.center_dim);" href="javascript:;">Apply Center-Transparency</a>
 <a onclick="cm.filter.setRuntimeFilter(fefx.center_speedup);" href="javascript:;">Apply Center-Speedup</a>
 <a onclick="cm.filter.setRuntimeFilter(null);" href="javascript:;">Clear Runtime Filters</a>
 </p>
 
+<p>APIs: <a onclick="toggleFullScreen($_('commentCanvas'))" href="javascript:;">Fullscreen</a>
+<a onclick="launchWindowFull($_('commentCanvas'))" href="javascript:;">Windowed Fullscreen</a>
+</p>
 </body>
 </html>

@@ -49,9 +49,6 @@ setTimeout(function recursive(){			// wait for the required node to be created
 		
 		//$.holdReady(false);
 		
-		// fullscreen comment bar width adjustment for browser without flex
-		document.styleSheets[0].insertRule(':fullscreen form#danmu input[type="text"][name="comment"]{width: '+ (screen.width - 150) +'px;}', 0)
-		
 	}/*else{
 		setTimeout(resursive, 10);			// loop if needed
 		console.log('loopy');
@@ -88,7 +85,7 @@ function load(dmf,dmfmd){               // glitchy.. initial load is fine.
     var cbfunc = function(){
         // rebuild comment list
         // reset comment list if already created
-        document.getElementById('CommentList').innerHTML = '';
+        $_('CommentList').innerHTML = '';
         
         cl.bind(cm.timeline,['stime','text','date'],function(dobj){
             var newObj = {};
@@ -130,7 +127,7 @@ function basicComment(){		// not so basic anymore..
 
 	// special commands
 	if($('input:text[name="comment"]').val() == 'fs'){
-		toggleFullScreen();
+		toggleFullScreen($_('chrome'));
 		$('input:text[name="comment"]').val('');
 	}
 
@@ -163,16 +160,38 @@ function basicComment(){		// not so basic anymore..
 }
 
 /* ======================================== Full Screen Utilities ======================================== */
-function toggleFullScreen() {
-	var frame = document.getElementById('chrome');
+
+var isWindowedFullscreen = false;
+
+function launchWindowFull(element){
+	if(!isWindowedFullscreen){
+		element.style.position = "fixed";
+		element.style.top = "0";
+		element.style.bottom = "0";
+		element.style.left = "0";
+		element.style.right = "0";
+		element.style.width = "auto";
+		element.style.height = "auto";
+	}else{
+		element.style.position = "";
+		element.style.top = "";
+		element.style.bottom = "";
+		element.style.left = "";
+		element.style.right = "";
+	}
+	cm.setBounds();
+	isWindowedFullscreen = !isWindowedFullscreen;
+}
+
+function toggleFullScreen(element) {
 	if ((document.fullScreenElement && document.fullScreenElement !== null) ||	// alternative standard method
 		(!document.mozFullScreen && !document.webkitIsFullScreen)) {            // current working methods
-		if (frame.requestFullScreen) {
-			frame.requestFullScreen();
-		} else if (frame.mozRequestFullScreen) {
-			frame.mozRequestFullScreen();
-		} else if (frame.webkitRequestFullScreen) {
-			frame.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
+		if (element.requestFullScreen) {
+			element.requestFullScreen();
+		} else if (element.mozRequestFullScreen) {
+			element.mozRequestFullScreen();
+		} else if (element.webkitRequestFullScreen) {
+			element.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
 		}
 	} else {
 		if (document.cancelFullScreen) {

@@ -70,17 +70,8 @@ function CommentManager(stageObject){
 		cmt.stime = data.stime;
 		cmt.mode = data.mode;
 		cmt.data = data;
-		/**
-			Remove 'else' block if you do not trust 3rd party
-			sources or parsers. Note: The AcfunFormat is NOT safe,
-			please do NOT use unchecked sources in AcFun Mode!!
-		**/
-		if(data.raw != true){
-			cmt.appendChild(document.createTextNode(data.text));
-			cmt.innerText = data.text;
-		}else{
-			cmt.innerHTML = data.text;//This is for compat with ACFun. Assume text is safe.
-		}
+		cmt.appendChild(document.createTextNode(data.text));
+		cmt.innerText = data.text;
 		cmt.style.fontSize = data.size + "px";
 		if(data.font != null && data.font != '')
 			cmt.style.fontFamily = data.font;
@@ -186,7 +177,7 @@ CommentManager.prototype.sendComment = function(data){
 	cmt = this.initCmt(cmt,data);
 	this.stage.appendChild(cmt);
 	cmt.style.width = (cmt.offsetWidth + 1) + "px";
-	cmt.style.height = (cmt.offsetHeight + 1) + "px";
+	cmt.style.height = (cmt.offsetHeight - 3) + "px";
 	cmt.style.left = this.stage.offsetWidth + "px";
 	if(this.filter != null && !this.filter.beforeSend(cmt)){
 		this.stage.removeChild(cmt);

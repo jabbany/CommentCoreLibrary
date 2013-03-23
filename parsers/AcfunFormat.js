@@ -26,7 +26,12 @@ function AcfunParser(jsond){
 			data.color = '#' + fillRGB(parseInt(xc[1]).toString(16));
 			data.mode = parseInt(xc[2]);
 			data.size = parseInt(xc[3]);
-			data.text = data.mode != 7 ? jsondt[i].m.replace(/(\/n|\\n|\n|\r\n)/g,"\n") : jsondt[i].m;
+			if(data.mode != 7){
+				data.text = jsondt[i].m.replace(/(\/n|\\n|\n|\r\n|\\r)/g,"\n");
+				data.text = data.text.replace(/\r/g,"\n");
+				data.text = data.text.replace(/\s/g,"\u00a0");
+			}else
+				data.text = jsondt[i].m;
 			data.hash = xc[4];
 			data.date = parseInt(xc[5]);
 			if(data.mode ==7){
@@ -34,19 +39,13 @@ function AcfunParser(jsond){
 				try{
 					var x = JSON.parse(data.text);
 				}catch(e){
-					console.log('Error parsing internal data for comment');
+					console.log('[Err] Error parsing internal data for comment');
+					console.log('[Dbg] ' + data.text);
 					continue;
 				}
-				console.log(x);
-				data.text = x.n.replace(/\ /g,"&nbsp;");
-				data.raw = true;
-				if(/<(script|embed|object|canvas|meta|video|audio).*?>/g.test(data.text) ||
-					/<.*on\w+=.*>/.test(data.txt)){
-					//Unsafe scripting embed
-					console.log('Unsafe attempt to embed script through text!');
-					data.text = data.text.replace(/<.+?>/g,'');//Remove all HTML
-				}
-				data.text = data.text.replace(/(\/n|\\n|\n|\r\n|\r|\\r)/g,"<br>");
+				data.text = x.n; /*.replace(/\r/g,"\n");*/
+				data.text = data.text.replace(/\ /g,"\u00a0");
+				console.log(data.text);
 				if(x.p != null){
 					data.x = x.p.x;
 					data.y = x.p.y;
