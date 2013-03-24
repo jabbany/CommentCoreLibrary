@@ -3,7 +3,7 @@
 * Author : Jim Chen
 * Licensing : MIT License
 ******/
-$_ = function(a){return document.getElementById(a);};				//return the dom object?
+$_ = function(a){return document.getElementById(a);};
 var ABGlobal = {
 	is_webkit:function(){
 		try{
@@ -85,9 +85,10 @@ function CommentManager(stageObject){
 			cmt.style.opacity = data.alphaFrom;
 		cmt.ttl = 4000;
 		cmt.dur = 4000;
-        if (cmt.mode == 1 && this.stage.offsetWidth > 640){
-            cmt.ttl = 12000;
-            cmt.dur = 12000;
+        if ((cmt.mode == 1 || cmt.mode == 2 || cmt.mode == 6) && this.stage.offsetWidth > 540){
+            // keep comment speed consistent in full screen
+            cmt.ttl *= this.stage.offsetWidth / 540;
+            cmt.dur *= this.stage.offsetWidth / 540;
         }
 		return cmt;
 	};

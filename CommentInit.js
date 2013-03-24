@@ -1,5 +1,5 @@
-// Initializing the Comment Core Library and video component
-// requires jQuery
+// Initialize the Comment Core Library and its video component
+// uses some jQuery..
 
 //$.holdReady(true);	// delay jQuery ready event
 var cm, cl;				// global scope
@@ -25,27 +25,12 @@ setTimeout(function recursive(){			// wait for the required node to be created
         scrollbar.onchange = function(){
             cm.def.opacity = Math.min(scrollbar.getValue(),100)/100;
         };
-        scrollbar.setValue(100);
+        scrollbar.setValue(85);
         
 		// video loader
 		if(typeof ytid != 'undefined') yt_init();
 		if(typeof dmid != 'undefined') dm_init();
 		if(typeof vmid != 'undefined') vm_init();
-		
-		// track fullscreen
-		$(document).on('fullscreenchange mozfullscreenchange webkitfullscreenchange', function(){
-			// use css calc on supported browsers
-			/* if (document.mozFullScreen || document.webkitIsFullScreen){
-				$('div.abp').css('height', function(){
-					return screen.height - 25 + 'px';
-				})
-			}else{
-				$('div.abp').css('height', function(){
-					return 380 + 'px';
-				})
-			} */
-			cm.setBounds();		// reset canvas
-		})
 		
 		//$.holdReady(false);
 		
@@ -56,28 +41,19 @@ setTimeout(function recursive(){			// wait for the required node to be created
 }, 1);
 
 
-/*
-cm.filter.addModifier(function(cmt){
-	if(cmt.mode == 1)
-		cmt.mode = 2;
-	return cmt;
-});
-*/
-
-// helper func
+// helper function
 function zerofill(number, width) {
     var input = number + "";  // make sure it's a string
     return("00000000".slice(0, width - input.length) + input);
 }
 
+/* ======================================== Comment Utilities ======================================== */
+
 var tmr=0;
 var start=0;
 var playhead = 0;
 
-function load(dmf,dmfmd){               // glitchy.. initial load is fine.
-    if(dmfmd == null)                   // not needed, checked again in CommentLoader
-        dmfmd = 'bilibili';
-
+function load(dmf,dmfmd){
 	cm.clear();
 	start = 0;
 	try{clearInterval(tmr);}catch(e){}  // unnecessary try-catch block?
@@ -132,7 +108,6 @@ function basicComment(){		// not so basic anymore..
 	}
 
 	if($('input:text[name="comment"]').val() != ''){
-		//stime = Math.floor(player.getCurrentTime())+1	// youtube specific call!
 		stime = parseFloat(Math.round(playhead / 1000))	// decimal: .toFixed(2);
 		sec = zerofill(stime % 60, 2);
 		min = Math.floor(stime / 60);
@@ -141,11 +116,11 @@ function basicComment(){		// not so basic anymore..
 		time = new Date();
 		date = time.getFullYear() + '-' + zerofill(time.getMonth() + 1, 2) + '-' + zerofill(time.getDate(), 2)
 					+ ' ' + zerofill(time.getHours(), 2) + ':' + zerofill(time.getMinutes(), 2);
-
-		// show it on screen
+        
+		// display it on screen
 		cm.sendComment({	// only 'mode' and 'text' are required
-			//stime:Math.floor(player.getCurrentTime())+1,
-			mode:1,
+			//stime:stime,
+			mode:parseInt($('select#mode').val()),
 			text:text,
 			size:$('select#fontsize').val(),
 			//date = new Date().getTime()		//get timestamp?
@@ -203,3 +178,8 @@ function toggleFullScreen(element) {
 		}
 	}
 }
+
+// fullscreen listener
+$(document).on('fullscreenchange mozfullscreenchange webkitfullscreenchange', function(){
+    cm.setBounds();
+})

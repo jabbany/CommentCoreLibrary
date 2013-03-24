@@ -2,9 +2,9 @@
 	CommentCoreLibrary Styles
 ============================== */
 
-/* danmaku player */
+/* outer wrapper */
 #chrome{
-	height: 410px;
+	height: 405px;
 	width: 950px;
     border: groove 0.2em gray;
     border-radius: 3px;
@@ -17,7 +17,7 @@
 }
 
 :-moz-full-screen div.abp{
-	height: -moz-calc(100% - 25px);		/* No prefix from Fx16 onwards */
+	height: -moz-calc(100% - 25px);		/* No prefix required from Fx16 onwards */
 	width: 100%;
 }
 
@@ -29,9 +29,9 @@
 :full-screen{ margin:10px 0 0 0; width:100%; height:100%;}
 :-ms-full-screen{ margin:10px 0 0 0; width:100%; height:100%;}
 
-/* left */
+/* left side */
 div.ls{
-	float: left;						/* this made form width the same as abp width..? */
+	float: left;
 }
 
 :-moz-full-screen div.ls{
@@ -42,12 +42,12 @@ div.ls{
 /* display */
 div.abp{
 	position:relative;
-	width:540px;						/* inherit from .ls */
-	height:380px;						/* absolute inherits from this (probably) */
+	width:540px;
+	height:380px;
 	background:#000;
 }
 
-/* Input */
+/* comment input */
 div form#danmu{
 	display: -moz-box;
 	width: 100%;
@@ -58,7 +58,7 @@ div form#danmu input[type="text"][name="comment"]{
 }
 
 /* yt fix */
-div.abp #ytTitleFix{ /*info bar*/
+div.abp #ytTitleFix{ /* top info bar */
 	position: absolute;
 	width: 100%;
 	height: 60px;				/* 30px default height */
@@ -83,8 +83,6 @@ div.abp #ytFullHide{
 	position:absolute;
 	top:0;
 	left:0;
-	/*width:100%;
-	height:100%;*/
 	bottom:0;
 	right:0;
 	-webkit-touch-callout: none;
