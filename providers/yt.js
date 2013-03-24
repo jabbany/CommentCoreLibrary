@@ -64,18 +64,16 @@ function onYouTubeIframeAPIReady() {
 	});
 
 
-/* 6. Youtube Fix - Requires jQuery
-		Comment click through can be enabled with css pointer-events: none;
+/* 6. Youtube Fix - Uses jQuery
 		
 	Purpose:
-		Using YouTube API requires compliance to its ToS.
-		Therefore, a fix/hack is required for danmaku not to obscure the player.
+		Make comments more transparent so as to not obscure YouTube's
+        top info bar when mouse hovers over.
 		
 	Description:
-		When document ready, overlay div boxes on top of youtube info bar.
-		When mouse over, hide danmaku and move div boxes itself so it does not obscure the content.
-		There are two different fix, one is title fix and the other is full removal of danmaku.
-		Also there is a canvas click fix, for when the comment is clickable to play/pause video.
+		Overlay transparent divs over top region of YouTube player.
+		When mouse hovers over the divs, do some comment manipulation and
+        then hide the div itself so it does not interfere w/ interactions.
 */
 
 	// Recoverable Hide Div - title overlay fix
@@ -88,8 +86,7 @@ function onYouTubeIframeAPIReady() {
 	tag.id = 'ytFullHide';
 	$(tag).insertBefore('#ytPlayer');
 
-	// dom objects
-	var canvas = $('.abp')				//container for mouse detection
+	var canvas = $('.abp')
 	var ytBar = $('#ytTitleFix')[0];
 	var hideBox = $('#ytFullHide')[0];
 
@@ -100,7 +97,7 @@ function onYouTubeIframeAPIReady() {
 		cm.clear();
 	};
 
-	//below is basically the onmouseover for title fix
+	// title fix
 	canvas.mousemove(function(e){
 		if (e.pageY < canvas.offset().top+60){
 			//yt infobar occupies 30px but used higher value to extend more rows

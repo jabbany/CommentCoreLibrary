@@ -4,70 +4,77 @@
 
 /* outer wrapper */
 #chrome{
-	height: 405px;
+	height: 430px;
 	width: 950px;
     border: groove 0.2em gray;
     border-radius: 3px;
 }
 
 /* FullScreen */
-:-webkit-full-screen#chrome{
-	height: 100%;
+:-moz-full-screen .ls{
+    height: 100%;
+    width: 100%;
+}
+
+:-moz-full-screen .abp{
+	height: calc(100% - 25px);
 	width: 100%;
 }
 
-:-moz-full-screen div.abp{
-	height: -moz-calc(100% - 25px);		/* No prefix required from Fx16 onwards */
-	width: 100%;
+:-webkit-full-screen .ls{
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
 }
 
-:-webkit-full-screen div.abp{
-	height: -webkit-calc(100% - 25px);	/* Untested yet */
-	width: 100%;
+:-webkit-full-screen .abp{
+	height: -webkit-calc(100% - 25px);
+    width: 100%;
 }
 
 :full-screen{ margin:10px 0 0 0; width:100%; height:100%;}
-:-ms-full-screen{ margin:10px 0 0 0; width:100%; height:100%;}
 
 /* left side */
-div.ls{
+.ls{
 	float: left;
 }
 
-:-moz-full-screen div.ls{
-	height: 100%;
-	width: 100%;
-}
-
 /* display */
-div.abp{
+.abp{
 	position:relative;
 	width:540px;
-	height:380px;
+	height:405px;
 	background:#000;
 }
 
+.abp video{
+    width: 100%;
+    height: 100%;
+}
+
 /* comment input */
-div form#danmu{
+.ls form#danmu{
 	width: 100%;
+    background: lightgrey;
+    text-align:  center;
 }
 
 /* yt fix */
-div.abp #ytTitleFix{ /* top info bar */
+.abp #ytTitleFix{
 	position: absolute;
 	width: 100%;
-	height: 60px;				/* 30px default height */
+	height: 60px;
 	z-index: 2;
-	/*border: 1px solid yellow;*/
 }
 
-div.abp #ytFullHide{
+.abp #ytFullHide{
 	position: absolute;
 	right: 0px;
 	width: 138px;
 	height: 30px;
 	z-index: 3;
-	/*border: 1px solid red;*/
 }
 
 /* Comment Overlay */
