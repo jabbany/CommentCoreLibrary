@@ -49,12 +49,7 @@ div.abp{
 
 /* comment input */
 div form#danmu{
-	display: -moz-box;
 	width: 100%;
-}
-
-div form#danmu input[type="text"][name="comment"]{
-	-moz-box-flex: 1;
 }
 
 /* yt fix */
