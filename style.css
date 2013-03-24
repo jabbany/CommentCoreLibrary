@@ -47,6 +47,11 @@ div.abp{
 	background:#000;
 }
 
+/* comment input */
+div form#danmu{
+	width: 100%;
+}
+
 /* yt fix */
 div.abp #ytTitleFix{ /* top info bar */
 	position: absolute;

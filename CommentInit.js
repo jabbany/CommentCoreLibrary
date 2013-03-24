@@ -35,8 +35,8 @@ setTimeout(function recursive(){			// wait for the required node to be created
 		//$.holdReady(false);
 		
 	}else{
-		setTimeout(resursive, 10);			// loop if needed
-		console.log('waiting for commentCanvas to be created');
+		setTimeout(recursive, 10);
+		console.log('waiting for commentCanvas node');
 	}
 }, 1);
 
