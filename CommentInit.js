@@ -34,10 +34,10 @@ setTimeout(function recursive(){			// wait for the required node to be created
 		
 		//$.holdReady(false);
 		
-	}/*else{
+	}else{
 		setTimeout(resursive, 10);			// loop if needed
-		console.log('loopy');
-	}*/
+		console.log('waiting for commentCanvas to be created');
+	}
 }, 1);
 
 
@@ -103,7 +103,7 @@ function basicComment(){		// not so basic anymore..
 
 	// special commands
 	if($('input:text[name="comment"]').val() == 'fs'){
-		toggleFullScreen($_('chrome'));
+		toggleFullScreen(document.getElementsByClassName('ls')[0]);
 		$('input:text[name="comment"]').val('');
 	}
 
