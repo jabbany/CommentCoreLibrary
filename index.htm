@@ -42,6 +42,9 @@
 
 <!-- Vimeo -->
 <script src="providers/vm.js"></script>
+
+<!-- HTML5 -->
+<script src="providers/html5.js"></script>
 </head>
 
 
@@ -141,20 +144,23 @@
 
 <script>
 function HTML5(){
-    $_("commentCanvas").innerHTML = "<video style=\"height: 100%; width: 100%;\" autoplay controls>"
+    stop();
+    $_("commentCanvas").innerHTML = "<video id= \"html5Media\" controls>"
         + "<source type=\"video/mp4\" src=\"http://media.w3.org/2010/05/sintel/trailer.mp4\"></source>"
         + "<source type=\"video/webm\" src=\"http://media.w3.org/2010/05/sintel/trailer.webm\"></source>"
         + "<source type=\"video/ogg\" src=\"http://media.w3.org/2010/05/sintel/trailer.ogv\"></source>"
         + "</video>";
-    load("tests/comment.xml");
-    resume();
+    cid="comment";
+    html5_init();
 }
 function DailyMotion(){
+    stop();
     $_("commentCanvas").innerHTML = "<video id=\"dmPlayer\"></video>";
     dmid='xqcwbi'; cid='comment';
     dm_init();
 }
 function Vimeo(){
+    stop();
     $_("commentCanvas").innerHTML = "<video id=\"vmPlayer\"></video>";
     vmid='5838112'; cid='comment';
     vm_init();
@@ -165,6 +171,7 @@ function Vimeo(){
 <a onclick="DailyMotion()" href="javascript:;">DailyMotion</a>
 <a onclick="Vimeo()" href="javascript:;">Vimeo</a>
 <a onclick="HTML5()" href="javascript:;">HTML5</a>
+<a onclick='$_("commentCanvas").innerHTML = ""' href="javascript:;">None</a>
 </p>
 
 <p>Filters: <a onclick="cm.filter.setRuntimeFilter(fefx.center_dim);" href="javascript:;">Apply Center-Transparency</a>

@@ -2,12 +2,12 @@
 div.cmtList{
 	overflow-y: hidden;
 	font-size: 0.9em;
-	height: 404px;
+	height: 430px;
 }
 
 div.cmtList .bDiv{
     overflow: auto;
-    height: 365px;
+    height: 380px;
 }
 
 /** Tabs **/

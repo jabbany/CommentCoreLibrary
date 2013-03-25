@@ -103,7 +103,7 @@ function basicComment(){		// not so basic anymore..
 
 	// special commands
 	if($('input:text[name="comment"]').val() == 'fs'){
-		toggleFullScreen(document.getElementsByClassName('ls')[0]);
+		toggleFullScreen($_("chrome"));
 		$('input:text[name="comment"]').val('');
 	}
 
