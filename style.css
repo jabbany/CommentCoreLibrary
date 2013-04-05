@@ -1,11 +1,11 @@
 /* ==============================
-	CommentCoreLibrary Styles
+    CommentCoreLibrary Styles
 ============================== */
 
-/* outer wrapper */
-#chrome{
-	height: 430px;
-	width: 950px;
+/* wrapper */
+#player{
+    height: 430px;
+    width: 950px;
     border: groove 0.2em gray;
     border-radius: 3px;
 }
@@ -15,12 +15,10 @@
     height: 100%;
     width: 100%;
 }
-
 :-moz-full-screen .abp{
-	height: calc(100% - 25px);
-	width: 100%;
+    height: calc(100% - 25px);
+    width: 100%;
 }
-
 :-webkit-full-screen .ls{
     position: absolute;
     top: 0;
@@ -28,15 +26,15 @@
     height: 100%;
     width: 100%;
 }
-
 :-webkit-full-screen .abp{
-	height: -webkit-calc(100% - 25px);
+    height: -webkit-calc(100% - 25px);
     width: 100%;
 }
+:full-screen{
+    margin:10px 0 0 0; width:100%; height:100%;
+}
 
-:full-screen{ margin:10px 0 0 0; width:100%; height:100%;}
-
-/* left side */
+/* left section */
 .ls{
 	float: left;
 }
@@ -48,13 +46,12 @@
 	height:405px;
 	background:#000;
 }
-
 .abp video{
     width: 100%;
     height: 100%;
 }
 
-/* comment input */
+/* comment input field */
 .ls form#danmu{
 	width: 100%;
     background: lightgrey;
@@ -68,7 +65,6 @@
 	height: 60px;
 	z-index: 2;
 }
-
 .abp #ytFullHide{
 	position: absolute;
 	right: 0px;
@@ -78,7 +74,7 @@
 }
 
 /* Comment Overlay */
-.abp .container{	
+.abp .container{
 	overflow:hidden;
 	display:block;
 	z-index:1;
@@ -110,7 +106,6 @@
 	text-wrap:none;
 	pointer-events: none;
 	border:0 !important;
-	/*display: none;			/* hide comments */
 }
 
 .cmt.noshadow{

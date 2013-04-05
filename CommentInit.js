@@ -1,10 +1,10 @@
 // Initialize the Comment Core Library and its video component
 // uses some jQuery..
 
-//$.holdReady(true);	// delay jQuery ready event
-var cm, cl;				// global scope
+var cm, cl;
 
-setTimeout(function recursive(){			// wait for the required node to be created
+setup();
+function setup() {
 	if($('div#commentCanvas').length){		// check node existence
 		// create comment overlay
 		cm = new CommentManager($_('commentCanvas'));
@@ -28,18 +28,15 @@ setTimeout(function recursive(){			// wait for the required node to be created
         scrollbar.setValue(85);
         
 		// video loader
-		if(typeof ytid != 'undefined') yt_init();
-		if(typeof dmid != 'undefined') dm_init();
-		if(typeof vmid != 'undefined') vm_init();
-		
-		//$.holdReady(false);
+		if(typeof ytid !== 'undefined') yt_init();
+		if(typeof dmid !== 'undefined') dm_init();
+		if(typeof vmid !== 'undefined') vm_init();
 		
 	}else{
-		setTimeout(recursive, 10);
+		setTimeout(setup, 10);
 		console.log('waiting for commentCanvas node');
 	}
-}, 1);
-
+}
 
 // helper function
 function zerofill(number, width) {
@@ -56,7 +53,7 @@ var playhead = 0;
 function load(dmf,dmfmd){
 	cm.clear();
 	start = 0;
-	try{clearInterval(tmr);}catch(e){}  // unnecessary try-catch block?
+	clearInterval(tmr);
     
     var cbfunc = function(){
         // rebuild comment list
@@ -78,7 +75,6 @@ function load(dmf,dmfmd){
     }
     
 	CommentLoader(dmf,cm,cbfunc,dmfmd);
-	//resume();                         // use when switching between dm, comment autostart..
 }
 
 function stop(){
@@ -89,17 +85,14 @@ function stop(){
 function resume(){
 	cm.startTimer();
 	start = new Date().getTime() - playhead;
-	try{
-		clearInterval(tmr);				// make sure interval is cleared when switching dm
-	}catch(e){}							// does nothing.
+	clearInterval(tmr);
 	tmr = setInterval(function(){
-		playhead = new Date().getTime() - start;	// Date object to accurately track time
+		playhead = new Date().getTime() - start;
 		cm.time(playhead);
-		//console.log('Interval: '+playhead);
 	}, 10);
 }
 
-function basicComment(){		// not so basic anymore..
+function basicComment(){
 
 	// special commands
 	if($('input:text[name="comment"]').val() == 'fs'){

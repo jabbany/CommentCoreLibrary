@@ -1,11 +1,10 @@
-/* cmtlist box */
-div.cmtList{
+/* Comment List */
+.cmtList{
 	overflow-y: hidden;
 	font-size: 0.9em;
 	height: 430px;
 }
-
-div.cmtList .bDiv{
+.cmtList .bDiv{
     overflow: auto;
     height: 380px;
 }
