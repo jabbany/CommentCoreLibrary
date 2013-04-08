@@ -61,7 +61,8 @@
 				<video id="ytPlayer"><script>ytid='AEV8cBND7EY'; cid='sweetdevil';</script></video>
 			</div>
 		</div>
-		<form id="danmu" onsubmit="return basicComment(); ">
+        <!-- comment form -->
+		<form id="danmu">
 			<span>
 				Mode:
 				<select name="mode" id="mode">
@@ -80,7 +81,7 @@
 					<option value="38">Large</option>
 				</select>
 			</span>
-			<input type="text" placeholder="comment here" name="comment" maxlength="50" />
+			<input type="text" placeholder="comment here" name="comment" maxlength="50" autofocus />
 			<input type="submit" value="Comment" />
 		</form>
 	</div>
@@ -130,48 +131,57 @@
 </div>
 
 <br />
-<a onclick="stop();" href="javascript:;">Stop</a>
-<a onclick="resume();" href="javascript:;">Resume</a>
-<a onclick="load('tests/test.xml');" href="javascript:;">Run Test 1</a>
-<a onclick="load('tests/test2.xml');" href="javascript:;">Run Test 2</a>
-<a onclick="load('tests/rokubunnoichi.xml');" href="javascript:;">Run Test 3</a>
-<a onclick="load('tests/mikunoshoushitsu.xml');" href="javascript:;">Run Test 4</a>
-<a onclick="load('tests/unowen.xml');" href="javascript:;">Run Test 5</a>
-<a onclick="load('tests/comment.xml');" href="javascript:;">Run Test 6</a>
-<a onclick="load('tests/extended.xml');" href="javascript:;">Run Test 7</a>
-<a onclick="load('tests/sweetdevil.xml');" href="javascript:;">Run Test 8</a>
-<p>AcFun (Experimental) <a onclick="load('tests/ACFun.json','acfun');" href="javascript:;">Run Test 1</a></p>
+<a onclick="cd.stop();" href="javascript:;">Stop</a>
+<a onclick="cd.resume();" href="javascript:;">Resume</a>
+<a onclick="cd.load('tests/test.xml');" href="javascript:;">Run Test 1</a>
+<a onclick="cd.load('tests/test2.xml');" href="javascript:;">Run Test 2</a>
+<a onclick="cd.load('tests/rokubunnoichi.xml');" href="javascript:;">Run Test 3</a>
+<a onclick="cd.load('tests/mikunoshoushitsu.xml');" href="javascript:;">Run Test 4</a>
+<a onclick="cd.load('tests/unowen.xml');" href="javascript:;">Run Test 5</a>
+<a onclick="cd.load('tests/comment.xml');" href="javascript:;">Run Test 6</a>
+<a onclick="cd.load('tests/extended.xml');" href="javascript:;">Run Test 7</a>
+<a onclick="cd.load('tests/sweetdevil.xml');" href="javascript:;">Run Test 8</a>
+<p>AC (Experimental) <a onclick="cd.load('tests/ACFun.json','acfun');" href="javascript:;">Run Test 1</a></p>
 
 <script>
-function HTML5(){
-    stop();
+function setHTML5(){
+    try{ if (typeof cd != 'undefined') cd.destory(); }catch(e){console.log(e)}
     $_("commentCanvas").innerHTML = "<video id= \"html5Media\" controls>"
         + "<source type=\"video/mp4\" src=\"http://media.w3.org/2010/05/sintel/trailer.mp4\"></source>"
         + "<source type=\"video/webm\" src=\"http://media.w3.org/2010/05/sintel/trailer.webm\"></source>"
         + "<source type=\"video/ogg\" src=\"http://media.w3.org/2010/05/sintel/trailer.ogv\"></source>"
         + "</video>";
-    cid="comment";
-    html5_init();
+    cd = new Video($_('html5Media')); cid="comment";
 }
-function DailyMotion(){
-    stop();
+function setYouTube(){
+    try{ if (typeof cd != 'undefined') cd.destory(); }catch(e){console.log(e)}
+    $_("commentCanvas").innerHTML = "<video id=\"ytPlayer\"></video>";
+    cd = new YouTube(); cid='sweetdevil';
+}
+function setDailyMotion(){
+    try{ if (typeof cd != 'undefined') cd.destory(); }catch(e){console.log(e)}
     $_("commentCanvas").innerHTML = "<video id=\"dmPlayer\"></video>";
-    dmid='xqcwbi'; cid='comment';
-    dm_init();
+    cd = new DailyMotion('xqcwbi'); cid='comment';
 }
-function Vimeo(){
-    stop();
+function setVimeo(){
+    try{ if (typeof cd != 'undefined') cd.destory(); }catch(e){console.log(e)}
     $_("commentCanvas").innerHTML = "<video id=\"vmPlayer\"></video>";
-    vmid='5838112'; cid='comment';
-    vm_init();
+    cd = new Vimeo('5838112'); cid='comment';
+}
+function setNone(){
+    try{ if (typeof cd != 'undefined') cd.destory(); }catch(e){console.log(e)}
+    $_("commentCanvas").innerHTML = "";
+    cd=new CommentDisplay();
 }
 </script>
 
-<p>Source: <a onclick="document.location.reload(true)" href="javascript:;">YouTube</a>
-<a onclick="DailyMotion()" href="javascript:;">DailyMotion</a>
-<a onclick="Vimeo()" href="javascript:;">Vimeo</a>
-<a onclick="HTML5()" href="javascript:;">HTML5</a>
-<a onclick='$_("commentCanvas").innerHTML = ""' href="javascript:;">None</a>
+<p>Source:
+<a onclick="setYouTube()" href="javascript:;">YouTube</a>
+<a onclick="setDailyMotion()" href="javascript:;">DailyMotion</a>
+<a onclick="setVimeo()" href="javascript:;">Vimeo</a>
+<a onclick="setHTML5()" href="javascript:;">HTML5</a>
+<a onclick='setNone()' href="javascript:;">None</a>
+<a onclick="document.location.reload(true)" href="javascript:;">Reload</a>
 </p>
 
 <p>Filters: <a onclick="cm.filter.setRuntimeFilter(fefx.center_dim);" href="javascript:;">Apply Center-Transparency</a>

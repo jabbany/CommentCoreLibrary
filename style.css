@@ -58,21 +58,6 @@
     text-align:  center;
 }
 
-/* yt fix */
-.abp #ytTitleFix{
-	position: absolute;
-	width: 100%;
-	height: 60px;
-	z-index: 2;
-}
-.abp #ytFullHide{
-	position: absolute;
-	right: 0px;
-	width: 138px;
-	height: 30px;
-	z-index: 3;
-}
-
 /* Comment Overlay */
 .abp .container{
 	overflow:hidden;
