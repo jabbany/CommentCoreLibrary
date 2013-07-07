@@ -432,6 +432,8 @@ function CommentManager(stageObject){
 			cmt.className = 'cmt noshadow';
 		if(data.color != null)
 			cmt.style.color = data.color;
+		if(data.color == "#000000")
+			cmt.className += " rshadow"
 		if(this.def.opacity != 1 && data.mode == 1)
 			cmt.style.opacity = this.def.opacity;
 		if(data.alphaFrom != null)
