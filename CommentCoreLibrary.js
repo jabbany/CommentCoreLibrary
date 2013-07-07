@@ -70,9 +70,13 @@ function CommentManager(stageObject){
 		cmt.stime = data.stime;
 		cmt.mode = data.mode;
 		cmt.data = data;
-		cmt.appendChild(document.createTextNode(data.text));
-		cmt.innerText = data.text;
-		cmt.style.fontSize = data.size + "px";
+		if(cmt.mode == 17){
+			
+		}else{
+			cmt.appendChild(document.createTextNode(data.text));
+			cmt.innerText = data.text;
+			cmt.style.fontSize = data.size + "px";
+		}
 		if(data.font != null && data.font != '')
 			cmt.style.fontFamily = data.font;
 		if(data.shadow == false && data.shadow != null)
@@ -187,6 +191,7 @@ CommentManager.prototype.sendComment = function(data){
 		case 4:{this.csa.bottom.add(cmt);}break;
 		case 5:{this.csa.top.add(cmt);}break;
 		case 6:{this.csa.reverse.add(cmt);}break;
+		case 17:
 		case 7:{
 			cmt.style.top = data.y + "px";
 			cmt.style.left = data.x + "px";
