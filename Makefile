@@ -2,7 +2,7 @@ SRC = CCLComment.js CommentFilter.js CommentSpaceAllocator.js CommentCoreLibrary
 ACSRC = parsers/AcfunFormat.js
 BILISRC = parsers/BilibiliFormat.js
 
-all: core parsers
+all: core parsers css
 core: $(SRC)
 	cat $^ > build/CommentCore.js
 
@@ -15,5 +15,9 @@ parserbili:
 	cat $(BILISRC) > build/BParser.js
 parserac:
 	cat $(ACSRC) > build/AParser.js
+
+css:
+	cp base.css build/base.css
+
 clean: 
 	rm build/CommentCore.js
