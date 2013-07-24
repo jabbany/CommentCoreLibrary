@@ -398,6 +398,7 @@ Array.prototype.binsert = function(what,how){
 function CommentManager(stageObject){
 	var __timer = 0;
 	var lastpos = 0;
+	this.scaleFactor = 1;
 	this.stage = stageObject;
 	this.def = {opacity:1};
 	this.timeline = [];
@@ -438,8 +439,8 @@ function CommentManager(stageObject){
 			cmt.style.opacity = this.def.opacity;
 		if(data.alphaFrom != null)
 			cmt.style.opacity = data.alphaFrom;
-		cmt.ttl = 4000;
-		cmt.dur = 4000;
+		cmt.ttl = Math.round(4000 * this.scaleFactor);
+		cmt.dur = Math.round(4000 * this.scaleFactor);
 		return cmt;
 	};
 	this.startTimer = function(){
@@ -519,6 +520,12 @@ CommentManager.prototype.time = function(time){
 		else break;
 	}
 };
+CommentManager.prototype.rescale = function(){
+	for(var i = 0; i < this.runline.length; i++){
+		this.runline[i].dur = Math.round(this.runline[i].dur * this.scaleFactor);
+		this.runline[i].ttl = Math.round(this.runline[i].ttl * this.scaleFactor);
+	}
+};
 CommentManager.prototype.sendComment = function(data){
 	var cmt = document.createElement('div');
 	if(this.filter != null){
@@ -546,8 +553,8 @@ CommentManager.prototype.sendComment = function(data){
 		case 7:{
 			cmt.style.top = data.y + "px";
 			cmt.style.left = data.x + "px";
-			cmt.ttl = data.duration;
-			cmt.dur = data.duration;
+			cmt.ttl = Math.round(data.duration * this.scaleFactor);
+			cmt.dur = Math.round(data.duration * this.scaleFactor);
 			if(data.rY!=0 || data.rZ!=0){
 				/** TODO: revise when browser manufacturers make up their mind on Transform APIs **/
 				cmt.style.transformOrigin = "0% 0%";
