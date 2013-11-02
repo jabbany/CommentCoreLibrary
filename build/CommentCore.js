@@ -398,9 +398,12 @@ Array.prototype.binsert = function(what,how){
 function CommentManager(stageObject){
 	var __timer = 0;
 	var lastpos = 0;
-	this.scaleFactor = 1;
 	this.stage = stageObject;
-	this.def = {opacity:1};
+	this.def = {
+		opacity:1,
+		globalScale:1,
+		scrollScale:1
+	};
 	this.timeline = [];
 	this.runline = [];
 	this.position = 0;
@@ -439,8 +442,8 @@ function CommentManager(stageObject){
 			cmt.style.opacity = this.def.opacity;
 		if(data.alphaFrom != null)
 			cmt.style.opacity = data.alphaFrom;
-		cmt.ttl = Math.round(4000 * this.scaleFactor);
-		cmt.dur = Math.round(4000 * this.scaleFactor);
+		cmt.ttl = Math.round(4000 * this.def.globalScale);
+		cmt.dur = Math.round(4000 * this.def.globalScale);
 		return cmt;
 	};
 	this.startTimer = function(){
@@ -522,8 +525,8 @@ CommentManager.prototype.time = function(time){
 };
 CommentManager.prototype.rescale = function(){
 	for(var i = 0; i < this.runline.length; i++){
-		this.runline[i].dur = Math.round(this.runline[i].dur * this.scaleFactor);
-		this.runline[i].ttl = Math.round(this.runline[i].ttl * this.scaleFactor);
+		this.runline[i].dur = Math.round(this.runline[i].dur * this.def.globalScale);
+		this.runline[i].ttl = Math.round(this.runline[i].ttl * this.def.globalScale);
 	}
 };
 CommentManager.prototype.sendComment = function(data){
@@ -553,8 +556,8 @@ CommentManager.prototype.sendComment = function(data){
 		case 7:{
 			cmt.style.top = data.y + "px";
 			cmt.style.left = data.x + "px";
-			cmt.ttl = Math.round(data.duration * this.scaleFactor);
-			cmt.dur = Math.round(data.duration * this.scaleFactor);
+			cmt.ttl = Math.round(data.duration * this.def.globalScale);
+			cmt.dur = Math.round(data.duration * this.def.globalScale);
 			if(data.rY!=0 || data.rZ!=0){
 				/** TODO: revise when browser manufacturers make up their mind on Transform APIs **/
 				cmt.style.transformOrigin = "0% 0%";

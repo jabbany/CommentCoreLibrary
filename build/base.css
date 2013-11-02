@@ -31,6 +31,8 @@ div.abp{
 	word-break:none;
 	text-wrap:none;
 	border:0 !important;
+	-webkit-text-size-adjust: none;
+	text-size-adjust: none;
 }
 .cmt.noshadow{
 	text-shadow: none !important;
