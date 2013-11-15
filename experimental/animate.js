@@ -111,6 +111,14 @@ CCLAnim.Animation.prototype.time = function(time){
 	}
 };
 
+CCLAnim.setTransition= function(elem, transition){
+	elem.style.transition = transition;
+	elem.style.webkitTransition = transition;
+	elem.style.MozTransition = transition;
+	elem.style.OTransition= transition;
+	elem.style.MSTransition = transition;
+};
+
 CCLAnim.setTransform = function(elem, transform){
 	elem.style.transform = transform;
 	elem.style.webkitTransform = transform;

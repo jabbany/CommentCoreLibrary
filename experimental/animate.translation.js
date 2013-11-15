@@ -36,6 +36,6 @@ CCLAnim.Translate = function(data, parent, onEnd){
 			}
 		}catch(e){};
 	});
-	an.parent.style.transition = "all " + an.ttl + "ms linear";
+	CCLAnim.setTransition(an.parent, "all " + an.ttl + "ms linear");
 	return an;
 };
