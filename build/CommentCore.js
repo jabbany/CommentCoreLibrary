@@ -434,6 +434,8 @@ function CommentManager(stageObject){
 			cmt.style.fontFamily = data.font;
 		if(data.shadow == false && data.shadow != null)
 			cmt.className = 'cmt noshadow';
+		if(data.color == "#000000")
+			cmt.className += ' rshadow';
 		if(data.color != null)
 			cmt.style.color = data.color;
 		if(this.def.opacity != 1 && data.mode == 1)
