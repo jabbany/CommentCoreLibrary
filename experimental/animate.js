@@ -112,6 +112,7 @@ CCLAnim.Animation.prototype.time = function(time){
 };
 
 CCLAnim.setTransition= function(elem, transition){
+	//TODO Fix browser vendor specific tags
 	elem.style.transition = transition;
 	elem.style.webkitTransition = transition;
 	elem.style.MozTransition = transition;
@@ -120,6 +121,7 @@ CCLAnim.setTransition= function(elem, transition){
 };
 
 CCLAnim.setTransform = function(elem, transform){
+	//TODO Fix browser vendor specific tags
 	elem.style.transform = transform;
 	elem.style.webkitTransform = transform;
 	elem.style.MozTransform = transform;
@@ -128,7 +130,6 @@ CCLAnim.setTransform = function(elem, transform){
 };
 
 CCLAnim.setXY = function(elem, x, y){
-
 	elem.style.top = y + "px";
 	elem.style.left = x + "px";
 }
