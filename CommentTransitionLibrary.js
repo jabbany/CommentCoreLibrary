@@ -228,8 +228,7 @@ CommentManager.prototype.sendComment = function(data){
 	cmt.parent.style.width = (cmt.width + 1) + "px";
 	cmt.parent.style.height = (cmt.height - 3) + "px";
 	cmt.parent.style.left = this.stage.offsetWidth + "px";
-	
-	
+	cmt.getBounds();
 	
 	if(this.filter != null && !this.filter.beforeSend(cmt)){
 		this.stage.removeChild(cmt);
@@ -238,14 +237,14 @@ CommentManager.prototype.sendComment = function(data){
 	}
 	switch(cmt.mode){
 		default:
-		case 1:{this.csa.scroll.add(cmt.parent);}break;
-		case 2:{this.csa.scrollbtm.add(cmt.parent);}break;
-		case 4:{this.csa.bottom.add(cmt.parent);}break;
-		case 5:{this.csa.top.add(cmt.parent);}break;
-		case 6:{this.csa.reverse.add(cmt.parent);}break;
+		case 1:{this.csa.scroll.add(cmt);}break;
+		case 2:{this.csa.scrollbtm.add(cmt);}break;
+		case 4:{this.csa.bottom.add(cmt);}break;
+		case 5:{this.csa.top.add(cmt);}break;
+		case 6:{this.csa.reverse.add(cmt);}break;
 		case 17:
 		case 7:{
-			break;
+			return;
 			cmt.style.top = data.y + "px";
 			cmt.style.left = data.x + "px";
 			cmt.ttl = Math.round(data.duration * this.def.globalScale);
@@ -274,11 +273,11 @@ CommentManager.prototype.finish = function(cmt){
 	console.log("Finished " + cmt.data.text);
 	switch(cmt.data.mode){
 		default:
-		case 1:{this.csa.scroll.remove(cmt.parent);}break;
-		case 2:{this.csa.scrollbtm.remove(cmt.parent);}break;
-		case 4:{this.csa.bottom.remove(cmt.parent);}break;
-		case 5:{this.csa.top.remove(cmt.parent);}break;
-		case 6:{this.csa.reverse.remove(cmt.parent);}break;
+		case 1:{this.csa.scroll.remove(cmt);}break;
+		case 2:{this.csa.scrollbtm.remove(cmt);}break;
+		case 4:{this.csa.bottom.remove(cmt);}break;
+		case 5:{this.csa.top.remove(cmt);}break;
+		case 6:{this.csa.reverse.remove(cmt);}break;
 		case 7:break;
 	}
 };

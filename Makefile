@@ -1,5 +1,5 @@
 SRC_CORE = CommentFilter.js CommentSpaceAllocator.js CommentCoreLibrary.js
-SRC_TRANSITION = CCLComment.js CommentFilter.js CommentSpaceAllocator.js CommentTransitionLibrary.js
+SRC_TRANSITION = CCLComment.js CommentFilter.js CommentTransitionSpaceAllocator.js CommentTransitionLibrary.js
 ACSRC = parsers/AcfunFormat.js
 BILISRC = parsers/BilibiliFormat.js
 

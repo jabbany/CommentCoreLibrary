@@ -14,11 +14,30 @@ function CCLComment(data, motion, parent){
 	this.y = 0;
 }
 
+CCLComment.prototype.set = function(styleParam, value){
+	switch(styleParam){
+		case "top":
+		case "left":
+		case "right":
+		case "bottom":{
+			this.parent.style[styleParam] = value ? (value + "px") : "";
+		}break;
+	}
+}
+
+CCLComment.prototype.getTTL = function(){
+	return this.motion ? this.motion.ttl : this.data.dur;
+}
+
 CCLComment.prototype.getBounds = function(){
 	this.width = this.parent.offsetWidth;
 	this.height = this.parent.offsetHeight;
 	this.x = this.parent.offsetLeft;
 	this.y = this.parent.offsetTop;
+	this.top = this.y;
+	this.bottom = this.y + this.height;
+	this.left = this.x;
+	this.right = this.x + this.width;
 };
 
 CCLComment.prototype.setMotion = function(m){

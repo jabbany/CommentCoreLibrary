@@ -14,11 +14,30 @@ function CCLComment(data, motion, parent){
 	this.y = 0;
 }
 
+CCLComment.prototype.set = function(styleParam, value){
+	switch(styleParam){
+		case "top":
+		case "left":
+		case "right":
+		case "bottom":{
+			this.parent.style[styleParam] = value ? (value + "px") : "";
+		}break;
+	}
+}
+
+CCLComment.prototype.getTTL = function(){
+	return this.motion ? this.motion.ttl : this.data.dur;
+}
+
 CCLComment.prototype.getBounds = function(){
 	this.width = this.parent.offsetWidth;
 	this.height = this.parent.offsetHeight;
 	this.x = this.parent.offsetLeft;
 	this.y = this.parent.offsetTop;
+	this.top = this.y;
+	this.bottom = this.y + this.height;
+	this.left = this.x;
+	this.right = this.x + this.width;
 };
 
 CCLComment.prototype.setMotion = function(m){
@@ -152,36 +171,27 @@ Comment Space Allocators Classes
 Licensed Under MIT License
 You may create your own.
 **/
-function CommentSpaceAllocator(w,h){
+function CommentSpaceAllocator(w, h){
 	this.width = w;
 	this.height = h;
-	this.dur = 4000;
 	this.pools = [[]];
 	this.pool = this.pools[0];
 	this.setBounds = function(w,h){this.width = w;this.height = h;};
 	this.add = function(cmt){
 		if(cmt.height >= this.height){
 			cmt.cindex = this.pools.indexOf(this.pool);
-			cmt.style.top = "0px";
+			cmt.set("top",0);
 		}else{
 			cmt.cindex = this.pools.indexOf(this.pool);
-			cmt.style.top = this.setY(cmt) + "px";
+			cmt.set("top",this.setY(cmt));
 		}
 	};
 	this.remove = function(cmt){
-		console.log(cmt.cindex);
 		var tpool = this.pools[cmt.cindex];
 		tpool.remove(cmt);
 	};
 	this.validateCmt = function(cmt){
-		cmt.bottom = cmt.offsetTop + cmt.offsetHeight;
-		cmt.y = cmt.offsetTop;
-		cmt.x = cmt.offsetLeft;
-		cmt.right = cmt.offsetLeft + cmt.offsetWidth;
-		cmt.height = cmt.offsetHeight;
-		cmt.width = cmt.offsetWidth;
-		cmt.top = cmt.offsetTop;
-		cmt.left = cmt.offsetLeft;
+		cmt.getBounds();
 		return cmt;
 	};
 	this.setY = function(cmt,index){
@@ -246,23 +256,23 @@ function CommentSpaceAllocator(w,h){
 		return true;
 	};
 	this.getEnd  = function(cmt){
-		return cmt.stime + cmt.ttl;
+		return cmt.data.stime + cmt.getTTL();
 	};
 	this.getMiddle = function(cmt){
-		return cmt.stime + (cmt.ttl / 2);
+		return cmt.data.stime + (cmt.getTTL() / 2);
 	};
 }
 function TopCommentSpaceAllocator(w,h){
 	var csa = new CommentSpaceAllocator(w,h);
 	csa.add = function (cmt){
 		csa.validateCmt(cmt);
-		cmt.style.left = (csa.width - cmt.width)/2 + "px";
+		cmt.set("left", (csa.width - cmt.width)/2);
 		if(cmt.height >= csa.height){
 			cmt.cindex = csa.pools.indexOf(csa.pool);
-			cmt.style.top = "0px";
+			cmt.set("top", 0);
 		}else{
 			cmt.cindex = csa.pools.indexOf(csa.pool);
-			cmt.style.top = csa.setY(cmt) + "px";
+			cmt.set("top", csa.setY(cmt));
 		}
 	};
 	csa.vCheck = function(y,cmt){
@@ -286,20 +296,21 @@ function TopCommentSpaceAllocator(w,h){
 function BottomCommentSpaceAllocator(w,h){
 	var csa = new CommentSpaceAllocator(w,h);
 	csa.add = function (cmt){
-		cmt.style.top = "";
-		cmt.style.bottom = "0px";
+		cmt.set("top", null);
+		cmt.set("bottom", 0);
 		csa.validateCmt(cmt);
-		cmt.style.left = (csa.width - cmt.width)/2 + "px";
+		cmt.set("left",(csa.width - cmt.width)/2);
 		if(cmt.height >= csa.height){
 			cmt.cindex = csa.pools.indexOf(csa.pool);
-			cmt.style.bottom = "0px";
+			cmt.set("bottom",0);
 		}else{
 			cmt.cindex = csa.pools.indexOf(csa.pool);
-			cmt.style.bottom = csa.setY(cmt) + "px";
+			cmt.set("bottom", csa.setY(cmt));
 		}
 	};
 	csa.validateCmt = function(cmt){
-		cmt.y = csa.height - (cmt.offsetTop + cmt.offsetHeight);
+		cmt.getBounds();
+		cmt.y = csa.height - (cmt.parent.offsetTop + cmt.parent.offsetHeight);
 		cmt.bottom = cmt.y + cmt.offsetHeight;
 		cmt.x = cmt.offsetLeft;
 		cmt.right = cmt.offsetLeft + cmt.offsetWidth;
@@ -383,6 +394,7 @@ function BottomScrollCommentSpaceAllocator(w,h){
 	this.add = function(what){csa.add(what);};
 	this.remove = function(d){csa.remove(d);};
 }
+
 /******
 * Comment Core For HTML5 VideoPlayers
 * Author : Jim Chen
@@ -623,14 +635,14 @@ CommentManager.prototype.sendComment = function(data){
 	}
 	switch(cmt.mode){
 		default:
-		case 1:{this.csa.scroll.add(cmt.parent);}break;
-		case 2:{this.csa.scrollbtm.add(cmt.parent);}break;
-		case 4:{this.csa.bottom.add(cmt.parent);}break;
-		case 5:{this.csa.top.add(cmt.parent);}break;
-		case 6:{this.csa.reverse.add(cmt.parent);}break;
+		case 1:{this.csa.scroll.add(cmt);}break;
+		case 2:{this.csa.scrollbtm.add(cmt);}break;
+		case 4:{this.csa.bottom.add(cmt);}break;
+		case 5:{this.csa.top.add(cmt);}break;
+		case 6:{this.csa.reverse.add(cmt);}break;
 		case 17:
 		case 7:{
-			break;
+			return;
 			cmt.style.top = data.y + "px";
 			cmt.style.left = data.x + "px";
 			cmt.ttl = Math.round(data.duration * this.def.globalScale);
@@ -659,11 +671,11 @@ CommentManager.prototype.finish = function(cmt){
 	console.log("Finished " + cmt.data.text);
 	switch(cmt.data.mode){
 		default:
-		case 1:{this.csa.scroll.remove(cmt.parent);}break;
-		case 2:{this.csa.scrollbtm.remove(cmt.parent);}break;
-		case 4:{this.csa.bottom.remove(cmt.parent);}break;
-		case 5:{this.csa.top.remove(cmt.parent);}break;
-		case 6:{this.csa.reverse.remove(cmt.parent);}break;
+		case 1:{this.csa.scroll.remove(cmt);}break;
+		case 2:{this.csa.scrollbtm.remove(cmt);}break;
+		case 4:{this.csa.bottom.remove(cmt);}break;
+		case 5:{this.csa.top.remove(cmt);}break;
+		case 6:{this.csa.reverse.remove(cmt);}break;
 		case 7:break;
 	}
 };
