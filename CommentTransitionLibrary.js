@@ -230,11 +230,6 @@ CommentManager.prototype.sendComment = function(data){
 	cmt.parent.style.left = this.stage.offsetWidth + "px";
 	cmt.getBounds();
 	
-	if(this.filter != null && !this.filter.beforeSend(cmt)){
-		this.stage.removeChild(cmt);
-		cmt = null;
-		return;
-	}
 	switch(cmt.mode){
 		default:
 		case 1:{this.csa.scroll.add(cmt);}break;

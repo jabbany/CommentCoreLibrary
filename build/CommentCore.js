@@ -347,7 +347,8 @@ function BottomScrollCommentSpaceAllocator(w,h){
 	this.setBounds = function(w,h){csa.setBounds(w,h);};
 	this.add = function(what){csa.add(what);};
 	this.remove = function(d){csa.remove(d);};
-}/******
+}
+/******
 * Comment Core For HTML5 VideoPlayers
 * Author : Jim Chen
 * Licensing : MIT License
@@ -423,7 +424,7 @@ function CommentManager(stageObject){
 		cmt.stime = data.stime;
 		cmt.mode = data.mode;
 		cmt.data = data;
-		if(cmt.mode == 17){
+		if(cmt.mode === 17){
 			
 		}else{
 			cmt.appendChild(document.createTextNode(data.text));
@@ -443,7 +444,11 @@ function CommentManager(stageObject){
 		if(data.alphaFrom != null)
 			cmt.style.opacity = data.alphaFrom;
 		cmt.ttl = Math.round(4000 * this.def.globalScale);
-		cmt.dur = Math.round(4000 * this.def.globalScale);
+		cmt.dur = cmt.ttl;
+		if(cmt.mode === 1 || cmt.mode === 6 || cmt.mode === 2){
+			cmt.ttl *= this.def.scrollScale;
+			cmt.dur = cmt.ttl;
+		}
 		return cmt;
 	};
 	this.startTimer = function(){
