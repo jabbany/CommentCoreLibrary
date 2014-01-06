@@ -417,6 +417,9 @@ function CommentManager(stageObject){
 		reverse:new ReverseCommentSpaceAllocator(0,0),
 		scrollbtm:new BottomScrollCommentSpaceAllocator(0,0)
 	};
+	/** Precompute the offset width **/
+	this.stage.width = this.stage.offsetWidth;
+	this.stage.height= this.stage.offsetHeight;
 	/** Private **/
 	this.initCmt = function(cmt,data){
 		cmt.className = 'cmt';
@@ -509,6 +512,8 @@ CommentManager.prototype.setBounds = function(){
 	for(var comAlloc in this.csa){
 		this.csa[comAlloc].setBounds(this.stage.offsetWidth,this.stage.offsetHeight);
 	}
+	this.stage.width = this.stage.offsetWidth;
+	this.stage.height= this.stage.offsetHeight;
 };
 CommentManager.prototype.init = function(){
 	this.setBounds();
@@ -545,6 +550,8 @@ CommentManager.prototype.sendComment = function(data){
 	cmt.style.width = (cmt.offsetWidth + 1) + "px";
 	cmt.style.height = (cmt.offsetHeight - 3) + "px";
 	cmt.style.left = this.stage.offsetWidth + "px";
+	cmt.w = cmt.offsetWidth;
+	cmt.h = cmt.offsetHeight;
 	if(this.filter != null && !this.filter.beforeSend(cmt)){
 		this.stage.removeChild(cmt);
 		cmt = null;
@@ -597,8 +604,8 @@ CommentManager.prototype.onTimerEvent = function(timePassed,cmObj){
 	for(var i=0;i<cmObj.runline.length;i++){
 		var cmt = cmObj.runline[i];
 		cmt.ttl -= timePassed;
-		if(cmt.mode == 1 || cmt.mode == 2) cmt.style.left = (cmt.ttl / cmt.dur) * (cmObj.stage.offsetWidth + cmt.offsetWidth) - cmt.offsetWidth + "px";
-		else if(cmt.mode == 6) cmt.style.left = (1 - cmt.ttl / cmt.dur) * (cmObj.stage.offsetWidth + cmt.offsetWidth) - cmt.offsetWidth + "px";
+		if(cmt.mode == 1 || cmt.mode == 2) cmt.style.left = (cmt.ttl / cmt.dur) * (cmObj.stage.width + cmt.w) - cmt.w + "px";
+		else if(cmt.mode == 6) cmt.style.left = (1 - cmt.ttl / cmt.dur) * (cmObj.stage.width + cmt.w) - cmt.w + "px";
 		else if(cmt.mode == 4 || cmt.mode == 5 || cmt.mode >= 7){
 			if(cmt.dur == null)
 				cmt.dur = 4000;
