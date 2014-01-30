@@ -18,7 +18,6 @@ div.abp{
 	user-select: none;
 }
 .abp .container .cmt{
-	white-space: pre-wrap;
 	padding:3px 0 0 0;margin:0;
 	line-height:100%;
 	font-family:Simhei,Simsun,Heiti,"MS Mincho","Meiryo","Microsoft Yahei",monospace;
@@ -34,6 +33,7 @@ div.abp{
 	border:0 !important;
 	-webkit-text-size-adjust: none;
 	text-size-adjust: none;
+	white-space: nowrap;
 }
 .cmt.noshadow{
 	text-shadow: none !important;
