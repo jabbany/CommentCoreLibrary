@@ -1,0 +1,33 @@
+a=$.createButton({
+	motion:{
+		alpha:{
+			fromValue:1,
+			toValue:0,
+			lifeTime:3,
+			startDelay:9000
+		}
+	},
+	x:5,
+	y:35,
+	lifeTime:12,
+	width:200,
+	text:"空降的说&gt;.&lt;~喵~",
+	onclick:function(){
+		c=$.createComment("第一集不可以跳哦...",{
+			x:5,
+			y:85,
+			lifeTime:8,
+			motion:{
+				alpha:{
+					fromValue:1,
+					toValue:0,
+					lifeTime:3,
+					startDelay:5000
+				}
+			},
+			font:"微软雅黑",
+			fontsize:22,
+			color:"0x66CCFF"
+		});
+	}
+});
