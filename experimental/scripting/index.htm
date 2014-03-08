@@ -9,7 +9,7 @@
 		#playerdiv{width:48%; float:right;}
 		#player{border:1px solid #f88; width:100%;}
 		#code-input{width:100%;height:300px;display:block; border:1px solid #f88; padding:10px;background:#000;color:#f88;font-size:20px;}
-		.button{display:block; border:1px solid #f88; padding:10px; background:#000; color:#f88;}
+		.button{display:block; border:1px solid #f88; padding:10px; background:#000; color:#f88; float:left;}
 		.button:hover{background:#f88; color:#000;}
 	</style>
 	<script type="text/javascript">var $ = function(e){return window.document.getElementById(e);}</script>
@@ -18,8 +18,10 @@
 <body style="background:#000;">
 	<h2 style="color:#fff">CCL Scripting Demo</h2>
 	<div id="codediv">
+		<div style="clear:both;">
+		<button class="button" id="evaluate">Execute (Sandbox)</button><button class="button" id="debug">Debug</button>
+		</div>
 		<textarea id="code-input"></textarea>
-		<button class="button" id="evaluate">Execute (Sandbox)</button>
 	</div>
 	<div id="playerdiv">
 		<div id="player" style="height:400px;"></div>
@@ -30,6 +32,9 @@
 		$("evaluate").addEventListener("click", function(){
 			try{
 				var w = bscripter.eval($("code-input").value);
+				w.onerror = function(error){
+					$("output").innerText = error + $("output").innerText;
+				};
 				console.log(w);
 			}catch(e){
 				$("output").innerText = e + $("output").innerText;

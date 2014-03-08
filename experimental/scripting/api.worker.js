@@ -1,4 +1,7 @@
 /** This is the API part of the worker **/
+function ButtonObject(){
+	
+};
 var $ = new function(){
 	self.addEventListener("message", function(msg){
 		console.log(msg.data);
@@ -12,14 +15,27 @@ var $ = new function(){
 			console.log(e);
 		}
 	});
-	this.invoke = function(method, params){
+	var invoke = function(method, params){
 		self.postMessage(JSON.stringify({
 			"action":"CallMethod",
 			"method":method,
 			"params":params
 		}));
 	};
+	var create = function(obj_class, obj_name, serialized){
+		self.postMessage(JSON.stringify({
+			"action":"AssignObject",
+			"name":obj_name,
+			"class":obj_class,
+			"serialized": serialized
+		}));
+	};
 	this.alert = function(msg){
-		this.invoke("alert", [msg]);
+		invoke("alert", [msg]);
+	};
+	this.createButton = function(data){
+		var button = new ButtonObject(data);
+		create("button", "ButttonObject", "{}");
+		return button;
 	};
 };

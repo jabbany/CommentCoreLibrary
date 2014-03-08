@@ -45,12 +45,14 @@ CCLScripting.BridgedSandbox = function(commentManager, stage){
 				var resp = JSON.parse(event.data);
 				switch(resp.action){
 					case "RequestObject":
-						ctx.get();
+						ctx.get(resp.name);
 						break;
 					case "CallMethod":
 						ctx.callMethod(resp.method, resp.params);
 						break;
 					case "AssignObject":
+						ctx.set(resp.name, resp["class"]);
+						ctx.get(resp.name).deserialize(resp.serialized);
 						break;
 					default:
 						break;
@@ -66,7 +68,7 @@ CCLScripting.BridgedSandbox = function(commentManager, stage){
 }
 
 CCLScripting.ScriptingContext = function(stage){
-	var boundObject = [];
+	var boundObjects = {};
 	
 	this.callMethod = function (method, params){
 		if(method === "alert"){
@@ -76,6 +78,14 @@ CCLScripting.ScriptingContext = function(stage){
 		}
 	};
 	
+	this.get = function(objname){
+		return boundObjects[objname];
+	};
+	
+	this.set = function(objname, objclass){
+		boundObjects[objname] = new CCLScripting.CommonObject();
+	};
+
 	this.clear = function(){
 		for(var i = 0; i < boundObject.length; i++){
 			stage.removeChild(boundObject);
@@ -83,27 +93,18 @@ CCLScripting.ScriptingContext = function(stage){
 	};
 }
 
-CCLScripting.TextFormat = function(){
-	this.bold = false;
-	this.italic = false;
-	this.underline = false;
-	this.color = "#000";
-	this.font = "";
-	this.outline = "shadow";
-}
-
-CCLScripting.CommentObject = function(text, type){
-	this.text = text;
-	this.mode = type;
-	this.textFormat = new CCLScripting.TextFormat();
-}
-
-CCLScripting.CommentObject.prototype.getTextFormat = function(){
-	return this.textFormat;
-}
-
-CCLScripting.CommentObject.prototype.setTextFormat = function(tf){
-	this.textFormat = tf;
+CCLScripting.CommonObject = function(){
+	this.data = {};
+	this.deserialize = function(data){
+		console.log(data);
+		for(var field in data){
+			this.data[field] = data[field];
+		}
+	};
+	
+	this.serialized = function(){
+		return JSON.stringify(this.data);
+	}
 }
 
 
