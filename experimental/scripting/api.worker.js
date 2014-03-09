@@ -25,7 +25,7 @@ function load(library, onComplete){
 	};
 	if(libname !== ""){
 		try{
-			require(libname);
+			require("libraries/" + libname + ".js");
 		}catch(e){
 			trace("Error: Import script failed.");
 		}
@@ -34,56 +34,15 @@ function load(library, onComplete){
 		onComplete();
 };
 
-/** This is the API part of the worker **/
-function ButtonObject(){
-	
-};
-var $ = new function(){
-	self.addEventListener("message", function(msg){
-		console.log(msg.data);
-		try{
-			var mdata = JSON.parse(msg);
-			switch(mdata.action){
-				default:break;
-			}
-		}catch(e){
-			console.log("Illegal InputMessage or things changed during execution.");
-			console.log(e);
-		}
-	});
-	var invoke = function(method, params){
-		self.postMessage(JSON.stringify({
-			"action":"CallMethod",
-			"method":method,
-			"params":params
-		}));
-	};
-	var create = function(obj_class, obj_name, serialized){
-		self.postMessage(JSON.stringify({
-			"action":"AssignObject",
-			"name":obj_name,
-			"class":obj_class,
-			"serialized": serialized
-		}));
-	};
-	this.alert = function(msg){
-		invoke("alert", [msg]);
-	};
-	this.createButton = function(data){
-		var button = new ButtonObject(data);
-		create("ButtonObject", "button", data);
-		button.id = "button";
-		return button;
-	};
-	this.createComment = function(data){
-		
-	};
-	this.createShape = function(data){
-	
-	};
-};
+function clone(a){
+	// Shallow copy
+	var b = {};
+	for(var x in a){
+		b[x] = a[x];
+	}
+	return b;
+}
 
-/** Util Library Abstraction **/
-require("libUtil.js");
-//require("libPlayer.js");
-//require("lib"
+/** Library Abstractions **/
+require("libraries/libBase.js");
+

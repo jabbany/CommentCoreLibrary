@@ -75,10 +75,10 @@ CCLScripting = {
 		}
 		var bridge = "var BASE_URL = '" + resolve("",document.URL) + "';" + 
 			"importScripts('" + resolve("api.worker.js", document.URL ) + "');";
-
+		var cleanup = ";;/**/if(Runtime && Runtime.cleanup) Runtime.cleanup();";
 		var blob;
 		try {
-			blob = new Blob([bridge, code], {type: 'application/javascript'});
+			blob = new Blob([bridge, code, cleanup], {type: 'application/javascript'});
 		} catch (e) { // Backwards-compatibility
 			window.BlobBuilder = window.BlobBuilder || window.WebKitBlobBuilder || window.MozBlobBuilder;
 			blob = new BlobBuilder();
@@ -91,6 +91,7 @@ CCLScripting = {
 
 	CCLScripting.BridgedSandbox = function(commentManager, stage){
 		var listeners = {};
+		var workers = [];
 		var cm = commentManager;
 		var stg = stage;
 		var ctx = new CCLScripting.ScriptingContext(stage);
@@ -105,6 +106,9 @@ CCLScripting = {
 				}
 			}
 		};
+		this.workers = function(){
+			return workers;
+		};
 		this.getContext = function(){
 			return ctx;
 		};
@@ -114,6 +118,10 @@ CCLScripting = {
 				try{
 					var resp = JSON.parse(event.data);
 					switch(resp.action){
+						case "CleanUp":
+							workers.splice(workers.indexOf(worker), 1);
+							invokeEvent("cleanup", worker);
+							return;
 						case "Trace":
 							invokeEvent("trace", resp.obj);
 							console.log(resp.obj);
@@ -126,6 +134,35 @@ CCLScripting = {
 							break;
 						case "AssignObject":
 							ctx.set(resp.name, resp["class"], resp.serialized);
+							if(resp.serialized.lifeTime){
+								setTimeout(function(){
+									worker.postMessage(JSON.stringify({
+										"action":"ObjectRemoved",
+										"id":resp.name
+									}));
+									var obj = ctx.get(resp.name);
+									if(obj && obj.domParent){
+										try{
+											stage.removeChild(obj.domParent);
+										}catch(e){}
+									}
+								},resp.serialized.lifeTime * 1000);
+							}
+							break;
+						case "RegisterListener":
+							var obj = ctx.get(resp.name);
+							if(obj.domParent){
+								obj.domParent.addEventListener(
+									obj.translateListener(resp.listener), 
+									function(){
+										worker.postMessage(JSON.stringify({
+											"action":"InvokeListener",
+											"id":resp.name,
+											"listener":resp.listener
+										}));
+									}
+								);
+							}
 							break;
 						default:
 							break;
@@ -136,6 +173,19 @@ CCLScripting = {
 					return;
 				}
 			};
+			// Pass some information to the worker
+			worker.postMessage(JSON.stringify({
+				"action":"update",
+				"values":{
+					"screenWidth": screen.width,
+					"screenHeight": screen.height,
+					"width":stage.offsetWidth,
+					"height":stage.offsetHeight,
+					"videoWidth":0,
+					"videoHeight":0
+				}
+			}));
+			workers.push(worker);
 			return worker;
 		};
 		this.addEventListener = function(event, listener){
@@ -200,16 +250,22 @@ CCLScripting = {
 	CCLScripting.CommonObject = function(){
 		this.data = {};
 		this.deserialize = function(data){
-			console.log(data);
 			for(var field in data){
 				this.data[field] = data[field];
 			}
 		};
-	
+		this.translateListener = function(n){
+			switch(n.toLowerCase()){
+				case "onclick":return "click";
+				case "onmouseover": return "mouseOver";
+				case "onmousedown": return "mouseDown";
+				default: return "click";
+			}
+		};
 		this.serialized = function(){
 			return JSON.stringify(this.data);
 		};
-	
+		
 		this.domParent = null;
 	};
 })();

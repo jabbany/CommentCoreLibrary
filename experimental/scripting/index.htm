@@ -32,7 +32,10 @@
 	<script type="text/javascript">
 		bscripter = new CCLScripting.BridgedSandbox({}, $("player"));
 		bscripter.addEventListener("trace", function(data){
-			$("output").innerText = "[Trace]" + data + "\r\n" + $("output").innerText;
+			$("output").innerText = "[Trace] " + data + "\r\n" + $("output").innerText;
+		});
+		bscripter.addEventListener("cleanup", function(data){
+			$("output").innerText = "[Cleanup] " + data + "\r\n" + $("output").innerText;
 		});
 		$("evaluate").addEventListener("click", function(){
 			try{

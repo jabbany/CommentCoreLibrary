@@ -13,6 +13,7 @@ a=$.createButton({
 	width:200,
 	text:"空降的说&gt;.&lt;~喵~",
 	onclick:function(){
+		trace("第一集不可以跳哦...");
 		c=$.createComment("第一集不可以跳哦...",{
 			x:5,
 			y:85,
