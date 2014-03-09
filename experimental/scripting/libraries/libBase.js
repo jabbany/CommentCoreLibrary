@@ -85,6 +85,13 @@ var $ = new function(){
 	/** Inner Classes for Display **/
 	function GraphicsContext(shape){
 		// Send data across
+		var toRGB = function(number){
+			var string = parseInt(number).toString(16);
+			while(string.length < 6){
+				string = "0" + string;
+			}
+			return "#" + string;
+		};
 		var updateObject = function(method, params){
 			self.postMessage(JSON.stringify({
 				"action":"CallObjectMethod",
@@ -102,9 +109,35 @@ var $ = new function(){
 		this.curveTo = function(a,b,c,d){
 			updateObject("curveTo", [a,b,c,d]);
 		};
-		this.lineStyle = function(r,g,b){
-			
+		this.lineStyle = function(thickness, color, alpha){
+			updateObject("lineStyle", [thickness, toRGB(color), alpha]);
 		};
+		this.drawRect = function(x, y, w, h){
+			updateObject("drawRect", [x, y, w, h]);
+		};
+		this.drawCircle = function(x, y, r){
+			updateObject("drawCircle", [x, y, r]);
+		};
+		this.drawEllipse = function(cx, cy, rx, ry){
+			updateObject("drawEllipse", [cx, cy, rx, ry]);
+		};
+		this.beginFill = function(color, alpha){
+			updateObject("beginFill", [toRGB(color), alpha]);
+		};
+		this.endFill = function(){
+			updateObject("endFill", []);
+		};
+		var s = this;
+		Object.defineProperty(this, "filters", {
+			get:function(){
+				return s.filters;
+			},
+			set:function(filters){
+				s.filters = filters;
+				trace(filters);
+				//Register filters.
+			}
+		});
 	};
 	function SVGShape(id){
 		this.paths = [];
@@ -182,6 +215,12 @@ var $ = new function(){
 		var svg = new SVGShape(Runtime.generateIdent());
 		create("SVGShape", svg.id, data, svg);
 		return svg;
+	};
+	this.createBlurFilter = function(x,y){
+		return;
+	};
+	this.createGlowFilter = function(x,y){
+		return;
 	};
 };
 

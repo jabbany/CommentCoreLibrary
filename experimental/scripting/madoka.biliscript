@@ -1,4 +1,10 @@
 /*马猴烧酒组*/
+/*干杯~*/
+var g = $.createShape({lifeTime:30,x:0,y:0});
+ g.graphics.beginFill(0xffffff);
+ g.graphics.drawRect(0,0,540,383);
+ g.graphics.endFill();
+
 var s = $.createShape({lifeTime:10,motionGroup:[
 {x:{fromValue:5,toValue:0,lifeTime:2},alpha:{fromValue:0,toValue:1,lifeTime:2}},
 {x:{fromValue:0,toValue:-15,lifeTime:6}},

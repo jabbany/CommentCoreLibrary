@@ -1,4 +1,10 @@
 /*绿坝娘~和谐你*/
+/*Kanpai*/
+var x = $.createShape({lifeTime:10,x:0,y:0});
+ x.graphics.beginFill(0xffffff);
+ x.graphics.drawRect(0,0,540,383);
+ x.graphics.endFill();
+
 var s = $.createShape({lifeTime:7,motionGroup:[
 {x:{fromValue:5,toValue:10,lifeTime:2},alpha:{fromValue:0,toValue:1,lifeTime:2}},
 {x:{fromValue:10,toValue:15,lifeTime:3}},

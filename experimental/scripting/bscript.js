@@ -9,6 +9,7 @@ CCLScripting = {
 	var ENTITIES = {
 		"amp" : "&","gt" : ">","lt" : "<","quot" : "\"","apos" : "'"
 	};
+	
 	var decodeHTMLEnt = function(s){
 		s = s.replace(/&#(\d+);?/g, function (_, code) {
 			return String.fromCharCode(code);
@@ -113,6 +114,7 @@ CCLScripting = {
 			for(var i = 0; i < workers.length; i++){
 				try{
 					workers[i].terminate();
+					invokeEvent("cleanup", workers[i]);
 				}catch(e){}
 			}
 		};
@@ -127,64 +129,63 @@ CCLScripting = {
 			worker.onmessage = function(event){
 				try{
 					var resp = JSON.parse(event.data);
-					switch(resp.action){
-						case "CleanUp":
-							workers.splice(workers.indexOf(worker), 1);
-							invokeEvent("cleanup", worker);
-							return;
-						case "Trace":
-							invokeEvent("trace", resp.obj);
-							console.log(resp.obj);
-							break;
-						case "RequestObject":
-							ctx.get(resp.name);
-							break;
-						case "CallObjectMethod":
-							ctx.callObjectMethod(resp.id, resp.method, resp.params);
-							break;
-						case "CallMethod":
-							ctx.callMethod(resp.method, resp.params);
-							break;
-						case "AssignObject":
-							ctx.set(resp.name, resp["class"], resp.serialized);
-							if(resp.serialized.lifeTime){
-								setTimeout(function(){
-									worker.postMessage(JSON.stringify({
-										"action":"ObjectRemoved",
-										"id":resp.name
-									}));
-									var obj = ctx.get(resp.name);
-									if(obj && obj.domParent){
-										try{
-											stage.removeChild(obj.domParent);
-										}catch(e){}
-									}
-								},resp.serialized.lifeTime * 1000);
-							}
-							break;
-						case "RegisterListener":
-							var obj = ctx.get(resp.name);
-							if(obj.domParent){
-								obj.domParent.addEventListener(
-									obj.translateListener(resp.listener), 
-									function(){
-										worker.postMessage(JSON.stringify({
-											"action":"InvokeListener",
-											"id":resp.name,
-											"listener":resp.listener
-										}));
-									}
-								);
-							}
-							break;
-						default:
-							break;
-					}
 				}catch(e){
-					console.log("Error:" + e.message + " Line:" + e.lineno);
-					console.log(event.data);
+					console.log("JSON ERROR");
 					return;
 				}
+				switch(resp.action){
+					case "CleanUp":
+						workers.splice(workers.indexOf(worker), 1);
+						invokeEvent("cleanup", worker);
+						return;
+					case "Trace":
+						invokeEvent("trace", resp.obj);
+						console.log(resp.obj);
+						break;
+					case "RequestObject":
+						ctx.get(resp.name);
+						break;
+					case "CallObjectMethod":
+						ctx.callObjectMethod(resp.id, resp.method, resp.params);
+						break;
+					case "CallMethod":
+						ctx.callMethod(resp.method, resp.params);
+						break;
+					case "AssignObject":
+						ctx.set(resp.name, resp["class"], resp.serialized);
+						if(resp.serialized.lifeTime){
+							setTimeout(function(){
+								worker.postMessage(JSON.stringify({
+									"action":"ObjectRemoved",
+									"id":resp.name
+								}));
+								var obj = ctx.get(resp.name);
+								if(obj && obj.domParent){
+									try{
+										stage.removeChild(obj.domParent);
+									}catch(e){}
+								}
+							},resp.serialized.lifeTime * 1000);
+						}
+						break;
+					case "RegisterListener":
+						var obj = ctx.get(resp.name);
+						if(obj.domParent){
+							obj.domParent.addEventListener(
+								obj.translateListener(resp.listener), 
+								function(){
+									worker.postMessage(JSON.stringify({
+										"action":"InvokeListener",
+										"id":resp.name,
+										"listener":resp.listener
+									}));
+								}
+							);
+						}
+						break;
+					default:
+						break;
+				};
 			};
 			// Pass some information to the worker
 			worker.postMessage(JSON.stringify({
@@ -263,6 +264,7 @@ CCLScripting = {
 					stage.appendChild(boundObjects[objname].domParent);
 				}break;
 				case "SVGShape":{
+					boundObjects[objname] = new CCLScripting.SVGObject();
 					var svg = boundObjects[objname];
 					svg.domParent = _("svg",{
 						"width":stage.offsetWidth, 
@@ -271,22 +273,7 @@ CCLScripting = {
 							"position":"absolute",
 							"top":"0px",
 							"left":"0px"
-						}});
-					var lastPath = null;
-					svg.moveTo = function(params){
-						var p = document.createElementNS("http://www.w3.org/2000/svg", "path");
-						p.setAttribute("d", "M" + params.join(" "));
-						p.setAttribute("stroke", "#fff");
-						p.setAttribute("fill", "none");
-						lastPath = p;
-						svg.domParent.appendChild(lastPath);
-					};
-					svg.lineTo = function(params){
-						lastPath.setAttribute("d", lastPath.getAttribute("d") + " L" + params.join(" "));
-					};
-					svg.curveTo = function(params){
-						lastPath.setAttribute("d", lastPath.getAttribute("d") + " Q" + params.join(" "));
-					};
+					}});
 					setTimeout(function(){
 						stage.appendChild(svg.domParent);
 					},1000);
@@ -326,6 +313,116 @@ CCLScripting = {
 			return JSON.stringify(this.data);
 		};
 		
+		this.domParent = null;
+	};
+	
+	CCLScripting.SVGObject = function(){
+		this.line = {
+			width:1,
+			color:"#FFFFFF",
+			alpha:1
+		};
+		this.fill = {
+			fill:"none",
+			alpha:1
+		};
+		
+		this.data = {};
+		this.deserialize = function(data){
+			for(var field in data){
+				this.data[field] = data[field];
+			}
+		};
+		this.translateListener = function(n){
+			switch(n.toLowerCase()){
+				case "onclick":return "click";
+				case "onmouseover": return "mouseOver";
+				case "onmousedown": return "mouseDown";
+				default: return "click";
+			}
+		};
+		this.serialized = function(){
+			return JSON.stringify(this.data);
+		};
+		
+		var applyStroke = function(p, ref){
+			p.setAttribute("stroke", ref.line.color);
+			p.setAttribute("stroke-width", ref.line.width);
+			p.setAttribute("stroke-opacity", ref.line.alpha);
+		};
+		
+		var applyFill = function(p, ref){
+			p.setAttribute("fill", ref.fill.fill);
+			p.setAttribute("fill-opacity", ref.fill.alpha)
+		};
+		
+		var state = {lastPath : null};
+		this.moveTo = function(params){
+			var p = document.createElementNS("http://www.w3.org/2000/svg", "path");
+			p.setAttribute("d", "M" + params.join(" "));
+			applyFill(p, this);
+			state.lastPath = p;
+			applyStroke(p, this);
+			this.domParent.appendChild(state.lastPath);
+		};
+		this.lineTo = function(params){
+			state.lastPath.setAttribute("d", state.lastPath.getAttribute("d") + " L" + params.join(" "));
+		};
+		this.curveTo = function(params){
+			state.lastPath.setAttribute("d", state.lastPath.getAttribute("d") + " Q" + params.join(" "));
+		};
+		this.lineStyle = function(params){
+			if(params.length < 3)
+				return;
+			this.line.width = params[0];
+			this.line.color = params[1];
+			this.line.alpha = params[2];
+			if(state.lastPath){
+				applyStroke(state.lastPath, this);
+			}
+		};
+		this.beginFill = function(params){
+			if(params.length === 0)
+				return;
+			this.fill.fill = params[0];
+			if(params.length > 1){
+				this.fill.alpha = params[1];
+			}
+		};
+		this.endFill = function(params){
+			this.fill.fill = "none";
+		};
+		this.drawRect = function(params){
+			var r = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+			r.setAttribute("x", params[0]);
+			r.setAttribute("y", params[1]);
+			r.setAttribute("width", params[2]);
+			r.setAttribute("height", params[3]);
+			applyFill(r, this);
+			applyStroke(r, this);
+			this.domParent.appendChild(r);
+		};
+		this.drawCircle = function(params){
+			var c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+			c.setAttribute("x", params[0]);
+			c.setAttribute("y", params[1]);
+			c.setAttribute("width", params[2]);
+			c.setAttribute("height", params[3]);
+			applyFill(c, this);
+			applyStroke(c, this);
+			this.domParent.appendChild(c);
+		};
+		
+		this.drawEllipse = function(params){
+			var e = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
+			e.setAttribute("cx", params[0]);
+			e.setAttribute("cy", params[1]);
+			e.setAttribute("rx", params[2]);
+			e.setAttribute("ry", params[3]);
+			applyFill(e, this);
+			applyStroke(e, this);
+			this.domParent.appendChild(e);
+		};
 		this.domParent = null;
 	};
 })();
