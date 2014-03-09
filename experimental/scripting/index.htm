@@ -7,8 +7,10 @@
 	<style>
 		#codediv{width:48%; float:left;}
 		#playerdiv{width:48%; float:right;}
-		#player{border:1px solid #f88; width:100%;}
-		#code-input{width:100%;height:300px;display:block; border:1px solid #f88; padding:10px;background:#000;color:#f88;font-size:20px;}
+		#output{font-family:Consolas, 'Courier New', monospace; font-size:20px;padding:10px; background:#020;
+		position:fixed; bottom:0; left:0; right:0; height:150px; overflow:auto; }
+		#player{border:1px solid #f88; width:100%;background-color:#100;position:relative;}
+		#code-input{width:100%;height:340px;display:block; border:1px solid #f88; padding:10px;background:#000;color:#f88;font-size:20px;}
 		.button{display:block; border:1px solid #f88; padding:10px; background:#000; color:#f88; float:left;}
 		.button:hover{background:#f88; color:#000;}
 	</style>
@@ -24,20 +26,23 @@
 		<textarea id="code-input"></textarea>
 	</div>
 	<div id="playerdiv">
-		<div id="player" style="height:400px;"></div>
-		<div id="output"></div>
+		<div id="player" style="height:400px;clear:both;"></div>
 	</div>
+	<div id="output" style="color:#fff;"> </div>
 	<script type="text/javascript">
 		bscripter = new CCLScripting.BridgedSandbox({}, $("player"));
+		bscripter.addEventListener("trace", function(data){
+			$("output").innerText = "[Trace]" + data + "\r\n" + $("output").innerText;
+		});
 		$("evaluate").addEventListener("click", function(){
 			try{
 				var w = bscripter.eval($("code-input").value);
 				w.onerror = function(error){
-					$("output").innerText = error + $("output").innerText;
+					$("output").innerText = error.message + "\r\n" + $("output").innerText;
 				};
 				console.log(w);
 			}catch(e){
-				$("output").innerText = e + $("output").innerText;
+				$("output").innerText = e.message + "\r\n" + $("output").innerText;
 			}
 		});
 	</script>

@@ -1,3 +1,39 @@
+/** Basic method wrappers **/
+function trace(text){
+	self.postMessage(JSON.stringify({
+		"action":"Trace",
+		"obj":text
+	}));
+}
+
+function foreach(dtype, f){
+	for(var x in dtype){
+		f(x, dtype[x]);
+	}
+	return;
+}
+
+function require(scriptname){
+	importScripts(BASE_URL + scriptname);
+};
+
+function load(library, onComplete){
+	var libname = "";
+	switch(library){
+		default:
+			break;
+	};
+	if(libname !== ""){
+		try{
+			require(libname);
+		}catch(e){
+			trace("Error: Import script failed.");
+		}
+	}
+	if(onComplete)
+		onComplete();
+};
+
 /** This is the API part of the worker **/
 function ButtonObject(){
 	
@@ -35,7 +71,19 @@ var $ = new function(){
 	};
 	this.createButton = function(data){
 		var button = new ButtonObject(data);
-		create("button", "ButttonObject", "{}");
+		create("ButtonObject", "button", data);
+		button.id = "button";
 		return button;
 	};
+	this.createComment = function(data){
+		
+	};
+	this.createShape = function(data){
+	
+	};
 };
+
+/** Util Library Abstraction **/
+require("libUtil.js");
+//require("libPlayer.js");
+//require("lib"
