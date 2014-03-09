@@ -180,7 +180,7 @@ var $ = new function(){
 	};
 	this.createShape = function(data){
 		var svg = new SVGShape(Runtime.generateIdent());
-		create("SVGShape", svg.id, {}, svg);
+		create("SVGShape", svg.id, data, svg);
 		return svg;
 	};
 };

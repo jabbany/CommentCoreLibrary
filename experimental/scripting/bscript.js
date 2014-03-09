@@ -277,6 +277,7 @@ CCLScripting = {
 						var p = document.createElementNS("http://www.w3.org/2000/svg", "path");
 						p.setAttribute("d", "M" + params.join(" "));
 						p.setAttribute("stroke", "#fff");
+						p.setAttribute("fill", "none");
 						lastPath = p;
 						svg.domParent.appendChild(lastPath);
 					};
