@@ -31,7 +31,9 @@ CCLScripting = {
 		var elem = null;
 		if (type === "text") {
 			return document.createTextNode(props);
-		} else {
+		} else if(type === "svg"){
+			elem = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+		}else {
 			elem = document.createElement(type);
 		}
 		for(var n in props){
@@ -75,7 +77,7 @@ CCLScripting = {
 		}
 		var bridge = "var BASE_URL = '" + resolve("",document.URL) + "';" + 
 			"importScripts('" + resolve("api.worker.js", document.URL ) + "');";
-		var cleanup = ";;/**/if(Runtime && Runtime.cleanup) Runtime.cleanup();";
+		var cleanup = ";;/**/if(Runtime && Runtime.cleanup) { Runtime.cleanup(); }";
 		var blob;
 		try {
 			blob = new Blob([bridge, code, cleanup], {type: 'application/javascript'});
@@ -106,6 +108,14 @@ CCLScripting = {
 				}
 			}
 		};
+		this.clear = function(){
+			ctx.clear();
+			for(var i = 0; i < workers.length; i++){
+				try{
+					workers[i].terminate();
+				}catch(e){}
+			}
+		};
 		this.workers = function(){
 			return workers;
 		};
@@ -128,6 +138,9 @@ CCLScripting = {
 							break;
 						case "RequestObject":
 							ctx.get(resp.name);
+							break;
+						case "CallObjectMethod":
+							ctx.callObjectMethod(resp.id, resp.method, resp.params);
 							break;
 						case "CallMethod":
 							ctx.callMethod(resp.method, resp.params);
@@ -168,7 +181,7 @@ CCLScripting = {
 							break;
 					}
 				}catch(e){
-					console.log("Error:" + e.message);
+					console.log("Error:" + e.message + " Line:" + e.lineno);
 					console.log(event.data);
 					return;
 				}
@@ -205,8 +218,20 @@ CCLScripting = {
 					alert(params[0]);
 				return;
 			}
+			switch(method){
+				case "seek":{}break;
+				case "play":{}break;
+				case "pause":{}break;
+				default:break;
+			}
 		};
-	
+		
+		this.callObjectMethod = function(id, method, params){
+			if(boundObjects[id] && boundObjects[id][method]){
+				boundObjects[id][method](params);
+			}
+		};
+		
 		this.get = function(objname){
 			return boundObjects[objname];
 		};
@@ -223,27 +248,61 @@ CCLScripting = {
 						button.x = serialized.x;
 						button.y = serialized.y;
 						button.dur = serialized.lifeTime * 1000;
-						
+						button.width = serialized.width;
 					}
 					boundObjects[objname].domParent = _("div", {
 						"className":"button",
 						"style":{
 							"position":"absolute",
+							"fontSize":"12px",
 							"top": (button.y ? button.y : 0) + "px",
-							"left": (button.x ? button.x : 0) + "px"
+							"left": (button.x ? button.x : 0) + "px",
+							"width":(button.width ? button.width + "px" : "auto")
 						}
 					},[_("text",decodeHTMLEnt(button.text))]);
-					console.log(boundObjects[objname].domParent);
 					stage.appendChild(boundObjects[objname].domParent);
-				}
+				}break;
+				case "SVGShape":{
+					var svg = boundObjects[objname];
+					svg.domParent = _("svg",{
+						"width":stage.offsetWidth, 
+						"height":stage.offsetHeight,
+						"style":{
+							"position":"absolute",
+							"top":"0px",
+							"left":"0px"
+						}});
+					var lastPath = null;
+					svg.moveTo = function(params){
+						var p = document.createElementNS("http://www.w3.org/2000/svg", "path");
+						p.setAttribute("d", "M" + params.join(" "));
+						p.setAttribute("stroke", "#fff");
+						lastPath = p;
+						svg.domParent.appendChild(lastPath);
+					};
+					svg.lineTo = function(params){
+						lastPath.setAttribute("d", lastPath.getAttribute("d") + " L" + params.join(" "));
+					};
+					svg.curveTo = function(params){
+						lastPath.setAttribute("d", lastPath.getAttribute("d") + " Q" + params.join(" "));
+					};
+					setTimeout(function(){
+						stage.appendChild(svg.domParent);
+					},1000);
+				}break;
+				case "CommentObject":{
+					
+				}break;
+				default:break;
 			}
 		};
 		this.clear = function(){
-			for(var i in boundObject){
-				if(boundObject[i].domParent){
-					stage.removeChild(boundObject[i].domParent);
+			for(var i in boundObjects){
+				if(boundObjects[i].domParent){
+					stage.removeChild(boundObjects[i].domParent);
 				}
 			}
+			boundObjects = {}
 		};
 	};
 

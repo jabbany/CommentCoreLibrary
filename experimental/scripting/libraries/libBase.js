@@ -83,6 +83,34 @@ var Runtime = new function(){
 
 var $ = new function(){
 	/** Inner Classes for Display **/
+	function GraphicsContext(shape){
+		// Send data across
+		var updateObject = function(method, params){
+			self.postMessage(JSON.stringify({
+				"action":"CallObjectMethod",
+				"id": shape.id,
+				"method":method,
+				"params":params
+			}));
+		};
+		this.lineTo = function(a,b){
+			updateObject("lineTo", [a,b]);
+		};
+		this.moveTo = function(a,b){
+			updateObject("moveTo", [a,b]);
+		};
+		this.curveTo = function(a,b,c,d){
+			updateObject("curveTo", [a,b,c,d]);
+		};
+		this.lineStyle = function(r,g,b){
+			
+		};
+	};
+	function SVGShape(id){
+		this.paths = [];
+		this.id = id;
+		this.graphics = new GraphicsContext(this);
+	};
 	function ButtonObject(data){
 		this.toString = function(){return "Button " + data.text + " id:" + this.id};
 	};
@@ -151,11 +179,34 @@ var $ = new function(){
 		return comment;
 	};
 	this.createShape = function(data){
-	
+		var svg = new SVGShape(Runtime.generateIdent());
+		create("SVGShape", svg.id, {}, svg);
+		return svg;
 	};
 };
 
-var Util = new function(){
+var Global = new function(){
+	var kvstore = {};
+	var notifyUp = function(key, val){
+		self.postMessage(JSON.stringify({
+			"action":"UpdateGlobals",
+			"key":key,
+			"value":JSON.stringify(val)
+		}));
+	};
+	this._set = function(key, val){
+		kvstore[key] = val;
+		notifyUp(key, val);
+	};
+	this._get = function(key){
+		return kvstore[key];
+	};
+};
+
+var Utils = new function(){
+	this.rgb = function(r,g,b){
+		return r * 256 * 256 + g * 256 + b;
+	};
 	this.rand = function(min, max){
 		return min + Math.floor(Math.random() * (max - min));
 	};
@@ -182,5 +233,27 @@ var Util = new function(){
 			},interval);
 			return iv;
 		}
+	};
+};
+
+var Player = new function(){
+	var invoke = function(method, params){
+		self.postMessage(JSON.stringify({
+			"action":"CallMethod",
+			"method":method,
+			"params":params
+		}));
+	};
+	this.play = function(){
+		invoke("play", []);
+	};
+	this.pause = function(){
+		invoke("pause", []);
+	};
+	this.seek = function(time){
+		invoke("seek", [time]);
+	};
+	this.jump = function(video, part, newwindow){
+		invoke("jump", [video, part ? part : 1, newwindow ? newwindow : false]);
 	};
 };

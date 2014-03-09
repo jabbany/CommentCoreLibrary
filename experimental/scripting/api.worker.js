@@ -4,17 +4,18 @@ function trace(text){
 		"action":"Trace",
 		"obj":text
 	}));
-}
+};
 
 function foreach(dtype, f){
 	for(var x in dtype){
 		f(x, dtype[x]);
 	}
 	return;
-}
+};
 
 function require(scriptname){
-	importScripts(BASE_URL + scriptname);
+	var fn = BASE_URL + scriptname;
+	importScripts(fn);
 };
 
 function load(library, onComplete){
@@ -41,7 +42,7 @@ function clone(a){
 		b[x] = a[x];
 	}
 	return b;
-}
+};
 
 /** Library Abstractions **/
 require("libraries/libBase.js");
