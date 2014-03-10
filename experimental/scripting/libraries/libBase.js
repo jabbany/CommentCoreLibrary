@@ -81,6 +81,10 @@ var Runtime = new function(){
 	};
 };
 
+var ScriptManager = new function(){
+	/** Bili abstraction of runtime **/
+};
+
 var $ = new function(){
 	/** Inner Classes for Display **/
 	function GraphicsContext(shape){
@@ -121,34 +125,73 @@ var $ = new function(){
 		this.drawEllipse = function(cx, cy, rx, ry){
 			updateObject("drawEllipse", [cx, cy, rx, ry]);
 		};
+		this.drawRoundRect= function(x, y, w, h, elw, elh){
+			updateObject("drawRoundRect", [x, y, w, h, elw, elh]);
+		};
 		this.beginFill = function(color, alpha){
 			updateObject("beginFill", [toRGB(color), alpha]);
 		};
 		this.endFill = function(){
 			updateObject("endFill", []);
 		};
-		var s = this;
-		Object.defineProperty(this, "filters", {
-			get:function(){
-				return s.filters;
-			},
-			set:function(filters){
-				s.filters = filters;
-				trace(filters);
-				//Register filters.
+		this.beginGradientFill = function(blendMode, colors, alphas, blendPoints, matrix, pad){
+			trace("Gradient Fill not supported. Using fallback");
+			var sumColors = 0;
+			var sumAlphas = 0;
+			for(var i = 0; i < colors.length; i++){
+				sumColors += colors[i];
+				sumAlphas += alphas[i];
 			}
-		});
+			updateObject("beginFill", [toRGB(Math.round(sumColors / colors.length)), 
+										Math.round(sumAlphas / alphas.length)]);
+		};
+		var s = this;
+		if(this.__defineSetter__){
+			this.__defineSetter__("filters", function(filters){
+				trace("Filter setting not supported yet");
+			});
+		}
 	};
-	function SVGShape(id){
+	function SVGShape(id, data){
 		this.paths = [];
 		this.id = id;
+		this.x = data.x ? data.x : 0;
+		this.y = data.y ? data.y : 0;
+		this.dur = (data.lifeTime ? data.lifeTime : 4) * 1000;
+		this.ttl = this.dur;
+		this.motion = data.motion ? data.motion : {};
+		var inst = this;
+		for(var m in this.motion){
+			this[m] = this.motion[m].fromValue;
+			var ivali = setInterval(function(){
+				inst.ttl -= 100;
+				inst[m] = (inst.motion[m].toValue - inst.motion[m].fromValue) * 
+								((inst.dur - inst.ttl) / inst.dur) + 
+								inst.motion[m].fromValue;
+				updateObject(inst.id, m, inst[m]);
+				if(inst.ttl <= 0){
+					clearInterval(ivali);
+				}
+			},100);
+		}
 		this.graphics = new GraphicsContext(this);
 	};
 	function ButtonObject(data){
 		this.toString = function(){return "Button " + data.text + " id:" + this.id};
 	};
 	function CommentObject(data){
+		var text = "";
 		this.toString = function(){return "Comment " + data.text + " id:" + this.id};
+		if(this.__defineSetter__  && this.__defineGetter__){
+			var inst = this;
+			this.__defineSetter__("text", function(newval){
+				updateObject(inst.id, "text", newval);
+				text = newval;
+			});
+			this.__defineGetter__("text", function(newval){
+				return text;
+			});
+		}
 	};
 	/** End Inner classes for Display **/
 	self.addEventListener("message", function(msg){
@@ -162,14 +205,14 @@ var $ = new function(){
 			console.log(e);
 		}
 	});
-	var invoke = function(method, params){
+	function invoke(method, params){
 		self.postMessage(JSON.stringify({
 			"action":"CallMethod",
 			"method":method,
 			"params":params
 		}));
 	};
-	var create = function(obj_class, obj_name, serialized, object){
+	function create(obj_class, obj_name, serialized, object){
 		if(!object)
 			throw "No Object Instance, cannot create";
 		Runtime.registerObject(obj_name, object);
@@ -180,12 +223,20 @@ var $ = new function(){
 			"serialized": serialized
 		}));
 	};
-	var listener = function(obj_name, listener_field){
+	function listener(obj_name, listener_field){
 		Runtime.registerListener(obj_name, listener_field);
 		self.postMessage(JSON.stringify({
 			"action":"RegisterListener",
 			"name":obj_name,
 			"listener":listener_field,
+		}));
+	};
+	function updateObject(obj_name, field, newValue){
+		self.postMessage(JSON.stringify({
+			"action":"UpdateObject",
+			"name":obj_name,
+			"field":field,
+			"value":newValue,
 		}));
 	};
 	/** Begin Display Libaray Public methods **/
@@ -205,6 +256,15 @@ var $ = new function(){
 	};
 	this.createComment = function(text, data){
 		data.text = text;
+		var toRGB = function(number){
+			var string = parseInt(number).toString(16);
+			while(string.length < 6){
+				string = "0" + string;
+			}
+			return "#" + string;
+		};
+		if(data.color != null)
+			data.color = toRGB(data.color);
 		var comment = new CommentObject(data);
 		var id = Runtime.generateIdent();
 		create("CommentObject", id, data, comment);
@@ -212,15 +272,21 @@ var $ = new function(){
 		return comment;
 	};
 	this.createShape = function(data){
-		var svg = new SVGShape(Runtime.generateIdent());
+		var svg = new SVGShape(Runtime.generateIdent(), data);
 		create("SVGShape", svg.id, data, svg);
 		return svg;
 	};
 	this.createBlurFilter = function(x,y){
+		trace("$.createBlurFilter not supported");
 		return;
 	};
 	this.createGlowFilter = function(x,y){
+		trace("$.createGlowFilter not supported");
 		return;
+	};
+	this.createMatrix = function(){
+		trace("$.createMatrix not supported");
+		return [];
 	};
 };
 
@@ -234,13 +300,19 @@ var Global = new function(){
 		}));
 	};
 	this._set = function(key, val){
+		trace("Global is not supported. Fallback.");
 		kvstore[key] = val;
 		notifyUp(key, val);
 	};
 	this._get = function(key){
 		return kvstore[key];
 	};
+	this._ = function(key){
+		return this._get(key);
+	};
 };
+
+var $G = Global;
 
 var Utils = new function(){
 	this.rgb = function(r,g,b){
@@ -274,6 +346,11 @@ var Utils = new function(){
 		}
 	};
 };
+
+/* -- Pull in important references */
+var interval = Utils.interval;
+var delay = Utils.delay;
+
 
 var Player = new function(){
 	var invoke = function(method, params){

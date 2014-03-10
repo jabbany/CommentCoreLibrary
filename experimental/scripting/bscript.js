@@ -145,6 +145,9 @@ CCLScripting = {
 					case "RequestObject":
 						ctx.get(resp.name);
 						break;
+					case "UpdateObject":
+						ctx.updateObjectField(resp.name, resp.field, resp.value);
+						break;
 					case "CallObjectMethod":
 						ctx.callObjectMethod(resp.id, resp.method, resp.params);
 						break;
@@ -212,7 +215,35 @@ CCLScripting = {
 
 	CCLScripting.ScriptingContext = function(stage){
 		var boundObjects = {};
-	
+		
+		this.updateObjectField = function(id, field, value){
+			var obj = boundObjects[id];
+			if(!obj)
+				return;
+			switch(obj.className){
+				case "CommentObject":
+					if(field === "text"){
+						if(obj.domParent){
+							obj.domParent.innerText = value;
+							stage.appendChild(obj.domParent);
+						}
+						obj.text = value;
+					}
+					break
+				default:
+					if(field === "x"){
+						if(obj.domParent){
+							obj.domParent.style.left = value + "px";
+						}
+					}else if(field === "y"){
+						if(obj.domParent){
+							obj.domParent.style.top = value + "px";
+						}
+					}
+					break;
+			}
+		};
+		
 		this.callMethod = function (method, params){
 			if(method === "alert"){
 				if(params)
@@ -238,8 +269,7 @@ CCLScripting = {
 		};
 	
 		this.set = function(objname, objclass, serialized){
-			boundObjects[objname] = new CCLScripting.CommonObject();
-			console.log(objclass);
+			boundObjects[objname] = new CCLScripting.CommonObject(objclass);
 			switch(objclass){
 				case "ButtonObject":{
 					// Do some setup.
@@ -271,15 +301,26 @@ CCLScripting = {
 						"height":stage.offsetHeight,
 						"style":{
 							"position":"absolute",
-							"top":"0px",
-							"left":"0px"
+							"top": (serialized.y ? serialized.y : 0) + "px",
+							"left":(serialized.x ? serialized.x : 0) + "px"
 					}});
 					setTimeout(function(){
 						stage.appendChild(svg.domParent);
 					},1000);
 				}break;
 				case "CommentObject":{
-					
+					var cmt = boundObjects[objname];
+					cmt.domParent = _("div",{
+						"className":"cmt",
+						"style":{
+							"fontSize":(serialized.fontsize ? serialized.fontsize : 16) + "px",
+							"position":"absolute",
+							"top":(serialized.y ? serialized.y : 0) + "px",
+							"left":(serialized.x ? serialized.x : 0) + "px",
+							"color":serialized.color
+						}
+					}, [_("text",serialized.text ? serialized.text : "")]);
+					stage.appendChild(cmt.domParent);
 				}break;
 				default:break;
 			}
@@ -294,8 +335,9 @@ CCLScripting = {
 		};
 	};
 
-	CCLScripting.CommonObject = function(){
+	CCLScripting.CommonObject = function(className){
 		this.data = {};
+		this.className = className;
 		this.deserialize = function(data){
 			for(var field in data){
 				this.data[field] = data[field];
@@ -366,9 +408,21 @@ CCLScripting = {
 			this.domParent.appendChild(state.lastPath);
 		};
 		this.lineTo = function(params){
+			if(!state.lastPath){
+				state.lastPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+				state.lastPath.setAttribute("d", "M0 0");
+				applyFill(state.lastPath, this);
+				applyStroke(state.lastPath, this);
+			}
 			state.lastPath.setAttribute("d", state.lastPath.getAttribute("d") + " L" + params.join(" "));
 		};
 		this.curveTo = function(params){
+			if(!state.lastPath){
+				state.lastPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+				state.lastPath.setAttribute("d", "M0 0");
+				applyFill(state.lastPath, this);
+				applyStroke(state.lastPath, this);
+			}
 			state.lastPath.setAttribute("d", state.lastPath.getAttribute("d") + " Q" + params.join(" "));
 		};
 		this.lineStyle = function(params){
@@ -402,12 +456,23 @@ CCLScripting = {
 			applyStroke(r, this);
 			this.domParent.appendChild(r);
 		};
+		this.drawRoundRect = function(params){
+			var r = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+			r.setAttribute("x", params[0]);
+			r.setAttribute("y", params[1]);
+			r.setAttribute("width", params[2]);
+			r.setAttribute("height", params[3]);
+			r.setAttribute("rx", params[4]);
+			r.setAttribute("ry", params[5]);
+			applyFill(r, this);
+			applyStroke(r, this);
+			this.domParent.appendChild(r);
+		};
 		this.drawCircle = function(params){
 			var c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-			c.setAttribute("x", params[0]);
-			c.setAttribute("y", params[1]);
-			c.setAttribute("width", params[2]);
-			c.setAttribute("height", params[3]);
+			c.setAttribute("cx", params[0]);
+			c.setAttribute("cy", params[1]);
+			c.setAttribute("r", params[2]);
 			applyFill(c, this);
 			applyStroke(c, this);
 			this.domParent.appendChild(c);

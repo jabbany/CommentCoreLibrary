@@ -15,13 +15,20 @@ Supported Objects 支持的对象
     建造一个按钮，可以挂载 onclick 事件。
 - $.createComment
     制造一条弹幕，通过参数模式动态插入 CommentManager。注意此弹幕不会出现在timeline里面，而是
-    通过 send() 派发出的。
+    通过 send() 派发出的。注意：有时此弹幕不会被派发出，是否通过 CommentManager 渲染会根据弹幕
+    的具体参数情况决定（请参考 [动态弹幕](dynamic_comment.md)）。
 - $.createShape
-	制造一个多边形（渲染层是一个新的canvas）。
+	制造一个SVG图形
 	
 Support for Bili Library 兼容性库
 --------------------------------
-- 还原 Util 库
+- 还原 Utils 库
     （基本都是原生方法的套用）
 - 原生支持 Math 库
 - 原生支持 String 库
+- 支持部分 Display 库（Shape，Comment，Button等）
+- 支持部分 Player 库（基本操控）
+- 支持部分 Bitmap 库
+- 支持部分 Storage 库
+- 有限支持 Global 库（参考 [Global库](globals.md) 中的『不兼容细节』）
+- 有限支持 Tween 库（参考 [Tween库](tween.md) 中的『不兼容细节』）
