@@ -83,6 +83,12 @@ var Runtime = new function(){
 
 var ScriptManager = new function(){
 	/** Bili abstraction of runtime **/
+	this.clearEl = function(){
+		
+	};
+	this.clearTimer = function(){
+		
+	};
 };
 
 var $ = new function(){
@@ -239,6 +245,8 @@ var $ = new function(){
 			"value":newValue,
 		}));
 	};
+	/** Some bad abstractions **/
+	this.root = [];
 	/** Begin Display Libaray Public methods **/
 	this.alert = function(msg){
 		invoke("alert", [msg]);
@@ -287,6 +295,14 @@ var $ = new function(){
 	this.createMatrix = function(){
 		trace("$.createMatrix not supported");
 		return [];
+	};
+	this.createCanvas = function(){
+		trace("$.createCanvas not supported");
+		return {};
+	};
+	this.createTextFormat = function(){
+		trace("$.createTextFormat not supported");
+		return {};
 	};
 };
 
