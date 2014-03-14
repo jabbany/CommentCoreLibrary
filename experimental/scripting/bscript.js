@@ -391,6 +391,12 @@ CCLScripting = {
 			p.setAttribute("stroke", ref.line.color);
 			p.setAttribute("stroke-width", ref.line.width);
 			p.setAttribute("stroke-opacity", ref.line.alpha);
+			if(ref.line.caps){
+				p.setAttribute("stroke-linecap", ref.line.caps);
+			}
+			if(ref.line.joints){
+				p.setAttribute("stroke-linejoin", ref.line.joints);
+			}
 		};
 		
 		var applyFill = function(p, ref){
@@ -431,6 +437,12 @@ CCLScripting = {
 			this.line.width = params[0];
 			this.line.color = params[1];
 			this.line.alpha = params[2];
+			if(params[3]){
+				this.line.caps = params[3];
+			}
+			if(params[4]){
+				this.line.joints = params[4];
+			}
 			if(state.lastPath){
 				applyStroke(state.lastPath, this);
 			}

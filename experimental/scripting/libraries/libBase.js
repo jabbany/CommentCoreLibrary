@@ -119,8 +119,10 @@ var $ = new function(){
 		this.curveTo = function(a,b,c,d){
 			updateObject("curveTo", [a,b,c,d]);
 		};
-		this.lineStyle = function(thickness, color, alpha){
-			updateObject("lineStyle", [thickness, toRGB(color), alpha]);
+		this.lineStyle = function(thickness, color, alpha, hinting, scale, caps, joints, miterlim){
+			if(caps === "none")
+				caps = "butt";
+			updateObject("lineStyle", [thickness, toRGB(color), alpha, caps, joints]);
 		};
 		this.drawRect = function(x, y, w, h){
 			updateObject("drawRect", [x, y, w, h]);
@@ -169,16 +171,16 @@ var $ = new function(){
 		var inst = this;
 		for(var m in this.motion){
 			this[m] = this.motion[m].fromValue;
-			var ivali = setInterval(function(){
+			var ivali = setInterval((function(copy){return function(){
 				inst.ttl -= 100;
-				inst[m] = (inst.motion[m].toValue - inst.motion[m].fromValue) * 
+				inst[copy] = (inst.motion[copy].toValue - inst.motion[copy].fromValue) * 
 								((inst.dur - inst.ttl) / inst.dur) + 
-								inst.motion[m].fromValue;
-				updateObject(inst.id, m, inst[m]);
+								inst.motion[copy].fromValue;
+				updateObject(inst.id, copy, inst[copy]);
 				if(inst.ttl <= 0){
 					clearInterval(ivali);
 				}
-			},100);
+			}})(m),100);
 		}
 		this.graphics = new GraphicsContext(this);
 	};
@@ -356,8 +358,12 @@ var Utils = new function(){
 				f();
 				if(cycles === 0){
 					clearInterval(iv);
+					var myName = "listener_ival:" + iv;
+					Runtime.deregisterListener("__self", myName); 
 				}
 			},interval);
+			var myName = "listener_ival:" + iv;
+			Runtime.registerListener("__self", myName); 
 			return iv;
 		}
 	};
