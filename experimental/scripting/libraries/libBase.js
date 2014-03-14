@@ -128,7 +128,7 @@ var $ = new function(){
 			updateObject("drawRect", [x, y, w, h]);
 		};
 		this.drawCircle = function(x, y, r){
-			updateObject("drawCircle", [x, y, r]);
+			updateObject("drawCircle", [x + r, y + r, r]);
 		};
 		this.drawEllipse = function(cx, cy, rx, ry){
 			updateObject("drawEllipse", [cx, cy, rx, ry]);
@@ -169,6 +169,9 @@ var $ = new function(){
 		this.ttl = this.dur;
 		this.motion = data.motion ? data.motion : {};
 		var inst = this;
+		if(this.motionGroup && this.motionGroup.length === 1){
+			this.motion = this.motionGroup[0];
+		}
 		for(var m in this.motion){
 			this[m] = this.motion[m].fromValue;
 			var ivali = setInterval((function(copy){return function(){
@@ -189,6 +192,9 @@ var $ = new function(){
 	};
 	function CommentObject(data){
 		var text = "";
+		this.setStyle = function(style){
+			trace("setStyle not implemented");
+		};
 		this.toString = function(){return "Comment " + data.text + " id:" + this.id};
 		if(this.__defineSetter__  && this.__defineGetter__){
 			var inst = this;
@@ -199,7 +205,14 @@ var $ = new function(){
 			this.__defineGetter__("text", function(newval){
 				return text;
 			});
-		}
+		};
+		this.setTextFormat = function(){
+			//trace("setTextFormat not implemented");
+		};
+		this.getTextFormat = function(){
+			//trace("getTextFormat not implemented");
+			return {};
+		};
 	};
 	function CanvasObject(data){
 		this.addChild = function(){
@@ -292,22 +305,20 @@ var $ = new function(){
 		return svg;
 	};
 	this.createBlurFilter = function(x,y){
-		trace("$.createBlurFilter not supported");
+		//trace("$.createBlurFilter not supported");
 		return;
 	};
 	this.createGlowFilter = function(x,y){
-		trace("$.createGlowFilter not supported");
+		//trace("$.createGlowFilter not supported");
 		return;
 	};
 	this.createMatrix = function(){
-		trace("$.createMatrix not supported");
+		//trace("$.createMatrix not supported");
 		return [];
 	};
-	this.createCanvas = function(){
+	this.createCanvas = function(data){
 		trace("$.createCanvas not supported");
-		return {
-			
-		};
+		return new CanvasObject(data);
 	};
 	this.createTextFormat = function(){
 		trace("$.createTextFormat not supported");
@@ -341,7 +352,23 @@ var $G = Global;
 
 var Utils = new function(){
 	this.rgb = function(r,g,b){
-		return r * 256 * 256 + g * 256 + b;
+		return (r * 256 * 256 + g * 256 + b);
+	};
+	this.hue = function(hue){
+		var q = 1, p = 1;
+		function hue2rgb(p, q, t){
+			if(t < 0) t += 1;
+			if(t > 1) t -= 1;
+			if(t < 1/6) return p + (q - p) * 6 * t;
+			if(t < 1/2) return q;
+			if(t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+			return p;
+		}
+		var h = hue / 360;
+		var r = hue2rgb(p, q, h + 1/3);
+		var g = hue2rgb(p, q, h);
+		var b = hue2rgb(p, q, h - 1/3);
+		return Utils.rgb(r,g,b);
 	};
 	this.rand = function(min, max){
 		return min + Math.floor(Math.random() * (max - min));
