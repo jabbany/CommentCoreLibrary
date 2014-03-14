@@ -13,6 +13,7 @@ function CommentFilter(){
 		"5":true,
 		"6":true,
 		"7":true,
+		"8":true,
 		"17":true
 	};
 	this.doModify = function(cmt){
@@ -113,7 +114,8 @@ function CommentFilter(){
 	this.setRuntimeFilter = function(f){
 		this.runtime = f;
 	}
-}/** 
+}
+/** 
 Comment Space Allocators Classes
 Licensed Under MIT License
 You may create your own.
@@ -540,6 +542,13 @@ CommentManager.prototype.rescale = function(){
 	}
 };
 CommentManager.prototype.sendComment = function(data){
+	if(data.mode === 8){
+		console.log(data);
+		if(this.scripting){
+			console.log(this.scripting.eval(data.code));
+		}
+		return;
+	}
 	var cmt = document.createElement('div');
 	if(this.filter != null){
 		data = this.filter.doModify(data);

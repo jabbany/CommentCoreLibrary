@@ -201,6 +201,11 @@ var $ = new function(){
 			});
 		}
 	};
+	function CanvasObject(data){
+		this.addChild = function(){
+			
+		};
+	};
 	/** End Inner classes for Display **/
 	self.addEventListener("message", function(msg){
 		try{
@@ -300,7 +305,9 @@ var $ = new function(){
 	};
 	this.createCanvas = function(){
 		trace("$.createCanvas not supported");
-		return {};
+		return {
+			
+		};
 	};
 	this.createTextFormat = function(){
 		trace("$.createTextFormat not supported");
@@ -371,7 +378,7 @@ var Utils = new function(){
 
 /* -- Pull in important references */
 var interval = Utils.interval;
-var delay = Utils.delay;
+var timer = Utils.delay;
 
 
 var Player = new function(){

@@ -54108,7 +54108,7 @@ var cmt = $.createComment(Sub,{ motionGroup:[
 	fontsize:Vsize,
  	lifeTime:Vtime-(i-1)*Vspeed/1000+2.5, 
  	color:0xffffff,
-	parent:cv
+	
  });
 setFilter(cmt);
 },Vspeed,Len);
@@ -54141,7 +54141,7 @@ var cmt = $.createComment(Sub,{ motionGroup:[
 	fontsize:Vsize,
  	lifeTime:Vtime-(i-1)*Vspeed/1000+2.5, 
  	color:0xffffff,
-	parent:cv
+	
  });
 setFilter(cmt);
 },Vspeed,Len);
@@ -54174,7 +54174,7 @@ var cmt = $.createComment(Sub,{ motionGroup:[
 	fontsize:Vsize,
  	lifeTime:Vtime-(i-1)*Vspeed/1000+2.5, 
  	color:0xffffff,
-	parent:cv
+	
  });
 setFilter(cmt);
 },Vspeed,Len);
@@ -54207,7 +54207,7 @@ var cmt = $.createComment(Sub,{ motionGroup:[
 	fontsize:Vsize,
  	lifeTime:Vtime-(i-1)*Vspeed/1000+2.5, 
  	color:0xffffff,
-	parent:cv
+	
  });
 setFilter(cmt);
 },Vspeed,Len);
@@ -54240,7 +54240,7 @@ var cmt = $.createComment(Sub,{ motionGroup:[
 	fontsize:Vsize,
  	lifeTime:Vtime-(i-1)*Vspeed/1000+2.5, 
  	color:0xffffff,
-	parent:cv
+	
  });
 setFilter(cmt);
 },Vspeed,Len);
@@ -54273,7 +54273,7 @@ var cmt = $.createComment(Sub,{ motionGroup:[
 	fontsize:Vsize,
  	lifeTime:Vtime-(i-1)*Vspeed/1000+2.5, 
  	color:0xffffff,
-	parent:cv
+	
  });
 setFilter(cmt);
 },Vspeed,Len);
@@ -54306,7 +54306,7 @@ var cmt = $.createComment(Sub,{ motionGroup:[
 	fontsize:Vsize,
  	lifeTime:Vtime-(i-1)*Vspeed/1000+2.5, 
  	color:0xffffff,
-	parent:cv
+	
  });
 setFilter(cmt);
 },Vspeed,Len);
@@ -54339,7 +54339,7 @@ var cmt = $.createComment(Sub,{ motionGroup:[
 	fontsize:Vsize,
  	lifeTime:Vtime-(i-1)*Vspeed/1000+2.5, 
  	color:0xffffff,
-	parent:cv
+	
  });
 setFilter(cmt);
 },Vspeed,Len);
@@ -54372,7 +54372,7 @@ var cmt = $.createComment(Sub,{ motionGroup:[
 	fontsize:Vsize,
  	lifeTime:Vtime-(i-1)*Vspeed/1000+2.5, 
  	color:0xffffff,
-	parent:cv
+	
  });
 setFilter(cmt);
 },Vspeed,Len);
@@ -54406,7 +54406,7 @@ var cmt = $.createComment(Sub,{ motionGroup:[
 	fontsize:Vsize,
  	lifeTime:Vtime-(i-1)*Vspeed/1000+2.5, 
  	color:0xffffff,
-	parent:cv
+	
  });
 setFilter(cmt);
 },Vspeed,Len);
@@ -54439,7 +54439,7 @@ var cmt = $.createComment(Sub,{ motionGroup:[
 	fontsize:Vsize,
  	lifeTime:Vtime-(i-1)*Vspeed/1000+2.5, 
  	color:0xffffff,
-	parent:cv
+	
  });
 setFilter(cmt);
 },Vspeed,Len);
@@ -54472,7 +54472,7 @@ var cmt = $.createComment(Sub,{ motionGroup:[
 	fontsize:Vsize,
  	lifeTime:Vtime-(i-1)*Vspeed/1000+2.5, 
  	color:0xffffff,
-	parent:cv
+	
  });
 setFilter(cmt);
 },Vspeed,Len);
@@ -54505,7 +54505,7 @@ var cmt = $.createComment(Sub,{ motionGroup:[
 	fontsize:Vsize,
  	lifeTime:Vtime-(i-1)*Vspeed/1000+2.5, 
  	color:0xffffff,
-	parent:cv
+	
  });
 setFilter(cmt);
 },Vspeed,Len);
@@ -54538,7 +54538,7 @@ var cmt = $.createComment(Sub,{ motionGroup:[
 	fontsize:Vsize,
  	lifeTime:Vtime-(i-1)*Vspeed/1000+2.5, 
  	color:0xffffff,
-	parent:cv
+	
  });
 setFilter(cmt);
 },Vspeed,Len);
@@ -54571,7 +54571,7 @@ var cmt = $.createComment(Sub,{ motionGroup:[
 	fontsize:Vsize,
  	lifeTime:Vtime-(i-1)*Vspeed/1000+2.5, 
  	color:0xffffff,
-	parent:cv
+	
  });
 setFilter(cmt);
 },Vspeed,Len);
@@ -54604,7 +54604,7 @@ var cmt = $.createComment(Sub,{ motionGroup:[
 	fontsize:Vsize,
  	lifeTime:Vtime-(i-1)*Vspeed/1000+2.5, 
  	color:0xffffff,
-	parent:cv
+	
  });
 setFilter(cmt);
 },Vspeed,Len);
@@ -54637,7 +54637,7 @@ var cmt = $.createComment(Sub,{ motionGroup:[
 	fontsize:Vsize,
  	lifeTime:Vtime-(i-1)*Vspeed/1000+2.5, 
  	color:0xffffff,
-	parent:cv
+	
  });
 setFilter(cmt);
 },Vspeed,Len);
@@ -54671,7 +54671,7 @@ var cmt = $.createComment(Sub,{ motionGroup:[
 	fontsize:Vsize,
  	lifeTime:Vtime-(i-1)*Vspeed/1000+2.5, 
  	color:0xffffff,
-	parent:cv
+	
  });
 setFilter(cmt);
 },Vspeed,Len);
@@ -54706,7 +54706,7 @@ var cmt = $.createComment(Sub,{ motionGroup:[
 	fontsize:Vsize,
  	lifeTime:Vtime-(i-1)*Vspeed/1000+2.5, 
  	color:0xffffff,
-	parent:cv
+	
  });
 setFilter(cmt);
 },Vspeed,Len);
@@ -54741,7 +54741,7 @@ var cmt = $.createComment(Sub,{ motionGroup:[
 	fontsize:Vsize,
  	lifeTime:Vtime-(i-1)*Vspeed/1000+2.5, 
  	color:0xffffff,
-	parent:cv
+	
  });
 setFilter(cmt);
 },Vspeed,Len);
@@ -54776,7 +54776,7 @@ var cmt = $.createComment(Sub,{ motionGroup:[
 	fontsize:Vsize,
  	lifeTime:Vtime-(i-1)*Vspeed/1000+2.5, 
  	color:0xffffff,
-	parent:cv
+	
  });
 setFilter(cmt);
 },Vspeed,Len);
@@ -54811,7 +54811,7 @@ var cmt = $.createComment(Sub,{ motionGroup:[
 	fontsize:Vsize,
  	lifeTime:Vtime-(i-1)*Vspeed/1000+2.5, 
  	color:0xffffff,
-	parent:cv
+	
  });
 setFilter(cmt);
 },Vspeed,Len);
@@ -54846,7 +54846,7 @@ var cmt = $.createComment(Sub,{ motionGroup:[
 	fontsize:Vsize,
  	lifeTime:Vtime-(i-1)*Vspeed/1000+2.5, 
  	color:0xffffff,
-	parent:cv
+	
  });
 setFilter(cmt);
 },Vspeed,Len);
@@ -54881,7 +54881,7 @@ var cmt = $.createComment(Sub,{ motionGroup:[
 	fontsize:Vsize,
  	lifeTime:Vtime-(i-1)*Vspeed/1000+2.5, 
  	color:0xffffff,
-	parent:cv
+	
  });
 setFilter(cmt);
 },Vspeed,Len);
@@ -54916,7 +54916,7 @@ var cmt = $.createComment(Sub,{ motionGroup:[
 	fontsize:Vsize,
  	lifeTime:Vtime-(i-1)*Vspeed/1000+2.5, 
  	color:0xffffff,
-	parent:cv
+	
  });
 setFilter(cmt);
 },Vspeed,Len);
@@ -54951,7 +54951,7 @@ var cmt = $.createComment(Sub,{ motionGroup:[
 	fontsize:Vsize,
  	lifeTime:Vtime-(i-1)*Vspeed/1000+2.5, 
  	color:0xffffff,
-	parent:cv
+	
  });
 setFilter(cmt);
 },Vspeed,Len);
@@ -54986,7 +54986,7 @@ var cmt = $.createComment(Sub,{ motionGroup:[
 	fontsize:Vsize,
  	lifeTime:Vtime-(i-1)*Vspeed/1000+2.5, 
  	color:0xffffff,
-	parent:cv
+	
  });
 setFilter(cmt);
 },Vspeed,Len);
@@ -55022,7 +55022,7 @@ var cmt = $.createComment(Sub,{ motionGroup:[
 	fontsize:Vsize,
  	lifeTime:Vtime-(i-1)*Vspeed/1000+2.5, 
  	color:0xffffff,
-	parent:cv
+	
  });
 setFilter(cmt);
 },Vspeed,Len);
@@ -55059,7 +55059,7 @@ var cmt = $.createComment(Sub,{ motionGroup:[
 	fontsize:Vsize,
  	lifeTime:Vtime-(i-1)*Vspeed/1000+2.5, 
  	color:0xffffff,
-	parent:cv
+	
  });
 setFilter(cmt);
 },Vspeed,Len);
@@ -55097,7 +55097,7 @@ var cmt = $.createComment(Sub,{ motionGroup:[
 	fontsize:Vsize,
  	lifeTime:Vtime-(i-1)*Vspeed/1000+2.5, 
  	color:0xffffff,
-	parent:cv
+	
  });
 setFilter(cmt);
 },Vspeed,Len);
@@ -55135,7 +55135,7 @@ var cmt = $.createComment(Sub,{ motionGroup:[
 	fontsize:Vsize,
  	lifeTime:Vtime-(i-1)*Vspeed/1000+2.5, 
  	color:0xffffff,
-	parent:cv
+	
  });
 setFilter(cmt);
 },Vspeed,Len);
@@ -55173,7 +55173,7 @@ var cmt = $.createComment(Sub,{ motionGroup:[
 	fontsize:Vsize,
  	lifeTime:Vtime-(i-1)*Vspeed/1000+2.5, 
  	color:0xffffff,
-	parent:cv
+	
  });
 setFilter(cmt);
 },Vspeed,Len);
@@ -55211,7 +55211,7 @@ var cmt = $.createComment(Sub,{ motionGroup:[
 	fontsize:Vsize,
  	lifeTime:Vtime-(i-1)*Vspeed/1000+2.5, 
  	color:0xffffff,
-	parent:cv
+	
  });
 setFilter(cmt);
 },Vspeed,Len);
@@ -55246,7 +55246,7 @@ var cmt = $.createComment(Sub,{ motionGroup:[
 	fontsize:Vsize,
  	lifeTime:Vtime-(i-1)*Vspeed/1000+2.5, 
  	color:0xffffff,
-	parent:cv
+	
  });
 setFilter(cmt);
 },Vspeed,Len);
@@ -55282,7 +55282,7 @@ var cmt = $.createComment(Sub,{ motionGroup:[
 	fontsize:Vsize,
  	lifeTime:Vtime-(i-1)*Vspeed/1000+2.5, 
  	color:0xffffff,
-	parent:cv
+	
  });
 setFilter(cmt);
 },Vspeed,Len);
@@ -55312,7 +55312,7 @@ a.graphics.beginFill(0xffffff);
 a.graphics.drawRect(0,0,950,484);
 a.graphics.endFill();
 
-}</d>
+</d>
 <d p="18.374,8,25,16777215,1355909135,2,7f7e4d48,159970180">var a = $.createShape({lifeTime:40,motionGroup:[
 	{alpha:{ fromValue:0, toValue:0.8,lifeTime:0.3}},
 	{alpha:{fromValue:0.8,toValue:1,lifeTime:1}}
@@ -55321,7 +55321,7 @@ a.graphics.beginFill(0x000000);
 a.graphics.drawRect(0,0,950,484);
 a.graphics.endFill();
 
-}</d>
+</d>
 <d p="0.678,8,25,16777215,1355930755,2,7f7e4d48,160055402">/*坑爹进度条*/
 var bar=$.createShape({x:80,y:384/2+10,lifeTime:5});
 var i=0;
@@ -55344,7 +55344,7 @@ var sa=$.createComment(txt,{x:541/2-(vsize*len/2),y:384/2-
  
 gossip('            载入中',15,4,0,17);    </d>
 <d p="27.343,8,25,16777215,1355932945,2,7f7e4d48,160061678">var i=0;
-var g=$.createShape({x:541/2,y:384/2,lifeTime:3,parent:cv});
+var g=$.createShape({x:541/2,y:384/2,lifeTime:3,});
 interval(function(){
 	i++;
 	g.graphics.beginFill(0xffffff);
@@ -55366,7 +55366,7 @@ interval(function(){
 
 </d>
 <d p="28.795,8,25,16777215,1355933048,2,7f7e4d48,160061936">var i=0;
-var g=$.createShape({x:241/2,y:184/2,lifeTime:5,parent:cv});
+var g=$.createShape({x:241/2,y:184/2,lifeTime:5,});
 interval(function(){
 	i++;
 	g.graphics.beginFill(0xffffff);
@@ -55388,7 +55388,7 @@ interval(function(){
 
 </d>
 <d p="29.807,8,25,16777215,1355933099,2,7f7e4d48,160062062">var i=0;
-var g=$.createShape({x:841/2,y:684/2,lifeTime:5,parent:cv});
+var g=$.createShape({x:841/2,y:684/2,lifeTime:5,});
 interval(function(){
 	i++;
 	g.graphics.beginFill(0xffffff);
@@ -55410,7 +55410,7 @@ interval(function(){
 
 </d>
 <d p="32.673,8,25,16777215,1355933233,2,7f7e4d48,160062395">var i=0;
-var g=$.createShape({x:841/2,y:384/2,lifeTime:5,parent:cv});
+var g=$.createShape({x:841/2,y:384/2,lifeTime:5,});
 interval(function(){
 	i++;
 	g.graphics.beginFill(0xffffff);
@@ -55432,7 +55432,7 @@ interval(function(){
 
 </d>
 <d p="35.15,8,25,16777215,1355933301,2,7f7e4d48,160062585">var i=0;
-var g=$.createShape({x:591/2,y:394/2,lifeTime:5,parent:cv});
+var g=$.createShape({x:591/2,y:394/2,lifeTime:5,});
 interval(function(){
 	i++;
 	g.graphics.beginFill(0xffffff);
@@ -55454,7 +55454,7 @@ interval(function(){
 
 </d>
 <d p="32.149,8,25,16777215,1355933325,2,7f7e4d48,160062645">var i=0;
-var g=$.createShape({x:541/2,y:384/2,lifeTime:5,parent:cv});
+var g=$.createShape({x:541/2,y:384/2,lifeTime:5,});
 interval(function(){
 	i++;
 	g.graphics.beginFill(0xffffff);
@@ -55476,7 +55476,7 @@ interval(function(){
 
 </d>
 <d p="34.406,8,25,16777215,1355933343,2,7f7e4d48,160062694">var i=0;
-var g=$.createShape({x:941/2,y:184/2,lifeTime:5,parent:cv});
+var g=$.createShape({x:941/2,y:184/2,lifeTime:5,});
 interval(function(){
 	i++;
 	g.graphics.beginFill(0xffffff);
@@ -55498,7 +55498,7 @@ interval(function(){
 
 </d>
 <d p="31.467,8,25,16777215,1355933387,2,7f7e4d48,160062805">var i=0;
-var g=$.createShape({x:141/2,y:984/2,lifeTime:5,parent:cv});
+var g=$.createShape({x:141/2,y:984/2,lifeTime:5,});
 interval(function(){
 	i++;
 	g.graphics.beginFill(0xffffff);
@@ -55520,7 +55520,7 @@ interval(function(){
 
 </d>
 <d p="37.395,8,25,16777215,1355933498,2,7f7e4d48,160063159">var i=0;
-var g=$.createShape({x:541/2,y:384/2,lifeTime:5,parent:cv});
+var g=$.createShape({x:541/2,y:384/2,lifeTime:5,});
 interval(function(){
 	i++;
 	g.graphics.beginFill(0xffffff);
@@ -55565,7 +55565,7 @@ var cmt = $.createComment(Sub,{ motionGroup:[
 	fontsize:Vsize,
  	lifeTime:Vtime-(i-1)*Vspeed/1000+2.5, 
  	color:0xffffff,
-	parent:cv
+	
  });
 setFilter(cmt);
 },Vspeed,Len);
@@ -55607,7 +55607,7 @@ var cmt = $.createComment(Sub,{ motionGroup:[
 	fontsize:Vsize,
  	lifeTime:Vtime-(i-1)*Vspeed/1000+2.5, 
  	color:0xffffff,
-	parent:cv
+	
  });
 setFilter(cmt);
 },Vspeed,Len);
@@ -55649,7 +55649,7 @@ var cmt = $.createComment(Sub,{ motionGroup:[
 	fontsize:Vsize,
  	lifeTime:Vtime-(i-1)*Vspeed/1000+2.5, 
  	color:0xffffff,
-	parent:cv
+	
  });
 setFilter(cmt);
 },Vspeed,Len);
@@ -55691,7 +55691,7 @@ var cmt = $.createComment(Sub,{ motionGroup:[
 	fontsize:Vsize,
  	lifeTime:Vtime-(i-1)*Vspeed/1000+2.5, 
  	color:0xffffff,
-	parent:cv
+	
  });
 setFilter(cmt);
 },Vspeed,Len);
@@ -55733,7 +55733,7 @@ var cmt = $.createComment(Sub,{ motionGroup:[
 	fontsize:Vsize,
  	lifeTime:Vtime-(i-1)*Vspeed/1000+2.5, 
  	color:0xffffff,
-	parent:cv
+	
  });
 setFilter(cmt);
 },Vspeed,Len);
@@ -55775,7 +55775,7 @@ var cmt = $.createComment(Sub,{ motionGroup:[
 	fontsize:Vsize,
  	lifeTime:Vtime-(i-1)*Vspeed/1000+2.5, 
  	color:0xffffff,
-	parent:cv
+	
  });
 setFilter(cmt);
 },Vspeed,Len);
@@ -55817,7 +55817,7 @@ var cmt = $.createComment(Sub,{ motionGroup:[
 	fontsize:Vsize,
  	lifeTime:Vtime-(i-1)*Vspeed/1000+2.5, 
  	color:0xffffff,
-	parent:cv
+	
  });
 setFilter(cmt);
 },Vspeed,Len);
@@ -55859,7 +55859,7 @@ var cmt = $.createComment(Sub,{ motionGroup:[
 	fontsize:Vsize,
  	lifeTime:Vtime-(i-1)*Vspeed/1000+2.5, 
  	color:0xffffff,
-	parent:cv
+	
  });
 setFilter(cmt);
 },Vspeed,Len);
@@ -55896,7 +55896,7 @@ var cmt = $.createComment(Sub,{ motionGroup:[
 	fontsize:Vsize,
  	lifeTime:Vtime-(i-1)*Vspeed/1000+2.5, 
  	color:0xffffff,
-	parent:cv
+	
  });
 setFilter(cmt);
 },Vspeed,Len);
@@ -55933,7 +55933,7 @@ var cmt = $.createComment(Sub,{ motionGroup:[
 	fontsize:Vsize,
  	lifeTime:Vtime-(i-1)*Vspeed/1000+2.5, 
  	color:0xffffff,
-	parent:cv
+	
  });
 setFilter(cmt);
 },Vspeed,Len);
@@ -55969,7 +55969,7 @@ var cmt = $.createComment(Sub,{ motionGroup:[
 	fontsize:Vsize,
  	lifeTime:Vtime-(i-1)*Vspeed/1000+2.5, 
  	color:0xffffff,
-	parent:cv
+	
  });
 setFilter(cmt);
 },Vspeed,Len);
@@ -55980,7 +55980,7 @@ setFilter(cmt);
 
 DanmakuAlpha('乾杯 - ( ゜- ゜)つロ',20,196,6,120,20,1,31,100,1,0.6);</d>
 <d p="34.637,8,25,16777215,1355937906,2,7f7e4d48,160072355">var i=0;
-var g=$.createShape({x:941/2,y:184/2,lifeTime:5,parent:cv});
+var g=$.createShape({x:941/2,y:184/2,lifeTime:5,});
 interval(function(){
 	i++;
 	g.graphics.beginFill(0xffffff);
@@ -55994,7 +55994,7 @@ interval(function(){
 
 },10,20);</d>
 <d p="35.744,8,25,16777215,1355937961,2,7f7e4d48,160072485">var i=0;
-var g=$.createShape({x:441/2,y:584/2,lifeTime:5,parent:cv});
+var g=$.createShape({x:441/2,y:584/2,lifeTime:5,});
 interval(function(){
 	i++;
 	g.graphics.beginFill(0xffffff);
@@ -56280,7 +56280,7 @@ var cmt = $.createComment(Sub,{ motionGroup:[
 	fontsize:Vsize,
  	lifeTime:Vtime-(i-1)*Vspeed/1000+2.5, 
  	color:0xffffff,
-	parent:cv
+	
  });
 setFilter(cmt);
 },Vspeed,Len);

@@ -82,6 +82,8 @@ function BilibiliParser(xmlDoc){
 						console.log('[Err] Error occurred in JSON parsing');
 						console.log('[Dbg] ' + text);
 					}
+				}else if(obj.mode == 8){
+					obj.code = text; //Code comments are special
 				}
 			}
 			//Before we push

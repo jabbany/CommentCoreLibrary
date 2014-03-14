@@ -190,6 +190,13 @@ CommentManager.prototype.rescale = function(){
 	}
 };
 CommentManager.prototype.sendComment = function(data){
+	if(data.mode === 8){
+		console.log(data);
+		if(this.scripting){
+			console.log(this.scripting.eval(data.code));
+		}
+		return;
+	}
 	var cmt = document.createElement('div');
 	if(this.filter != null){
 		data = this.filter.doModify(data);
