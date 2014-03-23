@@ -16,3 +16,4 @@
 * filter.xml - 各种模式下的弹幕不断重复，来测试过滤器和合并器。
 * scripting.xml (尚无) - 用于调戏高级脚本、图片、Canvas弹幕。
 * image.xml - 图片弹幕专用测试。
+* native.json - 播放器的原生模式，这个可以由解析后的timeline dump产生。

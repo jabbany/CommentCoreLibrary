@@ -4,18 +4,18 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta http-equiv="X-UA-Compatible" value="IE=9">
 <link rel="stylesheet" href="default.css" />
-<link rel="stylesheet" href="build/base.css" />
+<link rel="stylesheet" href="../build/base.css" />
 <!-- Run 'make' to build the file -->
-<script src="build/CommentCore.js"></script>
+<script src="../build/CommentCore.js"></script>
 
 <!-- A few helpers to do some decoding/fetching below-->
 <script src="libxml.js"></script>
-<script src="build/Parsers.js"></script>
+<script src="../build/Parsers.js"></script>
 
 <!-- Graphical Elements Maybe-->
 
 <!-- Extend-->
-<script src="extend/fefx.js"></script>
+<script src="../extend/fefx.js"></script>
 
 <title>Testrun Sandbox For Comment Core Library</title>
 </head>
@@ -98,7 +98,7 @@ function load(dmf,dmfmd){
 	try{
 		clearTimeout(tmr);
 	}catch(e){}
-	CommentLoader(dmf,cm,dmfmd);
+	CommentLoader('../' + dmf,cm,dmfmd);
 	cm.startTimer();
 	start = new Date().getTime();
 	tmr = setInterval(function(){

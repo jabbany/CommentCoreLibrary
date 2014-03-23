@@ -388,6 +388,9 @@ CCLScripting = {
 			if(ref.line.joints){
 				p.setAttribute("stroke-linejoin", ref.line.joints);
 			}
+			if(ref.line.miterLimit){
+				p.setAttribute("stroke-miterlimit", ref.line.miterLimit);
+			}
 		};
 		
 		var applyFill = function(p, ref){
@@ -433,6 +436,9 @@ CCLScripting = {
 			}
 			if(params[4]){
 				this.line.joints = params[4];
+			}
+			if(params[5]){
+				this.line.miterLimit = params[5];
 			}
 			if(state.lastPath){
 				applyStroke(state.lastPath, this);

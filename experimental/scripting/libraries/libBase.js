@@ -122,13 +122,13 @@ var $ = new function(){
 		this.lineStyle = function(thickness, color, alpha, hinting, scale, caps, joints, miterlim){
 			if(caps === "none")
 				caps = "butt";
-			updateObject("lineStyle", [thickness, toRGB(color), alpha, caps, joints]);
+			updateObject("lineStyle", [thickness, toRGB(color), alpha, caps, joints, miterlim]);
 		};
 		this.drawRect = function(x, y, w, h){
 			updateObject("drawRect", [x, y, w, h]);
 		};
 		this.drawCircle = function(x, y, r){
-			updateObject("drawCircle", [x + r, y + r, r]);
+			updateObject("drawCircle", [x , y , r]);
 		};
 		this.drawEllipse = function(cx, cy, rx, ry){
 			updateObject("drawEllipse", [cx, cy, rx, ry]);
