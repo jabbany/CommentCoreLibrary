@@ -6,11 +6,10 @@
 <link rel="stylesheet" href="default.css" />
 <link rel="stylesheet" href="../build/base.css" />
 <!-- Run 'make' to build the file -->
-<script src="../build/CommentCore.js"></script>
+<script src="../build/CommentCoreLibrary.js"></script>
 
 <!-- A few helpers to do some decoding/fetching below-->
 <script src="libxml.js"></script>
-<script src="../build/Parsers.js"></script>
 
 <!-- Graphical Elements Maybe-->
 
@@ -47,77 +46,84 @@
 <p>Links: <a href="player-demo.htm">Demo with video</a> <a href="../experimental/animation">Experimental CSS3 Transition Library</a> <a href="transition-library-test.htm">CCL /w Transition Library (Alpha)</a></p>
 <p>Scripting: <a href="../experimental/scripting">Scripting Sandbox test</a> <a href="../experimental/scripting/ccl.htm">Using scripting with CCL (Alpha)</a> </p>
 <script>
-var isWindowedFullscreen = false;
-function launchFullScreen(element) {
-	cm.setBounds();
-	if(element.requestFullscreen) {
-		element.requestFullscreen();
-	} else if(element.mozRequestFullscreen) {
-		element.mozRequestFullscreen();
-	} else if(element.webkitRequestFullscreen) {
-		element.webkitRequestFullscreen();
+	var isWindowedFullscreen = false;
+	function launchFullScreen(element) {
+		cm.setBounds();
+		if(element.requestFullscreen) {
+			element.requestFullscreen();
+		} else if(element.mozRequestFullscreen) {
+			element.mozRequestFullscreen();
+		} else if(element.webkitRequestFullscreen) {
+			element.webkitRequestFullscreen();
+		}
 	}
-}
 
-function launchWindowFull(element){
-	if(!isWindowedFullscreen){
-		element.style.position = "fixed";
-		element.style.top = "0";
-		element.style.bottom = "0";
-		element.style.left = "0";
-		element.style.right = "0";
-		element.style.width = "auto";
-		element.style.height = "auto";
-	}else{
-		element.style.position = "";
-		element.style.top = "";
-		element.style.bottom = "";
-		element.style.left = "";
-		element.style.right = "";
+	function launchWindowFull(element){
+		if(!isWindowedFullscreen){
+			element.style.position = "fixed";
+			element.style.top = "0";
+			element.style.bottom = "0";
+			element.style.left = "0";
+			element.style.right = "0";
+			element.style.width = "auto";
+			element.style.height = "auto";
+		}else{
+			element.style.position = "";
+			element.style.top = "";
+			element.style.bottom = "";
+			element.style.left = "";
+			element.style.right = "";
+		}
+		isWindowedFullscreen = !isWindowedFullscreen;
 	}
-	cm.getBounds();
-	isWindowedFullscreen = !isWindowedFullscreen;
-}
-var cm = new CommentManager($('commentCanvas'));
-cm.init();
-/*
-cm.filter.addModifier(function(cmt){
-	if(cmt.mode == 1)
-		cmt.mode = 2;
-	return cmt;
-});*/
-cm.filter.setRuntimeFilter(fefx.offset_dim);
-var tmr=0;
-var start=0;
-var playhead = 0;
-function load(dmf,dmfmd){
-	if(dmfmd == null)
-		dmfmd = 'bilibili';
-	cm.clear();
-	start = 0;
-	try{
+	// Add Fullscreen Handlers
+	var fs = function(){
+		cm.setBounds();
+	};
+	document.addEventListener("fullscreenchange", fs);
+	document.addEventListener("webkitfullscreenchange", fs);
+	document.addEventListener("mozfullscreenchange", fs);
+	
+	/** 
+	 * This is initialization code.
+	**/
+	var cm = new CommentManager($('commentCanvas'));
+	cm.init();
+
+	/**
+	 * Timer to model as a video.
+	**/
+	var tmr=0;
+	var start=0;
+	var playhead = 0;
+	function load(dmf,dmfmd){
+		if(dmfmd == null)
+			dmfmd = 'bilibili';
+		cm.clear();
+		start = 0;
+		try{
+			clearTimeout(tmr);
+		}catch(e){}
+		CommentLoader('../' + dmf,cm,dmfmd);
+		cm.startTimer();
+		start = new Date().getTime();
+		tmr = setInterval(function(){
+			playhead = new Date().getTime() - start;
+			cm.time(playhead);
+		},10);
+	}
+	function stop(){
+		cm.stopTimer();
 		clearTimeout(tmr);
-	}catch(e){}
-	CommentLoader('../' + dmf,cm,dmfmd);
-	cm.startTimer();
-	start = new Date().getTime();
-	tmr = setInterval(function(){
-		playhead = new Date().getTime() - start;
-		cm.time(playhead);
-	},10);
-}
-function stop(){
-	cm.stopTimer();
-	clearTimeout(tmr);
-}
-function resume(){
-	cm.startTimer();
-	start = new Date().getTime() - playhead;
-	tmr = setInterval(function(){
-		playhead = new Date().getTime() - start;
-		cm.time(playhead);
-	},10);
-}
+	}
+	function resume(){
+		cm.startTimer();
+		start = new Date().getTime() - playhead;
+		tmr = setInterval(function(){
+			playhead = new Date().getTime() - start;
+			cm.time(playhead);
+		},10);
+	}
 </script>
 </body>
 </html>

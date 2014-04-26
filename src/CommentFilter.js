@@ -66,7 +66,7 @@ function CommentFilter(){
 		if(!this.allowTypes[cmtData.mode])
 			return false;
 		/** Create abstract cmt data **/
-		abstCmtData = {
+		var abstCmtData = {
 			text:cmtData.text,
 			mode:cmtData.mode,
 			color:cmtData.color,

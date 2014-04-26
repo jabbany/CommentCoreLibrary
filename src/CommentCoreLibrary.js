@@ -48,7 +48,6 @@ Array.prototype.binsert = function(what,how){
 /****** Load Core Engine Classes ******/
 function CommentManager(stageObject){
 	var __timer = 0;
-	var lastpos = 0;
 	this.stage = stageObject;
 	this.def = {
 		opacity:1,
@@ -86,7 +85,7 @@ function CommentManager(stageObject){
 		}
 		if(data.font != null && data.font != '')
 			cmt.style.fontFamily = data.font;
-		if(data.shadow == false && data.shadow != null)
+		if(data.shadow === false && data.shadow != null)
 			cmt.className = 'cmt noshadow';
 		if(data.color == "#000000")
 			cmt.className += ' rshadow';
@@ -184,6 +183,7 @@ CommentManager.prototype.time = function(time){
 			return;
 	}else this.lastPos = time;
 	for(;this.position < this.timeline.length;this.position++){
+		if(this.limiter > 0 && this.runline.length > this.limiter) break;
 		if(this.validate(this.timeline[this.position]) && this.timeline[this.position]['stime']<=time) this.sendComment(this.timeline[this.position]);
 		else break;
 	}
@@ -236,7 +236,6 @@ CommentManager.prototype.sendComment = function(data){
 				/** TODO: revise when browser manufacturers make up their mind on Transform APIs **/
 				var getRotMatrix = function(yrot, zrot) {
 					// Courtesy of @StarBrilliant, re-adapted to look better
-					console.log(yrot + " | " + zrot + " | cmt: " + cmt.text);
 					var DEG2RAD = Math.PI/180;
 					var yr = yrot * DEG2RAD;
 					var zr = zrot * DEG2RAD;
