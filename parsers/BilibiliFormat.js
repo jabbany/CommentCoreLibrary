@@ -41,14 +41,14 @@ function BilibiliParser(xmlDoc){
 					try{
 						adv = JSON.parse(format(text));
 						obj.shadow = true;
-						obj.x = adv[0];
-						obj.y = adv[1];
+						obj.x = parseInt(adv[0]);
+						obj.y = parseInt(adv[1]);
 						obj.text = adv[4].replace(/(\/n|\\n|\n|\r\n)/g, "\n");
 						obj.rZ = 0;
 						obj.rY = 0;
 						if(adv.length >= 7){
-							obj.rZ = adv[5];
-							obj.rY = adv[6];
+							obj.rZ = parseInt(adv[5]);
+							obj.rY = parseInt(adv[6]);
 						}
 						obj.movable = false;
 						if(adv.length >= 11){

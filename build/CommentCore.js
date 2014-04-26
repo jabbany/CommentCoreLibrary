@@ -518,6 +518,9 @@ CommentManager.prototype.setBounds = function(){
 	}
 	this.stage.width = this.stage.offsetWidth;
 	this.stage.height= this.stage.offsetHeight;
+	// Update 3d perspective
+	this.stage.style.perspective = this.stage.width * Math.tan(40 * Math.PI/180) / 2 + "px";
+	this.stage.style.webkitPerspective = this.stage.width * Math.tan(40 * Math.PI/180) / 2 + "px";
 };
 CommentManager.prototype.init = function(){
 	this.setBounds();
@@ -581,10 +584,11 @@ CommentManager.prototype.sendComment = function(data){
 			cmt.style.left = data.x + "px";
 			cmt.ttl = Math.round(data.duration * this.def.globalScale);
 			cmt.dur = Math.round(data.duration * this.def.globalScale);
-			if(data.rY!=0 || data.rZ!=0){
+			if(data.rY !== 0 || data.rZ !== 0){
 				/** TODO: revise when browser manufacturers make up their mind on Transform APIs **/
 				var getRotMatrix = function(yrot, zrot) {
 					// Courtesy of @StarBrilliant, re-adapted to look better
+					console.log(yrot + " | " + zrot + " | cmt: " + cmt.text);
 					var DEG2RAD = Math.PI/180;
 					var yr = yrot * DEG2RAD;
 					var zr = zrot * DEG2RAD;
@@ -596,7 +600,7 @@ CommentManager.prototype.sendComment = function(data){
 						(-SIN(yr) * COS(zr)) , (-SIN(yr) * SIN(zr))  , COS(yr)  , 0,
 						0                    , 0                     , 0        , 1
 					];
-					//Fix matrix 
+					//Fix matrix to prevent underflow
 					for(var i = 0; i < matrix.length;i++){
 						if(Math.abs(matrix[i]) < 0.000001){
 							var sign = matrix[i] > 0 ? 1 : -1;
