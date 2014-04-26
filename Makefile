@@ -44,3 +44,4 @@ uglify: $(BUILD_MINIFY)
 
 clean: 
 	rm -rf build/
+	mkdir build
