@@ -7,7 +7,7 @@ DIR = src/
 
 all-uglify: all uglify
 
-all: core parsers css
+all: clean core parsers css
 
 core: $(SRC_CORE)
 	cat $^ > build/CommentCore.js
