@@ -63,6 +63,12 @@ function BilibiliParser(xmlDoc){
 								obj.moveDelay = adv[10];
 							if(adv.length > 11){
 								obj.shadow = adv[11];
+								if(obj.shadow === "true"){
+									obj.shadow = true;
+								}
+								if(obj.shadow === "false"){
+									obj.shadow = false;
+								}
 								if(adv[12]!=null)
 									obj.font = adv[12];
 							}
