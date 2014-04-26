@@ -231,16 +231,38 @@ CommentManager.prototype.sendComment = function(data){
 			cmt.dur = Math.round(data.duration * this.def.globalScale);
 			if(data.rY!=0 || data.rZ!=0){
 				/** TODO: revise when browser manufacturers make up their mind on Transform APIs **/
+				var getRotMatrix = function(yrot, zrot) {
+					// Courtesy of @StarBrilliant, re-adapted to look better
+					var DEG2RAD = Math.PI/180;
+					var yr = yrot * DEG2RAD;
+					var zr = zrot * DEG2RAD;
+					var COS = Math.cos;
+					var SIN = Math.sin;
+					var matrix = [
+						COS(yr) * COS(zr)    , COS(yr) * SIN(zr)     , SIN(yr)  , 0, 
+						(-SIN(zr))           , COS(zr)               , 0        , 0, 
+						(-SIN(yr) * COS(zr)) , (-SIN(yr) * SIN(zr))  , COS(yr)  , 0,
+						0                    , 0                     , 0        , 1
+					];
+					//Fix matrix to prevent underflow
+					for(var i = 0; i < matrix.length;i++){
+						if(Math.abs(matrix[i]) < 0.000001){
+							var sign = matrix[i] > 0 ? 1 : -1;
+							matrix[i] = sign * 0.000001;
+						}
+					}
+					return "matrix3d(" + matrix.join(",") + ")";
+				}
 				cmt.style.transformOrigin = "0% 0%";
 				cmt.style.webkitTransformOrigin = "0% 0%";
 				cmt.style.OTransformOrigin = "0% 0%";
 				cmt.style.MozTransformOrigin = "0% 0%";
 				cmt.style.MSTransformOrigin = "0% 0%";
-				cmt.style.transform = "rotateY(" + (data.rY > 180 && data.rY < 270?(0-data.rY):data.rY) + "deg) rotateZ(" + (data.rZ > 180 && data.rZ < 270?(0-data.rZ):data.rZ) + "deg)";
-				cmt.style.webkitTransform = "rotateY(" + (data.rY > 180 && data.rY < 270?(0-data.rY):data.rY) + "deg) rotateZ(" + (data.rZ > 180 && data.rZ < 270?(0-data.rZ):data.rZ) + "deg)";
-				cmt.style.OTransform = "rotateY(" + (data.rY > 180 && data.rY < 270?(0-data.rY):data.rY)  + "deg) rotateZ(" + (data.rZ > 180 && data.rZ < 270?(0-data.rZ):data.rZ) + "deg)";
-				cmt.style.MozTransform = "rotateY(" + (data.rY > 180 && data.rY < 270?(0-data.rY):data.rY)  + "deg) rotateZ(" + (data.rZ > 180 && data.rZ < 270?(0-data.rZ):data.rZ) + "deg)";
-				cmt.style.MSTransform = "rotateY(" + (data.rY > 180 && data.rY < 270?(0-data.rY):data.rY)  + "deg) rotateZ(" + (data.rZ > 180 && data.rZ < 270?(0-data.rZ):data.rZ) + "deg)";
+				cmt.style.transform = getRotMatrix(data.rY, data.rZ);
+				cmt.style.webkitTransform = getRotMatrix(data.rY, data.rZ);
+				cmt.style.OTransform = getRotMatrix(data.rY, data.rZ);
+				cmt.style.MozTransform = getRotMatrix(data.rY, data.rZ);
+				cmt.style.MSTransform = getRotMatrix(data.rY, data.rZ);
 			}
 		}break;
 	}
