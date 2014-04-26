@@ -38,9 +38,9 @@ css:
 	cp  src/base.css build/base.css
 
 uglify: $(BUILD_MINIFY)
-	./node_modules/.bin/uglifyjs $^ -c -m -o build/CommentCoreLibrary.tmp --preamble "/* CommentCoreLibrary (//github.com/jabbany/CommentCoreLibrary) - Licensed under the MIT License */"
+	node ./node_modules/uglify-js/bin/uglifyjs $^ -c -m -o build/CommentCoreLibrary.tmp --preamble "/* CommentCoreLibrary (//github.com/jabbany/CommentCoreLibrary) - Licensed under the MIT License */"
 	rm build/*.js
 	mv build/CommentCoreLibrary.tmp build/CommentCoreLibrary.js
 
 clean: 
-	rm build/CommentCore.js
+	rm -rf build/
