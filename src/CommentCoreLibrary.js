@@ -85,9 +85,9 @@ function CommentManager(stageObject){
 		}
 		if(data.font != null && data.font != '')
 			cmt.style.fontFamily = data.font;
-		if(data.shadow === false && data.shadow != null)
+		if(data.shadow === false)
 			cmt.className = 'cmt noshadow';
-		if(data.color == "#000000")
+		if(data.color == "#000000" && (data.shadow || data.shadow == null))
 			cmt.className += ' rshadow';
 		if(data.color != null)
 			cmt.style.color = data.color;
