@@ -23,7 +23,7 @@ function Vimeo(vid){
     }
     
     var init = function(vid){
-        var tag = $_('vmPlayer');
+        var tag = $('vmPlayer');
         var iframe = document.createElement('iframe');
         iframe.src = "http://player.vimeo.com/video/" + (vid || vmid) + "?api=1&player_id=vmPlayer";
         iframe.id = 'vmPlayer';         //  <--- These must match to enable the API!        ^^^^^
@@ -80,7 +80,7 @@ function Vimeo(vid){
         ref.parentNode.insertBefore(script, ref);
     
         //	script loader, call init when script load completes
-        //	alternatively there is the jQuery $.getSctipt() function
+        //	alternatively there is the jQuery.getSctipt() function
         script.onload = script.onreadystatechange = function(){
             if(!Vimeo.apiReady && (!this.readyState || this.readyState == 'loaded' || this.readyState == 'complete')){
                 Vimeo.apiReady = true;

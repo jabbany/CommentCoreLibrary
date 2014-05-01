@@ -5,8 +5,10 @@
 <head>
 <title>CommentCorePlayer Test Page</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta http-equiv="X-UA-Compatible" value="IE=9" />
+<meta http-equiv="X-UA-Compatible" value="IE=9">
 <link rel="stylesheet" href="style.css" />
+<link rel="stylesheet" href="default.css" />
+<link rel="stylesheet" href="build/base.css" />
 
 <!-- Comment List -->
 <link rel="stylesheet" href="interface/css/style.css" />
@@ -15,21 +17,19 @@
 <script src="interface/js/scrollbar.js"></script>
 <script src="interface/js/tabmanager.js"></script>
 
-<!-- Files Below May Be Combined/Concated into one on Deployment Servers -->
-<script src="CommentCoreLibrary.js"></script>
-<script src="CommentSpaceAllocator.js"></script>
-<script src="CommentFilter.js"></script>
+<!-- Run 'make' to build the file -->
+<script src="build/CommentCore.js"></script>
 
 <!-- A few helpers to do some decoding/fetching below-->
 <script src="libxml.js"></script>
-<script src="parsers/BilibiliFormat.js"></script>
-<script src="parsers/AcfunFormat.js"></script>
+<script src="build/Parsers.js"></script>
 
 <!-- Extend Effects -->
 <script src="extend/fefx.js"></script>
 
 <!-- jQuery -->
 <script src="extend/jquery-1.8.0.min.js"></script>
+<script>$.noConflict();</script>
 
 <!-- Initialization -->
 <script src="CommentInit.js"></script>
@@ -86,18 +86,12 @@
 		</form>
 	</div>
 	<!-- comment list -->
-	<script>
-	setInterval(function(){
-		time = new Date();
-		display = zerofill(time.getHours(), 2)+':'+zerofill(time.getMinutes(), 2)+':'+zerofill(time.getSeconds(), 2);
-		document.getElementById('time').innerHTML = display},1000);
-	</script>
     <div class="cmtList">
         <div id="sidebar" class="tablist">
             <div class="tabholder">
                 <div id="tab_commentlist" class="tabbtn current">Comment</div>
                 <div id="tab_playersettings" class="tabbtn">Setting</div>
-                <div style="padding: 1px;"><noscript>Please turn on JavaScript for this page.</noscript> Hello! Time: <span id=time></span></div>
+                <div style="padding: 2px; color: lightgrey; text-align: center;"> Please enable JavaScript </noscript></div>
             </div>
             <div id="commentListTab" class="tab">
                 <div class="flexigrid">
@@ -139,40 +133,46 @@
 <a onclick="cd.load('tests/mikunoshoushitsu.xml');" href="javascript:;">Run Test 4</a>
 <a onclick="cd.load('tests/unowen.xml');" href="javascript:;">Run Test 5</a>
 <a onclick="cd.load('tests/comment.xml');" href="javascript:;">Run Test 6</a>
-<a onclick="cd.load('tests/extended.xml');" href="javascript:;">Run Test 7</a>
-<a onclick="cd.load('tests/sweetdevil.xml');" href="javascript:;">Run Test 8</a>
-<p>AC (Experimental) <a onclick="cd.load('tests/ACFun.json','acfun');" href="javascript:;">Run Test 1</a></p>
+
+<p>Extended: <a onclick="cd.load('tests/extended.xml');" href="javascript:;">Run Test 7</a>
+    (WIP) <a onclick="cd.load('tests/bilibili.xml');" href="javascript:;">Run Test 8</a></p>
+<p>AcFun (Experimental) <a onclick="cd.load('tests/ACFun.json','acfun');" href="javascript:;">Run Test 1</a></p>
 
 <script>
 function setHTML5(){
     try{ if (typeof cd != 'undefined') cd.destory(); }catch(e){console.log(e)}
-    $_("commentCanvas").innerHTML = "<video id= \"html5Media\" controls>"
+    $("commentCanvas").innerHTML = "<video id= \"html5Media\" controls>"
         + "<source type=\"video/mp4\" src=\"http://media.w3.org/2010/05/sintel/trailer.mp4\"></source>"
         + "<source type=\"video/webm\" src=\"http://media.w3.org/2010/05/sintel/trailer.webm\"></source>"
         + "<source type=\"video/ogg\" src=\"http://media.w3.org/2010/05/sintel/trailer.ogv\"></source>"
         + "</video>";
-    cd = new Video($_('html5Media')); cid="comment";
+    cd = new Video($('html5Media')); cid="comment";
 }
 function setYouTube(){
     try{ if (typeof cd != 'undefined') cd.destory(); }catch(e){console.log(e)}
-    $_("commentCanvas").innerHTML = "<video id=\"ytPlayer\"></video>";
+    $("commentCanvas").innerHTML = "<video id=\"ytPlayer\"></video>";
     cd = new YouTube(); cid='sweetdevil';
 }
 function setDailyMotion(){
     try{ if (typeof cd != 'undefined') cd.destory(); }catch(e){console.log(e)}
-    $_("commentCanvas").innerHTML = "<video id=\"dmPlayer\"></video>";
+    $("commentCanvas").innerHTML = "<video id=\"dmPlayer\"></video>";
     cd = new DailyMotion('xqcwbi'); cid='comment';
 }
 function setVimeo(){
     try{ if (typeof cd != 'undefined') cd.destory(); }catch(e){console.log(e)}
-    $_("commentCanvas").innerHTML = "<video id=\"vmPlayer\"></video>";
+    $("commentCanvas").innerHTML = "<video id=\"vmPlayer\"></video>";
     cd = new Vimeo('5838112'); cid='comment';
 }
 function setNone(){
     try{ if (typeof cd != 'undefined') cd.destory(); }catch(e){console.log(e)}
-    $_("commentCanvas").innerHTML = "";
+    $("commentCanvas").innerHTML = "";
     cd=new CommentDisplay();
 }
+// initialize by default
+cd = new CommentDisplay();
+setTimeout(function () {
+    cd.load('tests/rokubunnoichi.xml');
+}, 100);
 </script>
 
 <p>Source:
@@ -189,8 +189,11 @@ function setNone(){
 <a onclick="cm.filter.setRuntimeFilter(null);" href="javascript:;">Clear Runtime Filters</a>
 </p>
 
-<p>APIs: <a onclick="toggleFullScreen($_('commentCanvas'))" href="javascript:;">Fullscreen</a>
-<a onclick="launchWindowFull($_('commentCanvas'))" href="javascript:;">Windowed Fullscreen</a>
+<p>APIs: <a onclick="cd.toggleFullscreen()" href="javascript:;">Fullscreen</a>
+<a onclick="cd.toggleWindowedFullscreen()" href="javascript:;">Windowed Fullscreen</a>
 </p>
+
+<p>Links: <a href="demos/player-demo.htm">Demo with video</a> <a href="experimental">Experimental CSS3 Transition Library</a></p>
+
 </body>
 </html>

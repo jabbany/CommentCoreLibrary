@@ -105,6 +105,7 @@ function CommentCore(stage){
 	
 	function CommentManager(stage){
 		this.stage = stage;
+		this.scaleFactor = 1;
 		this.time = new TimeKeeper(10);
 		this.timeline = [];//Timeline is filled with Pre-Rendered Comment Data
 		this.runline = [];
@@ -143,7 +144,7 @@ function CommentCore(stage){
 			var cmt = this.runline[i];
 			cmt.ttl -= timePassed;
 			if(cmt.data.mode == 1 || cmt.data.mode == 2){
-				cmt.position.x = (cmt.ttl / cmt.dur) * (this.stage.width + cmt.width) - cmt.width;
+				cmt.position.x = (cmt.ttl / (cmt.dur * this.scaleFactor)) * (this.stage.width + cmt.width) - cmt.width;
 			}else if(cmt.data.mode == 6){
 				cmt.position.x = (1 - cmt.ttl / cmt.dur) * (this.stage.width + cmt.width) - cmt.width;
 			}else if(cmt.data.mode == 7 && cmt.data.movable){

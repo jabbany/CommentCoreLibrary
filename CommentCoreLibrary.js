@@ -3,7 +3,7 @@
 * Author : Jim Chen
 * Licensing : MIT License
 ******/
-$_ = function(a){return document.getElementById(a);};
+$ = function(a){return document.getElementById(a);};
 var ABGlobal = {
 	is_webkit:function(){
 		try{
@@ -50,7 +50,11 @@ function CommentManager(stageObject){
 	var __timer = 0;
 	var lastpos = 0;
 	this.stage = stageObject;
-	this.def = {opacity:1};
+	this.def = {
+		opacity:1,
+		globalScale:1,
+		scrollScale:1
+	};
 	this.timeline = [];
 	this.runline = [];
 	this.position = 0;
@@ -70,26 +74,27 @@ function CommentManager(stageObject){
 		cmt.stime = data.stime;
 		cmt.mode = data.mode;
 		cmt.data = data;
-		cmt.appendChild(document.createTextNode(data.text));
-		cmt.innerText = data.text;
-		cmt.style.fontSize = data.size + "px";
+		if(cmt.mode == 17){
+			
+		}else{
+			cmt.appendChild(document.createTextNode(data.text));
+			cmt.innerText = data.text;
+			cmt.style.fontSize = data.size + "px";
+		}
 		if(data.font != null && data.font != '')
 			cmt.style.fontFamily = data.font;
 		if(data.shadow == false && data.shadow != null)
 			cmt.className = 'cmt noshadow';
+		if(data.color == "#000000")
+			cmt.className += ' rshadow';
 		if(data.color != null)
 			cmt.style.color = data.color;
 		if(this.def.opacity != 1 && data.mode == 1)
 			cmt.style.opacity = this.def.opacity;
 		if(data.alphaFrom != null)
 			cmt.style.opacity = data.alphaFrom;
-		cmt.ttl = 4000;
-		cmt.dur = 4000;
-        if ((cmt.mode == 1 || cmt.mode == 2 || cmt.mode == 6) && this.stage.offsetWidth > 540){
-            // keep comment speed consistent in full screen
-            cmt.ttl *= this.stage.offsetWidth / 540;
-            cmt.dur *= this.stage.offsetWidth / 540;
-        }
+		cmt.ttl = Math.round(4000 * this.def.globalScale);
+		cmt.dur = Math.round(4000 * this.def.globalScale);
 		return cmt;
 	};
 	this.startTimer = function(){
@@ -169,6 +174,12 @@ CommentManager.prototype.time = function(time){
 		else break;
 	}
 };
+CommentManager.prototype.rescale = function(){
+	for(var i = 0; i < this.runline.length; i++){
+		this.runline[i].dur = Math.round(this.runline[i].dur * this.def.globalScale);
+		this.runline[i].ttl = Math.round(this.runline[i].ttl * this.def.globalScale);
+	}
+};
 CommentManager.prototype.sendComment = function(data){
 	var cmt = document.createElement('div');
 	if(this.filter != null){
@@ -192,11 +203,12 @@ CommentManager.prototype.sendComment = function(data){
 		case 4:{this.csa.bottom.add(cmt);}break;
 		case 5:{this.csa.top.add(cmt);}break;
 		case 6:{this.csa.reverse.add(cmt);}break;
+		case 17:
 		case 7:{
 			cmt.style.top = data.y + "px";
 			cmt.style.left = data.x + "px";
-			cmt.ttl = data.duration;
-			cmt.dur = data.duration;
+			cmt.ttl = Math.round(data.duration * this.def.globalScale);
+			cmt.dur = Math.round(data.duration * this.def.globalScale);
 			if(data.rY!=0 || data.rZ!=0){
 				/** TODO: revise when browser manufacturers make up their mind on Transform APIs **/
 				cmt.style.transformOrigin = "0% 0%";

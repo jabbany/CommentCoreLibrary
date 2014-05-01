@@ -30,7 +30,7 @@ function YouTube(vid){
         if (!self.cm.stage.hasChildNodes()){
             var tag = document.createElement('video');
             tag.id = 'ytPlayer';
-            $_('commentCanvas').appendChild(tag);
+            $('commentCanvas').appendChild(tag);
         }
         
         self.player = new YT.Player('ytPlayer', {    //replace #ytPlayer with iframe
@@ -72,8 +72,8 @@ function YouTube(vid){
                         case 1:	//playing
                             self.position = self.player.getCurrentTime()*1000;
                             self.resumeCmt();
-                            $_('ytTitleFix').style.zIndex=2;
-                            $_('ytFullHide').style.zIndex=3;
+                            $('ytTitleFix').style.zIndex=2;
+                            $('ytFullHide').style.zIndex=3;
                             break;
                         case 2:	//paused
                         case 3:	//buffering
@@ -96,7 +96,7 @@ function YouTube(vid){
             tag.style.width = '100%';
             tag.style.height = '90px';
             tag.style.zIndex = '2';
-            $(tag).insertBefore('#ytPlayer');
+            jQuery(tag).insertBefore('#ytPlayer');
         
             // share/info button overlay
             var tag = document.createElement('div');
@@ -106,11 +106,11 @@ function YouTube(vid){
             tag.style.width = '138px';
             tag.style.height = '30px';
             tag.style.zIndex = '3';
-            $(tag).insertBefore('#ytPlayer');
+            jQuery(tag).insertBefore('#ytPlayer');
         
-            var canvas = $('.abp')
-            var ytBar = $('#ytTitleFix')[0];
-            var hideBox = $('#ytFullHide')[0];
+            var canvas = jQuery('.abp')
+            var ytBar = jQuery('#ytTitleFix')[0];
+            var hideBox = jQuery('#ytFullHide')[0];
         
             hideBox.onmouseover = function(){
                 ytBar.style.zIndex = -1;
@@ -152,8 +152,8 @@ function YouTube(vid){
     //  Remove some references
     this.destory = function(){
         this.stop();
-        $_('ytTitleFix').style.zIndex=-1;
-        $_('ytFullHide').style.zIndex=-1;
+        $('ytTitleFix').style.zIndex=-1;
+        $('ytFullHide').style.zIndex=-1;
         this.cm.filter.setRuntimeFilter(null);
         delete this.player;
         while (this.cm.stage.hasChildNodes())
