@@ -1,3 +1,56 @@
+/** This is the element for the comment **/
+function CCLComment(data, motion, parent){
+	/** Parent designates the comment's type **/
+	this.render = parent ? "DOM" : "CANVAS";
+	this.mode = data.mode;
+	this.parent = parent;
+	this.data = data;
+	//Motion is a motion factory or the manager
+	this.motion = motion;
+
+	this.width = -1;
+	this.height = -1;
+	this.x = 0;
+	this.y = 0;
+}
+
+CCLComment.prototype.set = function(styleParam, value){
+	switch(styleParam){
+		case "top":
+		case "left":
+		case "right":
+		case "bottom":{
+			this.parent.style[styleParam] = value ? (value + "px") : "";
+		}break;
+	}
+}
+
+CCLComment.prototype.getTTL = function(){
+	return this.motion ? this.motion.ttl : this.data.dur;
+}
+
+CCLComment.prototype.getBounds = function(){
+	this.width = this.parent.offsetWidth;
+	this.height = this.parent.offsetHeight;
+	this.x = this.parent.offsetLeft;
+	this.y = this.parent.offsetTop;
+	this.top = this.y;
+	this.bottom = this.y + this.height;
+	this.left = this.x;
+	this.right = this.x + this.width;
+};
+
+CCLComment.prototype.setMotion = function(m){
+	this.motion = m;
+}
+
+CCLComment.prototype.destroy = function(){
+	//Destroys references to aid gc?
+	delete this.parent;
+	delete this.motion;
+	this.render = "NONE";
+	this.type = -1;
+}
 /** 
 Comment Filters/Filter Lang
 Licensed Under MIT License
@@ -118,20 +171,19 @@ Comment Space Allocators Classes
 Licensed Under MIT License
 You may create your own.
 **/
-function CommentSpaceAllocator(w,h){
+function CommentSpaceAllocator(w, h){
 	this.width = w;
 	this.height = h;
-	this.dur = 4000;
 	this.pools = [[]];
 	this.pool = this.pools[0];
 	this.setBounds = function(w,h){this.width = w;this.height = h;};
 	this.add = function(cmt){
 		if(cmt.height >= this.height){
 			cmt.cindex = this.pools.indexOf(this.pool);
-			cmt.style.top = "0px";
+			cmt.set("top",0);
 		}else{
 			cmt.cindex = this.pools.indexOf(this.pool);
-			cmt.style.top = this.setY(cmt) + "px";
+			cmt.set("top",this.setY(cmt));
 		}
 	};
 	this.remove = function(cmt){
@@ -139,14 +191,7 @@ function CommentSpaceAllocator(w,h){
 		tpool.remove(cmt);
 	};
 	this.validateCmt = function(cmt){
-		cmt.bottom = cmt.offsetTop + cmt.offsetHeight;
-		cmt.y = cmt.offsetTop;
-		cmt.x = cmt.offsetLeft;
-		cmt.right = cmt.offsetLeft + cmt.offsetWidth;
-		cmt.height = cmt.offsetHeight;
-		cmt.width = cmt.offsetWidth;
-		cmt.top = cmt.offsetTop;
-		cmt.left = cmt.offsetLeft;
+		cmt.getBounds();
 		return cmt;
 	};
 	this.setY = function(cmt,index){
@@ -211,23 +256,23 @@ function CommentSpaceAllocator(w,h){
 		return true;
 	};
 	this.getEnd  = function(cmt){
-		return cmt.stime + cmt.ttl;
+		return cmt.data.stime + cmt.getTTL();
 	};
 	this.getMiddle = function(cmt){
-		return cmt.stime + (cmt.ttl / 2);
+		return cmt.data.stime + (cmt.getTTL() / 2);
 	};
 }
 function TopCommentSpaceAllocator(w,h){
 	var csa = new CommentSpaceAllocator(w,h);
 	csa.add = function (cmt){
 		csa.validateCmt(cmt);
-		cmt.style.left = (csa.width - cmt.width)/2 + "px";
+		cmt.set("left", (csa.width - cmt.width)/2);
 		if(cmt.height >= csa.height){
 			cmt.cindex = csa.pools.indexOf(csa.pool);
-			cmt.style.top = "0px";
+			cmt.set("top", 0);
 		}else{
 			cmt.cindex = csa.pools.indexOf(csa.pool);
-			cmt.style.top = csa.setY(cmt) + "px";
+			cmt.set("top", csa.setY(cmt));
 		}
 	};
 	csa.vCheck = function(y,cmt){
@@ -251,20 +296,21 @@ function TopCommentSpaceAllocator(w,h){
 function BottomCommentSpaceAllocator(w,h){
 	var csa = new CommentSpaceAllocator(w,h);
 	csa.add = function (cmt){
-		cmt.style.top = "";
-		cmt.style.bottom = "0px";
+		cmt.set("top", null);
+		cmt.set("bottom", 0);
 		csa.validateCmt(cmt);
-		cmt.style.left = (csa.width - cmt.width)/2 + "px";
+		cmt.set("left",(csa.width - cmt.width)/2);
 		if(cmt.height >= csa.height){
 			cmt.cindex = csa.pools.indexOf(csa.pool);
-			cmt.style.bottom = "0px";
+			cmt.set("bottom",0);
 		}else{
 			cmt.cindex = csa.pools.indexOf(csa.pool);
-			cmt.style.bottom = csa.setY(cmt) + "px";
+			cmt.set("bottom", csa.setY(cmt));
 		}
 	};
 	csa.validateCmt = function(cmt){
-		cmt.y = csa.height - (cmt.offsetTop + cmt.offsetHeight);
+		cmt.getBounds();
+		cmt.y = csa.height - (cmt.parent.offsetTop + cmt.parent.offsetHeight);
 		cmt.bottom = cmt.y + cmt.offsetHeight;
 		cmt.x = cmt.offsetLeft;
 		cmt.right = cmt.offsetLeft + cmt.offsetWidth;
@@ -348,6 +394,7 @@ function BottomScrollCommentSpaceAllocator(w,h){
 	this.add = function(what){csa.add(what);};
 	this.remove = function(d){csa.remove(d);};
 }
+
 /******
 * Comment Core For HTML5 VideoPlayers
 * Author : Jim Chen
@@ -397,7 +444,8 @@ Array.prototype.binsert = function(what,how){
 };
 /****** Load Core Engine Classes ******/
 function CommentManager(stageObject){
-	var __timer = 0;
+	if(!CCLAnim || CCLAnim.v < 0.9)
+		throw "Animation Library Not Supported!"
 	var lastpos = 0;
 	this.stage = stageObject;
 	this.def = {
@@ -406,7 +454,7 @@ function CommentManager(stageObject){
 		scrollScale:1
 	};
 	this.timeline = [];
-	this.runline = [];
+	this.runline = CCLAnim.createAnimateContext();
 	this.position = 0;
 	this.limiter = 0;
 	this.filter = null;
@@ -417,57 +465,86 @@ function CommentManager(stageObject){
 		reverse:new ReverseCommentSpaceAllocator(0,0),
 		scrollbtm:new BottomScrollCommentSpaceAllocator(0,0)
 	};
-	/** Precompute the offset width **/
-	this.stage.width = this.stage.offsetWidth;
-	this.stage.height= this.stage.offsetHeight;
 	/** Private **/
-	this.initCmt = function(cmt,data){
-		cmt.className = 'cmt';
-		if(ABGlobal.is_webkit() && data.mode < 7) cmt.className+=" webkit-helper";
-		cmt.stime = data.stime;
-		cmt.mode = data.mode;
-		cmt.data = data;
-		if(cmt.mode === 17){
+	this.initCommentDOM = function(domObject, data){
+		domObject.className = 'cmt';
+		if(ABGlobal.is_webkit() && data.mode < 7) domObject.className+=" webkit-helper";
+		if(data.mode == 17){
 			
 		}else{
-			cmt.appendChild(document.createTextNode(data.text));
-			cmt.innerText = data.text;
-			cmt.style.fontSize = data.size + "px";
+			domObject.appendChild(document.createTextNode(data.text));
+			domObject.innerText = data.text;
+			domObject.style.fontSize = data.size + "px";
 		}
 		if(data.font != null && data.font != '')
-			cmt.style.fontFamily = data.font;
+			domObject.style.fontFamily = data.font;
 		if(data.shadow == false && data.shadow != null)
-			cmt.className = 'cmt noshadow';
+			domObject.className = 'cmt noshadow';
 		if(data.color == "#000000")
-			cmt.className += ' rshadow';
+			domObject.className += ' rshadow';
 		if(data.color != null)
-			cmt.style.color = data.color;
+			domObject.style.color = data.color;
 		if(this.def.opacity != 1 && data.mode == 1)
-			cmt.style.opacity = this.def.opacity;
+			domObject.style.opacity = this.def.opacity;
 		if(data.alphaFrom != null)
-			cmt.style.opacity = data.alphaFrom;
-		cmt.ttl = Math.round(4000 * this.def.globalScale);
-		cmt.dur = cmt.ttl;
-		if(cmt.mode === 1 || cmt.mode === 6 || cmt.mode === 2){
-			cmt.ttl *= this.def.scrollScale;
-			cmt.dur = cmt.ttl;
-		}
-		return cmt;
+			domObject.style.opacity = data.alphaFrom;
+		return domObject;
 	};
-	this.startTimer = function(){
-		if(__timer > 0)
-			return;
-		var lastTPos = new Date().getTime();
+	
+	this.initCommentMovement = function(cmtObj){
+		var move = null;
+		var stg = this.stage;
 		var cmMgr = this;
-		__timer = window.setInterval(function(){
-			var elapsed = new Date().getTime() - lastTPos;
-			lastTPos = new Date().getTime();
-			cmMgr.onTimerEvent(elapsed,cmMgr);
-		},10);
+		switch(cmtObj.data.mode){
+			default:
+			case 1:
+			case 2:{
+				//console.log(cmtObj);
+				move = new CCLAnim.Translate({
+					"from":{
+						"x":stg.offsetWidth,
+						"y":cmtObj.parent.offsetTop
+					},
+					"to":{
+						"x":0 - cmtObj.width,
+						"y":cmtObj.parent.offsetTop
+					},
+					"dur": cmtObj.data.dur
+				}, cmtObj.parent, function(){
+					stg.removeChild(cmtObj.parent);
+					cmMgr.finish(cmtObj);
+					cmtObj.destroy();
+					
+				});
+			}break;
+			case 4:
+			case 5:{
+				move = new CCLAnim.Animation();
+				if(cmtObj.data.dur){
+					move.dur = cmtObj.data.dur;
+					move.ttl = cmtObj.data.dur;
+				}
+				move.addEventListener("end", function(){
+					stg.removeChild(cmtObj.parent);
+					cmMgr.finish(cmtObj);
+					cmtObj.destroy();
+				});
+			}break;
+		}
+		if(move == null){
+			console.log("Create Motion Failed");
+			return null;
+		}
+		cmtObj.motion = move;
+		cmtObj.setMotion(move);
+		return cmtObj;
+	};
+	
+	this.startTimer = function(){
+		this.runline.start();
 	};
 	this.stopTimer = function(){
-		window.clearInterval(__timer);
-		__timer = 0;
+		this.runline.pause();
 	};
 }
 	
@@ -502,18 +579,12 @@ CommentManager.prototype.load = function(a){
 	});
 };
 CommentManager.prototype.clear = function(){
-	for(var i=0;i<this.runline.length;i++){
-		this.finish(this.runline[i]);
-		this.stage.removeChild(this.runline[i]);
-	}
-	this.runline = [];
+	//this.runline.clear();
 };
 CommentManager.prototype.setBounds = function(){
 	for(var comAlloc in this.csa){
 		this.csa[comAlloc].setBounds(this.stage.offsetWidth,this.stage.offsetHeight);
 	}
-	this.stage.width = this.stage.offsetWidth;
-	this.stage.height= this.stage.offsetHeight;
 };
 CommentManager.prototype.init = function(){
 	this.setBounds();
@@ -534,24 +605,29 @@ CommentManager.prototype.time = function(time){
 	}
 };
 CommentManager.prototype.rescale = function(){
+	return;
 	for(var i = 0; i < this.runline.length; i++){
 		this.runline[i].dur = Math.round(this.runline[i].dur * this.def.globalScale);
 		this.runline[i].ttl = Math.round(this.runline[i].ttl * this.def.globalScale);
 	}
 };
 CommentManager.prototype.sendComment = function(data){
-	var cmt = document.createElement('div');
-	if(this.filter != null){
-		data = this.filter.doModify(data);
-		if(data == null) return;
-	}
-	cmt = this.initCmt(cmt,data);
-	this.stage.appendChild(cmt);
-	cmt.style.width = (cmt.offsetWidth + 1) + "px";
-	cmt.style.height = (cmt.offsetHeight - 3) + "px";
-	cmt.style.left = this.stage.offsetWidth + "px";
-	cmt.w = cmt.offsetWidth;
-	cmt.h = cmt.offsetHeight;
+	// Setup the comment abstract representation
+	var dom = document.createElement('div');
+	var cmt = new CCLComment(data, null, dom);
+	// Initialize it in the dom
+	this.initCommentDOM(dom, data);
+	
+	this.stage.appendChild(cmt.parent);
+	
+	cmt.getBounds();
+	// Fix the comment size
+	cmt.parent.style.width = (cmt.width + 1) + "px";
+	cmt.parent.style.height = (cmt.height - 3) + "px";
+	cmt.parent.style.left = this.stage.offsetWidth + "px";
+	
+	
+	
 	if(this.filter != null && !this.filter.beforeSend(cmt)){
 		this.stage.removeChild(cmt);
 		cmt = null;
@@ -566,6 +642,7 @@ CommentManager.prototype.sendComment = function(data){
 		case 6:{this.csa.reverse.add(cmt);}break;
 		case 17:
 		case 7:{
+			return;
 			cmt.style.top = data.y + "px";
 			cmt.style.left = data.x + "px";
 			cmt.ttl = Math.round(data.duration * this.def.globalScale);
@@ -586,10 +663,13 @@ CommentManager.prototype.sendComment = function(data){
 		}break;
 	}
 	if(data.border) cmt.style.border = "1px solid #00ffff";
-	this.runline.push(cmt);
+	// Make ght movement
+	this.initCommentMovement(cmt);
+	this.runline.add(cmt.motion);
 };
 CommentManager.prototype.finish = function(cmt){
-	switch(cmt.mode){
+	console.log("Finished " + cmt.data.text);
+	switch(cmt.data.mode){
 		default:
 		case 1:{this.csa.scroll.remove(cmt);}break;
 		case 2:{this.csa.scrollbtm.remove(cmt);}break;
@@ -604,8 +684,8 @@ CommentManager.prototype.onTimerEvent = function(timePassed,cmObj){
 	for(var i=0;i<cmObj.runline.length;i++){
 		var cmt = cmObj.runline[i];
 		cmt.ttl -= timePassed;
-		if(cmt.mode == 1 || cmt.mode == 2) cmt.style.left = (cmt.ttl / cmt.dur) * (cmObj.stage.width + cmt.w) - cmt.w + "px";
-		else if(cmt.mode == 6) cmt.style.left = (1 - cmt.ttl / cmt.dur) * (cmObj.stage.width + cmt.w) - cmt.w + "px";
+		if(cmt.mode == 1 || cmt.mode == 2) cmt.style.left = (cmt.ttl / cmt.dur) * (cmObj.stage.offsetWidth + cmt.offsetWidth) - cmt.offsetWidth + "px";
+		else if(cmt.mode == 6) cmt.style.left = (1 - cmt.ttl / cmt.dur) * (cmObj.stage.offsetWidth + cmt.offsetWidth) - cmt.offsetWidth + "px";
 		else if(cmt.mode == 4 || cmt.mode == 5 || cmt.mode >= 7){
 			if(cmt.dur == null)
 				cmt.dur = 4000;
@@ -622,7 +702,6 @@ CommentManager.prototype.onTimerEvent = function(timePassed,cmObj){
 		}
 		if(cmt.ttl <= 0){
 			cmObj.stage.removeChild(cmt);
-			cmObj.runline.splice(i,1);//remove the comment
 			cmObj.finish(cmt);
 		}
 	}

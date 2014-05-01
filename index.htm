@@ -54,11 +54,11 @@
 		<div class="abp">
 			<div id="commentCanvas" class="container">
 				<!--
-				<video id="ytPlayer"><script>ytid='AEV8cBND7EY'; cid='sweetdevil';</script></video>
-				<video id="vmPlayer"><script>vmid='5838112'; cid='comment';</script></video>
-				<video id="dmPlayer"><script>dmid='xqcwbi'; cid='comment';</script></video>
+				<video id="ytPlayer"><script>ytid='AEV8cBND7EY'; cfile='tests/sweetdevil.xml';</script></video>
+				<video id="vmPlayer"><script>vmid='5838112'; cfile='tests/comment.xml';</script></video>
+				<video id="dmPlayer"><script>dmid='xqcwbi'; cfile='tests/comment.xml';</script></video>
 				-->
-				<video id="ytPlayer"><script>ytid='AEV8cBND7EY'; cid='sweetdevil';</script></video>
+				<video id="ytPlayer"><script>ytid='AEV8cBND7EY'; cfile='tests/sweetdevil.xml';</script></video>
 			</div>
 		</div>
         <!-- comment form -->
@@ -146,22 +146,22 @@ function setHTML5(){
         + "<source type=\"video/webm\" src=\"http://media.w3.org/2010/05/sintel/trailer.webm\"></source>"
         + "<source type=\"video/ogg\" src=\"http://media.w3.org/2010/05/sintel/trailer.ogv\"></source>"
         + "</video>";
-    cd = new Video($('html5Media')); cid="comment";
+    cd = new Video($('html5Media')); cfile="tests/comment.xml";
 }
 function setYouTube(){
     try{ if (typeof cd != 'undefined') cd.destory(); }catch(e){console.log(e)}
     $("commentCanvas").innerHTML = "<video id=\"ytPlayer\"></video>";
-    cd = new YouTube(); cid='sweetdevil';
+    cd = new YouTube(); cfile='tests/sweetdevil.xml';
 }
 function setDailyMotion(){
     try{ if (typeof cd != 'undefined') cd.destory(); }catch(e){console.log(e)}
     $("commentCanvas").innerHTML = "<video id=\"dmPlayer\"></video>";
-    cd = new DailyMotion('xqcwbi'); cid='comment';
+    cd = new DailyMotion('xqcwbi'); cfile='tests/comment.xml';
 }
 function setVimeo(){
     try{ if (typeof cd != 'undefined') cd.destory(); }catch(e){console.log(e)}
     $("commentCanvas").innerHTML = "<video id=\"vmPlayer\"></video>";
-    cd = new Vimeo('5838112'); cid='comment';
+    cd = new Vimeo('5838112'); cfile='tests/comment.xml';
 }
 function setNone(){
     try{ if (typeof cd != 'undefined') cd.destory(); }catch(e){console.log(e)}
@@ -184,16 +184,16 @@ setTimeout(function () {
 <a onclick="document.location.reload(true)" href="javascript:;">Reload</a>
 </p>
 
-<p>Filters: <a onclick="cm.filter.setRuntimeFilter(fefx.center_dim);" href="javascript:;">Apply Center-Transparency</a>
-<a onclick="cm.filter.setRuntimeFilter(fefx.center_speedup);" href="javascript:;">Apply Center-Speedup</a>
-<a onclick="cm.filter.setRuntimeFilter(null);" href="javascript:;">Clear Runtime Filters</a>
+<p>Filters: <a onclick="cd.cm.filter.setRuntimeFilter(fefx.center_dim);" href="javascript:;">Apply Center-Transparency</a>
+<a onclick="cd.cm.filter.setRuntimeFilter(fefx.center_speedup);" href="javascript:;">Apply Center-Speedup</a>
+<a onclick="cd.cm.filter.setRuntimeFilter(null);" href="javascript:;">Clear Runtime Filters</a>
 </p>
 
 <p>APIs: <a onclick="cd.toggleFullscreen()" href="javascript:;">Fullscreen</a>
 <a onclick="cd.toggleWindowedFullscreen()" href="javascript:;">Windowed Fullscreen</a>
 </p>
 
-<p>Links: <a href="demos/player-demo.htm">Demo with video</a> <a href="experimental">Experimental CSS3 Transition Library</a></p>
+<p>Links: <a href="demos/player-demo.htm">Demo with video</a> <a href="experimental">Experimental CSS3 Transition Library</a> <a href="transition-library-test.htm">CCL /w Transition Library (Alpha)</a></p>
 
 </body>
 </html>

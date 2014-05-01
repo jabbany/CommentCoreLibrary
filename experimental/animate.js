@@ -6,28 +6,62 @@
  */
 
 var CCLAnim = {'v':0.9};
+CCLAnim.Timer = function(tickFunc){
+	var last = 0;
+	var id = -1;
+	var mode = "IVL";
+	this.start = function(){
+		last = (new Date()).getTime();
+		// Use requestAnimationFrame when specified possible
+		if(mode == "RAF" && window.requestAnimationFrame){
+			var tick = function(){
+				var now = (new Date()).getTime();
+				tickFunc(now - last);
+				last = now;
+				id = window.requestAnimationFrame(tick);
+			};
+			id = window.requestAnimationFrame(tick);
+		}else{
+			id = window.setInterval(function(){
+				var now = (new Date()).getTime();
+				tickFunc(now - last);
+				last = now;
+			}, 100);
+		}
+	};
+	
+	this.stop = function(){
+		try{
+			if(mode === "IVL"){
+				window.clearInterval(id);
+			}else{
+				window.cancelAnimationFrame(id);
+			}
+		}catch(e){}
+		id = -1;
+	};
+	
+	this.running = function(){
+		return id != -1;
+	};
+};
+
 CCLAnim.createAnimateContext = function(data){
 	return new function(){
 		this.animations = [];
-		var timer = -1;
-		var anim = this.animations;
-		var tick = function(duration){
+		var timer = new CCLAnim.Timer(function(duration){
 			for(var i = 0; i < anim.length; i++){
 				anim[i].time(duration);
 			}
-		};
+		});
+		var anim = this.animations;
 		
 		this.isStopped = function(){
-			return timer == -1;
+			return !timer.running();
 		};
 		
 		this.start = function(){
-			var last = (new Date()).getTime();
-			timer = setInterval(function(){
-				var now = (new Date()).getTime();
-				tick(now - last);
-				last = now;
-			}, 100);
+			timer.start();
 			//Emit the start event
 			for(var i = 0; i < this.animations.length; i++){
 				this.animations[i].emitEvent("start")
@@ -35,14 +69,11 @@ CCLAnim.createAnimateContext = function(data){
 		};
 		
 		this.pause = function(){
-			try{
-				clearInterval(timer);
-			}catch(e){}
+			timer.stop();
 			//Emit the stop event
 			for(var i = 0; i < this.animations.length; i++){
 				this.animations[i].emitEvent("stop");
 			}
-			timer = -1;
 		};
 		
 		this.add = function(anim){
@@ -112,6 +143,7 @@ CCLAnim.Animation.prototype.time = function(time){
 };
 
 CCLAnim.setTransition= function(elem, transition){
+	//TODO Fix browser vendor specific tags
 	elem.style.transition = transition;
 	elem.style.webkitTransition = transition;
 	elem.style.MozTransition = transition;
@@ -120,6 +152,7 @@ CCLAnim.setTransition= function(elem, transition){
 };
 
 CCLAnim.setTransform = function(elem, transform){
+	//TODO Fix browser vendor specific tags
 	elem.style.transform = transform;
 	elem.style.webkitTransform = transform;
 	elem.style.MozTransform = transform;
@@ -128,7 +161,6 @@ CCLAnim.setTransform = function(elem, transform){
 };
 
 CCLAnim.setXY = function(elem, x, y){
-
 	elem.style.top = y + "px";
 	elem.style.left = x + "px";
 }

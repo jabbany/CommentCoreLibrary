@@ -36,7 +36,7 @@ function Vimeo(vid){
         self.player = $f('vmPlayer') // = Froogaloop(this);
         
         self.player.addEvent('ready', function(id) {
-                self.load('tests/'+cid+'.xml');
+                self.load(cfile);
                 
                 self.player.addEvent('play', function(id){
                     toSync();

@@ -50,8 +50,8 @@ function YouTube(vid){
             },
             events: {
                 'onReady': function(event){
-                    if (typeof cid != 'undefined')
-                        self.loadCmt('tests/'+cid+'.xml');
+                    if (typeof cfile != 'undefined')
+                        self.loadCmt(cfile);
                     
                     (function(){ // seek detection for webkit
                         if(ABGlobal.is_webkit()){

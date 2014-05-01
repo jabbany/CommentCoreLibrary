@@ -14,11 +14,13 @@ CCLAnim.Translate = function(data, parent, onEnd){
 		data.from.x = parent.offsetTop;
 		data.from.y = parent.offsetLeft;
 	}
+	if(!data.delay){
+		data.delay = 0;
+	}
+	
 	an.toCSS = function(){
-		//TODO: use generic transform
-		an.parent.style.transition = "all " + an.ttl + "ms linear";
+		CCLAnim.setTransition(an.parent, "all " + an.ttl + "ms linear " + an.data.delay + "ms");
 		CCLAnim.setXY(an.parent, an.data.to.x , an.data.to.y);
-		//CCLAnim.setTransform(an.parent, "translate(" + (an.data.to.x - cur_x) + "px, " + (an.data.to.y - cur_y) + "px)");
 	};
 	an.addEventListener("stop", function(){
 		var cx = an.parent.offsetLeft;
@@ -36,6 +38,6 @@ CCLAnim.Translate = function(data, parent, onEnd){
 			}
 		}catch(e){};
 	});
-	CCLAnim.setTransition(an.parent, "all " + an.ttl + "ms linear");
+	CCLAnim.setTransition(an.parent, "all " + an.ttl + "ms linear " + an.data.delay + "ms");
 	return an;
 };

@@ -24,7 +24,7 @@ function Video(video){
     
     // events
     this.player.addEventListener('loadedmetadata', function() {
-        self.load("tests/"+cid+".xml");
+        self.load(cfile);
     }, false)
     
     this.player.addEventListener('play', function() {

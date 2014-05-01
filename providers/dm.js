@@ -41,7 +41,7 @@ function DailyMotion(vid){
             },
             events: {
                 'apiready': function(){
-                    self.load('tests/'+cid+'.xml');
+                    self.load(cfile);
                 },
                 'playing': function(event){
                     self.position = event.target.currentTime*1000;

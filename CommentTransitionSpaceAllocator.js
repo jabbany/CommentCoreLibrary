@@ -3,20 +3,19 @@ Comment Space Allocators Classes
 Licensed Under MIT License
 You may create your own.
 **/
-function CommentSpaceAllocator(w,h){
+function CommentSpaceAllocator(w, h){
 	this.width = w;
 	this.height = h;
-	this.dur = 4000;
 	this.pools = [[]];
 	this.pool = this.pools[0];
 	this.setBounds = function(w,h){this.width = w;this.height = h;};
 	this.add = function(cmt){
 		if(cmt.height >= this.height){
 			cmt.cindex = this.pools.indexOf(this.pool);
-			cmt.style.top = "0px";
+			cmt.set("top",0);
 		}else{
 			cmt.cindex = this.pools.indexOf(this.pool);
-			cmt.style.top = this.setY(cmt) + "px";
+			cmt.set("top",this.setY(cmt));
 		}
 	};
 	this.remove = function(cmt){
@@ -24,14 +23,7 @@ function CommentSpaceAllocator(w,h){
 		tpool.remove(cmt);
 	};
 	this.validateCmt = function(cmt){
-		cmt.bottom = cmt.offsetTop + cmt.offsetHeight;
-		cmt.y = cmt.offsetTop;
-		cmt.x = cmt.offsetLeft;
-		cmt.right = cmt.offsetLeft + cmt.offsetWidth;
-		cmt.height = cmt.offsetHeight;
-		cmt.width = cmt.offsetWidth;
-		cmt.top = cmt.offsetTop;
-		cmt.left = cmt.offsetLeft;
+		cmt.getBounds();
 		return cmt;
 	};
 	this.setY = function(cmt,index){
@@ -96,23 +88,23 @@ function CommentSpaceAllocator(w,h){
 		return true;
 	};
 	this.getEnd  = function(cmt){
-		return cmt.stime + cmt.ttl;
+		return cmt.data.stime + cmt.getTTL();
 	};
 	this.getMiddle = function(cmt){
-		return cmt.stime + (cmt.ttl / 2);
+		return cmt.data.stime + (cmt.getTTL() / 2);
 	};
 }
 function TopCommentSpaceAllocator(w,h){
 	var csa = new CommentSpaceAllocator(w,h);
 	csa.add = function (cmt){
 		csa.validateCmt(cmt);
-		cmt.style.left = (csa.width - cmt.width)/2 + "px";
+		cmt.set("left", (csa.width - cmt.width)/2);
 		if(cmt.height >= csa.height){
 			cmt.cindex = csa.pools.indexOf(csa.pool);
-			cmt.style.top = "0px";
+			cmt.set("top", 0);
 		}else{
 			cmt.cindex = csa.pools.indexOf(csa.pool);
-			cmt.style.top = csa.setY(cmt) + "px";
+			cmt.set("top", csa.setY(cmt));
 		}
 	};
 	csa.vCheck = function(y,cmt){
@@ -136,20 +128,21 @@ function TopCommentSpaceAllocator(w,h){
 function BottomCommentSpaceAllocator(w,h){
 	var csa = new CommentSpaceAllocator(w,h);
 	csa.add = function (cmt){
-		cmt.style.top = "";
-		cmt.style.bottom = "0px";
+		cmt.set("top", null);
+		cmt.set("bottom", 0);
 		csa.validateCmt(cmt);
-		cmt.style.left = (csa.width - cmt.width)/2 + "px";
+		cmt.set("left",(csa.width - cmt.width)/2);
 		if(cmt.height >= csa.height){
 			cmt.cindex = csa.pools.indexOf(csa.pool);
-			cmt.style.bottom = "0px";
+			cmt.set("bottom",0);
 		}else{
 			cmt.cindex = csa.pools.indexOf(csa.pool);
-			cmt.style.bottom = csa.setY(cmt) + "px";
+			cmt.set("bottom", csa.setY(cmt));
 		}
 	};
 	csa.validateCmt = function(cmt){
-		cmt.y = csa.height - (cmt.offsetTop + cmt.offsetHeight);
+		cmt.getBounds();
+		cmt.y = csa.height - (cmt.parent.offsetTop + cmt.parent.offsetHeight);
 		cmt.bottom = cmt.y + cmt.offsetHeight;
 		cmt.x = cmt.offsetLeft;
 		cmt.right = cmt.offsetLeft + cmt.offsetWidth;
@@ -233,3 +226,4 @@ function BottomScrollCommentSpaceAllocator(w,h){
 	this.add = function(what){csa.add(what);};
 	this.remove = function(d){csa.remove(d);};
 }
+
