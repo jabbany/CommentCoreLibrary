@@ -247,11 +247,10 @@ CommentManager.prototype.sendComment = function(data){
 						(-SIN(yr) * COS(zr)) , (-SIN(yr) * SIN(zr))  , COS(yr)  , 0,
 						0                    , 0                     , 0        , 1
 					];
-					//Fix matrix to prevent underflow
+					// CSS does not recognize scientific notation (e.g. 1e-6), truncating it.
 					for(var i = 0; i < matrix.length;i++){
 						if(Math.abs(matrix[i]) < 0.000001){
-							var sign = matrix[i] > 0 ? 1 : -1;
-							matrix[i] = sign * 0.000001;
+							matrix[i] = 0;
 						}
 					}
 					return "matrix3d(" + matrix.join(",") + ")";
