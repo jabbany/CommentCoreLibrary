@@ -73,7 +73,10 @@ function CommentDisplay() {
         var cbfunc = function () {
             // rebuild comment list
             // reset comment list if already created
-            $('CommentList').innerHTML = '';
+            var rowModel = '<tbody><tr><td id="tb-ref1" style="width:40px;"></td>' +
+                '<td id="tb-ref2" style="width:' + $('tb-ref2').offsetWidth + 'px"></td>' +
+                '<td id="tb-ref3" style="width:120px;"></td></tr></tbody>';
+            $('CommentList').innerHTML = rowModel;
 
             self.cl.bind(self.cm.timeline, ['stime', 'text', 'date'], function (dobj) {
                 var newObj = {};
