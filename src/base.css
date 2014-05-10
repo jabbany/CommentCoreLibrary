@@ -22,7 +22,6 @@ div.abp{
 	padding:3px 0 0 0;margin:0;
 	line-height:100%;
 	font-family:Simhei,Simsun,Heiti,"MS Mincho","Meiryo","Microsoft Yahei",monospace;
-	font-weight:bold;
 	text-decoration:none;
 	text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
 	color:#fff;
@@ -33,7 +32,7 @@ div.abp{
 	text-wrap:none;
 	-webkit-text-size-adjust: none;
 	text-size-adjust: none;
-	white-space: nowrap;
+	white-space: pre;
 }
 .cmt.noshadow{
 	text-shadow: none !important;
@@ -41,12 +40,4 @@ div.abp{
 }
 .cmt.rshadow{
 	text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white !important;
-}
-.webkit-helper{
-	text-shadow: none;
-	-webkit-text-stroke: 0.2px black;
-	font-weight:bold;
-}
-.webkit-helper.rshadow{
-	-webkit-text-stroke: 0.2px white !important;
 }

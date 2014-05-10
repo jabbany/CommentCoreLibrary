@@ -3,15 +3,6 @@
 * Author : Jim Chen
 * Licensing : MIT License
 ******/
-$ = function(a){return document.getElementById(a);};
-var ABGlobal = {
-	is_webkit:function(){
-		try{
-			if(/webkit/.test( navigator.userAgent.toLowerCase())) return true;
-		}catch(e){return false;}
-		return false;
-	}
-};
 Array.prototype.remove = function(obj){
 	for(var a = 0; a < this.length;a++)
 		if(this[a] == obj){
@@ -72,7 +63,6 @@ function CommentManager(stageObject){
 	/** Private **/
 	this.initCmt = function(cmt,data){
 		cmt.className = 'cmt';
-		if(ABGlobal.is_webkit() && data.mode < 7) cmt.className+=" webkit-helper";
 		cmt.stime = data.stime;
 		cmt.mode = data.mode;
 		cmt.data = data;
@@ -287,6 +277,9 @@ CommentManager.prototype.finish = function(cmt){
 CommentManager.prototype.onTimerEvent = function(timePassed,cmObj){
 	for(var i=0;i<cmObj.runline.length;i++){
 		var cmt = cmObj.runline[i];
+		if(cmt.hold){
+			continue;
+		}
 		cmt.ttl -= timePassed;
 		if(cmt.mode == 1 || cmt.mode == 2) cmt.style.left = (cmt.ttl / cmt.dur) * (cmObj.stage.width + cmt.w) - cmt.w + "px";
 		else if(cmt.mode == 6) cmt.style.left = (1 - cmt.ttl / cmt.dur) * (cmObj.stage.width + cmt.w) - cmt.w + "px";

@@ -32,3 +32,7 @@ function CommentLoader(url,xcm,mode){
 		}
 	}
 }
+/*************************
+* Tiny Shorthand
+**************************/
+$ = function(a){return document.getElementById(a);};
