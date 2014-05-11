@@ -201,11 +201,12 @@ CommentManager.prototype.sendComment = function(data){
 	}
 	cmt = this.initCmt(cmt,data);
 	this.stage.appendChild(cmt);
-	cmt.style.width = (cmt.offsetWidth + 1) + "px";
-	cmt.style.height = (cmt.offsetHeight - 3) + "px";
-	cmt.style.left = this.stage.offsetWidth + "px";
-	cmt.w = cmt.offsetWidth;
-	cmt.h = cmt.offsetHeight;
+	cmt.width = cmt.offsetWidth;
+	cmt.height = cmt.offsetHeight;
+	cmt.style.width = (cmt.w + 1) + "px";
+	cmt.style.height = (cmt.h - 3) + "px";
+	cmt.style.left = this.stage.width + "px";
+	
 	if(this.filter != null && !this.filter.beforeSend(cmt)){
 		this.stage.removeChild(cmt);
 		cmt = null;
@@ -280,27 +281,32 @@ CommentManager.prototype.finish = function(cmt){
 };
 /** Static Functions **/
 CommentManager.prototype.onTimerEvent = function(timePassed,cmObj){
-	for(var i=0;i<cmObj.runline.length;i++){
+	for(var i= 0;i < cmObj.runline.length; i++){
 		var cmt = cmObj.runline[i];
 		if(cmt.hold){
 			continue;
 		}
 		cmt.ttl -= timePassed;
-		if(cmt.mode == 1 || cmt.mode == 2) cmt.style.left = (cmt.ttl / cmt.dur) * (cmObj.stage.width + cmt.w) - cmt.w + "px";
-		else if(cmt.mode == 6) cmt.style.left = (1 - cmt.ttl / cmt.dur) * (cmObj.stage.width + cmt.w) - cmt.w + "px";
-		else if(cmt.mode == 4 || cmt.mode == 5 || cmt.mode >= 7){
+		if(cmt.mode == 1 || cmt.mode == 2) {
+			cmt.style.left = (cmt.ttl / cmt.dur) * (cmObj.stage.width + cmt.width) - cmt.width + "px";
+		}else if(cmt.mode == 6) {
+			cmt.style.left = (1 - cmt.ttl / cmt.dur) * (cmObj.stage.width + cmt.width) - cmt.width + "px";
+		}else if(cmt.mode == 4 || cmt.mode == 5 || cmt.mode >= 7){
 			if(cmt.dur == null)
 				cmt.dur = 4000;
 			if(cmt.data.alphaFrom != null && cmt.data.alphaTo != null){
-				cmt.style.opacity = (cmt.data.alphaFrom - cmt.data.alphaTo) * (cmt.ttl/cmt.dur) + cmt.data.alphaTo;
+				cmt.style.opacity = (cmt.data.alphaFrom - cmt.data.alphaTo) * 
+					(cmt.ttl/cmt.dur) + cmt.data.alphaTo;
 			}
 			if(cmt.mode == 7 && cmt.data.movable){
+				var posT = Math.min(Math.max(cmt.dur - cmt.data.moveDelay - cmt.ttl,0),
+					cmt.data.moveDuration) / cmt.data.moveDuration;
 				if(cmt.data.position !== "relative"){
-					cmt.style.top = ((cmt.data.toY - cmt.data.y) * (Math.min(Math.max(cmt.dur - cmt.data.moveDelay - cmt.ttl,0),cmt.data.moveDuration) / cmt.data.moveDuration) + cmt.data.y) + "px";
-					cmt.style.left = ((cmt.data.toX - cmt.data.x) * (Math.min(Math.max(cmt.dur - cmt.data.moveDelay - cmt.ttl,0),cmt.data.moveDuration) / cmt.data.moveDuration) + cmt.data.x) + "px";
+					cmt.style.top = ((cmt.data.toY - cmt.data.y) * posT + cmt.data.y) + "px";
+					cmt.style.left= ((cmt.data.toX - cmt.data.x) * posT + cmt.data.x) + "px";
 				}else{
-					cmt.style.top = ((cmt.data.toY - cmt.data.y) * cmObj.stage.height * (Math.min(Math.max(cmt.dur - cmt.data.moveDelay - cmt.ttl,0),cmt.data.moveDuration)  / cmt.data.moveDuration) + cmt.data.y * cmObj.stage.height) + "px";
-					cmt.style.left = ((cmt.data.toX - cmt.data.x) * cmObj.stage.width * (Math.min(Math.max(cmt.dur - cmt.data.moveDelay - cmt.ttl,0),cmt.data.moveDuration)  / cmt.data.moveDuration) + cmt.data.x * cmObj.stage.width) + "px";
+					cmt.style.top = (((cmt.data.toY - cmt.data.y) * posT + cmt.data.y) * cmObj.stage.height) + "px";
+					cmt.style.left= (((cmt.data.toX - cmt.data.x) * posT + cmt.data.x) * cmObj.stage.width) + "px";
 				}
 			}
 		}
