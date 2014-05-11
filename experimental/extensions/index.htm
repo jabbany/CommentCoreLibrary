@@ -15,17 +15,22 @@
 <title>Testrun Sandbox For ASS Subtitles</title>
 </head>
 <body>
-<div class="m20 abp" id="player" style="width:100%;height:600px;">
-	<div id="commentCanvas" class="container"></div>
-	<video id="abpVideo" autobuffer="true" data-setup="{}" width="100%" height="100%" style="z-index:-1;width:100%;height:100%;top:0;left:0;right:0;bottom:0;" autobuffer="true">
-		<source src="http://tools.kanoha.org/ccltestingvideos/%5bYYDM-11FANS%5d%5bStrike_Witches%5d%5bBDRIP%5d%5b01%5d%5bX264_AAC%5d%5b1280X720%5d.mp4" type="video/mp4">
-	</video>
+<div id="player-unit" style="width:100%;">
+	<div class="m20 abp" id="player" style="width:100%;height:600px;">
+		<div id="commentCanvas" class="container"></div>
+		<video id="abpVideo" autobuffer="true" data-setup="{}" width="100%" height="100%" style="z-index:-1;width:100%;height:100%;top:0;left:0;right:0;bottom:0;" autobuffer="true">
+			<source src="http://tools.kanoha.org/ccltestingvideos/%5bYYDM-11FANS%5d%5bStrike_Witches%5d%5bBDRIP%5d%5b01%5d%5bX264_AAC%5d%5b1280X720%5d.mp4" type="video/mp4">
+		</video>
+	</div>
+	<div class="controls">
+		<a onclick="play();" class="button" href="javascript:;">Play</a>
+		<a onclick="stop();" class="button" href="javascript:;">Pause</a>
+	</div>
 </div>
-<a onclick="play();" href="javascript:;">Play</a>
-<a onclick="stop();" href="javascript:;">Pause</a>
 
 <p>Scripting: <a href="../../demo/">&larr; Back to main test</a> </p>
 <script>
+$ = function(e){return document.getElementById(e);};
 var isWindowedFullscreen = false;
 function launchFullScreen(element) {
 	cm.setBounds();
