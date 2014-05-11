@@ -34,7 +34,7 @@
 ## 定位弹幕
 ### 定位弹幕简单模式
     可选参量：Array[x,y,opacity,duration,text]
-定位弹幕简单模式允许用户对弹幕进行精确定位和透明度渐变，但是本身不包含任何3D排版效果。opacity为形如：```[Float]-[Float]```，分别定义了始末透明度。
+定位弹幕简单模式允许用户对弹幕进行精确定位和透明度渐变，但是本身不包含任何3D排版效果。opacity为形如：```[Float]-[Float]```，分别定义了始末透明度。x,y都小于1的时候我们认为是百分比。
 
 ### 定位弹幕扩展模式
     可选参量：Array[x,y,opacity,duration,text,rotateZ,rotateY]

@@ -30,6 +30,7 @@ function BilibiliParser(xmlDoc){
 			obj.mode = parseInt(opt[1]);
 			obj.date = parseInt(opt[4]);
 			obj.pool = parseInt(opt[5]);
+			obj.position = "absolute";
 			if(opt[7] != null)
 				obj.dbid = parseInt(opt[7]);
 			obj.hash = opt[6];

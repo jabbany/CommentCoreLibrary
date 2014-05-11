@@ -220,8 +220,13 @@ CommentManager.prototype.sendComment = function(data){
 		case 6:{this.csa.reverse.add(cmt);}break;
 		case 17:
 		case 7:{
-			cmt.style.top = data.y + "px";
-			cmt.style.left = data.x + "px";
+			if(cmt.data.position !== "relative"){
+				cmt.style.top = cmt.data.y + "px";
+				cmt.style.left = cmt.data.x + "px";
+			}else{
+				cmt.style.top = cmt.data.y * this.stage.height + "px";
+				cmt.style.left = cmt.data.x * this.stage.width + "px";
+			}
 			cmt.ttl = Math.round(data.duration * this.def.globalScale);
 			cmt.dur = Math.round(data.duration * this.def.globalScale);
 			if(data.rY !== 0 || data.rZ !== 0){
@@ -290,8 +295,13 @@ CommentManager.prototype.onTimerEvent = function(timePassed,cmObj){
 				cmt.style.opacity = (cmt.data.alphaFrom - cmt.data.alphaTo) * (cmt.ttl/cmt.dur) + cmt.data.alphaTo;
 			}
 			if(cmt.mode == 7 && cmt.data.movable){
-				cmt.style.top = ((cmt.data.toY - cmt.data.y) * (Math.min(Math.max(cmt.dur - cmt.data.moveDelay - cmt.ttl,0),cmt.data.moveDuration) / cmt.data.moveDuration) + parseInt(cmt.data.y)) + "px";
-				cmt.style.left = ((cmt.data.toX - cmt.data.x) * (Math.min(Math.max(cmt.dur - cmt.data.moveDelay - cmt.ttl,0),cmt.data.moveDuration) / cmt.data.moveDuration) + parseInt(cmt.data.x)) + "px";
+				if(cmt.data.position !== "relative"){
+					cmt.style.top = ((cmt.data.toY - cmt.data.y) * (Math.min(Math.max(cmt.dur - cmt.data.moveDelay - cmt.ttl,0),cmt.data.moveDuration) / cmt.data.moveDuration) + cmt.data.y) + "px";
+					cmt.style.left = ((cmt.data.toX - cmt.data.x) * (Math.min(Math.max(cmt.dur - cmt.data.moveDelay - cmt.ttl,0),cmt.data.moveDuration) / cmt.data.moveDuration) + cmt.data.x) + "px";
+				}else{
+					cmt.style.top = ((cmt.data.toY - cmt.data.y) * cmObj.stage.height * (Math.min(Math.max(cmt.dur - cmt.data.moveDelay - cmt.ttl,0),cmt.data.moveDuration)  / cmt.data.moveDuration) + cmt.data.y * cmObj.stage.height) + "px";
+					cmt.style.left = ((cmt.data.toX - cmt.data.x) * cmObj.stage.width * (Math.min(Math.max(cmt.dur - cmt.data.moveDelay - cmt.ttl,0),cmt.data.moveDuration)  / cmt.data.moveDuration) + cmt.data.x * cmObj.stage.width) + "px";
+				}
 			}
 		}
 		if(cmObj.filter != null){
