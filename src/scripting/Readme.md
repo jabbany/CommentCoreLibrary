@@ -8,3 +8,7 @@ Building
 目前还不自动 build ，这里只有 API 头头。
 
 
+Documentation
+------------------------
+请参考 /docs/scripting/
+

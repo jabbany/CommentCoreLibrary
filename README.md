@@ -23,18 +23,19 @@ fonts, Linux systems may render some fixed point animations wrong, this
 is normal. You should install the basic chinese font SimHei for accurate
 positioning. 
 
-## Licensing
+## License
 The CommentCoreLibrary is licensed under the permissive MIT License. If 
 you wish to use this in any project, you can simply include the 
 following line:
 
-```CommentCoreLibrary (//github.com/jabbany/CommentCoreLibrary) - 
-Licensed under the MIT license```
+    CommentCoreLibrary (//github.com/jabbany/CommentCoreLibrary) - 
+    Licensed under the MIT license
  
 ## Examples and Documentation
-Documentation can be found inside the /docs/ folder. Some sample 
-extension modules may be found in /extend/. You may test using
-test data found in /tests/.
+- Documentation can be found inside the /docs/ folder. 
+- Some sample extension modules may be found in /extend/.
+- Experimental modules are in /experimental/.
+- You may test using test data found in /tests/.
 
 ## Contributing
 Please feel free to fork the project on GitHub. Also, bug reports and 
@@ -51,9 +52,8 @@ feature requests are welcome!
 高级弹幕效果 (5) 基础格式解析
 
 ## 测试
-项目开放测试于 [这里](http://jabbany.github.com/CommentCoreLibrary/demo)。你可以
-随时通过浏览器进行测试，如果有任何BUG等，非常欢迎提交Bug Ticket！ 不过记得告诉我你的
-浏览器版本和系统信息。PS，如果你在用Linux，请确保你有标准中文字体（宋体 Simsun【必需】
+你可以在[这里](http://jabbany.github.com/CommentCoreLibrary/demo) 访问到测试页面。
+我们欢迎各种BUG提交。如果你在用Linux，请确保你有标准中文字体（宋体 Simsun【必需】
 ，黑体 Simhei【必需】，雅黑 Microsoft YaHei，幼圆 YouYuan，隶书），和日文字体
 （Mincho， Gothic）。
 
@@ -67,7 +67,7 @@ feature requests are welcome!
 
 ## 使用
 有关本项目的文档可以在 /docs/ 文件夹里面找到。一些功能性扩展模块会出现在 /extend/ 中。
-如何扩展本程序将在 /docs/Extending.md 里面进行介绍。
+一些实验性模块在 /experimental/ 里面。
 
 ## 做出贡献
 非常欢迎提交问题报告和意见建议，同时你也可以在GitHub上Fork本工程，并发送Pull请求来提交

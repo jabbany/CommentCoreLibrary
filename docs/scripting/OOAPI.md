@@ -31,4 +31,4 @@ __achannel(id:String, auth:String, payload:Object)
 
 __OOAPI
 ---------------------
-总控。
+总控。主要功能都由上面的接管了。
