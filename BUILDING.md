@@ -1,4 +1,4 @@
-Buildind 编译项目
+Building 编译项目
 ==============================
 
 When building the comment core library, you can build two different types, 
