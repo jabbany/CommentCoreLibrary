@@ -1,14 +1,14 @@
 /******
-* Comment Core For HTML5 VideoPlayers
-* Author : Jim Chen
-* Licensing : MIT License
-******/
+ * Comment Core For HTML5 VideoPlayers
+ * Author : Jim Chen
+ * Licensing : MIT License
+ ******/
 Array.prototype.remove = function(obj){
 	for(var a = 0; a < this.length;a++)
-		if(this[a] == obj){
-			this.splice(a,1);
-			break;
-		}
+	  if(this[a] == obj){
+		  this.splice(a,1);
+		  break;
+	  }
 };
 Array.prototype.bsearch = function(what,how){
 	if(this.length == 0) return 0;
@@ -28,7 +28,7 @@ Array.prototype.bsearch = function(what,how){
 		}else if(how(what,this[i])>=0){
 			low = i;
 		}else
-			console.error('Program Error');
+		  console.error('Program Error');
 		if(count > 1500) console.error('Too many run cycles.');
 	}
 	return -1;
@@ -47,6 +47,12 @@ function CommentManager(stageObject){
 	};
 	this.timeline = [];
 	this.runline = [];
+	/////
+	this.pdiv = [];
+	this.pdivbreak = 0.3 * this.def.globalScale ; 
+	this.eachDivTime = 4000 * this.pdivbreak ; 
+	this.pdivshow = [];
+	/////
 	this.position = 0;
 	this.limiter = 0;
 	this.filter = null;
@@ -67,28 +73,28 @@ function CommentManager(stageObject){
 		cmt.mode = data.mode;
 		cmt.data = data;
 		if(cmt.mode === 17){
-			
+
 		}else{
 			cmt.appendChild(document.createTextNode(data.text));
 			cmt.innerText = data.text;
 			cmt.style.fontSize = data.size + "px";
 		}
 		if(data.font != null && data.font != '')
-			cmt.style.fontFamily = data.font;
+		  cmt.style.fontFamily = data.font;
 		if(data.shadow === false)
-			cmt.className = 'cmt noshadow';
+		  cmt.className = 'cmt noshadow';
 		if(data.color == "#000000" && (data.shadow || data.shadow == null))
-			cmt.className += ' rshadow';
+		  cmt.className += ' rshadow';
 		if(data.margin != null)
-			cmt.style.margin = data.margin;
+		  cmt.style.margin = data.margin;
 		if(data.color != null)
-			cmt.style.color = data.color;
+		  cmt.style.color = data.color;
 		if(this.def.opacity != 1 && data.mode == 1)
-			cmt.style.opacity = this.def.opacity;
+		  cmt.style.opacity = this.def.opacity;
 		if(data.alphaFrom != null)
-			cmt.style.opacity = data.alphaFrom;
+		  cmt.style.opacity = data.alphaFrom;
 		if(data.border)
-			cmt.style.border = "1px solid #00ffff";
+		  cmt.style.border = "1px solid #00ffff";
 		cmt.ttl = Math.round(4000 * this.def.globalScale);
 		cmt.dur = cmt.ttl;
 		if(cmt.mode === 1 || cmt.mode === 6 || cmt.mode === 2){
@@ -99,7 +105,7 @@ function CommentManager(stageObject){
 	};
 	this.startTimer = function(){
 		if(__timer > 0)
-			return;
+		  return;
 		var lastTPos = new Date().getTime();
 		var cmMgr = this;
 		__timer = window.setInterval(function(){
@@ -113,7 +119,7 @@ function CommentManager(stageObject){
 		__timer = 0;
 	};
 }
-	
+
 /** Public **/
 CommentManager.prototype.seek = function(time){
 	this.position = this.timeline.bsearch(time,function(a,b){
@@ -124,7 +130,7 @@ CommentManager.prototype.seek = function(time){
 };
 CommentManager.prototype.validate = function(cmt){
 	if(cmt == null)
-		return false;
+	  return false;
 	return this.filter.doValidate(cmt);
 };
 CommentManager.prototype.load = function(a){
@@ -140,10 +146,93 @@ CommentManager.prototype.load = function(a){
 				else if(a.dbid < b.dbid) return -1;
 				return 0;
 			}else
-				return 0;
+		return 0;
 		}
 	});
+	/////
+	this.preload();
+	/////
 };
+/////
+CommentManager.prototype.preload = function(){
+	this.pdiv = [];
+	this.pdivshow = [];
+	while(this.stage.children.length > 0){
+		this.stage.removeChild(this.stage.children[0]);
+	}
+	totalDivTime = this.timeline[this.timeline.length-1].stime;
+	totalDivNum = Math.floor(totalDivTime/this.eachDivTime)+1;
+	for(i = 0; i < totalDivNum; i++){
+		this.pdiv[i] = document.createElement("div");
+		this.pdiv[i].show = false;
+		this.pdiv[i].id = "pdiv_"+i;
+	}
+	for(i = 0; i < this.timeline.length; i++){
+		if(this.timeline[i].mode == 1){
+			if(this.filter != null){
+				data=this.timeline[i];
+				if(this.filter.doModify(data) == null) 
+				  continue;
+			}
+			cmt = document.createElement('div');
+			cmt = this.initCmt(cmt,this.timeline[i]);
+			cmt.width = cmt.offsetWidth;
+			cmt.height = cmt.offsetHeight;
+			cmt.style.width = (cmt.w + 1) + "px";
+			cmt.style.height = (cmt.h - 3) + "px";
+			cmt.style.left = this.stage.width + "px";
+			this.pdiv[Math.floor(this.timeline[i].stime/this.eachDivTime)].appendChild(cmt);
+			cmt.incsa = false;
+		}
+	}
+}
+CommentManager.prototype.pdivupdate = function(){
+	time=this.lastPos;
+	nowDivNum = Math.floor(time/this.eachDivTime);
+	if(this.pdiv[nowDivNum].show == false){
+		this.stage.appendChild(this.pdiv[nowDivNum]);
+		this.pdiv[nowDivNum].show = true;
+		this.pdivshow[this.pdivshow.length] = this.pdiv[nowDivNum];
+		childrenlength=this.pdiv[nowDivNum].children.length;
+		for(j = 0; j<childrenlength; j++){
+			//this.csa.scroll.add(this.pdiv[nowDivNum].children[j]);
+		}
+	}
+	finish=Math.floor(1/this.pdivbreak)+1;
+	if(nowDivNum > finish-1){
+		if(this.pdiv[nowDivNum-finish].show == true){
+			this.stage.removeChild(this.pdiv[nowDivNum-finish]);
+			this.pdiv[nowDivNum-finish].show = false;
+			childrenlength=this.pdiv[nowDivNum-finish].children.length;
+			for(j = 0; j<childrenlength; j++){
+				//this.pdiv[nowDivNum-finish].children[j].incsa = false ;
+				//this.csa.scroll.remove(this.pdiv[nowDivNum-finish].children[j]);
+			}
+		}
+	}
+	if(this.pdivshow.length>finish-1) k = this.pdivshow.length-finish;
+	else k = 0;
+	for(i = k; i < this.pdivshow.length; i++){
+		childrenlength = this.pdivshow[i].children.length;
+		for(j = 0; j < childrenlength; j++){
+			cmt = this.pdivshow[i].children[j];
+			cmtlocation=1+ (cmt.stime-time)/ cmt.dur;
+			if(cmtlocation>0){
+				if(cmt.incsa == false){
+					this.csa.scroll.add(cmt);
+					cmt.incsa = true;
+				}
+				cmt.style.left = (cmtlocation) * (this.stage.width + cmt.width) - cmt.width + "px";
+			}else{
+				if(cmt.incsa == true){
+					this.csa.scroll.remove(cmt);
+					cmt.incsa = false;
+				}
+			}
+		}
+	}
+}
+/////
 CommentManager.prototype.clear = function(){
 	for(var i=0;i<this.runline.length;i++){
 		this.finish(this.runline[i]);
@@ -164,7 +253,7 @@ CommentManager.prototype.setBounds = function(){
 CommentManager.prototype.init = function(){
 	this.setBounds();
 	if(this.filter == null)
-		this.filter = new CommentFilter(); //Only create a filter if none exist
+	  this.filter = new CommentFilter(); //Only create a filter if none exist
 };
 CommentManager.prototype.time = function(time){
 	time = time - 1;
@@ -172,7 +261,7 @@ CommentManager.prototype.time = function(time){
 		this.seek(time);
 		this.lastPos = time;
 		if(this.timeline.length <= this.position)
-			return;
+		  return;
 	}else this.lastPos = time;
 	for(;this.position < this.timeline.length;this.position++){
 		if(this.limiter > 0 && this.runline.length > this.limiter) break;
@@ -194,6 +283,7 @@ CommentManager.prototype.sendComment = function(data){
 		}
 		return;
 	}
+	if(data.mode === 1) return;
 	var cmt = document.createElement('div');
 	if(this.filter != null){
 		data = this.filter.doModify(data);
@@ -206,7 +296,7 @@ CommentManager.prototype.sendComment = function(data){
 	cmt.style.width = (cmt.w + 1) + "px";
 	cmt.style.height = (cmt.h - 3) + "px";
 	cmt.style.left = this.stage.width + "px";
-	
+
 	if(this.filter != null && !this.filter.beforeSend(cmt)){
 		this.stage.removeChild(cmt);
 		cmt = null;
@@ -244,7 +334,7 @@ CommentManager.prototype.sendComment = function(data){
 						(-SIN(zr))           , COS(zr)               , 0        , 0, 
 						(-SIN(yr) * COS(zr)) , (-SIN(yr) * SIN(zr))  , COS(yr)  , 0,
 						0                    , 0                     , 0        , 1
-					];
+							];
 					// CSS does not recognize scientific notation (e.g. 1e-6), truncating it.
 					for(var i = 0; i < matrix.length;i++){
 						if(Math.abs(matrix[i]) < 0.000001){
@@ -271,7 +361,7 @@ CommentManager.prototype.sendComment = function(data){
 CommentManager.prototype.finish = function(cmt){
 	switch(cmt.mode){
 		default:
-		case 1:{this.csa.scroll.remove(cmt);}break;
+			//case 1:{this.csa.scroll.remove(cmt);}break;
 		case 2:{this.csa.scrollbtm.remove(cmt);}break;
 		case 4:{this.csa.bottom.remove(cmt);}break;
 		case 5:{this.csa.top.remove(cmt);}break;
@@ -281,6 +371,7 @@ CommentManager.prototype.finish = function(cmt){
 };
 /** Static Functions **/
 CommentManager.prototype.onTimerEvent = function(timePassed,cmObj){
+	this.pdivupdate();
 	for(var i= 0;i < cmObj.runline.length; i++){
 		var cmt = cmObj.runline[i];
 		if(cmt.hold){
@@ -293,14 +384,14 @@ CommentManager.prototype.onTimerEvent = function(timePassed,cmObj){
 			cmt.style.left = (1 - cmt.ttl / cmt.dur) * (cmObj.stage.width + cmt.width) - cmt.width + "px";
 		}else if(cmt.mode == 4 || cmt.mode == 5 || cmt.mode >= 7){
 			if(cmt.dur == null)
-				cmt.dur = 4000;
+			  cmt.dur = 4000;
 			if(cmt.data.alphaFrom != null && cmt.data.alphaTo != null){
 				cmt.style.opacity = (cmt.data.alphaFrom - cmt.data.alphaTo) * 
 					(cmt.ttl/cmt.dur) + cmt.data.alphaTo;
 			}
 			if(cmt.mode == 7 && cmt.data.movable){
 				var posT = Math.min(Math.max(cmt.dur - cmt.data.moveDelay - cmt.ttl,0),
-					cmt.data.moveDuration) / cmt.data.moveDuration;
+							cmt.data.moveDuration) / cmt.data.moveDuration;
 				if(cmt.data.position !== "relative"){
 					cmt.style.top = ((cmt.data.toY - cmt.data.y) * posT + cmt.data.y) + "px";
 					cmt.style.left= ((cmt.data.toX - cmt.data.x) * posT + cmt.data.x) + "px";
