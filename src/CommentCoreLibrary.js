@@ -49,7 +49,7 @@ function CommentManager(stageObject){
 	this.runline = [];
 	/////
 	this.pdiv = [];
-	this.pdivbreak = 0.3 * this.def.globalScale ; 
+	this.pdivbreak = 1 * this.def.globalScale ; 
 	this.eachDivTime = 4000 * this.pdivbreak ; 
 	this.pdivshow = [];
 	this.pdivpool = [0];
@@ -169,6 +169,7 @@ CommentManager.prototype.preload = function(){
 		this.pdiv[i] = document.createElement("div");
 		this.pdiv[i].show = false;
 		this.pdiv[i].id = "pdiv_"+i;
+		this.pdiv[i].pnum = i;
 	}
 	for(i = 0; i < this.timeline.length; i++){
 		if(this.timeline[i].mode == 1){
@@ -179,16 +180,16 @@ CommentManager.prototype.preload = function(){
 			}
 			cmt = document.createElement('div');
 			cmt = this.initCmt(cmt,this.timeline[i]);
-			//cmt.width = cmt.offsetWidth;
-			//cmt.height = cmt.offsetHeight;
 			cmt.width = Math.floor(cmt.data.text.length*cmt.data.size)+1;
 			if(isNaN(cmt.width))cmt.width=0;
 			cmt.height = Math.floor(cmt.data.size*1.15)+1;
 			j = 0;
-			while(j < this.pdivpool.length){
+			while(j <= this.pdivpool.length){
+				if(j == this.pdivpool.length)
+				  this.pdivpool[j] = 0;
 				if(cmt.stime >= this.pdivpool[j]){
 					cmt.totop = j* this.pdivheight;
-					while(cmt.totop > this.stage.height)
+					while(cmt.totop + cmt.height > this.stage.height)
 					  cmt.totop-=this.stage.height;
 					endtime = cmt.stime+cmt.width/this.stage.width*4000*this.def.globalScale;
 					k=0;
@@ -200,19 +201,7 @@ CommentManager.prototype.preload = function(){
 				}else
 				  j++;
 			}
-			if(j == this.pdivpool.length){
-				cmt.totop = j* this.pdivheight;
-				while(cmt.totop > this.stage.height)
-				  cmt.totop-=this.stage.height;
-				endtime = cmt.stime+cmt.width/this.stage.width*4000*this.def.globalScale;
-				k=0;
-				while(k*this.pdivheight<cmt.height){
-				  this.pdivpool[j+k]=endtime;
-				  k++}
-			}	
-			//cmt.style.width = (cmt.w + 1) + "px";
-			//cmt.style.height = (cmt.h - 3) + "px";
-			cmt.style.left = this.stage.width + "px";
+			cmt.style.left = -this.stage.width-cmt.width + "px";
 			cmt.style.top = cmt.totop + "px";
 			this.pdiv[Math.floor(this.timeline[i].stime/this.eachDivTime)].appendChild(cmt);
 			cmt.incsa = false;
@@ -220,20 +209,51 @@ CommentManager.prototype.preload = function(){
 		}
 	}
 }
+CommentManager.prototype.pdivsety = function(){
+	this.pdivpool=[0];
+	for(i = 0; i < this.timeline.length; i++){
+		if(this.timeline[i].mode !== 1)
+		  continue;
+		if(!this.timeline[i].cmt)
+		  continue;
+		cmt=this.timeline[i].cmt;
+		j = 0;
+		while(j <= this.pdivpool.length){
+			if(j == this.pdivpool.length)
+			  this.pdivpool[j] = 0;
+			if(cmt.stime >= this.pdivpool[j]){
+				cmt.totop = j* this.pdivheight;
+				while(cmt.totop + cmt.height > this.stage.height)
+				  cmt.totop-=this.stage.height;
+				endtime = cmt.stime+cmt.width/this.stage.width*4000*this.def.globalScale;
+				k=0;
+				while(k*this.pdivheight<cmt.height){
+					this.pdivpool[j+k]=endtime;
+					k++
+				}
+				break;
+			}else
+			  j++;
+		}
+		cmt.style.top = cmt.totop + "px";
+	}
+}
 CommentManager.prototype.pdivupdate = function(){
 	time=this.lastPos;
 	nowDivNum = Math.floor(time/this.eachDivTime);
 	if(this.pdiv[nowDivNum].show == false){
-		this.stage.appendChild(this.pdiv[nowDivNum]);
 		this.pdiv[nowDivNum].show = true;
-		this.pdivshow[this.pdivshow.length] = this.pdiv[nowDivNum];
+		pdiv=this.pdiv[nowDivNum];
+		for(i=0;i<pdiv.children.length;i++)
+		  pdiv.children[i].style.left =  -this.stage.width-pdiv.children[i].width + "px";
+		this.stage.appendChild(this.pdiv[nowDivNum]);
+		this.pdivshow.push(this.pdiv[nowDivNum]);
 	}
-	finish=Math.floor(1/this.pdivbreak)+2;
-	if(nowDivNum > finish-1){
-		if(this.pdiv[nowDivNum-finish].show == true){
-			this.stage.removeChild(this.pdiv[nowDivNum-finish]);
-			this.pdiv[nowDivNum-finish].show = false;
-		}
+	finish=Math.floor(1/this.pdivbreak)+1;
+	while(this.pdivshow[0].pnum < nowDivNum - finish){
+		this.stage.removeChild(this.pdivshow[0]);
+		this.pdivshow[0].show = false;
+		this.pdivshow.shift();
 	}
 }
 /////
@@ -243,6 +263,11 @@ CommentManager.prototype.clear = function(){
 		if(this.runline[i].mode!==1)
 		  this.stage.removeChild(this.runline[i]);
 	}
+	while(this.stage.children[0])
+	  this.stage.removeChild(this.stage.children[0]);
+	for(i = 0; i < this.pdiv.length; i++)
+	  this.pdiv[i].show = false;
+	this.pdivshow = [];
 	this.runline = [];
 };
 CommentManager.prototype.setBounds = function(){
@@ -254,6 +279,9 @@ CommentManager.prototype.setBounds = function(){
 	// Update 3d perspective
 	this.stage.style.perspective = this.stage.width * Math.tan(40 * Math.PI/180) / 2 + "px";
 	this.stage.style.webkitPerspective = this.stage.width * Math.tan(40 * Math.PI/180) / 2 + "px";
+	for(i = 0; i < this.pdiv.length; i++)
+	  this.pdiv[i].style.left = this.stage.width + "px";
+	this.pdivsety();
 };
 CommentManager.prototype.init = function(){
 	this.setBounds();
@@ -270,7 +298,8 @@ CommentManager.prototype.time = function(time){
 	}else this.lastPos = time;
 	for(;this.position < this.timeline.length;this.position++){
 		if(this.limiter > 0 && this.runline.length > this.limiter) break;
-		if(this.validate(this.timeline[this.position]) && this.timeline[this.position]['stime']<=time) this.sendComment(this.timeline[this.position]);
+		if(this.validate(this.timeline[this.position]) && this.timeline[this.position]['stime']<=time) 
+		  this.sendComment(this.timeline[this.position]);
 		else break;
 	}
 };
@@ -291,18 +320,18 @@ CommentManager.prototype.sendComment = function(data){
 	if(data.mode === 1){
 		cmt = data.cmt;
 	}else{
-	var cmt = document.createElement('div');
-	if(this.filter != null){
-		data = this.filter.doModify(data);
-		if(data == null) return;
-	}
-	cmt = this.initCmt(cmt,data);
-	this.stage.appendChild(cmt);
-	cmt.width = cmt.offsetWidth;
-	cmt.height = cmt.offsetHeight;
-	cmt.style.width = (cmt.w + 1) + "px";
-	cmt.style.height = (cmt.h - 3) + "px";
-	cmt.style.left = this.stage.width + "px";
+		var cmt = document.createElement('div');
+		if(this.filter != null){
+			data = this.filter.doModify(data);
+			if(data == null) return;
+		}
+		cmt = this.initCmt(cmt,data);
+		this.stage.appendChild(cmt);
+		cmt.width = cmt.offsetWidth;
+		cmt.height = cmt.offsetHeight;
+		cmt.style.width = (cmt.w + 1) + "px";
+		cmt.style.height = (cmt.h - 3) + "px";
+		cmt.style.left = this.stage.width + "px";
 	}
 
 	if(this.filter != null && !this.filter.beforeSend(cmt)){
@@ -313,7 +342,7 @@ CommentManager.prototype.sendComment = function(data){
 	switch(cmt.mode){
 		default:
 		case 1: break;
-		//case 1:{this.csa.scroll.add(cmt);}break;
+				//case 1:{this.csa.scroll.add(cmt);}break;
 		case 2:{this.csa.scrollbtm.add(cmt);}break;
 		case 4:{this.csa.bottom.add(cmt);}break;
 		case 5:{this.csa.top.add(cmt);}break;
@@ -371,7 +400,7 @@ CommentManager.prototype.finish = function(cmt){
 	switch(cmt.mode){
 		default:
 		case 1: break;
-		//case 1:{this.csa.scroll.remove(cmt);}break;
+				//case 1:{this.csa.scroll.remove(cmt);}break;
 		case 2:{this.csa.scrollbtm.remove(cmt);}break;
 		case 4:{this.csa.bottom.remove(cmt);}break;
 		case 5:{this.csa.top.remove(cmt);}break;
