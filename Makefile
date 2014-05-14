@@ -7,6 +7,8 @@ DIR = src/
 
 all-uglify: all uglify
 
+all-concat-only: all concat-only
+
 all: clean core parsers css
 
 core: $(SRC_CORE)
@@ -22,25 +24,32 @@ parsers: parserbili parserac
 
 parserbili:
 ifneq ($(BILISRC),)
-	cat $(BILISRC) > build/BParser.js
+	cat $(DIR)$(BILISRC) > build/BParser.js
 endif
 
 parserac:
 ifneq ($(ACSRC),)
-	cat $(ACSRC) > build/AParser.js
+	cat $(DIR)$(ACSRC) > build/AParser.js
 endif
-
-extensions-scripting:
-	cp experimental/bscript.js build/CCLScripting.js
-	cp experimental/api.worker.js build/api.worker.js
 
 css:
 	cp  src/base.css build/base.css
 
+concat-only: $(BUILD_MINIFY)
+	cat $^ > build/CommentCoreLibrary.tmp
+	rm build/*.js
+	mv build/CommentCoreLibrary.tmp build/CommentCoreLibrary.js
+	
 uglify: $(BUILD_MINIFY)
 	node ./node_modules/uglify-js/bin/uglifyjs $^ -c -m -o build/CommentCoreLibrary.tmp --preamble "/* CommentCoreLibrary (//github.com/jabbany/CommentCoreLibrary) - Licensed under the MIT License */"
 	rm build/*.js
 	mv build/CommentCoreLibrary.tmp build/CommentCoreLibrary.js
+
+extensions: extensions-scripting
+
+extensions-scripting:
+	cp experimental/bscript.js build/CCLScripting.js
+	cp experimental/api.worker.js build/api.worker.js
 
 clean: 
 	rm -rf build/
