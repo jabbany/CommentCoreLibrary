@@ -204,7 +204,6 @@ CommentManager.prototype.preload = function(){
 			cmt.style.left = -this.stage.width-cmt.width + "px";
 			cmt.style.top = cmt.totop + "px";
 			this.pdiv[Math.floor(this.timeline[i].stime/this.eachDivTime)].appendChild(cmt);
-			cmt.incsa = false;
 			this.timeline[i].cmt=cmt;
 		}
 	}
@@ -241,19 +240,34 @@ CommentManager.prototype.pdivsety = function(){
 CommentManager.prototype.pdivupdate = function(){
 	time=this.lastPos;
 	nowDivNum = Math.floor(time/this.eachDivTime);
-	if(this.pdiv[nowDivNum].show == false){
-		this.pdiv[nowDivNum].show = true;
-		pdiv=this.pdiv[nowDivNum];
-		for(i=0;i<pdiv.children.length;i++)
-		  pdiv.children[i].style.left =  -this.stage.width-pdiv.children[i].width + "px";
-		this.stage.appendChild(this.pdiv[nowDivNum]);
-		this.pdivshow.push(this.pdiv[nowDivNum]);
+	if(this.pdiv[nowDivNum]){
+		if(this.pdiv[nowDivNum].show == false){
+			this.pdiv[nowDivNum].show = true;
+			pdiv=this.pdiv[nowDivNum];
+			for(i=0;i<pdiv.children.length;i++)
+			  pdiv.children[i].style.left =  -this.stage.width-pdiv.children[i].width + "px";
+			this.stage.appendChild(this.pdiv[nowDivNum]);
+			this.pdivshow.push(this.pdiv[nowDivNum]);
+		}
+		finish=Math.floor(1/this.pdivbreak)+1;
+		if(this.pdivshow[0])
+		  while(this.pdivshow[0].pnum < nowDivNum - finish){
+			  this.stage.removeChild(this.pdivshow[0]);
+			  this.pdivshow[0].show = false;
+			  this.pdivshow.shift();
+		  }
 	}
-	finish=Math.floor(1/this.pdivbreak)+1;
-	while(this.pdivshow[0].pnum < nowDivNum - finish){
-		this.stage.removeChild(this.pdivshow[0]);
-		this.pdivshow[0].show = false;
-		this.pdivshow.shift();
+}
+CommentManager.prototype.pdivclear = function(){
+	for(i=0;i<this.pdivshow.length;i++)
+	  this.stage.removeChild(this.pdivshow[i]);
+	this.pdivshow=[];
+	for(i=0;i<this.pdiv.length;i++)
+	  this.pdiv[i].show=false;
+	for(i = 0; i < this.timeline.length; i++){
+		if(this.timeline[i].mode==1)
+		  if(this.timeline[i].cmt)
+			this.timeline[i].cmt.ttl=this.timeline[i].cmt.dur;
 	}
 }
 /////
@@ -263,12 +277,13 @@ CommentManager.prototype.clear = function(){
 		if(this.runline[i].mode!==1)
 		  this.stage.removeChild(this.runline[i]);
 	}
-	while(this.stage.children[0])
-	  this.stage.removeChild(this.stage.children[0]);
-	for(i = 0; i < this.pdiv.length; i++)
-	  this.pdiv[i].show = false;
-	this.pdivshow = [];
+	//while(this.stage.children[0])
+	//  this.stage.removeChild(this.stage.children[0]);
+	//for(i = 0; i < this.pdiv.length; i++)
+	//  this.pdiv[i].show = false;
+	//this.pdivshow = [];
 	this.runline = [];
+	this.pdivclear();
 };
 CommentManager.prototype.setBounds = function(){
 	for(var comAlloc in this.csa){
@@ -290,7 +305,7 @@ CommentManager.prototype.init = function(){
 };
 CommentManager.prototype.time = function(time){
 	time = time - 1;
-	if(this.position >= this.timeline.length || Math.abs(this.lastPos - time) >= 2000){
+	if(this.position >= this.timeline.length || Math.abs(this.lastPos - time) >= 500){
 		this.seek(time);
 		this.lastPos = time;
 		if(this.timeline.length <= this.position)
