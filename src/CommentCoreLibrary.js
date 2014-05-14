@@ -52,6 +52,8 @@ function CommentManager(stageObject){
 	this.pdivbreak = 0.3 * this.def.globalScale ; 
 	this.eachDivTime = 4000 * this.pdivbreak ; 
 	this.pdivshow = [];
+	this.pdivpool = [0];
+	this.pdivheight = 29;
 	/////
 	this.position = 0;
 	this.limiter = 0;
@@ -157,6 +159,7 @@ CommentManager.prototype.load = function(a){
 CommentManager.prototype.preload = function(){
 	this.pdiv = [];
 	this.pdivshow = [];
+	this.pdivpool = [0];
 	while(this.stage.children.length > 0){
 		this.stage.removeChild(this.stage.children[0]);
 	}
@@ -176,13 +179,44 @@ CommentManager.prototype.preload = function(){
 			}
 			cmt = document.createElement('div');
 			cmt = this.initCmt(cmt,this.timeline[i]);
-			cmt.width = cmt.offsetWidth;
-			cmt.height = cmt.offsetHeight;
-			cmt.style.width = (cmt.w + 1) + "px";
-			cmt.style.height = (cmt.h - 3) + "px";
+			//cmt.width = cmt.offsetWidth;
+			//cmt.height = cmt.offsetHeight;
+			cmt.width = Math.floor(cmt.data.text.length*cmt.data.size)+1;
+			if(isNaN(cmt.width))cmt.width=0;
+			cmt.height = Math.floor(cmt.data.size*1.15)+1;
+			j = 0;
+			while(j < this.pdivpool.length){
+				if(cmt.stime >= this.pdivpool[j]){
+					cmt.totop = j* this.pdivheight;
+					while(cmt.totop > this.stage.height)
+					  cmt.totop-=this.stage.height;
+					endtime = cmt.stime+cmt.width/this.stage.width*4000*this.def.globalScale;
+					k=0;
+					while(k*this.pdivheight<cmt.height){
+						this.pdivpool[j+k]=endtime;
+						k++
+					}
+					break;
+				}else
+				  j++;
+			}
+			if(j == this.pdivpool.length){
+				cmt.totop = j* this.pdivheight;
+				while(cmt.totop > this.stage.height)
+				  cmt.totop-=this.stage.height;
+				endtime = cmt.stime+cmt.width/this.stage.width*4000*this.def.globalScale;
+				k=0;
+				while(k*this.pdivheight<cmt.height){
+				  this.pdivpool[j+k]=endtime;
+				  k++}
+			}	
+			//cmt.style.width = (cmt.w + 1) + "px";
+			//cmt.style.height = (cmt.h - 3) + "px";
 			cmt.style.left = this.stage.width + "px";
+			cmt.style.top = cmt.totop + "px";
 			this.pdiv[Math.floor(this.timeline[i].stime/this.eachDivTime)].appendChild(cmt);
 			cmt.incsa = false;
+			this.timeline[i].cmt=cmt;
 		}
 	}
 }
@@ -193,42 +227,12 @@ CommentManager.prototype.pdivupdate = function(){
 		this.stage.appendChild(this.pdiv[nowDivNum]);
 		this.pdiv[nowDivNum].show = true;
 		this.pdivshow[this.pdivshow.length] = this.pdiv[nowDivNum];
-		childrenlength=this.pdiv[nowDivNum].children.length;
-		for(j = 0; j<childrenlength; j++){
-			//this.csa.scroll.add(this.pdiv[nowDivNum].children[j]);
-		}
 	}
-	finish=Math.floor(1/this.pdivbreak)+1;
+	finish=Math.floor(1/this.pdivbreak)+2;
 	if(nowDivNum > finish-1){
 		if(this.pdiv[nowDivNum-finish].show == true){
 			this.stage.removeChild(this.pdiv[nowDivNum-finish]);
 			this.pdiv[nowDivNum-finish].show = false;
-			childrenlength=this.pdiv[nowDivNum-finish].children.length;
-			for(j = 0; j<childrenlength; j++){
-				//this.pdiv[nowDivNum-finish].children[j].incsa = false ;
-				//this.csa.scroll.remove(this.pdiv[nowDivNum-finish].children[j]);
-			}
-		}
-	}
-	if(this.pdivshow.length>finish-1) k = this.pdivshow.length-finish;
-	else k = 0;
-	for(i = k; i < this.pdivshow.length; i++){
-		childrenlength = this.pdivshow[i].children.length;
-		for(j = 0; j < childrenlength; j++){
-			cmt = this.pdivshow[i].children[j];
-			cmtlocation=1+ (cmt.stime-time)/ cmt.dur;
-			if(cmtlocation>0){
-				if(cmt.incsa == false){
-					this.csa.scroll.add(cmt);
-					cmt.incsa = true;
-				}
-				cmt.style.left = (cmtlocation) * (this.stage.width + cmt.width) - cmt.width + "px";
-			}else{
-				if(cmt.incsa == true){
-					this.csa.scroll.remove(cmt);
-					cmt.incsa = false;
-				}
-			}
 		}
 	}
 }
@@ -236,7 +240,8 @@ CommentManager.prototype.pdivupdate = function(){
 CommentManager.prototype.clear = function(){
 	for(var i=0;i<this.runline.length;i++){
 		this.finish(this.runline[i]);
-		this.stage.removeChild(this.runline[i]);
+		if(this.runline[i].mode!==1)
+		  this.stage.removeChild(this.runline[i]);
 	}
 	this.runline = [];
 };
@@ -283,7 +288,9 @@ CommentManager.prototype.sendComment = function(data){
 		}
 		return;
 	}
-	if(data.mode === 1) return;
+	if(data.mode === 1){
+		cmt = data.cmt;
+	}else{
 	var cmt = document.createElement('div');
 	if(this.filter != null){
 		data = this.filter.doModify(data);
@@ -296,6 +303,7 @@ CommentManager.prototype.sendComment = function(data){
 	cmt.style.width = (cmt.w + 1) + "px";
 	cmt.style.height = (cmt.h - 3) + "px";
 	cmt.style.left = this.stage.width + "px";
+	}
 
 	if(this.filter != null && !this.filter.beforeSend(cmt)){
 		this.stage.removeChild(cmt);
@@ -304,7 +312,8 @@ CommentManager.prototype.sendComment = function(data){
 	}
 	switch(cmt.mode){
 		default:
-		case 1:{this.csa.scroll.add(cmt);}break;
+		case 1: break;
+		//case 1:{this.csa.scroll.add(cmt);}break;
 		case 2:{this.csa.scrollbtm.add(cmt);}break;
 		case 4:{this.csa.bottom.add(cmt);}break;
 		case 5:{this.csa.top.add(cmt);}break;
@@ -361,7 +370,8 @@ CommentManager.prototype.sendComment = function(data){
 CommentManager.prototype.finish = function(cmt){
 	switch(cmt.mode){
 		default:
-			//case 1:{this.csa.scroll.remove(cmt);}break;
+		case 1: break;
+		//case 1:{this.csa.scroll.remove(cmt);}break;
 		case 2:{this.csa.scrollbtm.remove(cmt);}break;
 		case 4:{this.csa.bottom.remove(cmt);}break;
 		case 5:{this.csa.top.remove(cmt);}break;
@@ -405,7 +415,8 @@ CommentManager.prototype.onTimerEvent = function(timePassed,cmObj){
 			cmt = cmObj.filter.runtimeFilter(cmt);
 		}
 		if(cmt.ttl <= 0){
-			cmObj.stage.removeChild(cmt);
+			if(cmt.mode!==1)
+			  cmObj.stage.removeChild(cmt);
 			cmObj.runline.splice(i,1);//remove the comment
 			cmObj.finish(cmt);
 		}
