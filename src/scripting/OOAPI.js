@@ -1,30 +1,49 @@
 /**
  * The Wrapping API Worker. Here the OOAPI is defined
 **/
-var __OOAPI = function(){
+var __OOAPI = new function(){
 	var channels = {};
-	var channels
 	function dispatchMessage(msg){
 		if(channels[msg.channel]){
 			for(var i = 0; i < channels[msg.channel].listeners.length; i++){
 				try{
 					channels[msg.channel].listeners[i](msg.payload);
 				}catch(e){
-					__trace(e, 'err');
+					if(e.stack){
+						__trace(e.stack.toString(), 'err');
+					}else{
+						__trace(e.toString(), 'err');
+					}
 				}
 			}
 		}
 	};
 	
-	self.addEventListener("message",function(msg){
-		if(msg){
-			if(msg.action){
-				if(msg.action === "reply"){
-					dispatchMessage(msg);
-				}
-			}	
+	self.addEventListener("message",function(event){
+		if(!event)
+			return;
+		try{
+			var msg = JSON.parse(event.data);
+		}catch(e){
+			__trace(e, "err");
+		}
+		if(msg && msg.channel){
+			dispatchMessage(msg);
+		}else{
+			console.log(msg);
 		}
 	});
+	
+	this.listChannels = function(){
+		var chl = {};
+		for(var chan in channels){
+			chl[chan] = {
+				"max":channels[chan].max,
+				"listeners":channels[chan].listeners.length
+			};
+		}
+		return chl;
+	};
 	
 	this.deleteChannel = function(channelId, authToken){
 		if(!channels[channelId])
@@ -72,8 +91,8 @@ var __OOAPI = function(){
 
 function __trace(obj, traceMode){
 	self.postMessage(JSON.stringify({
-		"action":"trace",
-		"obj":text,
+		"channel":"",
+		"obj":obj,
 		"mode": (traceMode ? traceMode : "log")
 	}));
 };

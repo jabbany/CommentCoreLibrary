@@ -47,6 +47,11 @@ var Player = function(){
 	
 	};
 	
+	var triggers = {
+		"keyboard":[],
+		"comment":[]
+	};
+	
 	__schannel("update:player", function(){
 		
 	});
@@ -55,26 +60,26 @@ var Player = function(){
 	 * Public methods
 	**/
 	this.play = function(){
-		__pchannel("player", {
+		__pchannel("Player::action", {
 			"action":"play"
 		});
 	};
 	
 	this.pause = function(){
-		__pchannel("player", {
+		__pchannel("Player::action", {
 			"action":"pause"
 		});
 	};
 	
 	this.seek = function(offset){
-		__pchannel("player", {
+		__pchannel("Player::action", {
 			"action":"seek",
 			"params":offset
 		});
 	};
 	
 	this.jump = function(vid, page, newWindow){
-		__pchannel("player", {
+		__pchannel("Player::action", {
 			"action":"jump",
 			"params":{
 				"vid":vid,
@@ -85,19 +90,63 @@ var Player = function(){
 	};
 	
 	this.commentTrigger = function(callback, timeout){
-		
+		if(!timeout)
+			timeout = 0;
+		triggers["comment"].push(callback);
+		if(timeout > 0){
+			setTimeout(function(){
+				triggers["comment"].splice(triggers.indexOf(callback),1);
+			}, timeout);
+		};
 	};
 	
 	this.keyTrigger = function(callback, timeout, up){
-		
+		if(!timeout)
+			timeout = 0;
+		var oc = callback;
+		if(!up){
+			callback = function(event){
+				if(event == "keydown") {
+					oc(event);
+				}
+			};
+		}else{
+			callback = function(event){
+				if(event == "keyup") {
+					oc(event);
+				}
+			};
+		}
+		triggers["keyboard"].push(callback);
+		if(timeout > 0){
+			setTimeout(function(){
+				triggers["keyboard"].splice(triggers.indexOf(callback),1);
+			}, timeout);
+		};
+	};
+	
+	this.dispatchTrigger = function(trigger, data){
+		if(triggers[trigger]){
+			for(var i in triggers){
+				try{
+					triggers[i](data);
+				}catch(e){
+					if(e.stack){
+						__trace(e.stack, "err");
+					}else{
+						__trace(e.toString(), "err");
+					}
+				};
+			}
+		}
 	};
 	
 	this.setMask = function(maskObj){
-		__trace("Not supported", 'warn');
+		__trace("Masking not supported", 'warn');
 	};
 	
 	this.createSound = function(){
-		
+		__trace("Sound not supported", 'warn');
 	};
 	
 	this.toString = function(){

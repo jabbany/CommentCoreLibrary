@@ -1,11 +1,25 @@
 var CCLScripting = function(workerUrl){
 	this.version = 1.0;
 	this.workerUrl = workerUrl;
+	this.logger = new function(){
+		this.log = function(m){
+			console.log(m);
+		};
+		this.error = function(m){
+			console.error(m);
+		};
+		this.warn = function(m){
+			console.warn(m);
+		};
+	};
 	this.getWorker = function(){
 		return new Worker(this.workerUrl);
 	};
-	this.getScriptingContext(stage){
-		return new this.ScriptingContext(stage);
+	this.getScriptingContext = function(stage){
+		return new this.ScriptingContext(this, stage);
+	};
+	this.getSandbox = function(stage, player){
+		return new this.BridgedSandbox(this, stage, player);
 	};
 };
 
@@ -15,27 +29,78 @@ var CCLScripting = function(workerUrl){
 		return;
 	}
 	
-	CCLScripting.prototype.ScriptingContext = function(stage){
+	CCLScripting.prototype.ScriptingContext = function(scripter, stage){
 		// Here in the Scripting Context we also have a objects
-		
-	};
-	
-	CCLScripting.prototype.BridgedSandbox = function(stage){
-		var worker = this.getWorker();
-		var context = this.getScriptingContext(stage);
-		var channels = {
-			"::worker:state":{
-				"max":0,
-				"listeners":[]
+		var objects = {};
+		this.registerObject = function(objectId, serialized){
+			if(typeof this.Unpack[serialized["class"]] === "function"){
+				objects[objectId] = new this.Unpack[serialized["class"]](stage, 
+					serialized);
+			}else{
+				scripter.logger.error("Cannot unpack class \"" + 
+					serialized["class"] + "\". No valid unpacker found");
+				return;
 			}
 		};
+		
+		this.deregisterObject = function(objectId){
+			delete objects[objectId];
+		};
+		
+		this.callMethod = function(objectId, methodName, params){
+			if(!objects[objectId]){
+				scripter.logger.error("Object not found.");
+				return;
+			}
+			if(!objects[objectId][methodName]){
+				scripter.logger.error("Method \"" + methodName 
+					+ "\" not defined for object of type " + 
+					objects[objectId].getClass() +".");
+				return;
+			}
+			try{
+				objects[objectId][methodName](params);
+			}catch(e){
+				if(e.stack){
+					scripter.logger.error(e.stack);
+				}else{
+					scripter.logger.error(e.toString());
+				};
+			}
+		};
+		
+		this.clear = function(){
+			
+		};
+	};
+	
+	CCLScripting.prototype.ScriptingContext.prototype.Unpack = {};
+	
+	CCLScripting.prototype.BridgedSandbox = function(scripter, stage, player){
+		var worker = scripter.getWorker();
+		var context = scripter.getScriptingContext(stage);
+		var playerAbst = player;
+		var channels = {};
 		var isRunning = false;
+		var sandbox = this;
 		
 		if(!worker){
 			throw new Error("SANDBOX: Worker pool exhausted.");
 		}
 		
-		var addListener = function(channel, listener){
+		this.getLogger = function(){
+			return scripter.logger;
+		};
+		
+		this.getPlayer = function(){
+			return playerAbst;
+		};
+		
+		this.getContext = function(){
+			return context;
+		};
+		
+		this.addListener = function(channel, listener){
 			if(!channels[channel]){
 				channels[channel] = {
 					"max":0,
@@ -57,40 +122,160 @@ var CCLScripting = function(workerUrl){
 					try{
 						channels[msg.channel].listeners[i](msg.payload);
 					}catch(e){
-						__trace(e, 'err');
+						scripter.logger.error(e);
 					}
 				}
 			}else{
-				console.log("Message for channel:" + msg.channel + 
-					" but channel not existant.");
+				scripter.logger.warn("Message for channel \"" + msg.channel + 
+					"\" but channel not existant.");
 			}
 		};
 		
-		worker.onmessage = function(event){
+		var WorkerHook = function(event){
 			try{
 				var resp = JSON.parse(event.data);	
 			}catch(e){
 				console.log(e);
 				return;
 			}
-			if(!isRunning){
-				if(resp.channel === "::worker:state"){
-					if(resp.payload === "running" && resp.auth === "worker"){
-						isRunning = true;
+			if(resp.channel === ""){
+				switch(resp.mode){
+					case "log":
+					default:{
+						scripter.logger.log(resp.obj);
+						break;
+					}
+					case "warn":{
+						scripter.logger.warn(resp.obj);
+						break;
+					}
+					case "err":{
+						scripter.logger.error(resp.obj);
+						break;
+					}
+					case "fatal":{
+						scripter.logger.error(resp.obj);
+						sandbox.resetWorker();
+						return;
+					}
+				};
+				return;
+			}
+			if(resp.channel.substring(0,8) === "::worker"){
+				var RN = resp.channel.substring(8);
+				switch(RN){
+					case ":state":{
+						if(resp.payload === "running" && resp.auth === "worker"){
+							isRunning = true;
+							channels = {};
+							sandbox.init();
+						}
+						break;
+					}
+					default:{
+						console.log(resp);
+						break;
 					}
 				}
-				return;
 			}else{
 				dispatchMessage(resp);
 			}
 		};
 		
+		this.resetWorker = function(){
+			try{
+				worker.terminate();
+			}catch(e){}
+			worker = scripter.getWorker();
+			if(!worker){
+				throw new Error("SANDBOX: Worker pool exhausted.");
+			}
+			worker.addEventListener("message", WorkerHook);
+		};
+		
+		worker.addEventListener("message", WorkerHook);
+		
 		this.eval = function(code){
 			// Pushes the code to be evaluated on the Worker
+			if(!isRunning){
+				throw new Error("Worker offline");
+			}
 			worker.postMessage(JSON.stringify({
 				"channel":"::eval",
 				"payload":code
 			}));
 		};
+		
+		this.send = function(channel, payload){
+			// Low level send
+			worker.postMessage(JSON.stringify({
+				"channel":channel,
+				"payload":payload
+			}));
+		};
+	};
+	CCLScripting.prototype.BridgedSandbox.prototype.init = function(){
+		var self = this;
+		this.addListener("Runtime::alert", function(msg){
+			alert(msg);
+		});
+		this.addListener("Runtime::clear", function(){
+			self.getContext().clear();
+		});
+		this.addListener("Player::action", function(msg){
+			try{
+				switch(msg.action){
+					default:return;
+					case "play": self.getPlayer().play();break;
+					case "pause": self.getPlayer().pause();break;
+					case "seek": self.getPlayer().seek(msg.offset);break;
+					case "jump": self.getPlayer().jump(msg.params);break;
+				}
+			}catch(e){
+				if(e.stack){
+					self.getLogger().error(e.stack);
+				}else{
+					self.getLogger().error(e.toString());	
+				}
+			}
+		});
+		this.addListener("Runtime:RegisterObject", function(pl){
+			self.getContext().registerObject(pl.id, pl.data);
+		});
+		this.addListener("Runtime:DeregisterObject", function(pl){
+			self.getContext().deregisterObject(pl.id);
+		});
+		this.addListener("Runtime:InvokeMethod", function(pl){
+			self.getContext().callMethod(pl.id, pl.method, pl.params);
+		});
+	};
+	
+	// Define some unpackers
+	var ScriptingContext = CCLScripting.prototype.ScriptingContext;
+	ScriptingContext.prototype.Unpack.Comment = function(stage, data){
+		this.DOM = document.createElement("div");
+		
+		this.DOM.appendChild(document.createTextNode(data.text));
+		
+		this.setFilters = function(params){
+			for(var i = 0; i < params[0].length; i++){
+				var filter = params[0][i];
+				if(filter.type === "blur"){
+					this.DOM.style.color = "transparent";
+					this.DOM.style.textShadow = [-filter.params.blurX + "px",
+						-filter.params.blurY + "px", Math.max(
+							filter.params.blurX, filter.params.blurY) + 
+						"px"].join(" "); 
+				}else if(filter.type === "glow"){
+					this.DOM.style.textShadow = [-filter.params.blurX + "px",
+						-filter.params.blurY + "px", Math.max(
+							filter.params.blurX, filter.params.blurY) + 
+						"px", "#" + filter.params.color.toString(16)].join(" "); 
+				}
+			};
+		};
+		
+		// Hook child
+		stage.appendChild(this.DOM);
 	};
 })();

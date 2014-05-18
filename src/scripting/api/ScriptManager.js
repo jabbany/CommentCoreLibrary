@@ -8,7 +8,6 @@ var ScriptManager = new function(){
 	};
 	
 	this.clearTrigger = function(){
-		Runtime.deregisterAllListeners("__player:kbd");
-		Runtime.deregisterAllListeners("__player:cmt");
+		Runtime.deregisterAllListeners("__player");
 	};
 };

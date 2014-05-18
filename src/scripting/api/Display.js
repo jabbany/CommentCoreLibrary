@@ -5,33 +5,400 @@ var $ = new function(){
 	function Matrix(a,b,c,d,tx,ty){
 		// TODO: http://help.adobe.com/zh_CN/FlashPlatform/reference/actionscript/3/flash/geom/Matrix.html
 		var data = [[a,c,tx],[b,d,ty],[0,0,1]];
+		var dotProduct = function(other){
+			var n = [[0,0,0],[0,0,0],[0,0,0]]
+			for(var i = 0; i < 3; i++){
+				for(var j = 0; j < 3; j++){
+					for(var k = 0; j < 3; k++){
+						n[i][j] += data[i][k] * other[k][j];
+					}
+				}
+			}
+			return n;
+		};
 		this.clone = function(){
 			return new this(a,b,c,d,tx,ty);
 		};
-		this.concat = function(matrix){
-			return;
+		this.setTo = function(a,b,c,d,tx,ty){
+			data = [[a,c,tx],[b,d,ty],[0,0,1]];
 		};
-		this.
+		this.createBox = function(sX, sY, q, tX, tYs){
+			this.identity();
+			this.rotate(q);
+			this.scale(sX, sY);
+			this.translate(tX, tY);
+		};
+		this.translate = function(tX, tY){
+			this.setTo(data[0][0],data[1][0],data[0][1],
+				data[1][1],data[0][2] + tX,data[1][2] + tY);
+		};
+		this.rotate = function(q){
+			data = dotProduct([Math.cos(q), -Math.sin(q), 0],
+				[Math.sin(q), Math.cos(q), 0], [0, 0, 1]);
+		};
+		this.scale = function(sx, sy){
+			data = dotProduct([[sx, 0, 0],[0, sy, 0], [0, 0, 1]]);
+		};
+		this.identity = function(){
+			this.setTo(1,0,0,1,0,0);
+		};
+		this.concat = function(matrix){
+			var other = matrix.getData();
+			data = dotProduct(other);
+		};
+		this.toString = function(){
+			return "(a=" + data[0][0] + ", b=" + data[1][0] + ", c=" + 
+				data[0][1] + ", d=" + data[1][1] + ", tx=" + data[0][2] +", ty="
+				+ data[1][2] + ")";
+		};
+		this.getData = function(){
+			return data;
+		};
+	};
+	
+	function Matrix3D(iv){
+		var m = (iv && iv.length === 16) ? iv : 
+			[1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1];
+		var multiply = function(a,b){
+			var c = [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]
+			for(var i = 0; i < 4; i++){
+				for(var j = 0; j < 4; j++){
+					for(var k = 0; k < 4; k++){
+						c[i*4 + j] = a[i*4 + k] * b[k*4 + j];
+					}
+				}
+			}
+			return c;
+		};
+		
+		if(this.__defineGetter__){
+			this.__defineGetter__("determinant", function(){
+				var det = 0;
+				for(var i = 0; i < 4; i++){
+					var detC = 0;
+					var r = 0 < i ? 0 : 1  , 
+						c = 1 < i ? 1 : 2, 
+						l = 2 < i ? 2 : 3;
+					detC = m[r + 4] * m[c + 8] * m[l + 12] + m[c + 4] * m[l + 8]
+							* m[r + 12] + m[l + 4] * m[r + 8] * m[c + 12] - 
+							m[l + 4] * m[c + 8] * m[r + 12] - m[c + 4] * 
+							m[r + 8] * m[l + 12] - m[r + 4] * m[l + 8] * 
+							m[c + 12];
+					det += (i % 2 == 0 ? 1 : -1) * m[i] * detC;
+				}
+				return det;
+			});
+		}	
+		
+		this.append = function(other){
+			m = multiply(other.getData(), m);
+		};
+		
+		this.prepend = function(other){
+			m = multiply(m, other.getData());
+		};
+		
+		this.appendRotation = function(){
+			
+		};
+		
+		this.prependRotation = function(){
+			
+		};
+		
+		this.appendScale = function(){
+		
+		};
+		
+		this.prependScale = function(){
+		
+		};
+		
+		this.appendTranslation = function(){
+		
+		};
+		
+		this.prependTranslation = function(){
+		
+		};
+		
+		this.clone = function(){
+			return new this(m);
+		};
+		
+		this.copyColumnFrom = function(){
+		
+		};
+		
+		this.copyColumnTo = function(){
+		
+		};
+		
+		this.copyFrom = function(){
+		
+		};
+		
+		this.identity = function(){
+			m = [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1];
+		};
+		
+		this.invert = function(){
+			if(this.determinant === 0){
+				return false;
+			}
+		};
+		
+		this.getData = function(){
+			return m;
+		};
+	};
+	
+	function Vector3D(x,y,z,w){
+		var v = [x,y,z,w];
+		if(this.__defineGetter__){
+			this.__defineGetter__("lengthSquared", function(){
+				return x * x + y * y + z * z;
+			});
+			this.__defineGetter__("length", function(){
+				return Math.sqrt(x * x + y * y + z * z);
+			});
+			this.__defineGetter__("x", function(){
+				return v[0];
+			});
+			this.__defineGetter__("y", function(){
+				return v[1];
+			});
+			this.__defineGetter__("z", function(){
+				return v[2];
+			});
+			this.__defineGetter__("w", function(){
+				return v[3];
+			});
+			this.__defineGetter__("X_AXIS", function(){
+				return Vector3D.X_AXIS;
+			});
+			this.__defineGetter__("Y_AXIS", function(){
+				return Vector3D.Y_AXIS;
+			});
+			this.__defineGetter__("Z_AXIS", function(){
+				return Vector3D.Z_AXIS;
+			});
+		}
+		this.toString = function(){
+			return "(" + v.toString() + ")";
+		};
+	};
+	
+	Vector3D.X_AXIS = new Vector3D(1,0,0,0);
+	Vector3D.Y_AXIS = new Vector3D(0,1,0,0);
+	Vector3D.Z_AXIS = new Vector3D(0,0,1,0);
+	
+	function Graphics(id){
+		// Graphics Context for SVG
+		var toRGB = function(number){
+			var string = parseInt(number).toString(16);
+			while(string.length < 6){
+				string = "0" + string;
+			}
+			return "#" + string;
+		};
+		var updateObject = function(method, params){
+			__pchannel("Runtime:CallMethod", {
+				"id":id,
+				"method":method,
+				"params":params
+			});
+		};
+		
+		this.lineTo = function(a,b){
+			updateObject("lineTo", [a,b]);
+		};
+		this.moveTo = function(a,b){
+			updateObject("moveTo", [a,b]);
+		};
+		this.curveTo = function(a,b,c,d){
+			updateObject("curveTo", [a,b,c,d]);
+		};
+		this.lineStyle = function(thickness, color, alpha, hinting, scale, caps,
+			 joints, miterlim){
+			if(caps === "none")
+				caps = "butt";
+			updateObject("lineStyle", [thickness, toRGB(color), alpha, caps, 
+				joints, miterlim]);
+		};
+		this.drawRect = function(x, y, w, h){
+			updateObject("drawRect", [x, y, w, h]);
+		};
+		this.drawCircle = function(x, y, r){
+			updateObject("drawCircle", [x , y , r]);
+		};
+		this.drawEllipse = function(cx, cy, rx, ry){
+			updateObject("drawEllipse", [cx, cy, rx, ry]);
+		};
+		this.drawRoundRect= function(x, y, w, h, elw, elh){
+			updateObject("drawRoundRect", [x, y, w, h, elw, elh]);
+		};
+		this.beginFill = function(color, alpha){
+			updateObject("beginFill", [toRGB(color), alpha]);
+		};
+		this.endFill = function(){
+			updateObject("endFill", []);
+		};
+		this.setGlobalFilters = function(filters){
+			updateObject("setFilters", [filters]);
+		};
 	};
 	
 	function SVGShape(){
 		var id = Runtime.generateIdent();
+		this.graphics = new Graphics(id);
+		if(this.__defineSetter__){
+			this.__defineSetter__("filters", function(filters){
+				// Send the filters over
+				var f = [];
+				for(var i = 0; i < filters.length; i++){
+					f.push(filters[i].serialize());
+				}
+				this.graphics.setFilters(f);
+			});
+		}
+		
+		
+		this.dispatchEvent = function(){
+			
+		};
+		this.removeEventListener = function(event, listener){
+			
+		};
+		
+		this.addEventListener = function(event, listener){
+			
+		};
+		
+		this.getId = function(){
+			return id;
+		};
+		
+		this.serialize = function(){
+			return {
+				"class":"Shape",
+			};
+		};
+		
+		Runtime.registerObject(this);
+		
 	};
 	
 	function CanvasObject(){
 		var id = Runtime.generateIdent();
+		
+		this.getId = function(){
+			return id;
+		};
+		
+		this.serialize = function(){
+			return {
+				"class":"Canvas",
+			};
+		};
+		Runtime.registerObject(this);
 	};
 	
 	function ButtonObject(){
 		var id = Runtime.generateIdent();
+		
+		this.getId = function(){
+			return id;
+		};
+		
+		this.serialize = function(){
+			return {
+				"class":"Button",
+			};
+		};
+		Runtime.registerObject(this);
 	};
 	
-	function CommentObject(){
+	function CommentObject(text, params){
 		var id = Runtime.generateIdent();
+		var data = {};
+		// Init
+		data.text = text;
+		for(var x in params){
+			data[x] = params[x];
+		}
+		// Unpack params
+		if(this.__defineSetter__){
+			this.__defineSetter__("text", function(text){
+				data.text = text;
+				__pchannel("Runtime:InvokeMethod", {
+					"id":id,
+					"method":"setText",
+					"params":[text]
+				});
+			});
+			this.__defineSetter__("x", function(x){
+				data.x = x;
+				__pchannel("Runtime:InvokeMethod", {
+					"id":id,
+					"method":"setX",
+					"params":[data.x]
+				});
+			});
+			this.__defineSetter__("y", function(y){
+				data.y = y;
+				__pchannel("Runtime:InvokeMethod", {
+					"id":id,
+					"method":"setY",
+					"params":[data.y]
+				});
+			});
+			this.__defineSetter__("filters", function(filters){
+				__pchannel("Runtime:InvokeMethod", {
+					"id":id,
+					"method":"setFilters",
+					"params":[filters]
+				});
+			});
+		}
+		if(this.__defineGetter__){
+			this.__defineSetter__("text", function(){
+				return data.text;
+			});
+			this.__defineSetter__("x", function(){
+				return data.x;
+			});
+			this.__defineSetter__("y", function(){
+				return data.y;
+			});
+		}
+		this.getId = function(){
+			return id;
+		};
+		
+		this.serialize = function(){
+			return {
+				"class":"Comment",
+				"x":data.x,
+				"y":data.y,
+				"text":data.text
+			};
+		};
+		Runtime.registerObject(this);
 	};
 	
-	function FilterObject(){
-		var id = Runtime.generateIdent();
+	function FilterObject(type, params){
+		this.type = type ? type : "blur";
+		
+		this.params = params ? params : {"blurX":0, "blurY":0};
+		
+		this.serialize = function(){
+			return {
+				"class":"filter",
+				"type":this.type,
+				"params":this.params
+			};
+		};
 	};
 	/**
 	 * Private Variable stubs
@@ -77,7 +444,7 @@ var $ = new function(){
 	 * Public method stubs
 	**/
 	this.createMatrix = function(){
-		
+		return new Matrix(1,0,0,1,0,0);
 	};
 	
 	this.createPoint = function(x, y){
@@ -85,54 +452,86 @@ var $ = new function(){
 	};
 	
 	this.createComment = function(text, param){
-	
+		return new CommentObject(text, param);
 	};
 	
 	this.createShape = function(param){
-		
+		return new SVGShape();
 	};
 	
 	this.createCanvas = function(param){
-		
+		return new CanvasObject();
 	};
 	
 	this.createButton = function(param){
-		
+		return new ButtonObject();
 	};
 	
-	this.createGlowFilter = function(color, alpha, blurX, blurY, strength, quality, inner, knockout){
-		
+	this.createGlowFilter = function(color, alpha, blurX, blurY, strength, 
+		quality, inner, knockout){
+		return new FilterObject("glow",{
+			"color":color ? color : 16711680,
+			"alpha":alpha ? alpha : 1.0,
+			"blurX":blurX ? blurX : 6.0,
+			"blurY":blurY ? blurY : 6.0,
+			"strength":strength ? strength : 2,
+			"inner": inner == null ? false : inner,
+			"knockout": knockout == null ? false : knockout
+		});
 	};
 	
 	this.createBlurFilter = function(blurX, blurY, quality){
-	
+		return new FilterObject("blur", {
+			"blurX":blurX ? blurX : 4.0,
+			"blurY":blurY ? blurY : 4.0
+		});
 	};
 	
 	this.toIntVector = function(arr){
-		
+		// Vectors are arrays
+		for(var i = 0; i < arr.length; i++){
+			arr[i] = Math.floor(arr[i]);
+		}
+		arr.isVector = true;
+		return arr;
 	};
 	
 	this.toUIntVector = function(arr){
-		
+		for(var i = 0; i < arr.length; i++){
+			arr[i] = Math.floor(Math.abs(arr[i]));
+		}
+		arr.isVector = true;
+		return arr;
 	};
 	
 	this.toNumberVector = function(arr){
-		
+		arr.isVector = true;
+		return arr;
 	};
 	
 	this.createVector3D = function(x,y,z,w){
-		
+		if(!x)
+			x = 0;
+		if(!y)
+			y = 0;
+		if(!z)
+			z = 0;
+		if(!w)
+			w = 0;
+		return new Vector3D(x,y,z,w);
 	};
 	
-	this.createMatrix3D = function(x,y,z,w){
-		
+	this.createMatrix3D = function(iv){
+		return new Matrix3D(iv);
 	};
 	
 	this.createColorTransform = function(rM, gM, bM, aM, rO, gO, bO, aO){
 		
 	};
 	
-	this.createTextFormat = function(font, size, color, bold, italic, underline, url, target, align, leftMargin, rightMargin, indent, leading){
+	this.createTextFormat = function(font, size, color, bold, italic, 
+		underline, url, target, align, leftMargin, rightMargin, indent, 
+		leading){
 		
 	};
 	
@@ -171,6 +570,9 @@ var $ = new function(){
 			__trace("Attempted to assign to read-only field", 'warn');
 		});
 		this.__defineSetter__("fullScreenHeight", function(){
+			__trace("Attempted to assign to read-only field", 'warn');
+		});
+		this.__defineSetter__("version", function(){
 			__trace("Attempted to assign to read-only field", 'warn');
 		});
 	}
