@@ -6,45 +6,51 @@ var Player = function(){
 		width:-1,
 		height:-1,
 		videoWidth:-1,
-		videoHeight:-1
+		videoHeight:-1,
+		refreshRate:170,
 	};
 	/**
 	 * Private methods
 	**/
 	var _state = function(){
-	
+		return player.state;
 	};
 	
 	var _time = function(){
-	
+		return player.time;
 	};
 	
 	var _commentList = function(){
-	
+		return player.commentList;
 	};
 	
 	var _get_refreshRate = function(){
-	
+		return player.refreshRate;
 	};
 	
-	var _set_refreshRate = function(){
-		
+	var _set_refreshRate = function(r){
+		if(r < 10)
+			return;
+		__pchannel("Player::Set",{
+			"key":"refreshRate",
+			"value":r
+		});
 	};
 	
 	var _width = function(){
-	
+		return player.width;
 	};
 	
 	var _height = function(){
-	
+		return player.height;
 	};
 	
 	var _videoWidth = function(){
-	
+		return player.videoWidth;
 	};
 	
 	var _videoHeight = function(){
-	
+		return player.videoHeight;
 	};
 	
 	var triggers = {

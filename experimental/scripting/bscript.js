@@ -292,9 +292,11 @@ CCLScripting = {
 						"height":stage.offsetHeight,
 						"style":{
 							"position":"absolute",
-							"top": (serialized.y ? serialized.y : 0) + "px",
-							"left":(serialized.x ? serialized.x : 0) + "px"
+							"top": /*(serialized.y ? serialized.y : 0) + */"0px",
+							"left":/*(serialized.x ? serialized.x : 0) + */"0px"
 					}});
+					svg.y = (serialized.y ? serialized.y : 0);
+					svg.x = (serialized.x ? serialized.x : 0);
 					setTimeout(function(){
 						stage.appendChild(svg.domParent);
 					},1000);
@@ -457,8 +459,8 @@ CCLScripting = {
 		};
 		this.drawRect = function(params){
 			var r = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-			r.setAttribute("x", params[0]);
-			r.setAttribute("y", params[1]);
+			r.setAttribute("x", params[0] + this.x);
+			r.setAttribute("y", params[1] + this.y);
 			r.setAttribute("width", params[2]);
 			r.setAttribute("height", params[3]);
 			applyFill(r, this);
@@ -467,8 +469,8 @@ CCLScripting = {
 		};
 		this.drawRoundRect = function(params){
 			var r = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-			r.setAttribute("x", params[0]);
-			r.setAttribute("y", params[1]);
+			r.setAttribute("x", params[0] + this.x);
+			r.setAttribute("y", params[1] + this.y);
 			r.setAttribute("width", params[2]);
 			r.setAttribute("height", params[3]);
 			r.setAttribute("rx", params[4]);
@@ -479,8 +481,8 @@ CCLScripting = {
 		};
 		this.drawCircle = function(params){
 			var c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-			c.setAttribute("cx", params[0]);
-			c.setAttribute("cy", params[1]);
+			c.setAttribute("cx", params[0] + this.x);
+			c.setAttribute("cy", params[1] + this.y);
 			c.setAttribute("r", params[2]);
 			applyFill(c, this);
 			applyStroke(c, this);
@@ -489,8 +491,8 @@ CCLScripting = {
 		
 		this.drawEllipse = function(params){
 			var e = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
-			e.setAttribute("cx", params[0]);
-			e.setAttribute("cy", params[1]);
+			e.setAttribute("cx", params[0] + this.x);
+			e.setAttribute("cy", params[1] + this.y);
 			e.setAttribute("rx", params[2]);
 			e.setAttribute("ry", params[3]);
 			applyFill(e, this);

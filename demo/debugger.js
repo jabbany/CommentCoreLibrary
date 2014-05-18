@@ -409,6 +409,13 @@ function bindTests(){
 		state.mode = 'video';
 		loadDM(tests['test-6']);
 	});
+	$("load-cmt-file").addEventListener("click", function(e){
+		var x = prompt("Please give comment file URL");
+		if(!x){
+			return;
+		}
+		loadDM(x);
+	});
 }
 
 function bindResize(){

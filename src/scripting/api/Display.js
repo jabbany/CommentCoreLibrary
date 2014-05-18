@@ -256,13 +256,13 @@ var $ = new function(){
 			updateObject("drawCircle", [x , y , r]);
 		};
 		this.drawEllipse = function(cx, cy, rx, ry){
-			updateObject("drawEllipse", [cx, cy, rx, ry]);
+			updateObject("drawEllipse", [cx + rx/2, cy + ry/2, rx/2, ry/2]);
 		};
 		this.drawRoundRect= function(x, y, w, h, elw, elh){
 			updateObject("drawRoundRect", [x, y, w, h, elw, elh]);
 		};
 		this.beginFill = function(color, alpha){
-			updateObject("beginFill", [toRGB(color), alpha]);
+			updateObject("beginFill", [toRGB(color), (alpha ? alpha : 1)]);
 		};
 		this.beginGradientFill = function(){
 			__trace("Gradient not supported yet", 'warn');
@@ -275,11 +275,15 @@ var $ = new function(){
 		};
 	};
 	
-	function SVGShape(){
+	function SVGShape(params){
 		var id = Runtime.generateIdent();
+		if(!params){
+			params = {};
+		}
 		var data = {
-			"x":0,
-			"y":0,
+			"x":params.x ? params.x : 0,
+			"y":params.y ? params.y : 0,
+			"alpha":params.alpha ? params.alpha : 1,
 		};
 		this.graphics = new Graphics(id);
 		if(this.__defineSetter__){
@@ -289,7 +293,23 @@ var $ = new function(){
 				for(var i = 0; i < filters.length; i++){
 					f.push(filters[i].serialize());
 				}
-				this.graphics.setFilters(f);
+				this.graphics.setGlobalFilters(f);
+			});
+			
+			this.__defineSetter__("x", function(x){
+				__pchannel("Runtime:CallMethod", {
+					"id":id,
+					"method":"setX",
+					"params":x
+				});
+			});
+			
+			this.__defineSetter__("y", function(x){
+				__pchannel("Runtime:CallMethod", {
+					"id":id,
+					"method":"setY",
+					"params":y
+				});
 			});
 		}
 		
@@ -313,6 +333,9 @@ var $ = new function(){
 		this.serialize = function(){
 			return {
 				"class":"Shape",
+				"x":data.x,
+				"y":data.y,
+				"alpha":data.alpha
 			};
 		};
 		
@@ -322,14 +345,21 @@ var $ = new function(){
 	
 	function CanvasObject(params){
 		var id = Runtime.generateIdent();
+		if(!params)
+			params = {};
 		var data = {
 			"x":params.x ? params.x : 0,
 			"y":params.y ? params.y : 0,
 			"width":params.width ? params.width : null,
 			"height":params.height ? params.height : null,
 		}
+		
 		this.getId = function(){
 			return id;
+		};
+		
+		this.addChild = function(displayObject){
+		
 		};
 		
 		this.serialize = function(){
@@ -498,7 +528,7 @@ var $ = new function(){
 	};
 	
 	this.createShape = function(param){
-		return new SVGShape();
+		return new SVGShape(param);
 	};
 	
 	this.createCanvas = function(param){

@@ -323,7 +323,11 @@ var CCLScripting = function(workerUrl){
 				}
 			};
 		};
-		
+		this.unload = function(){
+			try{
+				stage.removeChild(this.DOM);
+			}catch(e){};
+		};
 		// Hook child
 		stage.appendChild(this.DOM);
 	};
@@ -334,9 +338,14 @@ var CCLScripting = function(workerUrl){
 			"height":stage.offsetHeight,
 			"style":{
 				"position":"absolute",
-				"top": (data.y ? data.y : 0) + "px",
-				"left":(data.x ? data.x : 0) + "px"
+				"top":"0px",
+				"left":"0px",
+				"width":"100%",
+				"height":"100%"
 		}});
+		this.x = data.x;
+		this.y = data.y;
+		this.alpha = data.alpha ? data.alpha : 1;
 		// Helpers
 		var __ = function(e, attr){
 			if(typeof e === "string"){
@@ -352,10 +361,14 @@ var CCLScripting = function(workerUrl){
 			}
 			return elem;
 		};
+		var defaultEffects = __("defs");
+		var defaultGroup = __("g",{"x":this.x, "y":this.y, "opacity":this.alpha});
+		this.DOM.appendChild(defaultEffects);
+		this.DOM.appendChild(defaultGroup);
 		
 		this.line = {
 			width:1,
-			color:"#FFFFFF",
+			color:"#ffffff",
 			alpha:1
 		};
 		this.fill = {
@@ -388,6 +401,14 @@ var CCLScripting = function(workerUrl){
 		};
 		
 		var state = {lastPath : null};
+		
+		/** Public methods **/
+		this.setX = function(x){
+			__(defaultGroup,{"x":x});
+		};
+		this.setY = function(y){
+			__(defaultGroup,{"y":y});
+		};
 		this.moveTo = function(params){
 			var p = __("path",{
 				"d":"M" + params.join(" ")
@@ -395,7 +416,7 @@ var CCLScripting = function(workerUrl){
 			applyFill(p, this);
 			state.lastPath = p;
 			applyStroke(p, this);
-			this.DOM.appendChild(state.lastPath);
+			defaultGroup.appendChild(state.lastPath);
 		};
 		this.lineTo = function(params){
 			if(!state.lastPath){
@@ -460,7 +481,7 @@ var CCLScripting = function(workerUrl){
 			});
 			applyFill(r, this);
 			applyStroke(r, this);
-			this.DOM.appendChild(r);
+			defaultGroup.appendChild(r);
 		};
 		this.drawRoundRect = function(params){
 			var r = __("rect",{
@@ -483,7 +504,7 @@ var CCLScripting = function(workerUrl){
 			});
 			applyFill(c, this);
 			applyStroke(c, this);
-			this.DOM.appendChild(c);
+			defaultGroup.appendChild(c);
 		};
 		
 		this.drawEllipse = function(params){
@@ -495,9 +516,83 @@ var CCLScripting = function(workerUrl){
 			});
 			applyFill(e, this);
 			applyStroke(e, this);
-			this.DOM.appendChild(e);
+			defaultGroup.appendChild(e);
 		};
 		
+		this.setFilters = function(params){
+			var filters = params[0];
+			//Remove old filters
+			this.DOM.removeChild(defaultEffects);
+			defaultEffects = __("defs");
+			for(var i = 0; i < filters.length; i++){
+				var filter = filters[i];
+				var dFilter = __("filter",{
+					"id":"fe" + filter.type + i,
+					"x":"-50%",
+					"y":"-50%",
+					"width":"200%",
+					"height":"200%"
+				});
+				switch(filter.type){
+					default:break;
+					case "blur":{
+						dFilter.appendChild(__("feGaussianBlur",{
+							"in":"SourceGraphic",
+							"stdDeviation":filter.params.blurX + " " 
+								+ filter.params.blurY,
+						}));
+					}break;
+					case "glow":{
+						var cR = Math.floor(filter.params.color / 65536), 
+							cG = Math.floor((filter.params.color % 65536)/256), 
+							cB = filter.params.color % 256;
+						var cMatrix = [
+							0,0,0,cR,0,
+							0,0,0,cG,0,
+							0,0,0,cB,0,
+							0,0,0,1,0
+						];
+						dFilter.appendChild(__("feColorMatrix",{
+							"type":"matrix",
+							"values": cMatrix.join(" ")
+						}));
+						dFilter.appendChild(__("feGaussianBlur",{
+							"stdDeviation":filter.params.blurX + " " 
+								+ filter.params.blurY,
+							"result":"coloredBlur"
+						}));
+						var m = __("feMerge");
+						m.appendChild(__("feMergeNode",{
+							"in":"coloredBlur"
+						}));
+						m.appendChild(__("feMergeNode",{
+							"in":"SourceGraphic"
+						}));
+						dFilter.appendChild(m);
+					}break;
+				}
+				defaultEffects.appendChild(dFilter);
+			};
+			// Add new filters
+			this.DOM.appendChild(defaultEffects);
+			// Apply filters
+			this.DOM.removeChild(defaultGroup);
+			var tGroup = defaultGroup;
+			for(var i = 0; i < filters.length; i++){
+				var layeredG = __("g",{
+					"filter":"url(#" + "fe" + filters[i].type + i + ")"
+				});
+				layeredG.appendChild(tGroup);
+				tGroup = layeredG;
+			}
+			this.DOM.appendChild(tGroup);
+		};
+		
+		this.unload = function(){
+			try{
+				stage.removeChild(this.DOM);
+			}catch(e){};
+		};
 		// Hook Child
 		stage.appendChild(this.DOM);
 	};
@@ -521,6 +616,11 @@ var CCLScripting = function(workerUrl){
 			this.DOM.style.height = height + "px";
 		};
 		
+		this.unload = function(){
+			try{
+				stage.removeChild(this.DOM);
+			}catch(e){};
+		};
 		// Hook child
 		stage.appendChild(this.DOM);
 	}
