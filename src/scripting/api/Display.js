@@ -198,7 +198,7 @@ var $ = new function(){
 		var config = {
 			"font":font ? font : "SimHei",
 			"size":size ? size : 25, 
-			"color":color ? color : 0x000000,
+			"color":color ? color : 0xFFFFFF,
 			"bold":bold ? bold : false,
 			"italic":italic ? italic : false, 
 			"underline":underline ? underline : false, 
@@ -210,7 +210,47 @@ var $ = new function(){
 			"indent":indent ? indent : 0, 
 			"leading":leading ? leading : 0
 		};
+		if(this.__defineSetter__){
+			this.__defineSetter__("font", function(font){
+				config.font = font;
+			});
+			this.__defineSetter__("size", function(size){
+				config.size = size;
+			});
+			this.__defineSetter__("color", function(color){
+				config.color = color;
+			});
+			this.__defineSetter__("bold", function(bold){
+				config.bold = bold;
+			});
+			this.__defineSetter__("italic", function(italic){
+				config.italic = italic;
+			});
+			this.__defineSetter__("underline", function(underline){
+				config.underline = underline;
+			});
+		}
 		
+		if(this.__defineGetter__){
+			this.__defineGetter__("font", function(){
+				return config.font;
+			});
+			this.__defineGetter__("size", function(){
+				return config.size;
+			});
+			this.__defineGetter__("color", function(){
+				return config.color;
+			});
+			this.__defineGetter__("bold", function(){
+				return config.bold;
+			});
+			this.__defineGetter__("italic", function(){
+				return config.italic;
+			});
+			this.__defineGetter__("underline", function(){
+				return config.underline;
+			});
+		}
 		this.serialize = function(){
 			return config;
 		};
@@ -253,7 +293,7 @@ var $ = new function(){
 			updateObject("drawRect", [x, y, w, h]);
 		};
 		this.drawCircle = function(x, y, r){
-			updateObject("drawCircle", [x , y , r]);
+			updateObject("drawCircle", [x, y , r]);
 		};
 		this.drawEllipse = function(cx, cy, rx, ry){
 			updateObject("drawEllipse", [cx + rx/2, cy + ry/2, rx/2, ry/2]);
@@ -284,6 +324,7 @@ var $ = new function(){
 			"x":params.x ? params.x : 0,
 			"y":params.y ? params.y : 0,
 			"alpha":params.alpha ? params.alpha : 1,
+			"lifeTime":params.lifeTime
 		};
 		this.graphics = new Graphics(id);
 		if(this.__defineSetter__){
@@ -304,7 +345,7 @@ var $ = new function(){
 				});
 			});
 			
-			this.__defineSetter__("y", function(x){
+			this.__defineSetter__("y", function(y){
 				__pchannel("Runtime:CallMethod", {
 					"id":id,
 					"method":"setY",
@@ -312,7 +353,13 @@ var $ = new function(){
 				});
 			});
 		}
-		
+		// Life time monitor
+		if(data.lifeTime){
+			var self = this;
+			Utils.delay(function(){
+				self.unload();
+			}, data.lifeTime * 1000);
+		}
 		
 		this.dispatchEvent = function(){
 			
@@ -326,10 +373,17 @@ var $ = new function(){
 			
 		};
 		
+		/** Common **/
+		this.unload = function(){
+			__pchannel("Runtime:CallMethod", {
+				"id":id,
+				"method":"unload",
+				"params":null
+			});
+		};
 		this.getId = function(){
 			return id;
 		};
-		
 		this.serialize = function(){
 			return {
 				"class":"Shape",
@@ -338,9 +392,7 @@ var $ = new function(){
 				"alpha":data.alpha
 			};
 		};
-		
 		Runtime.registerObject(this);
-		
 	};
 	
 	function CanvasObject(params){
@@ -353,15 +405,22 @@ var $ = new function(){
 			"width":params.width ? params.width : null,
 			"height":params.height ? params.height : null,
 		}
-		
-		this.getId = function(){
-			return id;
-		};
-		
+				
 		this.addChild = function(displayObject){
 		
 		};
 		
+		/** Common **/
+		this.unload = function(){
+			__pchannel("Runtime:CallMethod", {
+				"id":id,
+				"method":"unload",
+				"params":null
+			});
+		};
+		this.getId = function(){
+			return id;
+		};
 		this.serialize = function(){
 			return {
 				"class":"Canvas",
@@ -377,10 +436,21 @@ var $ = new function(){
 	function ButtonObject(){
 		var id = Runtime.generateIdent();
 		
+		this.setStyle = function(property, value){
+		
+		};
+		
+		/** Common **/
+		this.unload = function(){
+			__pchannel("Runtime:CallMethod", {
+				"id":id,
+				"method":"unload",
+				"params":null
+			});
+		};
 		this.getId = function(){
 			return id;
 		};
-		
 		this.serialize = function(){
 			return {
 				"class":"Button",
@@ -398,6 +468,12 @@ var $ = new function(){
 		for(var x in params){
 			data[x] = params[x];
 		}
+		if(data.fontsize){
+			data.textFormat.size = data.fontsize;
+		}
+		if(data.color){
+			data.textFormat.color = data.color;
+		}
 		// Unpack params
 		if(this.__defineSetter__){
 			this.__defineSetter__("text", function(text){
@@ -405,7 +481,7 @@ var $ = new function(){
 				__pchannel("Runtime:CallMethod", {
 					"id":id,
 					"method":"setText",
-					"params":[text]
+					"params":text
 				});
 			});
 			this.__defineSetter__("x", function(x){
@@ -413,7 +489,7 @@ var $ = new function(){
 				__pchannel("Runtime:CallMethod", {
 					"id":id,
 					"method":"setX",
-					"params":[data.x]
+					"params":data.x
 				});
 			});
 			this.__defineSetter__("y", function(y){
@@ -421,7 +497,7 @@ var $ = new function(){
 				__pchannel("Runtime:CallMethod", {
 					"id":id,
 					"method":"setY",
-					"params":[data.y]
+					"params":data.y
 				});
 			});
 			this.__defineSetter__("filters", function(filters){
@@ -432,21 +508,55 @@ var $ = new function(){
 				});
 			});
 		}
+		
 		if(this.__defineGetter__){
-			this.__defineSetter__("text", function(){
-				return data.text;
+			this.__defineGetter__("text", function(){
+				return data.text ? data.text : "";
 			});
-			this.__defineSetter__("x", function(){
+			this.__defineGetter__("x", function(){
 				return data.x;
 			});
-			this.__defineSetter__("y", function(){
+			this.__defineGetter__("y", function(){
 				return data.y;
 			});
 		}
+		
+		this.getTextFormat = function(s, e){
+			if(s && s > 0 || e && this.text && e < this.text.length){
+				__trace("Partial text format not supported", "warn");
+			}
+			return data.textFormat;
+		};
+		
+		this.setTextFormat = function(fmt, s, e){
+			if(s && s > 0 || e && this.text && e < this.text.length){
+				__trace("Partial text format not supported", "warn");
+			}
+			data.textFormat = fmt;
+			__pchannel("Runtime:CallMethod", {
+				"id":id,
+				"method":"setTextFormat",
+				"params":fmt.serialize()
+			});
+		};
+		// Life time monitor
+		if(data.lifeTime){
+			var self = this;
+			Utils.delay(function(){
+				self.unload();
+			}, data.lifeTime * 1000);
+		}
+		/** Common **/
+		this.unload = function(){
+			__pchannel("Runtime:CallMethod", {
+				"id":id,
+				"method":"unload",
+				"params":null
+			});
+		};
 		this.getId = function(){
 			return id;
 		};
-		
 		this.serialize = function(){
 			return {
 				"class":"Comment",

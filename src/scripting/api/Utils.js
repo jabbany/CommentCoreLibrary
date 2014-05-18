@@ -1,4 +1,95 @@
 var Utils = new function(){
+	var __timers = [], startTime = (new Date()).getTime(), __masterTimer = -1;
+	var __key = 0;
+	var stopMasterTimer= function(){
+		if(__masterTimer >= 0){
+			clearInterval(__masterTimer);
+			__masterTimer = -1;
+		}
+	};
+	
+	var __masterTimerFunction = function(){
+		var elapsed = (new Date()).getTime() - startTime;
+		for(var i = 0; i < __timers.length; i++){
+			if(__timers[i].type === "timeout" && 
+				__timers[i].timeout <= (elapsed - __timers[i].startTime)){
+				var t = __timers[i];
+				__timers.splice(i, 1);
+				i--;
+				try{
+					t.callback();
+				}catch(e){
+					if(e.stack){
+						__trace(e.stack, 'err');
+					}else{
+						__trace(e.toString(), 'err');
+					}
+				}
+			}else if(__timers[i].type === "interval" && 
+					__timers[i].interval <= (elapsed - __timers[i].startTime)){
+				__timers[i].startTime = (new Date()).getTime() - startTime;
+				try{
+					__timers[i].callback();
+				}catch(e){
+					if(e.stack){
+						__trace(e.stack, 'err');
+					}else{
+						__trace(e.toString(), 'err');
+					}
+				}
+			};
+		};
+		// Check to see if there are any more timers, if not stop the master
+		if(__timers.length <= 0){
+			stopMasterTimer();
+		}
+	}
+	
+	var startMasterTimer= function(){
+		if(__masterTimer < 0){
+			startTime = (new Date()).getTime()
+			__masterTimer = setInterval(__masterTimerFunction, 10);
+		}
+	};
+	
+	var _setTimeout = function(callback, timeout){
+		if(__masterTimer < 0)
+			startMasterTimer();
+		var thiskey = __key++;
+		__timers.push({
+			"callback":callback,
+			"type":"timeout",
+			"timeout":timeout,
+			"startTime":(new Date()).getTime() - startTime,
+			"key":thiskey,
+		});
+		return thiskey;
+	};
+	
+	var _setInterval = function(callback, interval){
+		if(__masterTimer < 0)
+			startMasterTimer();
+		var thiskey = __key++;
+		__timers.push({
+			"callback":callback,
+			"type":"interval",
+			"interval":interval,
+			"startTime":(new Date()).getTime() - startTime,
+			"key":thiskey,
+		});
+		return thiskey;
+	};
+	
+	var _clearInterval = function(key){
+		for(var i = 0; i < __timers.length; i++){
+			if(__timers[i].type === "interval" && 
+				__timers[i].key === key){
+				__timers.splice(i, 1);
+				return;
+			}
+		}
+	};
+	
 	this.rgb = function(r,g,b){
 		return (r * 256 * 256 + g * 256 + b);
 	};
@@ -25,21 +116,21 @@ var Utils = new function(){
 	};
 	
 	this.delay = function(f, time){
-		delay = delay ? delay : 1000;
-		return setTimeout(f, delay);
+		var delay = time ? time : 1000;
+		return _setTimeout(f, delay);
 	};
 	
 	this.interval = function(f, time, times){
 		var cycles = times ? times : 1;
 		var interval = time ? time : 1000;
 		if(cycles === 0){
-			return setInterval(f, interval);
+			return _setInterval(f, interval);
 		}else{
-			var iv = setInterval(function(){
+			var iv = _setInterval(function(){
 				cycles--;
 				f();
 				if(cycles === 0){
-					clearInterval(iv);
+					_clearInterval(iv);
 				}
 			},interval);
 			return iv;

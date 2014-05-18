@@ -232,6 +232,10 @@ var CCLScripting = function(workerUrl){
 		});
 		this.addListener("Player::action", function(msg){
 			try{
+				if(self.getPlayer() == null){
+					self.getLogger().warn("Player not initialized!");
+					return;
+				};
 				switch(msg.action){
 					default:return;
 					case "play": self.getPlayer().play();break;
@@ -292,37 +296,69 @@ var CCLScripting = function(workerUrl){
 	/** Define some unpackers **/
 	var ScriptingContext = CCLScripting.prototype.ScriptingContext;
 	ScriptingContext.prototype.Unpack.Comment = function(stage, data, ctx){
-		this.DOM = _("div",{});
-		/** Load the text format **/
+		this.DOM = _("div",{
+			"style":{
+				"position":"absolute",
+			},
+			"className":"cmt"
+		});
+		/** Load the text **/
 		this.DOM.appendChild(document.createTextNode(data.text));
-		this.DOM.style.fontFamily = data.textFormat.font;
-		this.DOM.style.fontSize = data.textFormat.size + "px";
-		this.DOM.style.color = "#" + data.textFormat.color.toString(16);
-		if(data.textFormat.bold)
-			this.DOM.style.fontWeight = "bold";
-		if(data.textFormat.underline)
-			this.DOM.style.textDecoration = "underline";
-		if(data.textFormat.italic)
-			this.DOM.style.fontStyle = "italic";
-		this.DOM.style.margin = data.textFormat.margin;
+		var getColor = function(c){
+			var color = c.toString(16);
+			while(color.length < 6){
+				color = "0" + color;
+			}
+			return "#" + color;
+		};
+		this.setTextFormat = function(textFormat){
+			this.DOM.style.fontFamily = textFormat.font;
+			this.DOM.style.fontSize = textFormat.size + "px";
+			this.DOM.style.color = getColor(textFormat.color);
+			if(textFormat.color <= 16){
+				this.DOM.style.textShadow = "0 0 1px #fff";
+			};
+			if(textFormat.bold)
+				this.DOM.style.fontWeight = "bold";
+			if(textFormat.underline)
+				this.DOM.style.textDecoration = "underline";
+			if(textFormat.italic)
+				this.DOM.style.fontStyle = "italic";
+			this.DOM.style.margin = textFormat.margin;
+		};
+		/** Load the text format **/
+		this.setTextFormat(data.textFormat);
+
+		this.setX = function(x){
+			data.x = x;
+			this.DOM.style.left = data.x + "px";
+		};
+		
+		this.setY = function(y){
+			data.y = y;
+			this.DOM.style.top = data.y + "px";
+		};
+		/** Load x,y **/
+		this.setX(data.x);
+		this.setY(data.y);
 		
 		this.setFilters = function(params){
 			for(var i = 0; i < params[0].length; i++){
 				var filter = params[0][i];
 				if(filter.type === "blur"){
 					this.DOM.style.color = "transparent";
-					this.DOM.style.textShadow = [-filter.params.blurX + "px",
-						-filter.params.blurY + "px", Math.max(
+					this.DOM.style.textShadow = [0,0, Math.max(
 							filter.params.blurX, filter.params.blurY) + 
 						"px"].join(" "); 
 				}else if(filter.type === "glow"){
-					this.DOM.style.textShadow = [-filter.params.blurX + "px",
-						-filter.params.blurY + "px", Math.max(
+					this.DOM.style.textShadow = [0,0, Math.max(
 							filter.params.blurX, filter.params.blurY) + 
-						"px", "#" + filter.params.color.toString(16)].join(" "); 
+						"px", getColor(filter.params.color)].join(" "); 
 				}
 			};
 		};
+		
+		/** Common **/
 		this.unload = function(){
 			try{
 				stage.removeChild(this.DOM);
@@ -343,8 +379,8 @@ var CCLScripting = function(workerUrl){
 				"width":"100%",
 				"height":"100%"
 		}});
-		this.x = data.x;
-		this.y = data.y;
+		this.x = data.x ? data.x : 0;
+		this.y = data.y ? data.y : 0;
 		this.alpha = data.alpha ? data.alpha : 1;
 		// Helpers
 		var __ = function(e, attr){
@@ -362,12 +398,15 @@ var CCLScripting = function(workerUrl){
 			return elem;
 		};
 		var defaultEffects = __("defs");
-		var defaultGroup = __("g",{"x":this.x, "y":this.y, "opacity":this.alpha});
+		var defaultGroup = __("g",{
+			"transform":"translate(" + this.x + "," + this.y + ")",
+			"opacity":this.alpha,
+		});
 		this.DOM.appendChild(defaultEffects);
 		this.DOM.appendChild(defaultGroup);
 		
 		this.line = {
-			width:1,
+			width:0,
 			color:"#ffffff",
 			alpha:1
 		};
@@ -404,10 +443,20 @@ var CCLScripting = function(workerUrl){
 		
 		/** Public methods **/
 		this.setX = function(x){
-			__(defaultGroup,{"x":x});
+			if(!x)
+				return;
+			this.x = x;
+			__(defaultGroup,{
+				"transform":"translate(" + this.x + "," + this.y + ")"
+			});
 		};
 		this.setY = function(y){
-			__(defaultGroup,{"y":y});
+			if(!y)
+				return;
+			this.y = y;
+			__(defaultGroup,{
+				"transform":"translate(" + this.x + "," + this.y + ")"
+			});
 		};
 		this.moveTo = function(params){
 			var p = __("path",{
@@ -528,10 +577,10 @@ var CCLScripting = function(workerUrl){
 				var filter = filters[i];
 				var dFilter = __("filter",{
 					"id":"fe" + filter.type + i,
-					"x":"-50%",
-					"y":"-50%",
-					"width":"200%",
-					"height":"200%"
+					"x":"-100%",
+					"y":"-100%",
+					"width":"400%",
+					"height":"400%"
 				});
 				switch(filter.type){
 					default:break;

@@ -1,4 +1,4 @@
-var Player = function(){
+var Player = new function(){
 	var player = {
 		state: "unloaded",
 		time:0,
