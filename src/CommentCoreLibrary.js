@@ -170,6 +170,7 @@ CommentManager.prototype.preload = function(){
 		this.pdiv[i].show = false;
 		this.pdiv[i].id = "pdiv_"+i;
 		this.pdiv[i].pnum = i;
+		this.pdiv[i].className = "container";
 	}
 	for(i = 0; i < this.timeline.length; i++){
 		if(this.timeline[i].mode == 1){
