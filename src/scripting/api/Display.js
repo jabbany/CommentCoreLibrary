@@ -193,6 +193,29 @@ var $ = new function(){
 	Vector3D.Y_AXIS = new Vector3D(0,1,0,0);
 	Vector3D.Z_AXIS = new Vector3D(0,0,1,0);
 	
+	function TextFormat(font, size, color, bold, italic, underline, url, target,
+		align, leftMargin, rightMargin, indent, leading) {
+		var config = {
+			"font":font ? font : "SimHei",
+			"size":size ? size : 25, 
+			"color":color ? color : 0x000000,
+			"bold":bold ? bold : false,
+			"italic":italic ? italic : false, 
+			"underline":underline ? underline : false, 
+			"url":url ? url : "", 
+			"target":target ? target : "", 
+			"align":align ? align : "left", 
+			"margin":(leftMargin ? leftMargin : 0) + "px 0 " + 
+				(rightMargin ? rightMargin : 0) + "px 0",
+			"indent":indent ? indent : 0, 
+			"leading":leading ? leading : 0
+		};
+		
+		this.serialize = function(){
+			return config;
+		};
+	};
+	
 	function Graphics(id){
 		// Graphics Context for SVG
 		var toRGB = function(number){
@@ -241,6 +264,9 @@ var $ = new function(){
 		this.beginFill = function(color, alpha){
 			updateObject("beginFill", [toRGB(color), alpha]);
 		};
+		this.beginGradientFill = function(){
+			__trace("Gradient not supported yet", 'warn');
+		};
 		this.endFill = function(){
 			updateObject("endFill", []);
 		};
@@ -251,6 +277,10 @@ var $ = new function(){
 	
 	function SVGShape(){
 		var id = Runtime.generateIdent();
+		var data = {
+			"x":0,
+			"y":0,
+		};
 		this.graphics = new Graphics(id);
 		if(this.__defineSetter__){
 			this.__defineSetter__("filters", function(filters){
@@ -267,6 +297,7 @@ var $ = new function(){
 		this.dispatchEvent = function(){
 			
 		};
+		
 		this.removeEventListener = function(event, listener){
 			
 		};
@@ -289,9 +320,14 @@ var $ = new function(){
 		
 	};
 	
-	function CanvasObject(){
+	function CanvasObject(params){
 		var id = Runtime.generateIdent();
-		
+		var data = {
+			"x":params.x ? params.x : 0,
+			"y":params.y ? params.y : 0,
+			"width":params.width ? params.width : null,
+			"height":params.height ? params.height : null,
+		}
 		this.getId = function(){
 			return id;
 		};
@@ -299,6 +335,10 @@ var $ = new function(){
 		this.serialize = function(){
 			return {
 				"class":"Canvas",
+				"x":data.x,
+				"y":data.y,
+				"width":data.width,
+				"height":data.height
 			};
 		};
 		Runtime.registerObject(this);
@@ -324,6 +364,7 @@ var $ = new function(){
 		var data = {};
 		// Init
 		data.text = text;
+		data.textFormat = new TextFormat();
 		for(var x in params){
 			data[x] = params[x];
 		}
@@ -331,7 +372,7 @@ var $ = new function(){
 		if(this.__defineSetter__){
 			this.__defineSetter__("text", function(text){
 				data.text = text;
-				__pchannel("Runtime:InvokeMethod", {
+				__pchannel("Runtime:CallMethod", {
 					"id":id,
 					"method":"setText",
 					"params":[text]
@@ -339,7 +380,7 @@ var $ = new function(){
 			});
 			this.__defineSetter__("x", function(x){
 				data.x = x;
-				__pchannel("Runtime:InvokeMethod", {
+				__pchannel("Runtime:CallMethod", {
 					"id":id,
 					"method":"setX",
 					"params":[data.x]
@@ -347,14 +388,14 @@ var $ = new function(){
 			});
 			this.__defineSetter__("y", function(y){
 				data.y = y;
-				__pchannel("Runtime:InvokeMethod", {
+				__pchannel("Runtime:CallMethod", {
 					"id":id,
 					"method":"setY",
 					"params":[data.y]
 				});
 			});
 			this.__defineSetter__("filters", function(filters){
-				__pchannel("Runtime:InvokeMethod", {
+				__pchannel("Runtime:CallMethod", {
 					"id":id,
 					"method":"setFilters",
 					"params":[filters]
@@ -381,7 +422,8 @@ var $ = new function(){
 				"class":"Comment",
 				"x":data.x,
 				"y":data.y,
-				"text":data.text
+				"text":data.text,
+				"textFormat":data.textFormat.serialize(),
 			};
 		};
 		Runtime.registerObject(this);
@@ -432,7 +474,7 @@ var $ = new function(){
 	/**
 	 * Bind listeners
 	**/
-	__schannel("update:dimension", function(dim){
+	__schannel("Update:dimension", function(dim){
 		stage.width = dim.stageWidth;
 		stage.height = dim.stageHeight;
 		stage.fsWidth = dim.screenWidth;
@@ -532,7 +574,13 @@ var $ = new function(){
 	this.createTextFormat = function(font, size, color, bold, italic, 
 		underline, url, target, align, leftMargin, rightMargin, indent, 
 		leading){
-		
+		return new TextFormat(font ? font : "SimHei",
+			 size ? size : 25, color ? color : 0x000000,
+			 bold ? bold : false, italic ? italic : false, 
+			 underline ? underline : false, url ? url : "", 
+			 target ? target : "", align ? align : "left", 
+			 leftMargin ? leftMargin : 0, rightMargin ? rightMargin : 0,
+			 indent ? indent : 0, leading ? leading : 0);
 	};
 	
 	this.toString = function(){

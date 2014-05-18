@@ -3,11 +3,6 @@ function trace(msg){
 	__trace(msg, 'log');
 }
 
-function require(scriptname){
-	var fn = BASE_URL + scriptname;
-	importScripts(fn);
-};
-
 function load(library, onComplete){
 	var libname = "";
 	switch(library){

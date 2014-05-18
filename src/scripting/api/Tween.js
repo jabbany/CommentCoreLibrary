@@ -126,7 +126,7 @@ var Tween = new function(){
 	this.repeat = function(itw, times){
 		// TODO: Fix this to be more effecient
 		var t = itw.clone;
-		for(var i = 1; i < times){
+		for(var i = 1; i < times; i++){
 			t = this.serial(t, itw.clone());
 		};
 		return t;

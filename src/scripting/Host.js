@@ -35,7 +35,7 @@ var CCLScripting = function(workerUrl){
 		this.registerObject = function(objectId, serialized){
 			if(typeof this.Unpack[serialized["class"]] === "function"){
 				objects[objectId] = new this.Unpack[serialized["class"]](stage, 
-					serialized);
+					serialized, this);
 			}else{
 				scripter.logger.error("Cannot unpack class \"" + 
 					serialized["class"] + "\". No valid unpacker found");
@@ -71,6 +71,15 @@ var CCLScripting = function(workerUrl){
 		
 		this.clear = function(){
 			
+		};
+		
+		this.getDimensions = function(){
+			return {
+				"stageWidth":stage.offsetWidth,
+				"stageHeight":stage.offsetHeight,
+				"screenWidth":window.screen.width,
+				"screenHeight":window.screen.height
+			};
 		};
 	};
 	
@@ -117,13 +126,9 @@ var CCLScripting = function(workerUrl){
 		};
 		
 		var dispatchMessage = function(msg){
-			if(channels[msg.channel]){
+			if(channels[msg.channel] && channels[msg.channel].listeners){
 				for(var i = 0; i < channels[msg.channel].listeners.length; i++){
-					try{
-						channels[msg.channel].listeners[i](msg.payload);
-					}catch(e){
-						scripter.logger.error(e);
-					}
+					channels[msg.channel].listeners[i](msg.payload);
 				}
 			}else{
 				scripter.logger.warn("Message for channel \"" + msg.channel + 
@@ -216,6 +221,9 @@ var CCLScripting = function(workerUrl){
 	};
 	CCLScripting.prototype.BridgedSandbox.prototype.init = function(){
 		var self = this;
+		/** Post whatever we need to **/
+		self.send("Update:dimension", self.getContext().getDimensions());
+		/** Hook Listeners **/
 		this.addListener("Runtime::alert", function(msg){
 			alert(msg);
 		});
@@ -245,17 +253,58 @@ var CCLScripting = function(workerUrl){
 		this.addListener("Runtime:DeregisterObject", function(pl){
 			self.getContext().deregisterObject(pl.id);
 		});
-		this.addListener("Runtime:InvokeMethod", function(pl){
+		this.addListener("Runtime:CallMethod", function(pl){
 			self.getContext().callMethod(pl.id, pl.method, pl.params);
 		});
 	};
-	
-	// Define some unpackers
+	/** This is the DOM Manipulation Library **/
+	var _ = function (type, props, children, callback) {
+		var elem = null;
+		if (type === "text") {
+			return document.createTextNode(props);
+		} else if(type === "svg"){
+			elem = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+		}else {
+			elem = document.createElement(type);
+		}
+		for(var n in props){
+			if(n !== "style" && n !== "className"){
+				elem.setAttribute(n, props[n]);
+			}else if(n === "className"){
+				elem.className = props[n];
+			}else{
+				for(var x in props.style){
+					elem.style[x] = props.style[x];
+				}
+			}
+		}
+		if (children) {
+			for(var i = 0; i < children.length; i++){
+				if(children[i] != null)
+					elem.appendChild(children[i]);
+			}
+		}
+		if (callback && typeof callback === "function") {
+			callback(elem);
+		}
+		return elem;
+	};
+	/** Define some unpackers **/
 	var ScriptingContext = CCLScripting.prototype.ScriptingContext;
-	ScriptingContext.prototype.Unpack.Comment = function(stage, data){
-		this.DOM = document.createElement("div");
-		
+	ScriptingContext.prototype.Unpack.Comment = function(stage, data, ctx){
+		this.DOM = _("div",{});
+		/** Load the text format **/
 		this.DOM.appendChild(document.createTextNode(data.text));
+		this.DOM.style.fontFamily = data.textFormat.font;
+		this.DOM.style.fontSize = data.textFormat.size + "px";
+		this.DOM.style.color = "#" + data.textFormat.color.toString(16);
+		if(data.textFormat.bold)
+			this.DOM.style.fontWeight = "bold";
+		if(data.textFormat.underline)
+			this.DOM.style.textDecoration = "underline";
+		if(data.textFormat.italic)
+			this.DOM.style.fontStyle = "italic";
+		this.DOM.style.margin = data.textFormat.margin;
 		
 		this.setFilters = function(params){
 			for(var i = 0; i < params[0].length; i++){
@@ -278,4 +327,211 @@ var CCLScripting = function(workerUrl){
 		// Hook child
 		stage.appendChild(this.DOM);
 	};
+	
+	ScriptingContext.prototype.Unpack.Shape = function(stage, data, ctx){
+		this.DOM = _("svg",{
+			"width":stage.offsetWidth, 
+			"height":stage.offsetHeight,
+			"style":{
+				"position":"absolute",
+				"top": (data.y ? data.y : 0) + "px",
+				"left":(data.x ? data.x : 0) + "px"
+		}});
+		// Helpers
+		var __ = function(e, attr){
+			if(typeof e === "string"){
+				var elem = 
+					document.createElementNS("http://www.w3.org/2000/svg",e);
+			}else{
+				var elem = e;
+			}
+			if(attr){
+				for(var x in attr){
+					elem.setAttribute(x, attr[x]);
+				}
+			}
+			return elem;
+		};
+		
+		this.line = {
+			width:1,
+			color:"#FFFFFF",
+			alpha:1
+		};
+		this.fill = {
+			fill:"none",
+			alpha:1
+		};
+		
+		var applyStroke = function(p, ref){
+			__(p, {
+				"stroke": ref.line.color,
+				"stroke-width": ref.line.width,
+				"stroke-opacity": ref.line.alpha
+			});
+			if(ref.line.caps){
+				p.setAttribute("stroke-linecap", ref.line.caps);
+			}
+			if(ref.line.joints){
+				p.setAttribute("stroke-linejoin", ref.line.joints);
+			}
+			if(ref.line.miterLimit){
+				p.setAttribute("stroke-miterlimit", ref.line.miterLimit);
+			}
+		};
+		
+		var applyFill = function(p, ref){
+			__(p, {
+				"fill": ref.fill.fill,
+				"fill-opacity": ref.fill.alpha
+			});
+		};
+		
+		var state = {lastPath : null};
+		this.moveTo = function(params){
+			var p = __("path",{
+				"d":"M" + params.join(" ")
+			});
+			applyFill(p, this);
+			state.lastPath = p;
+			applyStroke(p, this);
+			this.DOM.appendChild(state.lastPath);
+		};
+		this.lineTo = function(params){
+			if(!state.lastPath){
+				state.lastPath = __("path",{
+					"d":"M0 0"
+				});
+				applyFill(state.lastPath, this);
+				applyStroke(state.lastPath, this);
+			}
+			__(state.lastPath,{
+				"d": state.lastPath.getAttribute("d") + " L" + params.join(" ")
+			});
+		};
+		this.curveTo = function(params){
+			if(!state.lastPath){
+				state.lastPath = __("path",{
+					"d":"M0 0"
+				});
+				applyFill(state.lastPath, this);
+				applyStroke(state.lastPath, this);
+			}
+			__(state.lastPath,{
+				"d": state.lastPath.getAttribute("d") + " Q" + params.join(" ")
+			});
+		};
+		this.lineStyle = function(params){
+			if(params.length < 3)
+				return;
+			this.line.width = params[0];
+			this.line.color = params[1];
+			this.line.alpha = params[2];
+			if(params[3]){
+				this.line.caps = params[3];
+			}
+			if(params[4]){
+				this.line.joints = params[4];
+			}
+			if(params[5]){
+				this.line.miterLimit = params[5];
+			}
+			if(state.lastPath){
+				applyStroke(state.lastPath, this);
+			}
+		};
+		this.beginFill = function(params){
+			if(params.length === 0)
+				return;
+			this.fill.fill = params[0];
+			if(params.length > 1){
+				this.fill.alpha = params[1];
+			}
+		};
+		this.endFill = function(params){
+			this.fill.fill = "none";
+		};
+		this.drawRect = function(params){
+			var r = __("rect",{
+				"x": params[0],
+				"y": params[1],
+				"width": params[2],
+				"height": params[3]
+			});
+			applyFill(r, this);
+			applyStroke(r, this);
+			this.DOM.appendChild(r);
+		};
+		this.drawRoundRect = function(params){
+			var r = __("rect",{
+				"x": params[0],
+				"y": params[1],
+				"width": params[2],
+				"height": params[3],
+				"rx":params[4],
+				"ry":params[5]
+			});
+			applyFill(r, this);
+			applyStroke(r, this);
+			this.DOM.appendChild(r);
+		};
+		this.drawCircle = function(params){
+			var c = __("circle",{
+				"cx": params[0],
+				"cy": params[1],
+				"r": params[2]
+			});
+			applyFill(c, this);
+			applyStroke(c, this);
+			this.DOM.appendChild(c);
+		};
+		
+		this.drawEllipse = function(params){
+			var e = __("ellipse",{
+				"cx": params[0],
+				"cy": params[1],
+				"rx": params[2],
+				"ry": params[3]
+			});
+			applyFill(e, this);
+			applyStroke(e, this);
+			this.DOM.appendChild(e);
+		};
+		
+		// Hook Child
+		stage.appendChild(this.DOM);
+	};
+	
+	ScriptingContext.prototype.Unpack.Canvas = function(stage, data, ctx){
+		this.DOM = _("div",{"style":{"position":"absolute"}});
+		
+		this.setX = function(x){
+			this.DOM.style.left = x + "px";
+		};
+		
+		this.setY = function(y){
+			this.DOM.style.top = y + "px";
+		};
+		
+		this.setWidth = function(width){
+			this.DOM.style.width = width + "px";
+		};
+		
+		this.setHeight = function(height){
+			this.DOM.style.height = height + "px";
+		};
+		
+		// Hook child
+		stage.appendChild(this.DOM);
+	}
+	
+	// Load all the getClass Prototypes
+	for(var cl in ScriptingContext.prototype.Unpack){
+		ScriptingContext.prototype.Unpack[cl].prototype.getClass = (function(){
+			var n = cl;
+			return function(){
+				return n;
+			} 
+		})();
+	}
 })();
