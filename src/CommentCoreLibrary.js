@@ -105,6 +105,19 @@ function CommentManager(stageObject){
 		}
 		return cmt;
 	};
+	this.caculatecmt = function(c){
+		var text=c.data.text.split("\n");
+		c.height = Math.floor(text.length*c.data.size*1.15)+1;
+		c.textlength=0;
+		for(var p=0;p<text.length;p++){
+			if(text[p].length>c.textlength){
+			  c.textlength=text[p].length;
+			}
+		}
+		c.width = Math.floor(c.data.size*c.textlength*1.15)+1;
+		if(isNaN(c.width))c.width=0;
+		return c;
+}
 	this.startTimer = function(){
 		if(__timer > 0)
 		  return;
@@ -165,14 +178,14 @@ CommentManager.prototype.preload = function(){
 	}
 	totalDivTime = this.timeline[this.timeline.length-1].stime;
 	totalDivNum = Math.floor(totalDivTime/this.eachDivTime)+1;
-	for(i = 0; i < totalDivNum; i++){
+	for(var i = 0; i < totalDivNum; i++){
 		this.pdiv[i] = document.createElement("div");
 		this.pdiv[i].show = false;
 		this.pdiv[i].id = "pdiv_"+i;
 		this.pdiv[i].pnum = i;
 		this.pdiv[i].className = "container";
 	}
-	for(i = 0; i < this.timeline.length; i++){
+	for(var i = 0; i < this.timeline.length; i++){
 		if(this.timeline[i].mode == 1){
 			if(this.filter != null){
 				data=this.timeline[i];
@@ -181,10 +194,8 @@ CommentManager.prototype.preload = function(){
 			}
 			cmt = document.createElement('div');
 			cmt = this.initCmt(cmt,this.timeline[i]);
-			cmt.width = Math.floor(cmt.data.text.length*cmt.data.size)+1;
-			if(isNaN(cmt.width))cmt.width=0;
-			cmt.height = Math.floor(cmt.data.size*1.15)+1;
-			j = 0;
+			cmt = this.caculatecmt(cmt);
+			var j = 0;
 			while(j <= this.pdivpool.length){
 				if(j == this.pdivpool.length)
 				  this.pdivpool[j] = 0;
@@ -192,6 +203,8 @@ CommentManager.prototype.preload = function(){
 					cmt.totop = j* this.pdivheight;
 					while(cmt.totop + cmt.height > this.stage.height)
 					  cmt.totop-=this.stage.height;
+					if(cmt.totop<0)
+					  cmt.totop=0;
 					endtime = cmt.stime+cmt.width/this.stage.width*4000*this.def.globalScale;
 					k=0;
 					while(k*this.pdivheight<cmt.height){
@@ -209,15 +222,16 @@ CommentManager.prototype.preload = function(){
 		}
 	}
 }
+
 CommentManager.prototype.pdivsety = function(){
 	this.pdivpool=[0];
-	for(i = 0; i < this.timeline.length; i++){
+	for(var i = 0; i < this.timeline.length; i++){
 		if(this.timeline[i].mode !== 1)
 		  continue;
 		if(!this.timeline[i].cmt)
 		  continue;
 		cmt=this.timeline[i].cmt;
-		j = 0;
+		var j = 0;
 		while(j <= this.pdivpool.length){
 			if(j == this.pdivpool.length)
 			  this.pdivpool[j] = 0;
@@ -225,6 +239,8 @@ CommentManager.prototype.pdivsety = function(){
 				cmt.totop = j* this.pdivheight;
 				while(cmt.totop + cmt.height > this.stage.height)
 				  cmt.totop-=this.stage.height;
+				if(cmt.totop<0)
+				  cmt.totop=0;
 				endtime = cmt.stime+cmt.width/this.stage.width*4000*this.def.globalScale;
 				k=0;
 				while(k*this.pdivheight<cmt.height){
@@ -260,29 +276,23 @@ CommentManager.prototype.pdivupdate = function(){
 	}
 }
 CommentManager.prototype.pdivclear = function(){
-	for(i=0;i<this.pdivshow.length;i++)
+	for(var i=0;i<this.pdivshow.length;i++)
 	  this.stage.removeChild(this.pdivshow[i]);
 	this.pdivshow=[];
-	for(i=0;i<this.pdiv.length;i++)
+	for(var i=0;i<this.pdiv.length;i++)
 	  this.pdiv[i].show=false;
-	for(i = 0; i < this.timeline.length; i++){
+	for(var i = 0; i < this.timeline.length; i++){
 		if(this.timeline[i].mode==1)
 		  if(this.timeline[i].cmt)
 			this.timeline[i].cmt.ttl=this.timeline[i].cmt.dur;
 	}
 }
-/////
 CommentManager.prototype.clear = function(){
 	for(var i=0;i<this.runline.length;i++){
 		this.finish(this.runline[i]);
 		if(this.runline[i].mode!==1)
 		  this.stage.removeChild(this.runline[i]);
 	}
-	//while(this.stage.children[0])
-	//  this.stage.removeChild(this.stage.children[0]);
-	//for(i = 0; i < this.pdiv.length; i++)
-	//  this.pdiv[i].show = false;
-	//this.pdivshow = [];
 	this.runline = [];
 	this.pdivclear();
 };
