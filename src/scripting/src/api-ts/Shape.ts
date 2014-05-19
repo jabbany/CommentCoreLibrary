@@ -9,4 +9,10 @@ class Shape extends DisplayObject{
 	get graphics():Graphics{
 		return _graphics;
 	}
+
+	public serialize():Object{
+		var serialized:Object = super.serialize();
+		serialized["class"] = "Shape";
+		return serialized;
+	}
 }

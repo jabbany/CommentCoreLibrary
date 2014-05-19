@@ -10,15 +10,7 @@ class Graphics {
 		id = parent.getId();
 	}
 
-	private toRGB(rgb:number):string {
-		var output:string = parseInt(rgb).toString(16);
-		while (output.length < 6) {
-			output = "0" + output;
-		}
-		return "#" + output;
-	}
-
-	private callDrawMethod(method:string, params):void {
+	private _callDrawMethod(method:string, params):void {
 		__pchannel("Runtime:CallMethod", {
 			"id": id,
 			"context": "graphics",
@@ -33,7 +25,7 @@ class Graphics {
 	 * @param y - y coordinate
 	 */
 	public lineTo(x:number, y:number):void {
-		callDrawMethod("lineTo", [a, b]);
+		this._callDrawMethod("lineTo", [a, b]);
 	}
 
 	/**
@@ -42,7 +34,7 @@ class Graphics {
 	 * @param y - y coordinate
 	 */
 	public moveTo(x:number, y:number):void {
-		callDrawMethod("moveTo", [x, y]);
+		this._callDrawMethod("moveTo", [x, y]);
 	}
 
 	/**
@@ -53,7 +45,7 @@ class Graphics {
 	 * @param ay - Anchor y
 	 */
 	public curveTo(cx:number, cy:number, ax:number, ay:number):void {
-		callDrawMethod("curveTo", [cx, cy, ax, ay]);
+		this._callDrawMethod("curveTo", [cx, cy, ax, ay]);
 	}
 
 	/**
@@ -66,7 +58,7 @@ class Graphics {
 	 * @param ay - Anchor y
 	 */
 	public cubicCurveTo(cax:number, cay:number, cbx:number, cby:number, ax:number, ay:number):void {
-		callDrawMethod("cubicCurveTo", [cax, cay, cbx, cby, ax, ay]);
+		this._callDrawMethod("cubicCurveTo", [cax, cay, cbx, cby, ax, ay]);
 	}
 
 	/**
@@ -81,7 +73,7 @@ class Graphics {
 	 * @param miterlim - miter limit (default 3)
 	 */
 	public lineStyle(thickness:number, color:number = 0, alpha:number = 1.0, hinting:boolean = false, scale:string = "normal", caps:string = "none", joints:string = "round", miter:number = 3):void {
-		callDrawMethod("lineStyle", [thickness, color, alpha, caps, joints, miter]);
+		this._callDrawMethod("lineStyle", [thickness, color, alpha, caps, joints, miter]);
 	}
 
 	/**
@@ -92,7 +84,7 @@ class Graphics {
 	 * @param h - height
 	 */
 	public drawRect(x:number, y:number, w:number, h:number):void {
-		callDrawMethod("drawRect", [x, y, w, h]);
+		this._callDrawMethod("drawRect", [x, y, w, h]);
 	}
 
 	/**
@@ -102,7 +94,7 @@ class Graphics {
 	 * @param r - radius
 	 */
 	public drawCircle(x:number, y:number, r:number):void {
-		callDrawMethod("drawCircle", [x, y , r]);
+		this._callDrawMethod("drawCircle", [x, y , r]);
 	}
 
 	/**
@@ -113,7 +105,7 @@ class Graphics {
 	 * @param h - height
 	 */
 	public drawEllipse(cx:number, cy:number, w:number, h:number):void {
-		callDrawMethod("drawEllipse", [cx + w / 2, cy + h / 2, w / 2, h / 2]);
+		this._callDrawMethod("drawEllipse", [cx + w / 2, cy + h / 2, w / 2, h / 2]);
 	}
 
 	/**
@@ -126,7 +118,7 @@ class Graphics {
 	 * @param elh - ellipse corner height
 	 */
 	public drawRoundRect(x:number, y:number, w:number, h:number, elw:number, elh:number):void {
-		callDrawMethod("drawRoundRect", [x, y, w, h, elw, elh]);
+		this._callDrawMethod("drawRoundRect", [x, y, w, h, elw, elh]);
 	}
 
 	/**
@@ -135,13 +127,19 @@ class Graphics {
 	 * @param alpha
 	 */
 	public beginFill(color:number, alpha:number = 1.0):void {
-		callDrawMethod("beginFill", [color, alpha]);
+		this._callDrawMethod("beginFill", [color, alpha]);
 	}
 
+	/**
+	 * Gradient Fill Not Supported yet
+	 */
 	public beginGradientFill():void {
 		__trace("Graphics: Gradients not supported yet.", 'warn');
 	}
 
+	/**
+	 * Shader Fill Not Supported yet
+	 */
 	public beginShaderFill():void {
 		__trace("Graphics: Shaders not supported yet.", 'warn');
 	}
@@ -150,13 +148,13 @@ class Graphics {
 	 * Stop and finalize fill
 	 */
 	public endFill():void {
-		callDrawMethod("endFill", []);
+		this._callDrawMethod("endFill", []);
 	}
 
 	/**
 	 * Clears everything the current graphics context has drawn
 	 */
 	public clear():void {
-		callDrawMethod("clear", []);
+		this._callDrawMethod("clear", []);
 	}
 }

@@ -1,7 +1,7 @@
 /**
- * Created by jim on 5/19/14.
+ * Compliant CommentCanvas Polyfill For BiliScriptEngine
  */
-class CommentCanvas extends Sprite implements IComment {
+class CommentCanvas extends Sprite implements IComment{
 	private _mM:MotionManager = new MotionManager(this);
 
 	constructor(params:Object) {

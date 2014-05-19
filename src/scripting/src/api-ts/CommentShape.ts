@@ -1,7 +1,7 @@
 /**
  * Compliant CommentShape Polyfill For BiliScriptEngine
  */
-class CommentShape extends Shape implements IComment {
+class CommentShape extends Shape implements IComment{
 	private _mM:MotionManager = new MotionManager(this);
 
 	constructor(params:Object) {

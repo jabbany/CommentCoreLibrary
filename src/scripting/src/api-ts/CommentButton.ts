@@ -1,7 +1,7 @@
 /**
- * Created by jim on 5/19/14.
+ * Compliant CommentButton Polyfill For BiliScriptEngine
  */
-class CommentButton extends Sprite implements IComment {
+class CommentButton extends Sprite implements IComment{
 	private _mM:MotionManager = new MotionManager(this);
 
 	constructor(params:Object) {

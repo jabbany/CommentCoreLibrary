@@ -1,7 +1,7 @@
 /**
- * Created by jim on 5/19/14.
+ * Compliant CommentShape Polyfill For BiliScriptEngine
  */
-class CommentField extends TextField implements IComment {
+class CommentField extends TextField implements IComment{
 	private _mM:MotionManager = new MotionManager(this);
 
 	constructor(params:Object) {

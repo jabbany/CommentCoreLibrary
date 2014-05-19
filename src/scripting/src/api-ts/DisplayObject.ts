@@ -1,6 +1,6 @@
 /** This represents an element in the HTML rendering **/
-class DisplayObject {
-	private id:string = Runtime.getId();
+class DisplayObject implements ISerializable{
+	private _id:string = Runtime.getId();
 	private _alpha:number = 1;
 	private _x:number = 0;
 	private _y:number = 0;
@@ -18,12 +18,12 @@ class DisplayObject {
 
 	/** Properties **/
 	set alpha(value:number) {
-		_alpha = value;
+		this._alpha = value;
 		propertyUpdate("alpha", value);
 	}
 
 	get alpha():number {
-		return _alpha;
+		return this._alpha;
 	}
 
 	set cacheAsBitmap(value:boolean) {
@@ -35,12 +35,12 @@ class DisplayObject {
 	}
 
 	set filters(filters:Array<Filter>) {
-		_filters = filters;
+		this._filters = filters;
 		propertyUpdate("filters", filters);
 	}
 
 	get filters():Array<Filter> {
-		return _filters;
+		return this._filters;
 	}
 
 	get root():DisplayObject {
@@ -48,11 +48,11 @@ class DisplayObject {
 	}
 
 	set scaleX(val:number) {
-		_scaleX = val;
+		this._scaleX = val;
 	}
 
 	set scaleY(val:number) {
-		_scaleY = val;
+		this._scaleY = val;
 	}
 
 	set scaleZ(val:number) {
@@ -60,11 +60,11 @@ class DisplayObject {
 	}
 
 	set x(val:number) {
-		_x = val;
+		this._x = val;
 	}
 
 	set y(val:number) {
-		_y = val;
+		this._y = val;
 	}
 
 	set z(val:number) {
@@ -72,11 +72,11 @@ class DisplayObject {
 	}
 
 	get scaleX():number {
-		return _scaleX;
+		return this._scaleX;
 	}
 
 	get scaleY():number {
-		return _scaleY;
+		return this._scaleY;
 	}
 
 	get scaleZ():number {
@@ -84,11 +84,11 @@ class DisplayObject {
 	}
 
 	get x():number {
-		return _x;
+		return this._x;
 	}
 
 	get y():number {
-		return _y;
+		return this._y;
 	}
 
 	get z():number {
@@ -96,7 +96,20 @@ class DisplayObject {
 	}
 
 	/** Common Functions **/
-	unload():void {
+	public serialize():Object{
+		var filters:Array<Object> = [];
+		for(var i:number = 0; i < this._filters.length; i++){
+			filters.push(this._filters[i].serialize());
+		}
+		return {
+			"class":"DisplayObject",
+			"x":this._x,
+			"y":this._y,
+			"alpha":this._alpha,
+			"filters":filters
+		};
+	}
+	public unload():void {
 		__pchannel("Runtime:CallMethod", {
 			"id": id,
 			"method": "unload",
@@ -104,7 +117,7 @@ class DisplayObject {
 		});
 	}
 
-	getId():string {
-		return id;
+	public getId():string {
+		return this._id;
 	}
 }
