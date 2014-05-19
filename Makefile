@@ -33,7 +33,11 @@ ifneq ($(ACSRC),)
 endif
 
 css:
-	cp  src/base.css build/base.css
+	cp src/base.css build/base.css
+	cp src/fontalias.css build/fontalias.css
+	cat build/base.css build/fontalias.css > build/style.css
+	rm -f build/base.css
+	rm -f build/fontalias.css
 
 concat-only: $(BUILD_MINIFY)
 	cat $^ > build/CommentCoreLibrary.tmp

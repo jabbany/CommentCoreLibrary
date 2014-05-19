@@ -90,6 +90,20 @@ var Utils = new function(){
 		}
 	};
 	
+	/** Allow the scripting global timer to be halted **/
+	__schannel("Utils:Timer", function(pld){
+		if(pld.action === "halt"){
+			stopMasterTimer();
+		}else if(pld.action === "resume"){
+			startMasterTimer();
+		}
+	});
+	
+	this.clearTimers = function(){
+		__timers = [];
+		stopMasterTimer();
+	};
+	/** Utils **/
 	this.rgb = function(r,g,b){
 		return (r * 256 * 256 + g * 256 + b);
 	};

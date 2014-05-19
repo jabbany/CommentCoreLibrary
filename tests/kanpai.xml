@@ -56146,7 +56146,7 @@ a.graphics.beginFill(0xffffff);
 a.graphics.drawRect(0,0,950,484);
 a.graphics.endFill();
 
-}</d>
+</d>
 <d p="333.321,8,25,16777215,1355992958,2,7f7e4d48,160183578">function rainbow(txt,fz,col,xp){
 var cmt=$.createComment(txt,{x:xp,y:384/2-fz/1.8,color:col,lifeTime:5,motionGroup:[
 {alpha:{fromValue:0,toValue:1,lifeTime:2}},
@@ -56251,8 +56251,7 @@ cmt[i].y=Utils.rand(0,300);
 a.graphics.beginFill(0xffffff);
 a.graphics.drawRect(0,0,950,484);
 a.graphics.endFill();
-
-}</d>
+</d>
 <d p="339.122,8,25,16777215,1355994801,2,7f7e4d48,160189800">/*干杯 就算太对不容易*/
 
 

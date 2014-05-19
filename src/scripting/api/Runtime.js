@@ -1,5 +1,6 @@
 var Runtime = new function(){
 	function MetaObject (nm, callback){
+		this.unload = function(){};
 		this.dispatchEvent = function(event, data){
 			if(callback){
 				callback(event, data);
@@ -86,7 +87,12 @@ var Runtime = new function(){
 	};
 	
 	this.clear = function(){
-		__achannel("Runtime::clear", "::Runtime", msg);
+		for(var i in registeredObjects){
+			if(registeredObjects[i].unload){
+				registeredObjects[i].unload();
+			}
+		};
+		__achannel("Runtime::clear", "::Runtime", {});
 	};
 	
 	this.crash = function(){

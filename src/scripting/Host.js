@@ -342,6 +342,12 @@ var CCLScripting = function(workerUrl){
 		this.setX(data.x);
 		this.setY(data.y);
 		
+		/** Other **/
+		this.setText = function(text){
+			this.DOM.innerHTML = "";
+			this.DOM.appendChild(_("text",text));
+		};
+		
 		this.setFilters = function(params){
 			for(var i = 0; i < params[0].length; i++){
 				var filter = params[0][i];

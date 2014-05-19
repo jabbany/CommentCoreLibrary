@@ -338,6 +338,7 @@ var $ = new function(){
 			});
 			
 			this.__defineSetter__("x", function(x){
+				data.x = x;
 				__pchannel("Runtime:CallMethod", {
 					"id":id,
 					"method":"setX",
@@ -346,11 +347,25 @@ var $ = new function(){
 			});
 			
 			this.__defineSetter__("y", function(y){
+				data.y = y;
 				__pchannel("Runtime:CallMethod", {
 					"id":id,
 					"method":"setY",
 					"params":y
 				});
+			});
+		}
+		if(this.__defineGetter__){
+			this.__defineGetter__("filters", function(){
+				return [];
+			});
+			
+			this.__defineGetter__("x", function(){
+				return data.x;
+			});
+			
+			this.__defineGetter__("y", function(){
+				return data.y;
 			});
 		}
 		// Life time monitor
@@ -538,6 +553,10 @@ var $ = new function(){
 				"method":"setTextFormat",
 				"params":fmt.serialize()
 			});
+		};
+		
+		this.setText = function(text){
+			this.text = text;
 		};
 		// Life time monitor
 		if(data.lifeTime){
