@@ -10,7 +10,9 @@ __trace(object:Object, traceMode:String)
 - 'log': 普通 log，如果关闭播放器 log，则不会输出
 - 'warn' : Warning 警告，告知API使用错误或Deprecate通知，关闭严格模式则不输出
 - 'err' : Error 错误，永远输出。一般来说 err 表示无法纠正的错误，上一个操作可能已经失效。
-- 'fatal' : Fatal 引擎错误，永远输出。一般来说一旦 trace 出 fatal错误，BScript可以终止目前的Worker实例
+- 'fatal' : Fatal 引擎错误，永远输出。一般来说一旦 trace 出 fatal错误，BScript可以终止目
+前的Worker实例
+
 trace会发送到空channel，也因此无法绑定 "" 作为 channel 名称
 
 __channel(id:String, payload:Object, callback:Function)

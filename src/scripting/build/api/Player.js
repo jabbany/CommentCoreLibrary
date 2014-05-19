@@ -58,7 +58,7 @@ var Player = new function(){
 		"comment":[]
 	};
 	
-	__schannel("update:player", function(){
+	__schannel("Update:player", function(){
 		
 	});
 	

@@ -255,7 +255,11 @@ var $ = new function(){
 			return config;
 		};
 	};
-	
+	/** Common **/
+	function MotionManager(){
+		
+	};
+	/** MM **/
 	function Graphics(id){
 		// Graphics Context for SVG
 		var toRGB = function(number){
@@ -314,7 +318,6 @@ var $ = new function(){
 			updateObject("setFilters", [filters]);
 		};
 	};
-	
 	function SVGShape(params){
 		var id = Runtime.generateIdent();
 		if(!params){
@@ -326,6 +329,8 @@ var $ = new function(){
 			"alpha":params.alpha ? params.alpha : 1,
 			"lifeTime":params.lifeTime
 		};
+		var motionManager = new MotionManager(this);
+		
 		this.graphics = new Graphics(id);
 		if(this.__defineSetter__){
 			this.__defineSetter__("filters", function(filters){
@@ -420,7 +425,8 @@ var $ = new function(){
 			"width":params.width ? params.width : null,
 			"height":params.height ? params.height : null,
 		}
-				
+		var motionManager = new MotionManager(this);
+		
 		this.addChild = function(displayObject){
 		
 		};
@@ -450,7 +456,7 @@ var $ = new function(){
 	
 	function ButtonObject(){
 		var id = Runtime.generateIdent();
-		
+		var motionManager = new MotionManager(this);
 		this.setStyle = function(property, value){
 		
 		};
@@ -608,7 +614,8 @@ var $ = new function(){
 		width:-1,
 		height:-1,
 		fsWidth:-1,
-		fsHeight:-1
+		fsHeight:-1,
+		frameRate: 24,
 	};
 	
 	/**
@@ -749,6 +756,12 @@ var $ = new function(){
 	 * Initializer for all the getter/setter fields
 	 */
 	if(this.__defineGetter__){
+		this.__defineGetter__("root", function(){
+			return new Sprite();
+		});
+		this.__defineGetter__("frameRate", function(){
+			return stage.frameRate;
+		});
 		this.__defineGetter__("fullScreenWidth", function(){
 			return _fullScreenWidth();
 		});
@@ -767,6 +780,13 @@ var $ = new function(){
 	}
 	
 	if(this.__defineSetter__){
+		this.__defineSetter__("root", function(r){
+			__trace("Cannot reassign root!", 'warn');
+		});
+		this.__defineSetter__("frameRate", function(newFrameRate){
+			// Do something
+			stage.frameRate = Math.max(0,Math.min(120,newFrameRate));
+		});
 		this.__defineSetter__("fullScreenWidth", function(){
 			__trace("Attempted to assign to read-only field", 'warn');
 		});

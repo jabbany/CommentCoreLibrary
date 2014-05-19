@@ -1,14 +1,30 @@
 var ScriptManager = new function(){
 	this.clearTimer = function(){
 		Runtime.deregisterAllListeners("__self");
-		Utils.clearTimers();
+		Runtime.getMasterTimer().clearAll();
 	};
 	
-	this.clearEL = function(){
+	this.clearEl = function(){
 		Runtime.clear();
 	};
 	
 	this.clearTrigger = function(){
 		Runtime.deregisterAllListeners("__player");
+	};
+	
+	this.pushEl = function(e){
+		
+	};
+	
+	this.popEl = function(e){
+		
+	};
+	
+	this.pushTimer = function(e){
+		
+	};
+	
+	this.popTimer = function(e){
+		
 	};
 };
