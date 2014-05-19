@@ -1,9 +1,10 @@
 /**
  * CommentData Adapter
  */
-class CommentData{
+class CommentData {
 	private _dbid = 0;
-	constructor(comment:Object){
+
+	constructor(comment:Object) {
 		this._dbid = comment.dbid;
 		this.size = comment.size;
 		this.text = comment.text;
@@ -11,13 +12,16 @@ class CommentData{
 		this.stime = comment.stime;
 		this.date = comment.date;
 	}
+
 	public blocked:boolean = false;
 	public blockType:number = 0;
 	public border:boolean = false;
 	public credit:boolean = false;
-	get danmuId():number{
+
+	get danmuId():number {
 		return this._dbid;
 	}
+
 	public date:string = "";
 	public deleted:boolean = false;
 	public id:number = 0;
