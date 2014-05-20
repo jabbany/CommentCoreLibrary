@@ -1,5 +1,5 @@
 /**
- * Created by jim on 5/19/14.
+ * Compliant CommentBitmap Polyfill For BiliScriptEngine
  */
 module Display {
 	class CommentBitmap extends DisplayObject implements IComment {

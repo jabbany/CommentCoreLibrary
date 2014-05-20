@@ -1,5 +1,5 @@
 /**
- * Created by jim on 5/19/14.
+ * IComment Common Comment Contract
  */
 module Display {
 	interface IComment {

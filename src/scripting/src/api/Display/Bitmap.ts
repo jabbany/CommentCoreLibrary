@@ -1,5 +1,7 @@
 /**
- * Created by jim on 5/19/14.
+ * Bitmap Polyfill for AS3
+ * Author: Jim Chen
+ * Part of the CCLScripter
  */
 module Display {
 	class Bitmap extends DisplayObject {

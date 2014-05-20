@@ -1,5 +1,7 @@
 /**
- * Created by jim on 5/19/14.
+ * Filter Polyfill for AS3.
+ * Author: Jim Chen
+ * Part of the CCLScripter
  */
 module Display {
 	class Filter implements ISerializable {

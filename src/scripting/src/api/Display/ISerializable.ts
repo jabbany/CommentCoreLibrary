@@ -1,5 +1,5 @@
 /**
- * Created by jim on 5/19/14.
+ * ISerializable Serializable UI Contract
  */
 module Display {
 	interface ISerializable {

@@ -1,6 +1,11 @@
-/** This represents an element in the HTML rendering **/
+/**
+ * Shape Polyfill for AS3.
+ * Author: Jim Chen
+ * Part of the CCLScripter
+ */
 module Display {
 	class DisplayObject implements ISerializable {
+		/** This represents an element in the HTML rendering **/
 		private _id:string = Runtime.getId();
 		private _alpha:number = 1;
 		private _x:number = 0;

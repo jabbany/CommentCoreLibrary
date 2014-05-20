@@ -1,5 +1,7 @@
 /**
- * Created by jim on 5/19/14.
+ * Shape Polyfill for AS3.
+ * Author: Jim Chen
+ * Part of the CCLScripter
  */
 module Display {
 	class Shape extends DisplayObject {

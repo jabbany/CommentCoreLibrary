@@ -1,5 +1,5 @@
 /**
- * CommentData Adapter
+ * Partially Compliant CommentData Adapter
  */
 class CommentData {
 	private _dbid = 0;
