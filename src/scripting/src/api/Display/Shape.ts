@@ -3,16 +3,19 @@
  * Author: Jim Chen
  * Part of the CCLScripter
  */
+/// <reference path="DisplayObject.ts" />
+/// <reference path="Graphics.ts" />
 module Display {
-	class Shape extends DisplayObject {
+	export class Shape extends DisplayObject {
 		private _graphics:Graphics;
 
 		constructor() {
-			_graphics = new Graphics(this);
+			super();
+			this._graphics = new Graphics(this);
 		}
 
 		get graphics():Graphics {
-			return _graphics;
+			return this._graphics;
 		}
 
 		public serialize():Object {

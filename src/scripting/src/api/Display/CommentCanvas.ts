@@ -1,19 +1,23 @@
 /**
  * Compliant CommentCanvas Polyfill For BiliScriptEngine
  */
+/// <reference path="Sprite.ts" />
+/// <reference path="IComment.ts" />
+/// <reference path="MotionManager.ts" />
 module Display {
 	class CommentCanvas extends Sprite implements IComment {
 		private _mM:MotionManager = new MotionManager(this);
 
 		constructor(params:Object) {
+			super();
 			this.initStyle(params);
 		}
 
 		get motionManager():MotionManager {
-			return _mM;
+			return this._mM;
 		}
 
-		set motionManager(m):void {
+		set motionManager(m:MotionManager) {
 			__trace("IComment.motionManager is read-only", "warn");
 		}
 
@@ -24,5 +28,9 @@ module Display {
 		public initStyle(style:Object):void {
 
 		}
+	}
+
+	export function createCanvas(params:Object):any {
+		return new CommentCanvas(params);
 	}
 }

@@ -3,8 +3,11 @@
  * Author: Jim Chen
  * Part of the CCLScripter
  */
+/// <reference path="DisplayObject.ts" />
 module Display {
-	class Sprite extends DisplayObject {
-
+	export class Sprite extends DisplayObject {
+		constructor(){
+			super();
+		}
 	}
 }

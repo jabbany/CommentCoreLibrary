@@ -1,8 +1,10 @@
 /**
  * IComment Common Comment Contract
  */
+/// <reference path="DisplayObject.ts" />
+/// <reference path="MotionManager.ts" />
 module Display {
-	interface IComment {
+	export interface IComment {
 		/**
 		 * Motion Manager for Comments
 		 */
@@ -18,6 +20,6 @@ module Display {
 		 * CommentBitmap does not have this
 		 * @param params
 		 */
-		initStyle?(params:Object):void;
+		initStyle(params:Object):void;
 	}
 }

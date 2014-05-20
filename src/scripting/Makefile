@@ -5,4 +5,4 @@ clean:
 	mkdir build	
 	
 compile:
-	cp -r src/* build/
+	tsc --target ES5 src/api/Display/Display.ts --out build/api/Display.js

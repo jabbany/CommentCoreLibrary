@@ -2,7 +2,7 @@
  * ISerializable Serializable UI Contract
  */
 module Display {
-	interface ISerializable {
+	export interface ISerializable {
 		serialize():Object;
 	}
 }

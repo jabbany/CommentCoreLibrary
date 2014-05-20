@@ -3,8 +3,9 @@
  * Author: Jim Chen
  * Part of the CCLScripter
  */
+/// <reference path="DisplayObject.ts" />
 module Display {
-	class TextField extends DisplayObject {
+	export class TextField extends DisplayObject {
 
 	}
 }

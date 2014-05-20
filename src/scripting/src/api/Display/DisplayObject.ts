@@ -3,8 +3,11 @@
  * Author: Jim Chen
  * Part of the CCLScripter
  */
+/// <reference path="../Scripting.d.ts" />
+/// <reference path="ISerializable.ts" />
+/// <reference path="Filter.ts" />
 module Display {
-	class DisplayObject implements ISerializable {
+	export class DisplayObject implements ISerializable {
 		/** This represents an element in the HTML rendering **/
 		private _id:string = Runtime.getId();
 		private _alpha:number = 1;
@@ -16,7 +19,7 @@ module Display {
 
 		private propertyUpdate(propertyName:string, updatedValue):void {
 			__pchannel("Runtime:UpdateProperty", {
-				"id": id,
+				"id": this._id,
 				"name": propertyName,
 				"value": updatedValue
 			});
@@ -25,7 +28,7 @@ module Display {
 		/** Properties **/
 		set alpha(value:number) {
 			this._alpha = value;
-			propertyUpdate("alpha", value);
+			this.propertyUpdate("alpha", value);
 		}
 
 		get alpha():number {
@@ -42,7 +45,7 @@ module Display {
 
 		set filters(filters:Array<Filter>) {
 			this._filters = filters;
-			propertyUpdate("filters", filters);
+			this.propertyUpdate("filters", filters);
 		}
 
 		get filters():Array<Filter> {
@@ -50,15 +53,17 @@ module Display {
 		}
 
 		get root():DisplayObject {
-			return $.root;
+			return Display.root;
 		}
 
 		set scaleX(val:number) {
 			this._scaleX = val;
+			this.propertyUpdate("scaleX", val);
 		}
 
 		set scaleY(val:number) {
 			this._scaleY = val;
+			this.propertyUpdate("scaleY", val);
 		}
 
 		set scaleZ(val:number) {
@@ -67,10 +72,12 @@ module Display {
 
 		set x(val:number) {
 			this._x = val;
+			this.propertyUpdate("x", val);
 		}
 
 		set y(val:number) {
 			this._y = val;
+			this.propertyUpdate("y",val);
 		}
 
 		set z(val:number) {
@@ -118,7 +125,7 @@ module Display {
 
 		public unload():void {
 			__pchannel("Runtime:CallMethod", {
-				"id": id,
+				"id": this._id,
 				"method": "unload",
 				"params": null
 			});

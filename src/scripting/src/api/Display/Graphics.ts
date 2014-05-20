@@ -3,17 +3,18 @@
  * Author: Jim Chen
  * Part of the CCLScripter
  */
+/// <reference path="DisplayObject.ts" />
 module Display {
-	class Graphics {
-		private id:String;
+	export class Graphics {
+		private _id:String;
 
 		constructor(parent:DisplayObject) {
-			id = parent.getId();
+			this._id = parent.getId();
 		}
 
 		private _callDrawMethod(method:string, params):void {
 			__pchannel("Runtime:CallMethod", {
-				"id": id,
+				"id": this._id,
 				"context": "graphics",
 				"method": method,
 				"params": params
@@ -26,7 +27,7 @@ module Display {
 		 * @param y - y coordinate
 		 */
 		public lineTo(x:number, y:number):void {
-			this._callDrawMethod("lineTo", [a, b]);
+			this._callDrawMethod("lineTo", [x, y]);
 		}
 
 		/**

@@ -2,7 +2,7 @@
  * Compliant CommentBitmap Polyfill For BiliScriptEngine
  */
 module Display {
-	class CommentBitmap extends DisplayObject implements IComment {
+	export class CommentBitmap extends DisplayObject implements IComment {
 		private _mM:MotionManager = new MotionManager(this);
 
 		constructor(params:Object) {

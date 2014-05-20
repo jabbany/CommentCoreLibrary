@@ -1,809 +1,298 @@
-var $ = new function(){
-	/**
-	 * Inner classes
-	**/
-	function Matrix(a,b,c,d,tx,ty){
-		// TODO: http://help.adobe.com/zh_CN/FlashPlatform/reference/actionscript/3/flash/geom/Matrix.html
-		var data = [[a,c,tx],[b,d,ty],[0,0,1]];
-		var dotProduct = function(other){
-			var n = [[0,0,0],[0,0,0],[0,0,0]]
-			for(var i = 0; i < 3; i++){
-				for(var j = 0; j < 3; j++){
-					for(var k = 0; j < 3; k++){
-						n[i][j] += data[i][k] * other[k][j];
-					}
-				}
-			}
-			return n;
-		};
-		this.clone = function(){
-			return new this(a,b,c,d,tx,ty);
-		};
-		this.setTo = function(a,b,c,d,tx,ty){
-			data = [[a,c,tx],[b,d,ty],[0,0,1]];
-		};
-		this.createBox = function(sX, sY, q, tX, tYs){
-			this.identity();
-			this.rotate(q);
-			this.scale(sX, sY);
-			this.translate(tX, tY);
-		};
-		this.translate = function(tX, tY){
-			this.setTo(data[0][0],data[1][0],data[0][1],
-				data[1][1],data[0][2] + tX,data[1][2] + tY);
-		};
-		this.rotate = function(q){
-			data = dotProduct([Math.cos(q), -Math.sin(q), 0],
-				[Math.sin(q), Math.cos(q), 0], [0, 0, 1]);
-		};
-		this.scale = function(sx, sy){
-			data = dotProduct([[sx, 0, 0],[0, sy, 0], [0, 0, 1]]);
-		};
-		this.identity = function(){
-			this.setTo(1,0,0,1,0,0);
-		};
-		this.concat = function(matrix){
-			var other = matrix.getData();
-			data = dotProduct(other);
-		};
-		this.toString = function(){
-			return "(a=" + data[0][0] + ", b=" + data[1][0] + ", c=" + 
-				data[0][1] + ", d=" + data[1][1] + ", tx=" + data[0][2] +", ty="
-				+ data[1][2] + ")";
-		};
-		this.getData = function(){
-			return data;
-		};
-	};
-	
-	function Matrix3D(iv){
-		var m = (iv && iv.length === 16) ? iv : 
-			[1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1];
-		var multiply = function(a,b){
-			var c = [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]
-			for(var i = 0; i < 4; i++){
-				for(var j = 0; j < 4; j++){
-					for(var k = 0; k < 4; k++){
-						c[i*4 + j] = a[i*4 + k] * b[k*4 + j];
-					}
-				}
-			}
-			return c;
-		};
-		
-		if(this.__defineGetter__){
-			this.__defineGetter__("determinant", function(){
-				var det = 0;
-				for(var i = 0; i < 4; i++){
-					var detC = 0;
-					var r = 0 < i ? 0 : 1  , 
-						c = 1 < i ? 1 : 2, 
-						l = 2 < i ? 2 : 3;
-					detC = m[r + 4] * m[c + 8] * m[l + 12] + m[c + 4] * m[l + 8]
-							* m[r + 12] + m[l + 4] * m[r + 8] * m[c + 12] - 
-							m[l + 4] * m[c + 8] * m[r + 12] - m[c + 4] * 
-							m[r + 8] * m[l + 12] - m[r + 4] * m[l + 8] * 
-							m[c + 12];
-					det += (i % 2 == 0 ? 1 : -1) * m[i] * detC;
-				}
-				return det;
-			});
-		}	
-		
-		this.append = function(other){
-			m = multiply(other.getData(), m);
-		};
-		
-		this.prepend = function(other){
-			m = multiply(m, other.getData());
-		};
-		
-		this.appendRotation = function(){
-			
-		};
-		
-		this.prependRotation = function(){
-			
-		};
-		
-		this.appendScale = function(){
-		
-		};
-		
-		this.prependScale = function(){
-		
-		};
-		
-		this.appendTranslation = function(){
-		
-		};
-		
-		this.prependTranslation = function(){
-		
-		};
-		
-		this.clone = function(){
-			return new this(m);
-		};
-		
-		this.copyColumnFrom = function(){
-		
-		};
-		
-		this.copyColumnTo = function(){
-		
-		};
-		
-		this.copyFrom = function(){
-		
-		};
-		
-		this.identity = function(){
-			m = [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1];
-		};
-		
-		this.invert = function(){
-			if(this.determinant === 0){
-				return false;
-			}
-		};
-		
-		this.getData = function(){
-			return m;
-		};
-	};
-	
-	function Vector3D(x,y,z,w){
-		var v = [x,y,z,w];
-		if(this.__defineGetter__){
-			this.__defineGetter__("lengthSquared", function(){
-				return x * x + y * y + z * z;
-			});
-			this.__defineGetter__("length", function(){
-				return Math.sqrt(x * x + y * y + z * z);
-			});
-			this.__defineGetter__("x", function(){
-				return v[0];
-			});
-			this.__defineGetter__("y", function(){
-				return v[1];
-			});
-			this.__defineGetter__("z", function(){
-				return v[2];
-			});
-			this.__defineGetter__("w", function(){
-				return v[3];
-			});
-			this.__defineGetter__("X_AXIS", function(){
-				return Vector3D.X_AXIS;
-			});
-			this.__defineGetter__("Y_AXIS", function(){
-				return Vector3D.Y_AXIS;
-			});
-			this.__defineGetter__("Z_AXIS", function(){
-				return Vector3D.Z_AXIS;
-			});
-		}
-		this.toString = function(){
-			return "(" + v.toString() + ")";
-		};
-	};
-	
-	Vector3D.X_AXIS = new Vector3D(1,0,0,0);
-	Vector3D.Y_AXIS = new Vector3D(0,1,0,0);
-	Vector3D.Z_AXIS = new Vector3D(0,0,1,0);
-	
-	function TextFormat(font, size, color, bold, italic, underline, url, target,
-		align, leftMargin, rightMargin, indent, leading) {
-		var config = {
-			"font":font ? font : "SimHei",
-			"size":size ? size : 25, 
-			"color":color ? color : 0xFFFFFF,
-			"bold":bold ? bold : false,
-			"italic":italic ? italic : false, 
-			"underline":underline ? underline : false, 
-			"url":url ? url : "", 
-			"target":target ? target : "", 
-			"align":align ? align : "left", 
-			"margin":(leftMargin ? leftMargin : 0) + "px 0 " + 
-				(rightMargin ? rightMargin : 0) + "px 0",
-			"indent":indent ? indent : 0, 
-			"leading":leading ? leading : 0
-		};
-		if(this.__defineSetter__){
-			this.__defineSetter__("font", function(font){
-				config.font = font;
-			});
-			this.__defineSetter__("size", function(size){
-				config.size = size;
-			});
-			this.__defineSetter__("color", function(color){
-				config.color = color;
-			});
-			this.__defineSetter__("bold", function(bold){
-				config.bold = bold;
-			});
-			this.__defineSetter__("italic", function(italic){
-				config.italic = italic;
-			});
-			this.__defineSetter__("underline", function(underline){
-				config.underline = underline;
-			});
-		}
-		
-		if(this.__defineGetter__){
-			this.__defineGetter__("font", function(){
-				return config.font;
-			});
-			this.__defineGetter__("size", function(){
-				return config.size;
-			});
-			this.__defineGetter__("color", function(){
-				return config.color;
-			});
-			this.__defineGetter__("bold", function(){
-				return config.bold;
-			});
-			this.__defineGetter__("italic", function(){
-				return config.italic;
-			});
-			this.__defineGetter__("underline", function(){
-				return config.underline;
-			});
-		}
-		this.serialize = function(){
-			return config;
-		};
-	};
-	/** Common **/
-	function MotionManager(){
-		
-	};
-	/** MM **/
-	function Graphics(id){
-		// Graphics Context for SVG
-		var toRGB = function(number){
-			var string = parseInt(number).toString(16);
-			while(string.length < 6){
-				string = "0" + string;
-			}
-			return "#" + string;
-		};
-		var updateObject = function(method, params){
-			__pchannel("Runtime:CallMethod", {
-				"id":id,
-				"method":method,
-				"params":params
-			});
-		};
-		
-		this.lineTo = function(a,b){
-			updateObject("lineTo", [a,b]);
-		};
-		this.moveTo = function(a,b){
-			updateObject("moveTo", [a,b]);
-		};
-		this.curveTo = function(a,b,c,d){
-			updateObject("curveTo", [a,b,c,d]);
-		};
-		this.lineStyle = function(thickness, color, alpha, hinting, scale, caps,
-			 joints, miterlim){
-			if(caps === "none")
-				caps = "butt";
-			updateObject("lineStyle", [thickness, toRGB(color), alpha, caps, 
-				joints, miterlim]);
-		};
-		this.drawRect = function(x, y, w, h){
-			updateObject("drawRect", [x, y, w, h]);
-		};
-		this.drawCircle = function(x, y, r){
-			updateObject("drawCircle", [x, y , r]);
-		};
-		this.drawEllipse = function(cx, cy, rx, ry){
-			updateObject("drawEllipse", [cx + rx/2, cy + ry/2, rx/2, ry/2]);
-		};
-		this.drawRoundRect= function(x, y, w, h, elw, elh){
-			updateObject("drawRoundRect", [x, y, w, h, elw, elh]);
-		};
-		this.beginFill = function(color, alpha){
-			updateObject("beginFill", [toRGB(color), (alpha ? alpha : 1)]);
-		};
-		this.beginGradientFill = function(){
-			__trace("Gradient not supported yet", 'warn');
-		};
-		this.endFill = function(){
-			updateObject("endFill", []);
-		};
-		this.setGlobalFilters = function(filters){
-			updateObject("setFilters", [filters]);
-		};
-	};
-	function SVGShape(params){
-		var id = Runtime.generateIdent();
-		if(!params){
-			params = {};
-		}
-		var data = {
-			"x":params.x ? params.x : 0,
-			"y":params.y ? params.y : 0,
-			"alpha":params.alpha ? params.alpha : 1,
-			"lifeTime":params.lifeTime
-		};
-		var motionManager = new MotionManager(this);
-		
-		this.graphics = new Graphics(id);
-		if(this.__defineSetter__){
-			this.__defineSetter__("filters", function(filters){
-				// Send the filters over
-				var f = [];
-				for(var i = 0; i < filters.length; i++){
-					f.push(filters[i].serialize());
-				}
-				this.graphics.setGlobalFilters(f);
-			});
-			
-			this.__defineSetter__("x", function(x){
-				data.x = x;
-				__pchannel("Runtime:CallMethod", {
-					"id":id,
-					"method":"setX",
-					"params":x
-				});
-			});
-			
-			this.__defineSetter__("y", function(y){
-				data.y = y;
-				__pchannel("Runtime:CallMethod", {
-					"id":id,
-					"method":"setY",
-					"params":y
-				});
-			});
-		}
-		if(this.__defineGetter__){
-			this.__defineGetter__("filters", function(){
-				return [];
-			});
-			
-			this.__defineGetter__("x", function(){
-				return data.x;
-			});
-			
-			this.__defineGetter__("y", function(){
-				return data.y;
-			});
-		}
-		// Life time monitor
-		if(data.lifeTime){
-			var self = this;
-			Utils.delay(function(){
-				self.unload();
-			}, data.lifeTime * 1000);
-		}
-		
-		this.dispatchEvent = function(){
-			
-		};
-		
-		this.removeEventListener = function(event, listener){
-			
-		};
-		
-		this.addEventListener = function(event, listener){
-			
-		};
-		
-		/** Common **/
-		this.unload = function(){
-			__pchannel("Runtime:CallMethod", {
-				"id":id,
-				"method":"unload",
-				"params":null
-			});
-		};
-		this.getId = function(){
-			return id;
-		};
-		this.serialize = function(){
-			return {
-				"class":"Shape",
-				"x":data.x,
-				"y":data.y,
-				"alpha":data.alpha
-			};
-		};
-		Runtime.registerObject(this);
-	};
-	
-	function CanvasObject(params){
-		var id = Runtime.generateIdent();
-		if(!params)
-			params = {};
-		var data = {
-			"x":params.x ? params.x : 0,
-			"y":params.y ? params.y : 0,
-			"width":params.width ? params.width : null,
-			"height":params.height ? params.height : null,
-		}
-		var motionManager = new MotionManager(this);
-		
-		this.addChild = function(displayObject){
-		
-		};
-		
-		/** Common **/
-		this.unload = function(){
-			__pchannel("Runtime:CallMethod", {
-				"id":id,
-				"method":"unload",
-				"params":null
-			});
-		};
-		this.getId = function(){
-			return id;
-		};
-		this.serialize = function(){
-			return {
-				"class":"Canvas",
-				"x":data.x,
-				"y":data.y,
-				"width":data.width,
-				"height":data.height
-			};
-		};
-		Runtime.registerObject(this);
-	};
-	
-	function ButtonObject(){
-		var id = Runtime.generateIdent();
-		var motionManager = new MotionManager(this);
-		this.setStyle = function(property, value){
-		
-		};
-		
-		/** Common **/
-		this.unload = function(){
-			__pchannel("Runtime:CallMethod", {
-				"id":id,
-				"method":"unload",
-				"params":null
-			});
-		};
-		this.getId = function(){
-			return id;
-		};
-		this.serialize = function(){
-			return {
-				"class":"Button",
-			};
-		};
-		Runtime.registerObject(this);
-	};
-	
-	function CommentObject(text, params){
-		var id = Runtime.generateIdent();
-		var data = {};
-		// Init
-		data.text = text;
-		data.textFormat = new TextFormat();
-		for(var x in params){
-			data[x] = params[x];
-		}
-		if(data.fontsize){
-			data.textFormat.size = data.fontsize;
-		}
-		if(data.color){
-			data.textFormat.color = data.color;
-		}
-		// Unpack params
-		if(this.__defineSetter__){
-			this.__defineSetter__("text", function(text){
-				data.text = text;
-				__pchannel("Runtime:CallMethod", {
-					"id":id,
-					"method":"setText",
-					"params":text
-				});
-			});
-			this.__defineSetter__("x", function(x){
-				data.x = x;
-				__pchannel("Runtime:CallMethod", {
-					"id":id,
-					"method":"setX",
-					"params":data.x
-				});
-			});
-			this.__defineSetter__("y", function(y){
-				data.y = y;
-				__pchannel("Runtime:CallMethod", {
-					"id":id,
-					"method":"setY",
-					"params":data.y
-				});
-			});
-			this.__defineSetter__("filters", function(filters){
-				__pchannel("Runtime:CallMethod", {
-					"id":id,
-					"method":"setFilters",
-					"params":[filters]
-				});
-			});
-		}
-		
-		if(this.__defineGetter__){
-			this.__defineGetter__("text", function(){
-				return data.text ? data.text : "";
-			});
-			this.__defineGetter__("x", function(){
-				return data.x;
-			});
-			this.__defineGetter__("y", function(){
-				return data.y;
-			});
-		}
-		
-		this.getTextFormat = function(s, e){
-			if(s && s > 0 || e && this.text && e < this.text.length){
-				__trace("Partial text format not supported", "warn");
-			}
-			return data.textFormat;
-		};
-		
-		this.setTextFormat = function(fmt, s, e){
-			if(s && s > 0 || e && this.text && e < this.text.length){
-				__trace("Partial text format not supported", "warn");
-			}
-			data.textFormat = fmt;
-			__pchannel("Runtime:CallMethod", {
-				"id":id,
-				"method":"setTextFormat",
-				"params":fmt.serialize()
-			});
-		};
-		
-		this.setText = function(text){
-			this.text = text;
-		};
-		// Life time monitor
-		if(data.lifeTime){
-			var self = this;
-			Utils.delay(function(){
-				self.unload();
-			}, data.lifeTime * 1000);
-		}
-		/** Common **/
-		this.unload = function(){
-			__pchannel("Runtime:CallMethod", {
-				"id":id,
-				"method":"unload",
-				"params":null
-			});
-		};
-		this.getId = function(){
-			return id;
-		};
-		this.serialize = function(){
-			return {
-				"class":"Comment",
-				"x":data.x,
-				"y":data.y,
-				"text":data.text,
-				"textFormat":data.textFormat.serialize(),
-			};
-		};
-		Runtime.registerObject(this);
-	};
-	
-	function FilterObject(type, params){
-		this.type = type ? type : "blur";
-		
-		this.params = params ? params : {"blurX":0, "blurY":0};
-		
-		this.serialize = function(){
-			return {
-				"class":"filter",
-				"type":this.type,
-				"params":this.params
-			};
-		};
-	};
-	/**
-	 * Private Variable stubs
-	**/
-	var stage = {
-		width:-1,
-		height:-1,
-		fsWidth:-1,
-		fsHeight:-1,
-		frameRate: 24,
-	};
-	
-	/**
-	 * Private method stubs
-	**/
-	var _fullScreenWidth = function(){
-		return stage.fsWidth;
-	};
-	
-	var _fullScreenHeight = function(){
-		return stage.fsHeight;
-	};
-	
-	var _width = function(){
-		return stage.width;
-	};
-	
-	var _height = function(){
-		return stage.height;
-	};
-	
-	/**
-	 * Bind listeners
-	**/
-	__schannel("Update:dimension", function(dim){
-		stage.width = dim.stageWidth;
-		stage.height = dim.stageHeight;
-		stage.fsWidth = dim.screenWidth;
-		stage.fsHeight = dim.screenHeight;
-	});
-	
-	
-	/**
-	 * Public method stubs
-	**/
-	this.createMatrix = function(){
-		return new Matrix(1,0,0,1,0,0);
-	};
-	
-	this.createPoint = function(x, y){
-		
-	};
-	
-	this.createComment = function(text, param){
-		return new CommentObject(text, param);
-	};
-	
-	this.createShape = function(param){
-		return new SVGShape(param);
-	};
-	
-	this.createCanvas = function(param){
-		return new CanvasObject();
-	};
-	
-	this.createButton = function(param){
-		return new ButtonObject();
-	};
-	
-	this.createGlowFilter = function(color, alpha, blurX, blurY, strength, 
-		quality, inner, knockout){
-		return new FilterObject("glow",{
-			"color":color ? color : 16711680,
-			"alpha":alpha ? alpha : 1.0,
-			"blurX":blurX ? blurX : 6.0,
-			"blurY":blurY ? blurY : 6.0,
-			"strength":strength ? strength : 2,
-			"inner": inner == null ? false : inner,
-			"knockout": knockout == null ? false : knockout
-		});
-	};
-	
-	this.createBlurFilter = function(blurX, blurY, quality){
-		return new FilterObject("blur", {
-			"blurX":blurX ? blurX : 4.0,
-			"blurY":blurY ? blurY : 4.0
-		});
-	};
-	
-	this.toIntVector = function(arr){
-		// Vectors are arrays
-		for(var i = 0; i < arr.length; i++){
-			arr[i] = Math.floor(arr[i]);
-		}
-		arr.isVector = true;
-		return arr;
-	};
-	
-	this.toUIntVector = function(arr){
-		for(var i = 0; i < arr.length; i++){
-			arr[i] = Math.floor(Math.abs(arr[i]));
-		}
-		arr.isVector = true;
-		return arr;
-	};
-	
-	this.toNumberVector = function(arr){
-		arr.isVector = true;
-		return arr;
-	};
-	
-	this.createVector3D = function(x,y,z,w){
-		if(!x)
-			x = 0;
-		if(!y)
-			y = 0;
-		if(!z)
-			z = 0;
-		if(!w)
-			w = 0;
-		return new Vector3D(x,y,z,w);
-	};
-	
-	this.createMatrix3D = function(iv){
-		return new Matrix3D(iv);
-	};
-	
-	this.createColorTransform = function(rM, gM, bM, aM, rO, gO, bO, aO){
-		
-	};
-	
-	this.createTextFormat = function(font, size, color, bold, italic, 
-		underline, url, target, align, leftMargin, rightMargin, indent, 
-		leading){
-		return new TextFormat(font ? font : "SimHei",
-			 size ? size : 25, color ? color : 0x000000,
-			 bold ? bold : false, italic ? italic : false, 
-			 underline ? underline : false, url ? url : "", 
-			 target ? target : "", align ? align : "left", 
-			 leftMargin ? leftMargin : 0, rightMargin ? rightMargin : 0,
-			 indent ? indent : 0, leading ? leading : 0);
-	};
-	
-	this.toString = function(){
-		return "[display Display]";
-	};
-	/**
-	 * Initializer for all the getter/setter fields
-	 */
-	if(this.__defineGetter__){
-		this.__defineGetter__("root", function(){
-			return new Sprite();
-		});
-		this.__defineGetter__("frameRate", function(){
-			return stage.frameRate;
-		});
-		this.__defineGetter__("fullScreenWidth", function(){
-			return _fullScreenWidth();
-		});
-		this.__defineGetter__("fullScreenHeight", function(){
-			return _fullScreenHeight();
-		});
-		this.__defineGetter__("width", function(){
-			return _width();
-		});
-		this.__defineGetter__("height", function(){
-			return _height();
-		});
-		this.__defineGetter__("version", function(){
-			return "CCLDisplay/1.0 HTML5/* (bilibili, like BSE, like flash)";
-		});
-	}
-	
-	if(this.__defineSetter__){
-		this.__defineSetter__("root", function(r){
-			__trace("Cannot reassign root!", 'warn');
-		});
-		this.__defineSetter__("frameRate", function(newFrameRate){
-			// Do something
-			stage.frameRate = Math.max(0,Math.min(120,newFrameRate));
-		});
-		this.__defineSetter__("fullScreenWidth", function(){
-			__trace("Attempted to assign to read-only field", 'warn');
-		});
-		this.__defineSetter__("fullScreenHeight", function(){
-			__trace("Attempted to assign to read-only field", 'warn');
-		});
-		this.__defineSetter__("width", function(){
-			__trace("Attempted to assign to read-only field", 'warn');
-		});
-		this.__defineSetter__("fullScreenHeight", function(){
-			__trace("Attempted to assign to read-only field", 'warn');
-		});
-		this.__defineSetter__("version", function(){
-			__trace("Attempted to assign to read-only field", 'warn');
-		});
-	}
+/**
+* Filter Polyfill for AS3.
+* Author: Jim Chen
+* Part of the CCLScripter
+*/
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
 };
+/// <reference path="ISerializable.ts" />
+var Display;
+(function (Display) {
+    var Filter = (function () {
+        function Filter() {
+        }
+        Filter.prototype.serialize = function () {
+            return {
+                "class": "Filter",
+                "type": "nullfilter"
+            };
+        };
+        return Filter;
+    })();
+    Display.Filter = Filter;
 
-/** Create alias **/
-var Display = $;
+    var BlurFilter = (function (_super) {
+        __extends(BlurFilter, _super);
+        function BlurFilter(blurX, blurY) {
+            _super.call(this);
+        }
+        BlurFilter.prototype.serialize = function () {
+            var s = _super.prototype.serialize.call(this);
+            s["type"] = "blur";
+            return s;
+        };
+        return BlurFilter;
+    })(Filter);
+
+    var GlowFilter = (function (_super) {
+        __extends(GlowFilter, _super);
+        function GlowFilter(blurX, blurY) {
+            _super.call(this);
+        }
+        GlowFilter.prototype.serialize = function () {
+            var s = _super.prototype.serialize.call(this);
+            s["type"] = "glow";
+            return s;
+        };
+        return GlowFilter;
+    })(Filter);
+
+    function createGlowFilter(color, alpha, blurX, blurY, strength, quality, inner, knockout) {
+        if (typeof alpha === "undefined") { alpha = 1.0; }
+        if (typeof blurX === "undefined") { blurX = 6.0; }
+        if (typeof blurY === "undefined") { blurY = 6.0; }
+        if (typeof strength === "undefined") { strength = 2; }
+        if (typeof quality === "undefined") { quality = null; }
+        if (typeof inner === "undefined") { inner = false; }
+        if (typeof knockout === "undefined") { knockout = false; }
+        return new GlowFilter(blurX, blurY);
+    }
+    Display.createGlowFilter = createGlowFilter;
+
+    function createBlurFilter(blurX, blurY, strength) {
+        if (typeof blurX === "undefined") { blurX = 6.0; }
+        if (typeof blurY === "undefined") { blurY = 6.0; }
+        if (typeof strength === "undefined") { strength = 2; }
+        return new BlurFilter(blurX, blurY);
+    }
+    Display.createBlurFilter = createBlurFilter;
+})(Display || (Display = {}));
+/**
+* Shape Polyfill for AS3.
+* Author: Jim Chen
+* Part of the CCLScripter
+*/
+/// <reference path="../Scripting.d.ts" />
+/// <reference path="ISerializable.ts" />
+/// <reference path="Filter.ts" />
+var Display;
+(function (Display) {
+    var DisplayObject = (function () {
+        function DisplayObject() {
+            /** This represents an element in the HTML rendering **/
+            this._id = Runtime.getId();
+            this._alpha = 1;
+            this._x = 0;
+            this._y = 0;
+            this._scaleX = 1;
+            this._scaleY = 1;
+            this._filters = [];
+        }
+        DisplayObject.prototype.propertyUpdate = function (propertyName, updatedValue) {
+            __pchannel("Runtime:UpdateProperty", {
+                "id": this._id,
+                "name": propertyName,
+                "value": updatedValue
+            });
+        };
+
+
+        Object.defineProperty(DisplayObject.prototype, "alpha", {
+            get: function () {
+                return this._alpha;
+            },
+            /** Properties **/
+            set: function (value) {
+                this._alpha = value;
+                this.propertyUpdate("alpha", value);
+            },
+            enumerable: true,
+            configurable: true
+        });
+
+
+        Object.defineProperty(DisplayObject.prototype, "cacheAsBitmap", {
+            get: function () {
+                return false;
+            },
+            set: function (value) {
+                __trace("DisplayObject.cacheAsBitmap is not supported", "warn");
+            },
+            enumerable: true,
+            configurable: true
+        });
+
+
+        Object.defineProperty(DisplayObject.prototype, "filters", {
+            get: function () {
+                return this._filters;
+            },
+            set: function (filters) {
+                this._filters = filters;
+                this.propertyUpdate("filters", filters);
+            },
+            enumerable: true,
+            configurable: true
+        });
+
+        Object.defineProperty(DisplayObject.prototype, "root", {
+            get: function () {
+                return Display.root;
+            },
+            enumerable: true,
+            configurable: true
+        });
+
+
+
+
+
+
+
+        Object.defineProperty(DisplayObject.prototype, "scaleX", {
+            get: function () {
+                return this._scaleX;
+            },
+            set: function (val) {
+                this._scaleX = val;
+                this.propertyUpdate("scaleX", val);
+            },
+            enumerable: true,
+            configurable: true
+        });
+
+        Object.defineProperty(DisplayObject.prototype, "scaleY", {
+            get: function () {
+                return this._scaleY;
+            },
+            set: function (val) {
+                this._scaleY = val;
+                this.propertyUpdate("scaleY", val);
+            },
+            enumerable: true,
+            configurable: true
+        });
+
+        Object.defineProperty(DisplayObject.prototype, "scaleZ", {
+            get: function () {
+                return 1;
+            },
+            set: function (val) {
+                __trace("DisplayObject.scaleZ is not supported", "warn");
+            },
+            enumerable: true,
+            configurable: true
+        });
+
+        Object.defineProperty(DisplayObject.prototype, "x", {
+            get: function () {
+                return this._x;
+            },
+            set: function (val) {
+                this._x = val;
+                this.propertyUpdate("x", val);
+            },
+            enumerable: true,
+            configurable: true
+        });
+
+        Object.defineProperty(DisplayObject.prototype, "y", {
+            get: function () {
+                return this._y;
+            },
+            set: function (val) {
+                this._y = val;
+                this.propertyUpdate("y", val);
+            },
+            enumerable: true,
+            configurable: true
+        });
+
+        Object.defineProperty(DisplayObject.prototype, "z", {
+            get: function () {
+                return 0;
+            },
+            set: function (val) {
+                __trace("DisplayObject.z is not supported", "warn");
+            },
+            enumerable: true,
+            configurable: true
+        });
+
+        /** Common Functions **/
+        DisplayObject.prototype.serialize = function () {
+            var filters = [];
+            for (var i = 0; i < this._filters.length; i++) {
+                filters.push(this._filters[i].serialize());
+            }
+            return {
+                "class": "DisplayObject",
+                "x": this._x,
+                "y": this._y,
+                "alpha": this._alpha,
+                "filters": filters
+            };
+        };
+
+        DisplayObject.prototype.unload = function () {
+            __pchannel("Runtime:CallMethod", {
+                "id": this._id,
+                "method": "unload",
+                "params": null
+            });
+        };
+
+        DisplayObject.prototype.getId = function () {
+            return this._id;
+        };
+        return DisplayObject;
+    })();
+    Display.DisplayObject = DisplayObject;
+})(Display || (Display = {}));
+/**
+* Sprite Polyfill for AS3.
+* Author: Jim Chen
+* Part of the CCLScripter
+*/
+/// <reference path="DisplayObject.ts" />
+var Display;
+(function (Display) {
+    var Sprite = (function (_super) {
+        __extends(Sprite, _super);
+        function Sprite() {
+            _super.call(this);
+        }
+        return Sprite;
+    })(Display.DisplayObject);
+    Display.Sprite = Sprite;
+})(Display || (Display = {}));
+/**
+* Display Adapter
+* Author: Jim Chen
+*/
+/// <reference path="../OOAPI.d.ts" />
+/// <reference path="Sprite.ts" />
+/// <reference path="DisplayObject.ts" />
+var Display;
+(function (Display) {
+    Display.root;
+    var _root = new Display.Sprite();
+    Object.defineProperty(Display, 'root', {
+        get: function () {
+            return _root;
+        },
+        set: function (value) {
+            __trace("Display.root is read-only", "warn");
+        }
+    });
+})(Display || (Display = {}));
+
+/// <reference path="CommentButton.ts" />
+/// <reference path="CommentCanvas.ts" />
+/// <reference path="CommentShape.ts" />
+/// <reference path="CommentField.ts" />
+var $ = Display;

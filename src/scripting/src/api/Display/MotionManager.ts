@@ -3,17 +3,18 @@
  * Author: Jim Chen
  * Part of the CCLScripter
  */
+/// <reference path="DisplayObject.ts" />
 module Display {
-	class MotionManager {
+	export class MotionManager {
 		private _isRunning:boolean = false;
-		private onComplete = null;
+		public oncomplete:Function = null;
 
-		constructor(o:DisplayObject) {
+		constructor(o:Display.DisplayObject) {
 
 		}
 
 		get running():boolean {
-			return _isRunning;
+			return this._isRunning;
 		}
 
 		public reset():void {
@@ -21,11 +22,11 @@ module Display {
 		}
 
 		public play():void {
-
+			this._isRunning = false;
 		}
 
 		public stop():void {
-
+			this._isRunning = true;
 		}
 
 		public forecasting(time:number):boolean {
@@ -45,7 +46,7 @@ module Display {
 		}
 
 		public setCompleteListener(listener:Function):void {
-
+			this.oncomplete = listener;
 		}
 	}
 }
