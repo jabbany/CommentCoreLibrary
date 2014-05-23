@@ -3,5 +3,5 @@
 ////////////////
 
 declare var Runtime: {
-	getId():string
+	generateId():string
 }

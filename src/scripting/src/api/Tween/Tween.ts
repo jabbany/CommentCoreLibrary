@@ -46,7 +46,29 @@ module Tween{
 		};
 	}
 
-	export function tween(){
+	function createStepFunction(object:any, dest:Object, src:Object){
+		for(var property in dest){
+			if(!src.hasOwnProperty(property)){
+				src[property] = object[property];
+			}
+		}
+		for(var property in src){
+			if(!dest.hasOwnProperty(property)){
+				dest[property] = src[property];
+			}
+		}
+		return function(currentTime:number, totalTime:number){
+			for(var property in src){
+				if(!src.hasOwnProperty(property))
+					continue;
+				object[property] = (dest[property] - src[property]) * (currentTime / totalTime) + src[property];
+			}
+		};
+	}
 
+	export function tween(object:any, dest:Object = {}, src:Object = {}, duration:number = 0, easing:Function = null){
+		var t:ITween = new ITween(object, duration);
+		t.step = createStepFunction(object, dest, src);
+		return t;
 	}
 }

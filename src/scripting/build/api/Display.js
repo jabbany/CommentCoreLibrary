@@ -82,15 +82,15 @@ var Display;
 var Display;
 (function (Display) {
     var DisplayObject = (function () {
-        function DisplayObject() {
-            /** This represents an element in the HTML rendering **/
-            this._id = Runtime.getId();
+        function DisplayObject(id) {
+            if (typeof id === "undefined") { id = Runtime.getId(); }
             this._alpha = 1;
             this._x = 0;
             this._y = 0;
             this._scaleX = 1;
             this._scaleY = 1;
             this._filters = [];
+            this._id = id;
         }
         DisplayObject.prototype.propertyUpdate = function (propertyName, updatedValue) {
             __pchannel("Runtime:UpdateProperty", {
@@ -223,6 +223,10 @@ var Display;
             configurable: true
         });
 
+        /** AS3 Stuff **/
+        DisplayObject.prototype.addEventListener = function (event, listener) {
+        };
+
         /** Common Functions **/
         DisplayObject.prototype.serialize = function () {
             var filters = [];
@@ -263,8 +267,8 @@ var Display;
 (function (Display) {
     var Sprite = (function (_super) {
         __extends(Sprite, _super);
-        function Sprite() {
-            _super.call(this);
+        function Sprite(id) {
+            _super.call(this, id);
         }
         return Sprite;
     })(Display.DisplayObject);

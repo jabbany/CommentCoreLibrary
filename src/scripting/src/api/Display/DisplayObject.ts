@@ -9,13 +9,19 @@
 module Display {
 	export class DisplayObject implements ISerializable {
 		/** This represents an element in the HTML rendering **/
-		private _id:string = Runtime.getId();
+		private _id:string;
 		private _alpha:number = 1;
 		private _x:number = 0;
 		private _y:number = 0;
 		private _scaleX:number = 1;
 		private _scaleY:number = 1;
 		private _filters:Array<Filter> = [];
+		private _visible:boolean = false;
+
+		constructor(id:string = Runtime.generateId()){
+			this._id = id;
+			this._visible = true;
+		}
 
 		private propertyUpdate(propertyName:string, updatedValue):void {
 			__pchannel("Runtime:UpdateProperty", {
@@ -108,6 +114,19 @@ module Display {
 			return 0;
 		}
 
+		set visible(visible:boolean){
+			this._visible = visible;
+			this.propertyUpdate("visible", visible);
+		}
+
+		get visible():boolean{
+			return this._visible;
+		}
+		/** AS3 Stuff **/
+		public addEventListener(event:String, listener:Function):void{
+
+		}
+
 		/** Common Functions **/
 		public serialize():Object {
 			var filters:Array<Object> = [];
@@ -124,6 +143,7 @@ module Display {
 		}
 
 		public unload():void {
+			this._visible = false;
 			__pchannel("Runtime:CallMethod", {
 				"id": this._id,
 				"method": "unload",

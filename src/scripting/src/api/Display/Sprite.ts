@@ -6,8 +6,8 @@
 /// <reference path="DisplayObject.ts" />
 module Display {
 	export class Sprite extends DisplayObject {
-		constructor(){
-			super();
+		constructor(id?:string){
+			super(id);
 		}
 	}
 }
