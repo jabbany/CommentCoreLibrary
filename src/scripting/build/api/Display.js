@@ -81,22 +81,42 @@ var Display;
 /// <reference path="Filter.ts" />
 var Display;
 (function (Display) {
+    var Transform = (function () {
+        function Transform() {
+        }
+        return Transform;
+    })();
     var DisplayObject = (function () {
         function DisplayObject(id) {
-            if (typeof id === "undefined") { id = Runtime.getId(); }
+            if (typeof id === "undefined") { id = Runtime.generateId(); }
             this._alpha = 1;
             this._x = 0;
             this._y = 0;
             this._scaleX = 1;
             this._scaleY = 1;
             this._filters = [];
+            this._visible = false;
+            this._listeners = {};
+            this._parent = null;
+            this._name = "";
+            this._children = [];
+            this._transform = new Transform();
             this._id = id;
+            this._visible = true;
         }
         DisplayObject.prototype.propertyUpdate = function (propertyName, updatedValue) {
             __pchannel("Runtime:UpdateProperty", {
                 "id": this._id,
                 "name": propertyName,
                 "value": updatedValue
+            });
+        };
+
+        DisplayObject.prototype.methodCall = function (methodName, params) {
+            __pchannel("Runtime:CallMethod", {
+                "id": this._id,
+                "name": methodName,
+                "value": params
             });
         };
 
@@ -223,8 +243,80 @@ var Display;
             configurable: true
         });
 
+
+        Object.defineProperty(DisplayObject.prototype, "visible", {
+            get: function () {
+                return this._visible;
+            },
+            set: function (visible) {
+                this._visible = visible;
+                this.propertyUpdate("visible", visible);
+            },
+            enumerable: true,
+            configurable: true
+        });
+
+
+        Object.defineProperty(DisplayObject.prototype, "transform", {
+            get: function () {
+                return this._transform;
+            },
+            set: function (t) {
+                this._transform = t;
+            },
+            enumerable: true,
+            configurable: true
+        });
+
         /** AS3 Stuff **/
+        DisplayObject.prototype.dispatchListener = function (event, data) {
+            if (this._listeners.hasOwnProperty(event)) {
+                if (this._listeners[event] !== null) {
+                    for (var i = 0; i < this._listeners[event].length; i++) {
+                        try  {
+                            this._listeners[event][i](data);
+                        } catch (e) {
+                            if (e.hasOwnProperty("stack")) {
+                                __trace(e.stack.toString(), 'err');
+                            } else {
+                                __trace(e.toString(), 'err');
+                            }
+                        }
+                    }
+                }
+            }
+        };
+
         DisplayObject.prototype.addEventListener = function (event, listener) {
+            if (!this._listeners.hasOwnProperty(event)) {
+                this._listeners[event] = [];
+            }
+            this._listeners[event].push(listener);
+        };
+
+        DisplayObject.prototype.removeEventListener = function (event, listener) {
+            if (!this._listeners.hasOwnProperty(event)) {
+                return;
+            }
+            var index = this._listeners[event].indexOf(listener);
+            if (index >= 0) {
+                this._listeners[event].splice(index, 1);
+            }
+        };
+
+        DisplayObject.prototype.addChild = function (o) {
+            this._children.push(o);
+            o._parent = this;
+            this.methodCall("addChild", o._id);
+        };
+
+        DisplayObject.prototype.removeChild = function (o) {
+            var index = this._children.indexOf(o);
+            if (index >= 0) {
+                this._children.splice(index, 1);
+                o._parent = null;
+                this.methodCall("removeChild", o._id);
+            }
         };
 
         /** Common Functions **/
@@ -243,6 +335,7 @@ var Display;
         };
 
         DisplayObject.prototype.unload = function () {
+            this._visible = false;
             __pchannel("Runtime:CallMethod", {
                 "id": this._id,
                 "method": "unload",
@@ -284,13 +377,92 @@ var Display;
 var Display;
 (function (Display) {
     Display.root;
-    var _root = new Display.Sprite();
+    Display.loaderInfo;
+    Display.stage;
+    Display.version;
+    Display.width;
+    Display.height;
+    Display.fullScreenWidth;
+    Display.fullScreenHeight;
+    Display.frameRate;
+
+    var _root = new Display.Sprite("__root");
+    var _width = 0;
+    var _height = 0;
+    var _fullScreenWidth = 0;
+    var _fullScreenHeight = 0;
+    var _frameRate = 24;
+
     Object.defineProperty(Display, 'root', {
         get: function () {
             return _root;
         },
         set: function (value) {
             __trace("Display.root is read-only", "warn");
+        }
+    });
+    Object.defineProperty(Display, 'loaderInfo', {
+        get: function () {
+            return {};
+        },
+        set: function (value) {
+            __trace("Display.loaderInfo is disabled", "warn");
+        }
+    });
+    Object.defineProperty(Display, 'stage', {
+        get: function () {
+            return _root;
+        },
+        set: function (value) {
+            __trace("Display.stage is read-only", "warn");
+        }
+    });
+    Object.defineProperty(Display, 'version', {
+        get: function () {
+            return "CCLDisplay/1.0 HTML5/* (bilibili, like BSE, like flash, AS3 compatible)";
+        },
+        set: function (value) {
+            __trace("Display.version is read-only", "warn");
+        }
+    });
+    Object.defineProperty(Display, 'width', {
+        get: function () {
+            return _width;
+        },
+        set: function (value) {
+            __trace("Display.width is read-only", "warn");
+        }
+    });
+    Object.defineProperty(Display, 'height', {
+        get: function () {
+            return _height;
+        },
+        set: function (value) {
+            __trace("Display.height is read-only", "warn");
+        }
+    });
+    Object.defineProperty(Display, 'fullScreenWidth', {
+        get: function () {
+            return _fullScreenWidth;
+        },
+        set: function (value) {
+            __trace("Display.fullScreenWidth is read-only", "warn");
+        }
+    });
+    Object.defineProperty(Display, 'fullScreenHeight', {
+        get: function () {
+            return _fullScreenHeight;
+        },
+        set: function (value) {
+            __trace("Display.fullScreenHeight is read-only", "warn");
+        }
+    });
+    Object.defineProperty(Display, 'frameRate', {
+        get: function () {
+            return _frameRate;
+        },
+        set: function (value) {
+            __pchannel("Display:SetFrameRate", value);
         }
     });
 })(Display || (Display = {}));

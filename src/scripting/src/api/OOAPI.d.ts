@@ -31,7 +31,7 @@ declare function __schannel(id:string, callback:Function):void;
 declare function __achannel(id:string, auth:string, payload:Object):void;
 
 declare var __OOAPI:{
-	createChannel(id:string, max:number = 0, token:string = null):boolean;
-	deleteChannel(id:string, token:string = null):boolean;
+	createChannel(id:string, max?:number, token?:string):boolean;
+	deleteChannel(id:string, token?:string):boolean;
 	addListenerChannel(id:string, listener:Function):boolean;
 }

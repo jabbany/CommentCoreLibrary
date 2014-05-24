@@ -78,6 +78,7 @@ module Display {
 	Object.defineProperty(Display, 'frameRate', {
 		get: function() { return _frameRate; },
 		set: function(value) {
+			_frameRate = value;
 			__pchannel("Display:SetFrameRate", value);
 		}
 	});

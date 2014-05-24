@@ -7,6 +7,21 @@
 /// <reference path="ISerializable.ts" />
 /// <reference path="Filter.ts" />
 module Display {
+	class Transform implements ISerializable{
+		private _parent:DisplayObject;
+		constructor(parent:DisplayObject){
+			this._parent = parent;
+		}
+
+		private updateProperty(propertyName:string, value:any):void{
+			this._parent.transform = this;
+		}
+
+		public serialize():Object{
+			return {};
+		}
+
+	}
 	export class DisplayObject implements ISerializable {
 		/** This represents an element in the HTML rendering **/
 		private _id:string;
@@ -17,17 +32,30 @@ module Display {
 		private _scaleY:number = 1;
 		private _filters:Array<Filter> = [];
 		private _visible:boolean = false;
+		private _listeners:Object = {};
+		private _parent:DisplayObject = null;
+		private _name:string = "";
+		private _children:Array<DisplayObject> = [];
+		private _transform:Transform = new Transform(this);
 
 		constructor(id:string = Runtime.generateId()){
 			this._id = id;
 			this._visible = true;
 		}
 
-		private propertyUpdate(propertyName:string, updatedValue):void {
+		private propertyUpdate(propertyName:string, updatedValue:any):void {
 			__pchannel("Runtime:UpdateProperty", {
 				"id": this._id,
 				"name": propertyName,
 				"value": updatedValue
+			});
+		}
+
+		private methodCall(methodName:string, params:any):void {
+			__pchannel("Runtime:CallMethod", {
+				"id": this._id,
+				"name": methodName,
+				"value": params
 			});
 		}
 
@@ -122,10 +150,93 @@ module Display {
 		get visible():boolean{
 			return this._visible;
 		}
-		/** AS3 Stuff **/
-		public addEventListener(event:String, listener:Function):void{
 
+		set blendMode(blendMode:string){
+			__trace("DisplayObject.blendMode not supported.","warn");
 		}
+
+		get blendMode():string{
+			return "normal";
+		}
+
+		set transform(t:any){
+			this._transform = t;
+			this.propertyUpdate("transform", this._transform.serialize());
+		}
+
+		get transform():any{
+			return this._transform;
+		}
+
+		set name(name:string){
+			this._name = name;
+			this.propertyUpdate("name", name);
+		}
+
+		get name():string{
+			return this._name;
+		}
+
+		set loaderInfo(name:any){
+			__trace("DisplayObject.loaderInfo is read-only", "warn");
+		}
+
+		get loaderInfo():any{
+			__trace("DisplayObject.loaderInfo is not supported", "warn");
+			return {};
+		}
+
+		/** AS3 Stuff **/
+		public dispatchListener(event:string, data:any):void{
+			if(this._listeners.hasOwnProperty(event)){
+				if(this._listeners[event] !== null){
+					for(var i = 0; i < this._listeners[event].length; i++){
+						try{
+							this._listeners[event][i](data);
+						}catch(e){
+							if(e.hasOwnProperty("stack")) {
+								__trace(e.stack.toString(), 'err');
+							}else{
+								__trace(e.toString(), 'err');
+							}
+						}
+					}
+				}
+			}
+		}
+
+		public addEventListener(event:string, listener:Function):void{
+			if(!this._listeners.hasOwnProperty(event)){
+				this._listeners[event] = [];
+			}
+			this._listeners[event].push(listener);
+		}
+
+		public removeEventListener(event:string, listener:Function):void{
+			if(!this._listeners.hasOwnProperty(event)){
+				return;
+			}
+			var index = this._listeners[event].indexOf(listener);
+			if(index >= 0) {
+				this._listeners[event].splice(index, 1);
+			}
+		}
+
+		public addChild(o:DisplayObject):void{
+			this._children.push(o);
+			o._parent = this;
+			this.methodCall("addChild", o._id);
+		}
+
+		public removeChild(o:DisplayObject):void{
+			var index = this._children.indexOf(o);
+			if(index >= 0){
+				this._children.splice(index,1);
+				o._parent = null;
+				this.methodCall("removeChild", o._id);
+			}
+		}
+
 
 		/** Common Functions **/
 		public serialize():Object {
