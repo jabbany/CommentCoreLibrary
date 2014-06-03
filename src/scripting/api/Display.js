@@ -304,6 +304,21 @@ var $ = new function(){
 		this.beginFill = function(color, alpha){
 			updateObject("beginFill", [toRGB(color), (alpha ? alpha : 1)]);
 		};
+		this.drawPath = function(commands, params){
+			for(var i = 0; i < commands.length; i++){
+				switch(commands[i]){
+					case 1:{
+						this.moveTo(params.shift(), params.shift());break;
+					}
+					case 2:{
+						this.lineTo(params.shift(), params.shift());break;
+					}
+					case 3:{
+						this.curveTo(params.shift(), params.shift(),params.shift(), params.shift());break;
+					}
+				}
+			}
+		};
 		this.beginGradientFill = function(){
 			__trace("Gradient not supported yet", 'warn');
 		};
