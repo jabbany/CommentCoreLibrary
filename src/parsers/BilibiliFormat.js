@@ -22,6 +22,8 @@ function BilibiliParser(xmlDoc){
 	for(var i=0;i<elems.length;i++){
 		if(elems[i].getAttribute('p') != null){
 			var opt = elems[i].getAttribute('p').split(',');
+			if(!elems[i].childNodes[0])
+			  continue;
 			var text = elems[i].childNodes[0].nodeValue;
 			var obj = {};
 			obj.stime = Math.round(parseFloat(opt[0]*1000));
