@@ -1,274 +1,515 @@
-var Runtime = new function () {
-	/** MetaObject **/
-	function MetaObject(nm, callback) {
-		this.unload = function () {
-		};
-		this.dispatchEvent = function (event, data) {
-			if (callback) {
-				callback(event, data);
-			}
-		};
-		this.getId = function () {
-			return nm;
-		};
-	};
-	function TimerRuntime(m) {
-		var __precision = m ? m : 10;
-		var __timers = [],
-			startTime = (new Date()).getTime(),
-			__masterTimer = -1;
-		var __key = 0;
-		var self = this;
-		var __masterTimerFunction = function () {
-			var elapsed = (new Date()).getTime() - startTime;
-			for (var i = 0; i < __timers.length; i++) {
-				if (__timers[i].type === "timeout" &&
-					__timers[i].timeout <= (elapsed - __timers[i].startTime)) {
-					var t = __timers[i];
-					__timers.splice(i, 1);
-					i--;
-					try {
-						t.callback();
-					} catch (e) {
-						if (e.stack) {
-							__trace(e.stack, 'err');
-						} else {
-							__trace(e.toString(), 'err');
-						}
-					}
-				} else if (__timers[i].type === "interval" &&
-					__timers[i].interval <= (elapsed - __timers[i].startTime)) {
-					__timers[i].startTime = (new Date()).getTime() - startTime;
-					try {
-						__timers[i].callback();
-					} catch (e) {
-						if (e.stack) {
-							__trace(e.stack, 'err');
-						} else {
-							__trace(e.toString(), 'err');
-						}
-					}
-				}
-				;
-			}
-			;
-			// Check to see if there are any more timers, if not stop the master
-			if (__timers.length <= 0) {
-				self.stop();
-			}
-		}
+/**
+* AS3 Like Timer Control for Runtime
+*/
+var Runtime;
+(function (Runtime) {
+    var RuntimeTimer = (function () {
+        function RuntimeTimer(type, dur, key, callback) {
+            this.ttl = dur;
+            this.dur = dur;
+            this.key = key;
+            this.type = type;
+            this.callback = callback;
+        }
+        return RuntimeTimer;
+    })();
 
-		this.stop = function () {
-			if (__masterTimer >= 0) {
-				clearInterval(__masterTimer);
-				__masterTimer = -1;
-			}
-		};
+    var TimerRuntime = (function () {
+        function TimerRuntime(precision) {
+            if (typeof precision === "undefined") { precision = 10; }
+            this._timer = -1;
+            this._timers = [];
+            this._lastToken = 0;
+            this._key = 0;
+            this._precision = precision;
+        }
+        TimerRuntime.prototype.start = function () {
+            if (this._timer < 0) {
+                this._lastToken = Date.now();
+                var _self = this;
+                this._timer = setInterval(function () {
+                    var elapsed = Date.now() - _self._lastToken;
+                    for (var i = 0; i < _self._timers.length; i++) {
+                        var timer = _self._timers[i];
+                        if (!timer.hasOwnProperty("type"))
+                            continue;
+                        if (timer.type === "timeout") {
+                            timer.ttl -= elapsed;
+                            if (timer.ttl <= 0) {
+                                _self._timers.splice(i, 1);
+                                i--;
+                            }
+                        } else if (timer.type === "interval") {
+                            timer.ttl -= elapsed;
+                            if (timer.ttl <= 0) {
+                                timer.ttl += timer.dur;
+                            }
+                        }
+                    }
+                    _self._lastToken = Date.now();
+                }, this._precision);
+            }
+        };
 
-		this.start = function () {
-			if (__masterTimer < 0) {
-				startTime = (new Date()).getTime()
-				__masterTimer = setInterval(__masterTimerFunction, 10);
-			}
-		};
+        TimerRuntime.prototype.stop = function () {
+            if (this._timer > -1) {
+                clearInterval(this._timer);
+                this._timer = -1;
+            }
+        };
 
-		this.setTimeout = function (callback, timeout) {
-			if (__masterTimer < 0)
-				self.start();
-			var thiskey = __key++;
-			__timers.push({
-				"callback": callback,
-				"type": "timeout",
-				"timeout": timeout,
-				"startTime": (new Date()).getTime() - startTime,
-				"key": thiskey,
-			});
-			return thiskey;
-		};
+        TimerRuntime.prototype.setInterval = function (f, interval) {
+            var myKey = this._key++;
+            this._timers.push(new RuntimeTimer("interval", interval, myKey, f));
+            return myKey;
+        };
 
-		this.setInterval = function (callback, interval) {
-			if (__masterTimer < 0)
-				self.start();
-			var thiskey = __key++;
-			__timers.push({
-				"callback": callback,
-				"type": "interval",
-				"interval": interval,
-				"startTime": (new Date()).getTime() - startTime,
-				"key": thiskey,
-			});
-			return thiskey;
-		};
+        TimerRuntime.prototype.setTimeout = function (f, timeout) {
+            var myKey = this._key++;
+            this._timers.push(new RuntimeTimer("timeout", timeout, myKey, f));
+            return myKey;
+        };
 
-		this.clearAll = function () {
-			__timers = [];
-			this.stop();
-		};
+        TimerRuntime.prototype.clearInterval = function (id) {
+            for (var i = 0; i < this._timers.length; i++) {
+                if (this._timers[i].type === "interval" && this._timers[i].key === id) {
+                    this._timers.splice(i, 1);
+                    return;
+                }
+            }
+        };
 
-		this.clearInterval = function (key) {
-			for (var i = 0; i < __timers.length; i++) {
-				if (__timers[i].type === "interval" &&
-					__timers[i].key === key) {
-					__timers.splice(i, 1);
-					return;
-				}
-			}
-		};
+        TimerRuntime.prototype.clearTimeout = function (id) {
+            for (var i = 0; i < this._timers.length; i++) {
+                if (this._timers[i].type === "timeout" && this._timers[i].key === id) {
+                    this._timers.splice(i, 1);
+                    return;
+                }
+            }
+        };
 
-		this.clearTimeout = function (key) {
-			for (var i = 0; i < __timers.length; i++) {
-				if (__timers[i].type === "timeout" &&
-					__timers[i].key === key) {
-					__timers.splice(i, 1);
-					return;
-				}
-			}
-		};
-	};
-	/********** END OF Inner Class Definition **********/
-	var masterTimer = new TimerRuntime();
-	var registeredObjects = {
-		"__self": new MetaObject("__self"),
-		"__player": new MetaObject("__player", function (event, data) {
-			if (event === "keyup" || event === "keydown") {
-				Player.dispatchTrigger("keyboard", event);
-			} else if (event === "comment") {
-				Player.dispatchTrigger("comment", data);
-			}
-		}),
-	};
-	var registeredListeners = {
-		"__self": [],
-	};
-	var objCount = 0;
-	var dispatchEvent = function (objectId, event, data) {
-		if (registeredObjects[objectId]) {
-			var cobj = registeredObjects[objectId];
-			if (cobj.dispatchEvent) {
-				cobj.dispatchEvent(event, data);
-			}
-		}
-	};
-	var dispatchListener = function (listenerId, event) {
-		if (registeredListeners[listenerId]) {
+        TimerRuntime.prototype.clearAll = function () {
+            this._timers = [];
+        };
+        return TimerRuntime;
+    })();
 
-		}
-	};
-	/********** END OF private objects Registration **********/
+    /**
+    * Timers interface similar to AS3
+    */
+    var Timer = (function () {
+        function Timer(delay, repeatCount) {
+            if (typeof repeatCount === "undefined") { repeatCount = 0; }
+            this._repeatCount = 0;
+            this._delay = 0;
+            this._microtime = 0;
+            this._timer = -1;
+            this._listeners = [];
+            this._complete = [];
+            this.currentCount = 0;
+            this._delay = delay;
+            this._repeatCount = repeatCount;
+        }
 
-	__schannel("Runtime:Timer", function (pld) {
-		if (pld.action === "halt") {
-			masterTimer.stop();
-		} else if (pld.action === "resume") {
-			masterTimer.start();
-		}
-	});
+        Object.defineProperty(Timer.prototype, "isRunning", {
+            get: function () {
+                return this._timer >= 0;
+            },
+            set: function (b) {
+                __trace("Timer.isRunning is read-only", "warn");
+            },
+            enumerable: true,
+            configurable: true
+        });
 
-	__schannel("Runtime:onListener", function (pld) {
-		// Listener id
-	});
+        Timer.prototype.start = function () {
+            if (!this.isRunning) {
+                var lastTime = Date.now();
+                var self = this;
+                this._timer = setInterval(function () {
+                    var elapsed = Date.now() - lastTime;
+                    self._microtime += elapsed;
+                    if (self._microtime > self._delay) {
+                        self._microtime -= self._delay;
+                        self.currentCount++;
+                        self.dispatchEvent("timer");
+                    }
+                    lastTime = elapsed;
+                    if (self._repeatCount > 0 && self._repeatCount <= self.currentCount) {
+                        self.stop();
+                        self.dispatchEvent("timerComplete");
+                    }
+                }, 20);
+            }
+        };
 
-	/*********** END OF Channel Registration ***********/
-	this.getMasterTimer = function () {
-		return masterTimer;
-	};
+        Timer.prototype.stop = function () {
+            if (this.isRunning) {
+                clearInterval(this._timer);
+                this._timer = -1;
+            }
+        };
 
-	this.registerObject = function (object) {
-		if (!object.getId) {
-			__trace("Attempted to register non-named object", 'err');
-			return;
-		}
-		var id = object.getId();
-		if (!this.hasObject(id)) {
-			registeredObjects[id] = object;
-			__pchannel("Runtime:RegisterObject", {
-				"id": id,
-				"data": object.serialize()
-			});
-			__schannel("object::(" + id + ")", function (payload) {
-				if (payload.type === "event") {
-					dispatchEvent(id, payload.event, payload.data);
-				}
-			});
-			objCount++;
-			return;
-		} else {
-			__trace("Attempting to re-register taken id", 'err');
-			return;
-		}
-	};
+        Timer.prototype.reset = function () {
+            this.stop();
+            this.currentCount = 0;
+            this._microtime = 0;
+        };
 
-	this.deregisterObject = function (objectId) {
-		if (this.hasObject(objectId)) {
-			__schannel("Runtime:DeregisterObject", {
-				"id": objectId
-			});
-			if (registeredObjects[objectId].unload != null) {
-				if (typeof registeredObjects[objectId].unload === "function") {
-					// Gracefully unload first
-					registeredObjects[objectId].unload();
-				}
-			}
-			registeredObjects[objectId] = null;
-			delete registeredObjects[objectId];
-			objCount--;
-		}
-	};
+        Timer.prototype.addEventListener = function (type, listener) {
+            if (type === "timer") {
+                this._listeners.push(listener);
+            } else if (type === "timerComplete") {
+                this._complete.push(listener);
+            }
+        };
 
-	this.registerListener = function (objectId, listener) {
-		if (!this.hasObject(objectId)) {
-			__trace("Attempting to register listener onto unregistered object "
-				+ objectId);
-			return;
-		}
+        Timer.prototype.dispatchEvent = function (event) {
+            if (event === "timer") {
+                for (var i = 0; i < this._listeners.length; i++) {
+                    this._listeners[i]();
+                }
+            } else if (event === "timerComplete") {
+                for (var i = 0; i < this._complete.length; i++) {
+                    this._complete[i]();
+                }
+            }
+        };
+        return Timer;
+    })();
+    Runtime.Timer = Timer;
 
-	};
+    /** Timer Related **/
+    var masterTimer = new TimerRuntime();
+    var internalTimer = new TimerRuntime(20);
+    var enterFrameDispatcher = function () {
+        for (var object in Runtime.registeredObjects) {
+            if (object.getId().substring(0, 2) === "__") {
+                continue;
+            }
+            object.dispatchEvent("enterFrame");
+        }
+    };
+    var enterFrameInterval = -1;
 
-	this.deregisterListener = function (objectId, listener) {
+    /**
+    *  Get the master timer instance
+    */
+    function getTimer() {
+        return masterTimer;
+    }
+    Runtime.getTimer = getTimer;
 
-	};
+    /**
+    * Update the rate in which the enterFrame event is broadcasted
+    * This synchronizes the frameRate value of the Display object.
+    * By default, the frame rate is 24fps.
+    */
+    function updateFrameRate(frameRate) {
+        if (frameRate > 60) {
+            return;
+        }
+        internalTimer.clearInterval(enterFrameInterval);
+        enterFrameInterval = internalTimer.setInterval(enterFrameDispatcher, Math.floor(1000 / frameRate));
+    }
+    Runtime.updateFrameRate = updateFrameRate;
+})(Runtime || (Runtime = {}));
+/**
+* Runtime permissions
+*/
+var Runtime;
+(function (Runtime) {
+    var permissions = {};
+    function requestPermission(name, callback) {
+        __channel("Runtime:RequestPermission", {
+            "name": name
+        }, function (result) {
+            if (result === true) {
+                permissions[name] = true;
+            } else {
+                permissions[name] = false;
+            }
+            if (typeof callback === "function") {
+                callback(result);
+            }
+        });
+    }
+    Runtime.requestPermission = requestPermission;
 
-	this.deregisterAllListeners = function (objectId) {
+    function hasPermission(name) {
+        if (permissions.hasOwnProperty(name) && permissions[name]) {
+            return true;
+        }
+        return false;
+    }
+    Runtime.hasPermission = hasPermission;
 
-	};
+    function openWindow(url, params, callback) {
+        if (typeof callback === "undefined") { callback = null; }
+        __channel("Runtime:PrivilegedAPI", {
+            "method": "openWindow",
+            "params": [url, params]
+        }, function (windowId) {
+            // Create a small compact window object
+            var WND = {
+                "moveTo": function (x, y) {
+                    __pchannel("Runtime:PrivilegedAPI", {
+                        "method": "window",
+                        "params": [windowId, "moveTo", [x, y]]
+                    });
+                },
+                "resizeTo": function (w, h) {
+                    __pchannel("Runtime:PrivilegedAPI", {
+                        "method": "window",
+                        "params": [windowId, "resizeTo", [w, h]]
+                    });
+                },
+                "focus": function () {
+                    __pchannel("Runtime:PrivilegedAPI", {
+                        "method": "window",
+                        "params": [windowId, "focus"]
+                    });
+                },
+                "close": function () {
+                    __pchannel("Runtime:PrivilegedAPI", {
+                        "method": "window",
+                        "params": [windowId, "close"]
+                    });
+                }
+            };
+            if (callback !== null) {
+                callback(WND);
+            }
+        });
+    }
+    Runtime.openWindow = openWindow;
 
-	this.clear = function () {
-		for (var i in registeredObjects) {
-			if (registeredObjects[i].unload) {
-				registeredObjects[i].unload();
-			}
-		}
-		;
-		__achannel("Runtime::clear", "::Runtime", {});
-	};
+    function injectStyle(referenceObject, style) {
+        __pchannel("Runtime:PrivilegedAPI", {
+            "method": "injectStyle",
+            "params": [referenceObject, style]
+        });
+    }
+    Runtime.injectStyle = injectStyle;
 
-	this.crash = function () {
-		/* Crashes the main thread. Forces an exit on error */
-		__trace("Manual:Runtime.crash()", "fatal");
-	};
+    function privilegedCode() {
+        __trace("Runtime.privilegedCode not available.", "warn");
+    }
+    Runtime.privilegedCode = privilegedCode;
+})(Runtime || (Runtime = {}));
+/**
+* Runtime Internal Module
+* Author: Jim Chen
+*/
+/// <reference path="../OOAPI.d.ts" />
+/// <reference path="Timer.ts" />
+/// <reference path="Permissions.ts" />
+var Runtime;
+(function (Runtime) {
+    var MetaObject = (function () {
+        function MetaObject(name, callback) {
+            if (typeof callback === "undefined") { callback = null; }
+            this._oncallback = null;
+            this._name = name;
+            this._oncallback = callback;
+        }
+        MetaObject.prototype.dispatchEvent = function (event, data) {
+            if (this._oncallback !== null) {
+                this._oncallback(event, data);
+            }
+        };
 
-	this.alert = function (msg) {
-		/* Sends an alert request to the main interface */
-		__achannel("Runtime::alert", "::Runtime", msg);
-	};
+        MetaObject.prototype.getId = function () {
+            return this._name;
+        };
 
-	this.hasObject = function (objId) {
-		return (registeredObjects[objId] != null ? true : false);
-	};
+        MetaObject.prototype.serialize = function () {
+            return {
+                "class": this._name
+            };
+        };
+        return MetaObject;
+    })();
 
-	this.generateIdent = function (type) {
-		if (!type)
-			type = "obj";
-		var id = type + ":" + (new Date()).getTime() + "|" +
-			Math.round(Math.random() * 4096) + ":" + objCount;
-		while (this.hasObject(id)) {
-			id = type + ":" + (new Date()).getTime() + "|" +
-				Math.round(Math.random() * 4096) + ":" + objCount;
-		}
-		return id;
-	};
-	
-	this.generateId = function (type) {
-		return this.generateIdent(type);
-	};
-};
+    /** Variables **/
+    var objCount = 0;
+    var _registeredObjects = {
+        "__self": new MetaObject("__self"),
+        "__player": new MetaObject("__player"),
+        "__root": new MetaObject("__root")
+    };
+
+    Runtime.registeredObjects;
+    Object.defineProperty(Runtime, 'registeredObjects', {
+        get: function () {
+            return _registeredObjects;
+        },
+        set: function (value) {
+            __trace("Runtime.registeredObjects is read-only", "warn");
+        }
+    });
+
+    /**
+    * Dispatches an event to the corresponding object
+    * @param objectId - object to dispatch to
+    * @param event - event id
+    * @param payload - event object
+    * @private
+    */
+    function _dispatchEvent(objectId, event, payload) {
+        var obj = _registeredObjects[objectId];
+        if (typeof obj === "object") {
+            if (obj.dispatchEvent)
+                obj.dispatchEvent(event, payload);
+        }
+    }
+
+    /**
+    * Checks to see if an object is registered under the id given
+    * @param objectId - Id to check
+    * @returns {boolean} - whether the objectid is registered
+    */
+    function hasObject(objectId) {
+        return _registeredObjects.hasOwnProperty(objectId) && _registeredObjects[objectId] !== null;
+    }
+    Runtime.hasObject = hasObject;
+
+    /**
+    * Gets the object registered by id
+    * @param objectId - objectid of object
+    * @returns {any} - object or undefined if not found
+    */
+    function getObject(objectId) {
+        return _registeredObjects[objectId];
+    }
+    Runtime.getObject = getObject;
+
+    /**
+    * Registers an object to allow two way communication between the API
+    * and the host.
+    * @param object - object to be registered. Must have getId method.
+    */
+    function registerObject(object) {
+        if (!object.getId) {
+            __trace("Attempted to register unnamed object", "warn");
+            return;
+        }
+        if (!Runtime.hasObject(object.getId())) {
+            _registeredObjects[object.getId()] = object;
+            __pchannel("Runtime:RegisterObject", {
+                "id": object.getId(),
+                "data": object.serialize()
+            });
+            __schannel("object::(" + object.getId() + ")", function (payload) {
+                if (payload.hasOwnProperty("type") && payload.type === "event") {
+                    _dispatchEvent(object.getId(), payload.event, payload.data);
+                }
+            });
+            objCount++;
+            return;
+        } else {
+            __trace("Attempted to re-register object or id collision", "warn");
+            return;
+        }
+    }
+    Runtime.registerObject = registerObject;
+
+    /**
+    * De-Registers an object from the runtime. This not only removes the object
+    * from the stage if it is onstage, but also prevents the element from
+    * receiving any more events.
+    *
+    * @param objectId - objectid to remove
+    */
+    function deregisterObject(objectId) {
+        if (Runtime.hasObject(objectId)) {
+            if (objectId.substr(0, 2) === "__") {
+                __trace("Runtime.deregisterObject cannot de-register a MetaObject", "warn");
+                return;
+            }
+            __pchannel("Runtime:DeregisterObject", {
+                "id": objectId
+            });
+            if (_registeredObjects[objectId].unload != null) {
+                if (typeof _registeredObjects[objectId].unload === "function") {
+                    // Gracefully unload first
+                    _registeredObjects[objectId].unload();
+                }
+            }
+            _registeredObjects[objectId] = null;
+            delete _registeredObjects[objectId];
+            objCount--;
+        }
+    }
+    Runtime.deregisterObject = deregisterObject;
+
+    /**
+    * Generates an objectid that isn't registered
+    * @param type - object type
+    * @returns {string} - objectid that has not been registered
+    */
+    function generateId(type) {
+        if (typeof type === "undefined") { type = "obj"; }
+        var id = type + ":" + (new Date()).getTime() + "|" + Math.round(Math.random() * 4096) + ":" + objCount;
+        while (Runtime.hasObject(id)) {
+            id = type + ":" + (new Date()).getTime() + "|" + Math.round(Math.random() * 4096) + ":" + objCount;
+        }
+        return id;
+    }
+    Runtime.generateId = generateId;
+    ;
+
+    /**
+    * De-registers all objects. This also unloads them. Objects
+    * will not receive any more events
+    */
+    function reset() {
+        for (var i in _registeredObjects) {
+            if (i.substr(0, 2) !== "__") {
+                Runtime.deregisterObject(i);
+            }
+        }
+    }
+    Runtime.reset = reset;
+
+    /**
+    * Unloads all objects. Does not deregister them, so they may
+    * still receive events.
+    */
+    function clear() {
+        for (var i in _registeredObjects) {
+            if (i.substr(0, 2) === "__")
+                continue;
+            if (_registeredObjects[i].unload) {
+                _registeredObjects[i].unload();
+            }
+        }
+    }
+    Runtime.clear = clear;
+
+    /**
+    * Invoke termination of script
+    */
+    function crash() {
+        __trace("Runtime.crash() : Manual crash", "fatal");
+    }
+    Runtime.crash = crash;
+
+    /**
+    * Invoke exit of script
+    */
+    function exit() {
+        self.close();
+    }
+    Runtime.exit = exit;
+
+    /**
+    * Attempts to invoke an alert dialog.
+    * Note that this may not work if the Host policy does not allow it
+    * @param msg - message for alert
+    */
+    function alert(msg) {
+        __achannel("Runtime::alert", "::Runtime", msg);
+    }
+    Runtime.alert = alert;
+})(Runtime || (Runtime = {}));

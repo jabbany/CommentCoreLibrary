@@ -12,13 +12,6 @@ var CCLScripting = function(workerUrl){
 			console.warn(m);
 		};
 	};
-	this.toRGB = function(number){
-		var string = parseInt(number).toString(16);
-		while(string.length < 6){
-			string = "0" + string;
-		}
-		return "#" + string;
-	};
 	this.getWorker = function(){
 		return new Worker(this.workerUrl);
 	};
@@ -427,7 +420,13 @@ var CCLScripting = function(workerUrl){
 			fill:"none",
 			alpha:1
 		};
-		
+		var toRGB = function(number){
+			var string = parseInt(number).toString(16);
+			while(string.length < 6){
+				string = "0" + string;
+			}
+			return "#" + string;
+		};
 		var applyStroke = function(p, ref){
 			__(p, {
 				"stroke": ref.line.color,
@@ -508,7 +507,7 @@ var CCLScripting = function(workerUrl){
 			if(params.length < 3)
 				return;
 			this.line.width = params[0];
-			this.line.color = CCLScripting.toRGB(params[1]);
+			this.line.color = toRGB(params[1]);
 			this.line.alpha = params[2];
 			if(params[3]){
 				this.line.caps = params[3];
@@ -526,7 +525,7 @@ var CCLScripting = function(workerUrl){
 		this.beginFill = function(params){
 			if(params.length === 0)
 				return;
-			this.fill.fill = CCLScripting.toRGB(params[0]);
+			this.fill.fill = toRGB(params[0]);
 			if(params.length > 1){
 				this.fill.alpha = params[1];
 			}

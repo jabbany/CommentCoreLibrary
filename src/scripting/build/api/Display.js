@@ -446,12 +446,16 @@ var Display;
             }
         };
 
+        /**
+        * Removes the object from a parent if exists.
+        */
         DisplayObject.prototype.remove = function () {
             // Remove itself
             if (this._parent !== null) {
                 this._parent.removeChild(this);
+            } else {
+                this.root.removeChild(this);
             }
-            this.unload();
         };
 
         /** Common Functions **/
@@ -471,6 +475,7 @@ var Display;
 
         DisplayObject.prototype.unload = function () {
             this._visible = false;
+            this.remove();
             __pchannel("Runtime:CallMethod", {
                 "id": this._id,
                 "method": "unload",
@@ -1048,6 +1053,11 @@ var Display;
             __pchannel("Display:SetFrameRate", value);
         }
     });
+
+    function toString() {
+        return "[display Display]";
+    }
+    Display.toString = toString;
 })(Display || (Display = {}));
 
 var $ = Display;

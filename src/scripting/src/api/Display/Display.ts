@@ -87,6 +87,10 @@ module Display {
 			__pchannel("Display:SetFrameRate", value);
 		}
 	});
+
+	export function toString(){
+		return "[display Display]";
+	}
 }
 
 var $ = Display;

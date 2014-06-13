@@ -262,13 +262,18 @@ module Display {
 			}
 		}
 
+		/**
+		 * Removes the object from a parent if exists.
+		 */
 		public remove():void{
 			// Remove itself
 			if(this._parent !== null){
 				this._parent.removeChild(this);
+			}else{
+				this.root.removeChild(this);
 			}
-			this.unload();
 		}
+
 		/** Common Functions **/
 		public serialize():Object {
 			var filters:Array<Object> = [];
@@ -286,6 +291,7 @@ module Display {
 
 		public unload():void {
 			this._visible = false;
+			this.remove();
 			__pchannel("Runtime:CallMethod", {
 				"id": this._id,
 				"method": "unload",

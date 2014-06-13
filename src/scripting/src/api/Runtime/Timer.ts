@@ -3,11 +3,26 @@
  */
 
 module Runtime{
+	class RuntimeTimer{
+		public ttl:number;
+		public dur:number;
+		public key:number;
+		public type:string;
+		public callback:Function;
+		constructor(type:string, dur:number, key:number, callback:Function){
+			this.ttl = dur;
+			this.dur = dur;
+			this.key = key;
+			this.type = type;
+			this.callback = callback;
+		}
+	}
+
 	class TimerRuntime {
 		private _precision:number;
 		private _timer:number = -1;
-		private _timers:Array<Object> = [];
-		private _startTime:number = 0;
+		private _timers:Array<RuntimeTimer> = [];
+		private _lastToken:number = 0;
 		private _key:number = 0;
 
 		constructor(precision:number = 10) {
@@ -16,20 +31,28 @@ module Runtime{
 
 		public start():void {
 			if (this._timer < 0) {
-				this._startTime = Date.now();
+				this._lastToken = Date.now();
 				var _self:TimerRuntime = this;
 				this._timer = setInterval(function () {
-					var elapsed:number = Date.now() - _self._startTime;
+					var elapsed:number = Date.now() - _self._lastToken;
 					for (var i = 0; i < _self._timers.length; i++) {
-						var timer:Object = _self._timers[i];
+						var timer:RuntimeTimer = _self._timers[i];
 						if (!timer.hasOwnProperty("type"))
 							continue;
-						if (timer.type === "interval") {
-
-						} else if (timer.type === "timeout") {
-
+						if (timer.type === "timeout") {
+							timer.ttl -= elapsed;
+							if (timer.ttl <= 0) {
+								_self._timers.splice(i, 1);
+								i--;
+							}
+						} else if (timer.type === "interval") {
+							timer.ttl -= elapsed;
+							if (timer.ttl <= 0) {
+								timer.ttl += timer.dur;
+							}
 						}
 					}
+					_self._lastToken = Date.now();
 				}, this._precision);
 			}
 		}
@@ -43,32 +66,19 @@ module Runtime{
 
 		public setInterval(f:Function, interval:number):number {
 			var myKey = this._key++;
-			this._timers.push({
-				"type": "interval",
-				"startTime": Date.now(),
-				"key": myKey,
-				"interval": interval,
-				"callback": f
-			});
+			this._timers.push(new RuntimeTimer("interval", interval, myKey, f));
 			return myKey;
 		}
 
 		public setTimeout(f:Function, timeout:number):number {
 			var myKey = this._key++;
-			this._timers.push({
-				"type": "timeout",
-				"startTime": Date.now(),
-				"key": myKey,
-				"timeout": timeout,
-				"callback": f
-			});
+			this._timers.push(new RuntimeTimer("timeout", timeout, myKey, f));
 			return myKey;
 		}
 
 		public clearInterval(id:number):void {
 			for (var i = 0; i < this._timers.length; i++) {
-				if (this._timers[i].hasOwnProperty("type") &&
-					this._timers[i].type === "interval" &&
+				if (this._timers[i].type === "interval" &&
 					this._timers[i].key === id) {
 					this._timers.splice(i, 1);
 					return;
@@ -78,8 +88,7 @@ module Runtime{
 
 		public clearTimeout(id:number):void {
 			for (var i = 0; i < this._timers.length; i++) {
-				if (this._timers[i].hasOwnProperty("type") &&
-					this._timers[i].type === "timeout" &&
+				if (this._timers[i].type === "timeout" &&
 					this._timers[i].key === id) {
 					this._timers.splice(i, 1);
 					return;
@@ -91,7 +100,118 @@ module Runtime{
 			this._timers = [];
 		}
 	}
+	/**
+	 * Timers interface similar to AS3
+	 */
 	export class Timer {
+		private _repeatCount:number = 0;
+		private _delay:number = 0;
+		private _microtime:number = 0;
+		private _timer:number = -1;
+		private _listeners:Array<Function> = [];
+		private _complete:Array<Function> = [];
+		public currentCount:number = 0;
 
+		constructor(delay:number, repeatCount:number = 0){
+			this._delay = delay;
+			this._repeatCount = repeatCount;
+		}
+
+		set isRunning(b:boolean){
+			__trace("Timer.isRunning is read-only","warn");
+		}
+
+		get isRunning():boolean{
+			return this._timer >= 0;
+		}
+
+		public start():void{
+			if(!this.isRunning){
+				var lastTime = Date.now();
+				var self = this;
+				this._timer = setInterval(function(){
+					var elapsed = Date.now() - lastTime;
+					self._microtime += elapsed;
+					if(self._microtime > self._delay){
+						self._microtime -= self._delay;
+						self.currentCount++;
+						self.dispatchEvent("timer");
+					}
+					lastTime = elapsed;
+					if(self._repeatCount > 0 &&
+						self._repeatCount <= self.currentCount){
+						self.stop();
+						self.dispatchEvent("timerComplete");
+					}
+				}, 20);
+			}
+		}
+
+		public stop():void{
+			if(this.isRunning){
+				clearInterval(this._timer);
+				this._timer = -1;
+			}
+		}
+
+		public reset():void{
+			this.stop();
+			this.currentCount = 0;
+			this._microtime = 0;
+		}
+
+		public addEventListener(type:string, listener:Function):void{
+			if(type === "timer"){
+				this._listeners.push(listener);
+			}else if(type === "timerComplete"){
+				this._complete.push(listener);
+			}
+		}
+
+		public dispatchEvent(event:string){
+			if(event === "timer"){
+				for(var i = 0; i < this._listeners.length; i++){
+					this._listeners[i]();
+				}
+			}else if(event === "timerComplete"){
+				for(var i = 0; i < this._complete.length; i++){
+					this._complete[i]();
+				}
+			}
+		}
+	}
+
+	/** Timer Related **/
+	var masterTimer:TimerRuntime = new TimerRuntime();
+	var internalTimer:TimerRuntime = new TimerRuntime(20);
+	var enterFrameDispatcher:Function = function () {
+		for (var object in Runtime.registeredObjects) {
+			if (object.getId().substring(0, 2) === "__") {
+				continue;
+			}
+			object.dispatchEvent("enterFrame");
+		}
+	};
+	var enterFrameInterval:number = -1;
+
+	/**
+	 *  Get the master timer instance
+	 */
+	export function getTimer():any {
+		return masterTimer;
+	}
+
+	/**
+	 * Update the rate in which the enterFrame event is broadcasted
+	 * This synchronizes the frameRate value of the Display object.
+	 * By default, the frame rate is 24fps.
+	 */
+	export function updateFrameRate(frameRate:number):void {
+		if(frameRate > 60){
+			return;
+		}
+		internalTimer.clearInterval(enterFrameInterval);
+		enterFrameInterval = internalTimer.setInterval(enterFrameDispatcher,
+			Math.floor(1000 / frameRate));
 	}
 }
