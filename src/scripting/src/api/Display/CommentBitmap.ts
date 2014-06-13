@@ -7,6 +7,7 @@ module Display {
 
 		constructor(params:Object) {
 			this.initStyle(params);
+			Runtime.registerObject(this);
 		}
 
 		get motionManager():MotionManager {

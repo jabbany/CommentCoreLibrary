@@ -19,7 +19,7 @@
 		pre.warning{color:#FFC500;}
 	</style>
 	<script type="text/javascript">var $ = function(e){return window.document.getElementById(e);}</script>
-	<script src="../../src/scripting/Host.js" type="text/javascript"></script>
+	<script src="../../src/scripting/build/Host.js" type="text/javascript"></script>
 </head>
 <body style="background:#000;">
 	<h2 style="color:#fff">CCL Scripting Demo</h2>
@@ -34,7 +34,7 @@
 	</div>
 	<div id="output">[Msg] 有关具体API信息请阅读 docs/scripting</div>
 	<script type="text/javascript">
-		bscripter = new CCLScripting("../../src/scripting/Worker.js");
+		bscripter = new CCLScripting("../../src/scripting/build/Worker.js");
 		bscripter.logger = new function(){
 			this.log = function(t){
 				$("output").innerHTML = "<pre>" + t.toString() + "</pre>" + $("output").innerHTML;

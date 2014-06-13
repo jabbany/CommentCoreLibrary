@@ -11,6 +11,7 @@ module Display {
 		constructor(params:Object) {
 			super();
 			this.initStyle(params);
+			Runtime.registerObject(this);
 		}
 
 		get motionManager():MotionManager {

@@ -9,8 +9,29 @@
 module Display {
 	class Transform implements ISerializable{
 		private _parent:DisplayObject;
+		private _matrix:Display.Matrix = new Matrix();
+		private _matrix3d:Display.Matrix3D = null;
+		private _m;
 		constructor(parent:DisplayObject){
 			this._parent = parent;
+		}
+
+		set matrix3D(m:Display.Matrix3D){
+			this._matrix = null;
+			this._matrix3d = m;
+		}
+
+		set matrix(m:Display.Matrix){
+			this._matrix3d = null;
+			this._matrix = m;
+		}
+
+		get matrix3D():Display.Matrix3D{
+			return this._matrix3d;
+		}
+
+		get matrix():Display.Matrix{
+			return this._matrix;
 		}
 
 		private updateProperty(propertyName:string, value:any):void{
@@ -79,7 +100,11 @@ module Display {
 
 		set filters(filters:Array<Filter>) {
 			this._filters = filters;
-			this.propertyUpdate("filters", filters);
+			var serializedFilters:Array<Object> = [];
+			for(var i = 0; i < this._filters.length; i++){
+				serializedFilters.push(this._filters[i].serialize());
+			}
+			this.propertyUpdate("filters", serializedFilters);
 		}
 
 		get filters():Array<Filter> {
@@ -237,7 +262,13 @@ module Display {
 			}
 		}
 
-
+		public remove():void{
+			// Remove itself
+			if(this._parent !== null){
+				this._parent.removeChild(this);
+			}
+			this.unload();
+		}
 		/** Common Functions **/
 		public serialize():Object {
 			var filters:Array<Object> = [];

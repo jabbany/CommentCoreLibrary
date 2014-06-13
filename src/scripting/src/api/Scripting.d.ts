@@ -3,5 +3,6 @@
 ////////////////
 
 declare var Runtime: {
-	generateId():string
+	generateId():string;
+	registerObject(object:any):void;
 }

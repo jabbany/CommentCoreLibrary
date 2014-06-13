@@ -4,8 +4,13 @@
  */
 /// <reference path="../OOAPI.d.ts" />
 
+/// <reference path="Matrix.ts" />
 /// <reference path="Sprite.ts" />
 /// <reference path="DisplayObject.ts" />
+/// <reference path="CommentButton.ts" />
+/// <reference path="CommentCanvas.ts" />
+/// <reference path="CommentShape.ts" />
+/// <reference path="CommentField.ts" />
 
 module Display {
 	export var root:DisplayObject;
@@ -83,10 +88,5 @@ module Display {
 		}
 	});
 }
-
-/// <reference path="CommentButton.ts" />
-/// <reference path="CommentCanvas.ts" />
-/// <reference path="CommentShape.ts" />
-/// <reference path="CommentField.ts" />
 
 var $ = Display;
