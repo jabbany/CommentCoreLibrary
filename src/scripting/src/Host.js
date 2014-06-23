@@ -46,7 +46,19 @@ var CCLScripting = function(workerUrl){
 		this.deregisterObject = function(objectId){
 			delete objects[objectId];
 		};
-		
+		this.updateProperty = function(objectId, propName, value){
+			if(!objects[objectId]){
+				scripter.logger.error("Object not found.");
+				return;
+			}
+			if(!objects[objectId][propName]){
+				scripter.logger.error("Property \"" + propName 
+					+ "\" not defined for object of type " + 
+					objects[objectId].getClass() +".");
+				return;
+			}
+			objects[objectId][propName] = value;
+		};
 		this.callMethod = function(objectId, methodName, params){
 			if(!objects[objectId]){
 				scripter.logger.error("Object not found.");
@@ -260,6 +272,9 @@ var CCLScripting = function(workerUrl){
 		this.addListener("Runtime:CallMethod", function(pl){
 			self.getContext().callMethod(pl.id, pl.method, pl.params);
 		});
+		this.addListener("Runtime:UpdateProperty", function(pl){
+			self.getContext().updateProperty(pl.id, pl.name, pl.value);
+		});
 	};
 	/** This is the DOM Manipulation Library **/
 	var _ = function (type, props, children, callback) {
@@ -295,7 +310,7 @@ var CCLScripting = function(workerUrl){
 	};
 	/** Define some unpackers **/
 	var ScriptingContext = CCLScripting.prototype.ScriptingContext;
-	ScriptingContext.prototype.Unpack.Comment = function(stage, data, ctx){
+	ScriptingContext.prototype.Unpack.TextField = function(stage, data, ctx){
 		this.DOM = _("div",{
 			"style":{
 				"position":"absolute",
@@ -579,7 +594,13 @@ var CCLScripting = function(workerUrl){
 			applyStroke(e, this);
 			defaultGroup.appendChild(e);
 		};
-		
+		this.__defineGetter__("filters", function(f){
+			return [];
+		});
+		this.__defineSetter__("filters", function(f){
+			console.log(f);
+			this.setFilters([f]);
+		});
 		this.setFilters = function(params){
 			var filters = params[0];
 			//Remove old filters

@@ -10,8 +10,9 @@ module Display {
 
 		constructor(params:Object) {
 			super();
-			this.initStyle(params);
-			Runtime.registerObject(this);
+			this.setDefaults(params);
+			this.initStyle(params);// This is for the special styles
+			Runtime.registerObject(<any> this);
 		}
 
 		get motionManager():MotionManager {
@@ -27,7 +28,10 @@ module Display {
 		}
 
 		public initStyle(style:Object):void {
-
+			if (style.hasOwnProperty("lifeTime")) {
+				this._mM.dur = style["lifeTime"] * 1000;
+			}
+			this._mM.play();
 		}
 
 	}

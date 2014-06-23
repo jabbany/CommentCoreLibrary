@@ -496,7 +496,7 @@ var Runtime;
     Runtime.crash = crash;
 
     /**
-    * Invoke exit of script
+    * Invoke exit of script engine
     */
     function exit() {
         self.close();

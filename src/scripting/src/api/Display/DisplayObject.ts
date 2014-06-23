@@ -3,47 +3,48 @@
  * Author: Jim Chen
  * Part of the CCLScripter
  */
-/// <reference path="../Scripting.d.ts" />
+/// <reference path="../Runtime.d.ts" />
 /// <reference path="ISerializable.ts" />
 /// <reference path="Filter.ts" />
 module Display {
-	class Transform implements ISerializable{
+	class Transform implements ISerializable {
 		private _parent:DisplayObject;
 		private _matrix:Display.Matrix = new Matrix();
 		private _matrix3d:Display.Matrix3D = null;
 		private _m;
-		constructor(parent:DisplayObject){
+
+		constructor(parent:DisplayObject) {
 			this._parent = parent;
 		}
 
-		set matrix3D(m:Display.Matrix3D){
+		set matrix3D(m:Display.Matrix3D) {
 			this._matrix = null;
 			this._matrix3d = m;
 		}
 
-		set matrix(m:Display.Matrix){
+		set matrix(m:Display.Matrix) {
 			this._matrix3d = null;
 			this._matrix = m;
 		}
 
-		get matrix3D():Display.Matrix3D{
+		get matrix3D():Display.Matrix3D {
 			return this._matrix3d;
 		}
 
-		get matrix():Display.Matrix{
+		get matrix():Display.Matrix {
 			return this._matrix;
 		}
 
-		private updateProperty(propertyName:string, value:any):void{
+		private updateProperty(propertyName:string, value:any):void {
 			this._parent.transform = this;
 		}
 
-		public serialize():Object{
+		public serialize():Object {
 			return {};
 		}
 
 	}
-	export class DisplayObject implements ISerializable {
+	export class DisplayObject implements ISerializable, Runtime.RegisterableObject {
 		/** This represents an element in the HTML rendering **/
 		private _id:string;
 		private _alpha:number = 1;
@@ -58,13 +59,31 @@ module Display {
 		private _name:string = "";
 		private _children:Array<DisplayObject> = [];
 		private _transform:Transform = new Transform(this);
+		private _hasSetDefaults:boolean = false;
 
-		constructor(id:string = Runtime.generateId()){
+		constructor(id:string = Runtime.generateId()) {
 			this._id = id;
 			this._visible = true;
 		}
 
-		private propertyUpdate(propertyName:string, updatedValue:any):void {
+		public setDefaults(defaults:Object = {}):void {
+			if (this._hasSetDefaults) {
+				__trace("DisplayObject.setDefaults called more than once.", "warn");
+				return;
+			}
+			this._hasSetDefaults = true;
+			if (defaults.hasOwnProperty("alpha")) {
+				this._alpha = defaults["alpha"];
+			}
+			if (defaults.hasOwnProperty("x")) {
+				this._x = defaults["x"];
+			}
+			if (defaults.hasOwnProperty("y")) {
+				this._y = defaults["y"];
+			}
+		}
+
+		public propertyUpdate(propertyName:string, updatedValue:any):void {
 			__pchannel("Runtime:UpdateProperty", {
 				"id": this._id,
 				"name": propertyName,
@@ -72,7 +91,7 @@ module Display {
 			});
 		}
 
-		private methodCall(methodName:string, params:any):void {
+		public methodCall(methodName:string, params:any):void {
 			__pchannel("Runtime:CallMethod", {
 				"id": this._id,
 				"name": methodName,
@@ -101,7 +120,7 @@ module Display {
 		set filters(filters:Array<Filter>) {
 			this._filters = filters;
 			var serializedFilters:Array<Object> = [];
-			for(var i = 0; i < this._filters.length; i++){
+			for (var i = 0; i < this._filters.length; i++) {
 				serializedFilters.push(this._filters[i].serialize());
 			}
 			this.propertyUpdate("filters", serializedFilters);
@@ -136,7 +155,7 @@ module Display {
 
 		set y(val:number) {
 			this._y = val;
-			this.propertyUpdate("y",val);
+			this.propertyUpdate("y", val);
 		}
 
 		set z(val:number) {
@@ -167,61 +186,69 @@ module Display {
 			return 0;
 		}
 
-		set visible(visible:boolean){
+		set visible(visible:boolean) {
 			this._visible = visible;
 			this.propertyUpdate("visible", visible);
 		}
 
-		get visible():boolean{
+		get visible():boolean {
 			return this._visible;
 		}
 
-		set blendMode(blendMode:string){
-			__trace("DisplayObject.blendMode not supported.","warn");
+		set blendMode(blendMode:string) {
+			__trace("DisplayObject.blendMode not supported.", "warn");
 		}
 
-		get blendMode():string{
+		get blendMode():string {
 			return "normal";
 		}
 
-		set transform(t:any){
+		set transform(t:any) {
 			this._transform = t;
 			this.propertyUpdate("transform", this._transform.serialize());
 		}
 
-		get transform():any{
+		get transform():any {
 			return this._transform;
 		}
 
-		set name(name:string){
+		set name(name:string) {
 			this._name = name;
 			this.propertyUpdate("name", name);
 		}
 
-		get name():string{
+		get name():string {
 			return this._name;
 		}
 
-		set loaderInfo(name:any){
+		set loaderInfo(name:any) {
 			__trace("DisplayObject.loaderInfo is read-only", "warn");
 		}
 
-		get loaderInfo():any{
+		get loaderInfo():any {
 			__trace("DisplayObject.loaderInfo is not supported", "warn");
 			return {};
 		}
 
+		set parent(p:DisplayObject) {
+			__trace("DisplayObject.parent is read-only", "warn");
+		}
+
+		get parent():DisplayObject {
+			return this._parent;
+		}
+
 		/** AS3 Stuff **/
-		public dispatchListener(event:string, data:any):void{
-			if(this._listeners.hasOwnProperty(event)){
-				if(this._listeners[event] !== null){
-					for(var i = 0; i < this._listeners[event].length; i++){
-						try{
+		public dispatchEvent(event:string, data:any):void {
+			if (this._listeners.hasOwnProperty(event)) {
+				if (this._listeners[event] !== null) {
+					for (var i = 0; i < this._listeners[event].length; i++) {
+						try {
 							this._listeners[event][i](data);
-						}catch(e){
-							if(e.hasOwnProperty("stack")) {
+						} catch (e) {
+							if (e.hasOwnProperty("stack")) {
 								__trace(e.stack.toString(), 'err');
-							}else{
+							} else {
 								__trace(e.toString(), 'err');
 							}
 						}
@@ -230,33 +257,33 @@ module Display {
 			}
 		}
 
-		public addEventListener(event:string, listener:Function):void{
-			if(!this._listeners.hasOwnProperty(event)){
+		public addEventListener(event:string, listener:Function):void {
+			if (!this._listeners.hasOwnProperty(event)) {
 				this._listeners[event] = [];
 			}
 			this._listeners[event].push(listener);
 		}
 
-		public removeEventListener(event:string, listener:Function):void{
-			if(!this._listeners.hasOwnProperty(event)){
+		public removeEventListener(event:string, listener:Function):void {
+			if (!this._listeners.hasOwnProperty(event)) {
 				return;
 			}
 			var index = this._listeners[event].indexOf(listener);
-			if(index >= 0) {
+			if (index >= 0) {
 				this._listeners[event].splice(index, 1);
 			}
 		}
 
-		public addChild(o:DisplayObject):void{
+		public addChild(o:DisplayObject):void {
 			this._children.push(o);
 			o._parent = this;
 			this.methodCall("addChild", o._id);
 		}
 
-		public removeChild(o:DisplayObject):void{
+		public removeChild(o:DisplayObject):void {
 			var index = this._children.indexOf(o);
-			if(index >= 0){
-				this._children.splice(index,1);
+			if (index >= 0) {
+				this._children.splice(index, 1);
 				o._parent = null;
 				this.methodCall("removeChild", o._id);
 			}
@@ -265,17 +292,18 @@ module Display {
 		/**
 		 * Removes the object from a parent if exists.
 		 */
-		public remove():void{
+		public remove():void {
 			// Remove itself
-			if(this._parent !== null){
+			if (this._parent !== null) {
 				this._parent.removeChild(this);
-			}else{
+			} else {
 				this.root.removeChild(this);
 			}
 		}
 
 		/** Common Functions **/
 		public serialize():Object {
+			this._hasSetDefaults = true;
 			var filters:Array<Object> = [];
 			for (var i:number = 0; i < this._filters.length; i++) {
 				filters.push(this._filters[i].serialize());

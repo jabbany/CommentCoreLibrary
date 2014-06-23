@@ -5,7 +5,97 @@
  */
 /// <reference path="DisplayObject.ts" />
 module Display {
-	export class TextField extends DisplayObject {
+	class TextFormat implements Display.ISerializable {
+		public font:string;
+		public size:number;
+		public color:number;
+		public bold:boolean;
+		public italic:boolean;
+		public underline:boolean;
+		constructor(font:string = "SimHei", size:number = 25, color:number = 0xFFFFFF, bold:boolean = false, italic:boolean = false, underline:boolean = false, url:string = "", target:string = "", align:string = "left", leftMargin:number = 0, rightMargin:number = 0, indent:number = 0, leading:number = 0) {
+			this.font = font;
+			this.size = size;
+			this.color = color;
+			this.bold = bold;
+			this.italic = italic;
+			this.underline = unterline;
+		}
 
+		public serialize():Object {
+			return {
+				"class": "TextFormat",
+				"font": this.font,
+				"size": this.size,
+				"color": this.color,
+				"bold": this.bold,
+				"underline": this.underline,
+				"italic": this.italic
+			};
+		}
+	}
+
+	export class TextField extends DisplayObject {
+		private _text:string;
+		private _color:number;
+		private _textFormat:TextFormat;
+
+		constructor(text:string = "", color:number = 0) {
+			super();
+			this._text = text;
+			this._color = color;
+			this._textFormat = new TextFormat();
+		}
+
+		get text():string {
+			return this._text;
+		}
+
+		set text(t:string) {
+			this._text = t;
+			this.propertyUpdate("text", this._text);
+		}
+
+		get htmlText():string {
+			return this.text;
+		}
+
+		set htmlText(text:string) {
+			__trace("TextField.htmlText is restricted due to security policy.", "warn");
+			this.text = text.replace(/<\/?[^>]+(>|$)/g, "");
+		}
+
+		get color():number {
+			return this._color;
+		}
+
+		set color(c:number) {
+			this._color = c;
+			this.propertyUpdate("color", this._color);
+		}
+
+		public getTextFormat():any {
+			return this._textFormat;
+		}
+
+		public setTextFormat(tf:any) {
+			this._textFormat = <TextFormat> tf;
+			this.methodCall("setTextFormat", tf);
+		}
+
+		public appendText(t:string):void {
+			this.text = this.text + t;
+		}
+
+		public serialize():Object {
+			var serialized:Object = super.serialize();
+			serialized["class"] = "TextField";
+			serialized["text"] = this._text;
+			serialized["textFormat"] = this._textFormat.serialize();
+			return serialized;
+		}
+	}
+
+	export function createTextFormat():any {
+		return new TextFormat();
 	}
 }

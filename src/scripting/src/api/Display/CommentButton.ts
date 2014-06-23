@@ -29,6 +29,12 @@ module Display {
 		public initStyle(style:Object):void {
 
 		}
+
+		public serialize():Object{
+			var serialized:Object = super.serialize();
+			serialized["class"] = "Button";
+			return serialized;
+		}
 	}
 
 	export function createButton(params:Object):any {

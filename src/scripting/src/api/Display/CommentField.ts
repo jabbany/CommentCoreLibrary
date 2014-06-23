@@ -9,7 +9,7 @@ module Display {
 		private _mM:MotionManager = new MotionManager(this);
 
 		constructor(text:string, params:Object) {
-			super();
+			super(text, 0xffffff);
 			this.initStyle(params);
 			Runtime.registerObject(this);
 		}

@@ -6,22 +6,54 @@
 var Display;
 (function (Display) {
     var Matrix = (function () {
-        function Matrix() {
-            this._data = [];
+        function Matrix(a, b, c, d, tx, ty) {
+            if (typeof a === "undefined") { a = 1; }
+            if (typeof b === "undefined") { b = 0; }
+            if (typeof c === "undefined") { c = 0; }
+            if (typeof d === "undefined") { d = 1; }
+            if (typeof tx === "undefined") { tx = 0; }
+            if (typeof ty === "undefined") { ty = 0; }
+            this._data = [a, c, tx, b, d, ty, 0, 0, 1];
         }
-        Matrix.prototype.setTo = function () {
+        Matrix.prototype.setTo = function (a, b, c, d, tx, ty) {
+            if (typeof a === "undefined") { a = 1; }
+            if (typeof b === "undefined") { b = 0; }
+            if (typeof c === "undefined") { c = 0; }
+            if (typeof d === "undefined") { d = 1; }
+            if (typeof tx === "undefined") { tx = 0; }
+            if (typeof ty === "undefined") { ty = 0; }
+            this._data = [a, c, tx, b, d, ty, 0, 0, 1];
+        };
+
+        Matrix.prototype.identity = function () {
+            this.setTo(1, 0, 0, 1, 0, 0);
         };
 
         Matrix.prototype.clone = function () {
-            return null;
+            var a = this._data[0], b = this._data[3], c = this._data[1], d = this._data[4], tx = this._data[2], ty = this._data[5];
+            return new Matrix(a, b, c, d, tx, ty);
         };
         return Matrix;
     })();
     Display.Matrix = Matrix;
 
     var Matrix3D = (function () {
-        function Matrix3D() {
+        function Matrix3D(iv) {
+            if (typeof iv === "undefined") { iv = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]; }
+            if (iv.length == 16) {
+                this._data = iv;
+            } else {
+                __trace("Matrix3D initialization vector invalid", "warn");
+                this.identity();
+            }
         }
+        Matrix3D.prototype.identity = function () {
+            this._data = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
+        };
+
+        Matrix3D.prototype.clone = function () {
+            return new Matrix3D(this._data);
+        };
         return Matrix3D;
     })();
     Display.Matrix3D = Matrix3D;
@@ -45,6 +77,44 @@ var Display;
         return null;
     }
     Display.createGradientBox = createGradientBox;
+
+    /**
+    * Transforms a JS Array into an AS3 Vector<int>.
+    *   Nothing is actually done since the methods are very
+    *   similar across both.
+    * @param array - Array
+    * @returns {Array<number>} - AS3 Integer Vector
+    */
+    function toIntVector(array) {
+        Object.defineProperty(array, 'as3Type', {
+            get: function () {
+                return "Vector<int>";
+            },
+            set: function (value) {
+            }
+        });
+        return array;
+    }
+    Display.toIntVector = toIntVector;
+
+    /**
+    * Transforms a JS Array into an AS3 Vector<number>.
+    *   Nothing is actually done since the methods are very
+    *   similar across both.
+    * @param array - Array
+    * @returns {Array<number>} - AS3 Number Vector
+    */
+    function toNumberVector(array) {
+        Object.defineProperty(array, 'as3Type', {
+            get: function () {
+                return "Vector<number>";
+            },
+            set: function (value) {
+            }
+        });
+        return array;
+    }
+    Display.toNumberVector = toNumberVector;
 })(Display || (Display = {}));
 /**
 * Filter Polyfill for AS3.
@@ -76,11 +146,19 @@ var Display;
     var BlurFilter = (function (_super) {
         __extends(BlurFilter, _super);
         function BlurFilter(blurX, blurY) {
+            if (typeof blurX === "undefined") { blurX = 4.0; }
+            if (typeof blurY === "undefined") { blurY = 4.0; }
             _super.call(this);
+            this._blurX = blurX;
+            this._blurY = blurY;
         }
         BlurFilter.prototype.serialize = function () {
             var s = _super.prototype.serialize.call(this);
             s["type"] = "blur";
+            s["params"] = {
+                "blurX": this._blurX,
+                "blurY": this._blurY
+            };
             return s;
         };
         return BlurFilter;
@@ -88,18 +166,101 @@ var Display;
 
     var GlowFilter = (function (_super) {
         __extends(GlowFilter, _super);
-        function GlowFilter(blurX, blurY) {
+        function GlowFilter(color, alpha, blurX, blurY, strength, quality, inner, knockout) {
+            if (typeof color === "undefined") { color = 16711680; }
+            if (typeof alpha === "undefined") { alpha = 1.0; }
+            if (typeof blurX === "undefined") { blurX = 6.0; }
+            if (typeof blurY === "undefined") { blurY = 6.0; }
+            if (typeof strength === "undefined") { strength = 2; }
+            if (typeof quality === "undefined") { quality = null; }
+            if (typeof inner === "undefined") { inner = false; }
+            if (typeof knockout === "undefined") { knockout = false; }
             _super.call(this);
+            this._color = color;
+            this._alpha = alpha;
+            this._blurX = blurX;
+            this._blurY = blurY;
+            this._strength = strength;
+            this._quality = quality;
+            this._inner = inner;
+            this._knockout = knockout;
         }
         GlowFilter.prototype.serialize = function () {
             var s = _super.prototype.serialize.call(this);
             s["type"] = "glow";
+            s["params"] = {
+                "color": this._color,
+                "alpha": this._alpha,
+                "blurX": this._blurX,
+                "blurY": this._blurY,
+                "strength": this._strength,
+                "inner": this._inner,
+                "knockout": this._knockout
+            };
             return s;
         };
         return GlowFilter;
     })(Filter);
 
+    var DropShadowFilter = (function (_super) {
+        __extends(DropShadowFilter, _super);
+        function DropShadowFilter(distance, angle, color, alpha, blurX, blurY, strength, quality) {
+            if (typeof distance === "undefined") { distance = 4.0; }
+            if (typeof angle === "undefined") { angle = 45; }
+            if (typeof color === "undefined") { color = 0; }
+            if (typeof alpha === "undefined") { alpha = 1; }
+            if (typeof blurX === "undefined") { blurX = 4.0; }
+            if (typeof blurY === "undefined") { blurY = 4.0; }
+            if (typeof strength === "undefined") { strength = 1.0; }
+            if (typeof quality === "undefined") { quality = 1; }
+            _super.call(this);
+            this._color = color;
+            this._alpha = alpha;
+            this._blurX = blurX;
+            this._blurY = blurY;
+            this._strength = strength;
+            this._quality = quality;
+
+            /* TODO: Update to support inner & knockout */
+            this._inner = false;
+            this._knockout = false;
+            this._distance = distance;
+            this._angle = angle;
+        }
+        DropShadowFilter.prototype.serialize = function () {
+            var s = _super.prototype.serialize.call(this);
+            s["type"] = "dropShadow";
+            s["params"] = {
+                "distance": this._distance,
+                "angle": this._angle,
+                "color": this._color,
+                "alpha": this._alpha,
+                "blurX": this._blurX,
+                "blurY": this._blurY,
+                "strength": this._strength,
+                "inner": this._inner,
+                "knockout": this._knockout
+            };
+            return s;
+        };
+        return DropShadowFilter;
+    })(Filter);
+
+    function createDropShadowFilter(distance, angle, color, alpha, blurX, blurY, strength, quality) {
+        if (typeof distance === "undefined") { distance = 4.0; }
+        if (typeof angle === "undefined") { angle = 45; }
+        if (typeof color === "undefined") { color = 0; }
+        if (typeof alpha === "undefined") { alpha = 1; }
+        if (typeof blurX === "undefined") { blurX = 4.0; }
+        if (typeof blurY === "undefined") { blurY = 4.0; }
+        if (typeof strength === "undefined") { strength = 1.0; }
+        if (typeof quality === "undefined") { quality = 1; }
+        return new DropShadowFilter(distance, angle, color, alpha, blurX, blurY, strength, quality);
+    }
+    Display.createDropShadowFilter = createDropShadowFilter;
+
     function createGlowFilter(color, alpha, blurX, blurY, strength, quality, inner, knockout) {
+        if (typeof color === "undefined") { color = 16711680; }
         if (typeof alpha === "undefined") { alpha = 1.0; }
         if (typeof blurX === "undefined") { blurX = 6.0; }
         if (typeof blurY === "undefined") { blurY = 6.0; }
@@ -107,7 +268,7 @@ var Display;
         if (typeof quality === "undefined") { quality = null; }
         if (typeof inner === "undefined") { inner = false; }
         if (typeof knockout === "undefined") { knockout = false; }
-        return new GlowFilter(blurX, blurY);
+        return new GlowFilter(color, alpha, blurX, blurY, strength, quality, inner, knockout);
     }
     Display.createGlowFilter = createGlowFilter;
 
@@ -124,7 +285,7 @@ var Display;
 * Author: Jim Chen
 * Part of the CCLScripter
 */
-/// <reference path="../Scripting.d.ts" />
+/// <reference path="../Runtime.d.ts" />
 /// <reference path="ISerializable.ts" />
 /// <reference path="Filter.ts" />
 var Display;
@@ -185,9 +346,28 @@ var Display;
             this._name = "";
             this._children = [];
             this._transform = new Transform(this);
+            this._hasSetDefaults = false;
             this._id = id;
             this._visible = true;
         }
+        DisplayObject.prototype.setDefaults = function (defaults) {
+            if (typeof defaults === "undefined") { defaults = {}; }
+            if (this._hasSetDefaults) {
+                __trace("DisplayObject.setDefaults called more than once.", "warn");
+                return;
+            }
+            this._hasSetDefaults = true;
+            if (defaults.hasOwnProperty("alpha")) {
+                this._alpha = defaults["alpha"];
+            }
+            if (defaults.hasOwnProperty("x")) {
+                this._x = defaults["x"];
+            }
+            if (defaults.hasOwnProperty("y")) {
+                this._y = defaults["y"];
+            }
+        };
+
         DisplayObject.prototype.propertyUpdate = function (propertyName, updatedValue) {
             __pchannel("Runtime:UpdateProperty", {
                 "id": this._id,
@@ -395,8 +575,20 @@ var Display;
             configurable: true
         });
 
+
+        Object.defineProperty(DisplayObject.prototype, "parent", {
+            get: function () {
+                return this._parent;
+            },
+            set: function (p) {
+                __trace("DisplayObject.parent is read-only", "warn");
+            },
+            enumerable: true,
+            configurable: true
+        });
+
         /** AS3 Stuff **/
-        DisplayObject.prototype.dispatchListener = function (event, data) {
+        DisplayObject.prototype.dispatchEvent = function (event, data) {
             if (this._listeners.hasOwnProperty(event)) {
                 if (this._listeners[event] !== null) {
                     for (var i = 0; i < this._listeners[event].length; i++) {
@@ -460,6 +652,7 @@ var Display;
 
         /** Common Functions **/
         DisplayObject.prototype.serialize = function () {
+            this._hasSetDefaults = true;
             var filters = [];
             for (var i = 0; i < this._filters.length; i++) {
                 filters.push(this._filters[i].serialize());
@@ -516,10 +709,27 @@ var Display;
 var Display;
 (function (Display) {
     var MotionManager = (function () {
-        function MotionManager(o) {
+        function MotionManager(o, dur) {
+            if (typeof dur === "undefined") { dur = 1000; }
             this._isRunning = false;
             this.oncomplete = null;
+            this._ttl = dur;
+            this._dur = dur;
+            this._parent = o;
         }
+
+        Object.defineProperty(MotionManager.prototype, "dur", {
+            get: function () {
+                return this._dur;
+            },
+            set: function (dur) {
+                this._dur = dur;
+                this._ttl = dur;
+            },
+            enumerable: true,
+            configurable: true
+        });
+
         Object.defineProperty(MotionManager.prototype, "running", {
             get: function () {
                 return this._isRunning;
@@ -529,14 +739,38 @@ var Display;
         });
 
         MotionManager.prototype.reset = function () {
+            this._ttl = this._dur;
         };
 
         MotionManager.prototype.play = function () {
-            this._isRunning = false;
+            if (this._isRunning)
+                return;
+            this._isRunning = true;
+            this._lastTick = Date.now();
+            var self = this;
+
+            this._timer = setInterval(function () {
+                var dur = Date.now() - self._lastTick;
+                this._ttl -= dur;
+                if (this._ttl <= 0) {
+                    this._ttl = 0;
+                    this.stop();
+                    if (this.oncomplete) {
+                        this.oncomplete();
+                    }
+
+                    /* TODO: Update this to use remove() instead*/
+                    this._parent.unload();
+                }
+                self._lastTick = Date.now();
+            }, 1000 / Display.frameRate);
         };
 
         MotionManager.prototype.stop = function () {
-            this._isRunning = true;
+            if (!this._isRunning)
+                return;
+            this._isRunning = false;
+            clearInterval(this._timer);
         };
 
         MotionManager.prototype.forecasting = function (time) {
@@ -547,6 +781,12 @@ var Display;
         };
 
         MotionManager.prototype.initTween = function (motion, repeat) {
+            if (motion.hasOwnProperty("lifeTime")) {
+                this._ttl = motion["lifeTime"] * 1000;
+                if (isNaN(this._ttl)) {
+                    this._ttl = 3000;
+                }
+            }
         };
 
         MotionManager.prototype.initTweenGroup = function (motionGroup, lifeTime) {
@@ -861,7 +1101,8 @@ var Display;
         function CommentShape(params) {
             _super.call(this);
             this._mM = new Display.MotionManager(this);
-            this.initStyle(params);
+            this.setDefaults(params);
+            this.initStyle(params); // This is for the special styles
             Runtime.registerObject(this);
         }
         Object.defineProperty(CommentShape.prototype, "motionManager", {
@@ -881,6 +1122,10 @@ var Display;
         };
 
         CommentShape.prototype.initStyle = function (style) {
+            if (style.hasOwnProperty("lifeTime")) {
+                this._mM.dur = style["lifeTime"] * 1000;
+            }
+            this._mM.play();
         };
         return CommentShape;
     })(Display.Shape);
@@ -898,11 +1143,57 @@ var Display;
 /// <reference path="DisplayObject.ts" />
 var Display;
 (function (Display) {
+    var TextFormat = (function () {
+        function TextFormat() {
+        }
+        return TextFormat;
+    })();
+
     var TextField = (function (_super) {
         __extends(TextField, _super);
-        function TextField() {
-            _super.apply(this, arguments);
+        function TextField(text, color) {
+            if (typeof text === "undefined") { text = ""; }
+            if (typeof color === "undefined") { color = 0; }
+            _super.call(this);
+            this._text = text;
+            this._color = color;
+            this._textFormat = new TextFormat();
         }
+        Object.defineProperty(TextField.prototype, "text", {
+            get: function () {
+                return this._text;
+            },
+            set: function (t) {
+                this._text = t;
+                this.propertyUpdate("text", this._text);
+            },
+            enumerable: true,
+            configurable: true
+        });
+
+
+        Object.defineProperty(TextField.prototype, "color", {
+            get: function () {
+                return this._color;
+            },
+            set: function (c) {
+                this._color = c;
+                this.propertyUpdate("color", this._color);
+            },
+            enumerable: true,
+            configurable: true
+        });
+
+
+        TextField.prototype.getTextFormat = function () {
+            return this._textFormat;
+        };
+
+        TextField.prototype.serialize = function () {
+            var serialized = _super.prototype.serialize.call(this);
+            serialized["class"] = "TextField";
+            return serialized;
+        };
         return TextField;
     })(Display.DisplayObject);
     Display.TextField = TextField;
@@ -918,7 +1209,7 @@ var Display;
     var CommentField = (function (_super) {
         __extends(CommentField, _super);
         function CommentField(text, params) {
-            _super.call(this);
+            _super.call(this, text, 0xffffff);
             this._mM = new Display.MotionManager(this);
             this.initStyle(params);
             Runtime.registerObject(this);
@@ -1006,7 +1297,7 @@ var Display;
     });
     Object.defineProperty(Display, 'version', {
         get: function () {
-            return "CCLDisplay/1.0 HTML5/* (bilibili, like BSE, like flash, AS3 compatible)";
+            return "CCLDisplay/1.0 HTML5/* (bilibili, like BSE, like flash, AS3 compatible) KagerouEngine/v1";
         },
         set: function (value) {
             __trace("Display.version is read-only", "warn");
