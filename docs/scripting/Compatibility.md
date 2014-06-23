@@ -1,4 +1,4 @@
-Compatibility 兼容性
+Errors and Warnings 错误和警告
 ============================================
 We try to replicate as much functionality as we can, but sometimes it is just 
 very hard to do. In such cases we will usually silently drop the functionality
@@ -22,6 +22,7 @@ Fatal Errors 致命性错误
 代码的总命名空间下，则出现错误之后的代码将不会被执行。
 
 ### Security Error 安全冲突
+试图调用被禁止的函数或者没有提供正确的Key。
 
 Errors 错误
 ---------------------------------------------
