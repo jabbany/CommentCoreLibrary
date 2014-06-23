@@ -72,7 +72,7 @@ function launchWindowFull(element){
 }
 
 var cm = new CommentManager($('commentCanvas'));
-var bscripter = new CCLScripting("../../src/scripting/Worker.js");
+var bscripter = new CCLScripting("../../src/scripting/build/Worker.js");
 cm.scripting = bscripter.getSandbox($("commentCanvas"));
 cm.init();
 
