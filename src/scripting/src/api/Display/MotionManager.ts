@@ -3,6 +3,8 @@
  * Author: Jim Chen
  * Part of the CCLScripter
  */
+/// <reference path="../Runtime.d.ts" />
+
 /// <reference path="DisplayObject.ts" />
 module Display {
 	export class MotionManager {
@@ -10,8 +12,7 @@ module Display {
 		private _ttl:number;
 		private _dur:number;
 		private _parent:Display.DisplayObject;
-		private _timer:number;
-		private _lastTick:number;
+		private _timer:Runtime.Timer;
 
 		public oncomplete:Function = null;
 
@@ -19,11 +20,14 @@ module Display {
 			this._ttl = dur;
 			this._dur = dur;
 			this._parent = o;
+			this._timer = new Runtime.Timer(41, 0);
 		}
 
 		set dur(dur:number) {
 			this._dur = dur;
 			this._ttl = dur;
+			this._timer.stop();
+			this._timer = new Runtime.Timer(41, 0);
 		}
 
 		get dur():number {
@@ -42,30 +46,28 @@ module Display {
 			if (this._isRunning)
 				return;
 			this._isRunning = true;
-			this._lastTick = Date.now();
 			var self:MotionManager = this;
-
-			this._timer = setInterval(function () {
-				var dur:number = Date.now() - self._lastTick;
-				this._ttl -= dur;
-				if (this._ttl <= 0) {
-					this._ttl = 0;
-					this.stop();
-					if (this.oncomplete) {
-						this.oncomplete();
+			var _lastTime:number = Date.now();
+			this._timer.addEventListener("timer", function(){
+				var dur:number = Date.now() - _lastTime;
+				self._dur -= dur;
+				if(self._dur <= 0){
+					self.stop();
+					if(self.oncomplete){
+						self.oncomplete();
 					}
-					/* TODO: Update this to use remove() instead*/
-					this._parent.unload();
+					self._parent.unload();
 				}
-				self._lastTick = Date.now();
-			}, 1000 / Display.frameRate);
+				_lastTime = Date.now();
+			});
+			this._timer.start();
 		}
 
 		public stop():void {
 			if (!this._isRunning)
 				return;
 			this._isRunning = false;
-			clearInterval(this._timer);
+			this._timer.stop();
 		}
 
 		public forecasting(time:number):boolean {

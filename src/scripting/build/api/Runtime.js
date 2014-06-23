@@ -23,6 +23,22 @@ var Runtime;
             this._key = 0;
             this._precision = precision;
         }
+
+        Object.defineProperty(TimerRuntime.prototype, "isRunning", {
+            get: function () {
+                return this._timer > -1;
+            },
+            set: function (state) {
+                if (state == false) {
+                    this.stop();
+                } else {
+                    this.start();
+                }
+            },
+            enumerable: true,
+            configurable: true
+        });
+
         TimerRuntime.prototype.start = function () {
             if (this._timer < 0) {
                 this._lastToken = Date.now();
@@ -31,19 +47,29 @@ var Runtime;
                     var elapsed = Date.now() - _self._lastToken;
                     for (var i = 0; i < _self._timers.length; i++) {
                         var timer = _self._timers[i];
-                        if (!timer.hasOwnProperty("type"))
-                            continue;
                         if (timer.type === "timeout") {
                             timer.ttl -= elapsed;
                             if (timer.ttl <= 0) {
+                                try  {
+                                    timer.callback();
+                                } catch (e) {
+                                    __trace(e.stack.toString(), "err");
+                                }
                                 _self._timers.splice(i, 1);
                                 i--;
                             }
                         } else if (timer.type === "interval") {
                             timer.ttl -= elapsed;
                             if (timer.ttl <= 0) {
+                                try  {
+                                    timer.callback();
+                                } catch (e) {
+                                    __trace(e.stack.toString(), "err");
+                                }
                                 timer.ttl += timer.dur;
                             }
+                        } else {
+                            // Do nothing
                         }
                     }
                     _self._lastToken = Date.now();
@@ -181,16 +207,19 @@ var Runtime;
 
     /** Timer Related **/
     var masterTimer = new TimerRuntime();
-    var internalTimer = new TimerRuntime(20);
+    var internalTimer = new Timer(20);
     var enterFrameDispatcher = function () {
         for (var object in Runtime.registeredObjects) {
-            if (object.getId().substring(0, 2) === "__") {
+            if (object.substring(0, 2) === "__") {
                 continue;
             }
-            object.dispatchEvent("enterFrame");
+            Runtime.registeredObjects[object].dispatchEvent("enterFrame");
         }
     };
-    var enterFrameInterval = -1;
+    masterTimer.start();
+
+    //internalTimer.start();
+    internalTimer.addEventListener("timer", enterFrameDispatcher);
 
     /**
     *  Get the master timer instance
@@ -209,8 +238,9 @@ var Runtime;
         if (frameRate > 60) {
             return;
         }
-        internalTimer.clearInterval(enterFrameInterval);
-        enterFrameInterval = internalTimer.setInterval(enterFrameDispatcher, Math.floor(1000 / frameRate));
+        internalTimer.stop();
+        internalTimer = new Timer(Math.floor(1000 / frameRate));
+        internalTimer.addEventListener("timer", enterFrameDispatcher);
     }
     Runtime.updateFrameRate = updateFrameRate;
 })(Runtime || (Runtime = {}));

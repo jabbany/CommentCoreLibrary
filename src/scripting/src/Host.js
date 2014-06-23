@@ -362,7 +362,24 @@ var CCLScripting = function(workerUrl){
 			this.DOM.innerHTML = "";
 			this.DOM.appendChild(_("text",text));
 		};
-		
+		this.__defineSetter__("x", function(f){
+			this.setX(f);
+		});
+		this.__defineSetter__("y", function(f){
+			this.setY(f);
+		});
+		this.__defineGetter__("text", function(f){
+			return this.DOM.textContent;
+		});
+		this.__defineSetter__("text", function(f){
+			this.setText(f);
+		});
+		this.__defineGetter__("filters", function(f){
+			return [];
+		});
+		this.__defineSetter__("filters", function(f){
+			this.setFilters([f]);
+		});
 		this.setFilters = function(params){
 			for(var i = 0; i < params[0].length; i++){
 				var filter = params[0][i];
@@ -598,7 +615,6 @@ var CCLScripting = function(workerUrl){
 			return [];
 		});
 		this.__defineSetter__("filters", function(f){
-			console.log(f);
 			this.setFilters([f]);
 		});
 		this.setFilters = function(params){
@@ -679,7 +695,7 @@ var CCLScripting = function(workerUrl){
 		stage.appendChild(this.DOM);
 	};
 	
-	ScriptingContext.prototype.Unpack.Canvas = function(stage, data, ctx){
+	ScriptingContext.prototype.Unpack.Sprite = function(stage, data, ctx){
 		this.DOM = _("div",{"style":{"position":"absolute"}});
 		
 		this.setX = function(x){

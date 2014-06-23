@@ -14,16 +14,21 @@ module Display {
 			Runtime.registerObject(this);
 		}
 
+		/**
+		 * Set the style for the UIComponent which this is
+		 * @param styleProp - style to set
+		 * @param value - value to set the style to
+		 */
+		public setStyle(styleProp:string, value:any):void{
+			__trace("UIComponent.setStyle not implemented","warn");
+		}
+
 		get motionManager():MotionManager {
 			return this._mM;
 		}
 
 		set motionManager(m:MotionManager) {
 			__trace("IComment.motionManager is read-only", "warn");
-		}
-
-		public remove():void {
-			this.unload();
 		}
 
 		public initStyle(style:Object):void {

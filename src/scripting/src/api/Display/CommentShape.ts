@@ -23,12 +23,8 @@ module Display {
 			__trace("IComment.motionManager is read-only", "warn");
 		}
 
-		public remove():void {
-			this.unload();
-		}
-
 		public initStyle(style:Object):void {
-			if (style.hasOwnProperty("lifeTime")) {
+			if (style["lifeTime"]) {
 				this._mM.dur = style["lifeTime"] * 1000;
 			}
 			this._mM.play();

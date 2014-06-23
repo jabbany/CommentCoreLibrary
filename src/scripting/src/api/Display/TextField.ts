@@ -18,7 +18,7 @@ module Display {
 			this.color = color;
 			this.bold = bold;
 			this.italic = italic;
-			this.underline = unterline;
+			this.underline = underline;
 		}
 
 		public serialize():Object {
@@ -36,14 +36,13 @@ module Display {
 
 	export class TextField extends DisplayObject {
 		private _text:string;
-		private _color:number;
 		private _textFormat:TextFormat;
 
 		constructor(text:string = "", color:number = 0) {
 			super();
 			this._text = text;
-			this._color = color;
 			this._textFormat = new TextFormat();
+			this._textFormat.color = color;
 		}
 
 		get text():string {
@@ -65,12 +64,12 @@ module Display {
 		}
 
 		get color():number {
-			return this._color;
+			return this._textFormat.color;
 		}
 
 		set color(c:number) {
-			this._color = c;
-			this.propertyUpdate("color", this._color);
+			this._textFormat.color = c;
+			this.setTextFormat(this._textFormat);
 		}
 
 		public getTextFormat():any {

@@ -22,10 +22,6 @@ module Display {
 			__trace("IComment.motionManager is read-only", "warn");
 		}
 
-		public remove():void {
-			this.unload();
-		}
-
 		public initStyle(style:Object):void {
 
 		}

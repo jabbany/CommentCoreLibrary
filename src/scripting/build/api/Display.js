@@ -379,8 +379,8 @@ var Display;
         DisplayObject.prototype.methodCall = function (methodName, params) {
             __pchannel("Runtime:CallMethod", {
                 "id": this._id,
-                "name": methodName,
-                "value": params
+                "method": methodName,
+                "params": params
             });
         };
 
@@ -696,6 +696,11 @@ var Display;
         function Sprite(id) {
             _super.call(this, id);
         }
+        Sprite.prototype.serialize = function () {
+            var serialized = _super.prototype.serialize.call(this);
+            serialized["class"] = "Sprite";
+            return serialized;
+        };
         return Sprite;
     })(Display.DisplayObject);
     Display.Sprite = Sprite;
@@ -705,6 +710,7 @@ var Display;
 * Author: Jim Chen
 * Part of the CCLScripter
 */
+/// <reference path="../Runtime.d.ts" />
 /// <reference path="DisplayObject.ts" />
 var Display;
 (function (Display) {
@@ -716,6 +722,7 @@ var Display;
             this._ttl = dur;
             this._dur = dur;
             this._parent = o;
+            this._timer = new Runtime.Timer(41, 0);
         }
 
         Object.defineProperty(MotionManager.prototype, "dur", {
@@ -725,6 +732,8 @@ var Display;
             set: function (dur) {
                 this._dur = dur;
                 this._ttl = dur;
+                this._timer.stop();
+                this._timer = new Runtime.Timer(41, 0);
             },
             enumerable: true,
             configurable: true
@@ -746,31 +755,28 @@ var Display;
             if (this._isRunning)
                 return;
             this._isRunning = true;
-            this._lastTick = Date.now();
             var self = this;
-
-            this._timer = setInterval(function () {
-                var dur = Date.now() - self._lastTick;
-                this._ttl -= dur;
-                if (this._ttl <= 0) {
-                    this._ttl = 0;
-                    this.stop();
-                    if (this.oncomplete) {
-                        this.oncomplete();
+            var _lastTime = Date.now();
+            this._timer.addEventListener("timer", function () {
+                var dur = Date.now() - _lastTime;
+                self._dur -= dur;
+                if (self._dur <= 0) {
+                    self.stop();
+                    if (self.oncomplete) {
+                        self.oncomplete();
                     }
-
-                    /* TODO: Update this to use remove() instead*/
-                    this._parent.unload();
+                    self._parent.unload();
                 }
-                self._lastTick = Date.now();
-            }, 1000 / Display.frameRate);
+                _lastTime = Date.now();
+            });
+            this._timer.start();
         };
 
         MotionManager.prototype.stop = function () {
             if (!this._isRunning)
                 return;
             this._isRunning = false;
-            clearInterval(this._timer);
+            this._timer.stop();
         };
 
         MotionManager.prototype.forecasting = function (time) {
@@ -817,6 +823,15 @@ var Display;
             this.initStyle(params);
             Runtime.registerObject(this);
         }
+        /**
+        * Set the style for the UIComponent which this is
+        * @param styleProp - style to set
+        * @param value - value to set the style to
+        */
+        CommentButton.prototype.setStyle = function (styleProp, value) {
+            __trace("UIComponent.setStyle not implemented", "warn");
+        };
+
         Object.defineProperty(CommentButton.prototype, "motionManager", {
             get: function () {
                 return this._mM;
@@ -829,11 +844,13 @@ var Display;
         });
 
 
-        CommentButton.prototype.remove = function () {
-            this.unload();
+        CommentButton.prototype.initStyle = function (style) {
         };
 
-        CommentButton.prototype.initStyle = function (style) {
+        CommentButton.prototype.serialize = function () {
+            var serialized = _super.prototype.serialize.call(this);
+            serialized["class"] = "Button";
+            return serialized;
         };
         return CommentButton;
     })(Display.Sprite);
@@ -870,10 +887,6 @@ var Display;
             configurable: true
         });
 
-
-        CommentCanvas.prototype.remove = function () {
-            this.unload();
-        };
 
         CommentCanvas.prototype.initStyle = function (style) {
         };
@@ -1117,12 +1130,8 @@ var Display;
         });
 
 
-        CommentShape.prototype.remove = function () {
-            this.unload();
-        };
-
         CommentShape.prototype.initStyle = function (style) {
-            if (style.hasOwnProperty("lifeTime")) {
+            if (style["lifeTime"]) {
                 this._mM.dur = style["lifeTime"] * 1000;
             }
             this._mM.play();
@@ -1144,8 +1153,38 @@ var Display;
 var Display;
 (function (Display) {
     var TextFormat = (function () {
-        function TextFormat() {
+        function TextFormat(font, size, color, bold, italic, underline, url, target, align, leftMargin, rightMargin, indent, leading) {
+            if (typeof font === "undefined") { font = "SimHei"; }
+            if (typeof size === "undefined") { size = 25; }
+            if (typeof color === "undefined") { color = 0xFFFFFF; }
+            if (typeof bold === "undefined") { bold = false; }
+            if (typeof italic === "undefined") { italic = false; }
+            if (typeof underline === "undefined") { underline = false; }
+            if (typeof url === "undefined") { url = ""; }
+            if (typeof target === "undefined") { target = ""; }
+            if (typeof align === "undefined") { align = "left"; }
+            if (typeof leftMargin === "undefined") { leftMargin = 0; }
+            if (typeof rightMargin === "undefined") { rightMargin = 0; }
+            if (typeof indent === "undefined") { indent = 0; }
+            if (typeof leading === "undefined") { leading = 0; }
+            this.font = font;
+            this.size = size;
+            this.color = color;
+            this.bold = bold;
+            this.italic = italic;
+            this.underline = underline;
         }
+        TextFormat.prototype.serialize = function () {
+            return {
+                "class": "TextFormat",
+                "font": this.font,
+                "size": this.size,
+                "color": this.color,
+                "bold": this.bold,
+                "underline": this.underline,
+                "italic": this.italic
+            };
+        };
         return TextFormat;
     })();
 
@@ -1156,8 +1195,8 @@ var Display;
             if (typeof color === "undefined") { color = 0; }
             _super.call(this);
             this._text = text;
-            this._color = color;
             this._textFormat = new TextFormat();
+            this._textFormat.color = color;
         }
         Object.defineProperty(TextField.prototype, "text", {
             get: function () {
@@ -1172,13 +1211,26 @@ var Display;
         });
 
 
+        Object.defineProperty(TextField.prototype, "htmlText", {
+            get: function () {
+                return this.text;
+            },
+            set: function (text) {
+                __trace("TextField.htmlText is restricted due to security policy.", "warn");
+                this.text = text.replace(/<\/?[^>]+(>|$)/g, "");
+            },
+            enumerable: true,
+            configurable: true
+        });
+
+
         Object.defineProperty(TextField.prototype, "color", {
             get: function () {
-                return this._color;
+                return this._textFormat.color;
             },
             set: function (c) {
-                this._color = c;
-                this.propertyUpdate("color", this._color);
+                this._textFormat.color = c;
+                this.setTextFormat(this._textFormat);
             },
             enumerable: true,
             configurable: true
@@ -1189,14 +1241,30 @@ var Display;
             return this._textFormat;
         };
 
+        TextField.prototype.setTextFormat = function (tf) {
+            this._textFormat = tf;
+            this.methodCall("setTextFormat", tf);
+        };
+
+        TextField.prototype.appendText = function (t) {
+            this.text = this.text + t;
+        };
+
         TextField.prototype.serialize = function () {
             var serialized = _super.prototype.serialize.call(this);
             serialized["class"] = "TextField";
+            serialized["text"] = this._text;
+            serialized["textFormat"] = this._textFormat.serialize();
             return serialized;
         };
         return TextField;
     })(Display.DisplayObject);
     Display.TextField = TextField;
+
+    function createTextFormat() {
+        return new TextFormat();
+    }
+    Display.createTextFormat = createTextFormat;
 })(Display || (Display = {}));
 /**
 * Compliant CommentField Polyfill For BiliScriptEngine
@@ -1211,9 +1279,66 @@ var Display;
         function CommentField(text, params) {
             _super.call(this, text, 0xffffff);
             this._mM = new Display.MotionManager(this);
+            this.setDefaults(params);
             this.initStyle(params);
             Runtime.registerObject(this);
         }
+
+        Object.defineProperty(CommentField.prototype, "fontsize", {
+            get: function () {
+                return this.getTextFormat().fontsize;
+            },
+            set: function (size) {
+                var tf = this.getTextFormat();
+                tf.size = size;
+                this.setTextFormat(tf);
+            },
+            enumerable: true,
+            configurable: true
+        });
+
+
+        Object.defineProperty(CommentField.prototype, "font", {
+            get: function () {
+                return this.getTextFormat().font;
+            },
+            set: function (fontname) {
+                var tf = this.getTextFormat();
+                tf.font = fontname;
+                this.setTextFormat(tf);
+            },
+            enumerable: true,
+            configurable: true
+        });
+
+
+        Object.defineProperty(CommentField.prototype, "align", {
+            get: function () {
+                return this.getTextFormat().align;
+            },
+            set: function (a) {
+                var tf = this.getTextFormat();
+                tf.align = a;
+                this.setTextFormat(tf);
+            },
+            enumerable: true,
+            configurable: true
+        });
+
+
+        Object.defineProperty(CommentField.prototype, "bold", {
+            get: function () {
+                return this.getTextFormat().bold;
+            },
+            set: function (b) {
+                var tf = this.getTextFormat();
+                tf.bold = b;
+                this.setTextFormat(tf);
+            },
+            enumerable: true,
+            configurable: true
+        });
+
         Object.defineProperty(CommentField.prototype, "motionManager", {
             get: function () {
                 return this._mM;
@@ -1226,11 +1351,23 @@ var Display;
         });
 
 
-        CommentField.prototype.remove = function () {
-            this.unload();
-        };
-
         CommentField.prototype.initStyle = function (style) {
+            if (style["lifeTime"]) {
+                this._mM.dur = style["lifeTime"] * 1000;
+            }
+            if (style["fontsize"]) {
+                this.getTextFormat().size = style["fontsize"];
+            }
+            if (style["font"]) {
+                this.getTextFormat().font = style["font"];
+            }
+            if (style["color"]) {
+                this.getTextFormat().color = style["color"];
+            }
+            if (style["bold"]) {
+                this.getTextFormat().bold = style["bold"];
+            }
+            this._mM.play();
         };
         return CommentField;
     })(Display.TextField);

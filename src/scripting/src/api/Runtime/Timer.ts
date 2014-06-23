@@ -29,6 +29,18 @@ module Runtime{
 			this._precision = precision;
 		}
 
+		set isRunning(state:boolean){
+			if(state == false){
+				this.stop();
+			}else{
+				this.start();
+			}
+		}
+
+		get isRunning():boolean{
+			return this._timer > -1;
+		}
+
 		public start():void {
 			if (this._timer < 0) {
 				this._lastToken = Date.now();
@@ -37,19 +49,29 @@ module Runtime{
 					var elapsed:number = Date.now() - _self._lastToken;
 					for (var i = 0; i < _self._timers.length; i++) {
 						var timer:RuntimeTimer = _self._timers[i];
-						if (!timer.hasOwnProperty("type"))
-							continue;
 						if (timer.type === "timeout") {
 							timer.ttl -= elapsed;
 							if (timer.ttl <= 0) {
+								try {
+									timer.callback();
+								}catch(e){
+									__trace(e.stack.toString(),"err");
+								}
 								_self._timers.splice(i, 1);
 								i--;
 							}
 						} else if (timer.type === "interval") {
 							timer.ttl -= elapsed;
 							if (timer.ttl <= 0) {
+								try {
+									timer.callback();
+								}catch(e){
+									__trace(e.stack.toString(),"err");
+								}
 								timer.ttl += timer.dur;
 							}
+						}else{
+							// Do nothing
 						}
 					}
 					_self._lastToken = Date.now();
@@ -183,17 +205,18 @@ module Runtime{
 
 	/** Timer Related **/
 	var masterTimer:TimerRuntime = new TimerRuntime();
-	var internalTimer:TimerRuntime = new TimerRuntime(20);
+	var internalTimer:Timer = new Timer(20);
 	var enterFrameDispatcher:Function = function () {
 		for (var object in Runtime.registeredObjects) {
-			if (object.getId().substring(0, 2) === "__") {
+			if (object.substring(0, 2) === "__") {
 				continue;
 			}
-			object.dispatchEvent("enterFrame");
+			Runtime.registeredObjects[object].dispatchEvent("enterFrame");
 		}
 	};
-	var enterFrameInterval:number = -1;
-
+	masterTimer.start();
+	//internalTimer.start();
+	internalTimer.addEventListener("timer", enterFrameDispatcher);
 	/**
 	 *  Get the master timer instance
 	 */
@@ -210,8 +233,8 @@ module Runtime{
 		if(frameRate > 60){
 			return;
 		}
-		internalTimer.clearInterval(enterFrameInterval);
-		enterFrameInterval = internalTimer.setInterval(enterFrameDispatcher,
-			Math.floor(1000 / frameRate));
+		internalTimer.stop();
+		internalTimer = new Timer(Math.floor(1000 / frameRate));
+		internalTimer.addEventListener("timer", enterFrameDispatcher);
 	}
 }

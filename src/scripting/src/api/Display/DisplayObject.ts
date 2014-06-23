@@ -94,8 +94,8 @@ module Display {
 		public methodCall(methodName:string, params:any):void {
 			__pchannel("Runtime:CallMethod", {
 				"id": this._id,
-				"name": methodName,
-				"value": params
+				"method": methodName,
+				"params": params
 			});
 		}
 
@@ -239,7 +239,7 @@ module Display {
 		}
 
 		/** AS3 Stuff **/
-		public dispatchEvent(event:string, data:any):void {
+		public dispatchEvent(event:string, data?:any):void {
 			if (this._listeners.hasOwnProperty(event)) {
 				if (this._listeners[event] !== null) {
 					for (var i = 0; i < this._listeners[event].length; i++) {
