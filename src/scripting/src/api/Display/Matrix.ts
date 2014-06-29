@@ -123,7 +123,7 @@ module Display {
 	}
 
 	export function projectVectors(matrix:Matrix3D, verts:Array<number>, projectedVerts:Array<number>, uvts:Array<number>):void{
-		
+
 	}
 
 	/**

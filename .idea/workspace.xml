@@ -5,17 +5,7 @@
     <option name="SCOPE_TYPE" value="3" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d872933e-151d-45f2-bea4-5399a376f23e" name="Default" comment="Added more precise abstraction of interfaces">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripting/src/api/Display/DisplayObject.ts" afterPath="$PROJECT_DIR$/src/scripting/src/api/Display/DisplayObject.ts" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripting/build/Host.js" afterPath="$PROJECT_DIR$/src/scripting/build/Host.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripting/src/Host.js" afterPath="$PROJECT_DIR$/src/scripting/src/Host.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripting/src/api/Display/Matrix.ts" afterPath="$PROJECT_DIR$/src/scripting/src/api/Display/Matrix.ts" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripting/src/api/Display/MotionManager.ts" afterPath="$PROJECT_DIR$/src/scripting/src/api/Display/MotionManager.ts" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/scripting/Display/Readme.md" afterPath="$PROJECT_DIR$/docs/scripting/Display/Readme.md" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripting/src/api/Runtime/Runtime.ts" afterPath="$PROJECT_DIR$/src/scripting/src/api/Runtime/Runtime.ts" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripting/src/api/Display/Sprite.ts" afterPath="$PROJECT_DIR$/src/scripting/src/api/Display/Sprite.ts" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-    </list>
+    <list default="true" id="d872933e-151d-45f2-bea4-5399a376f23e" name="Default" comment="Added more precise abstraction of interfaces" />
     <ignored path="CommentCoreLibrary.iws" />
     <ignored path=".idea/workspace.xml" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -107,8 +97,8 @@
       <file leaf-file-name="Matrix.ts" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Display/Matrix.ts">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-0.66486484" vertical-offset="2994" max-vertical-offset="3549">
-              <caret line="125" column="8" selection-start-line="125" selection-start-column="8" selection-end-line="125" selection-end-column="8" />
+            <state vertical-scroll-proportion="-0.6144144" vertical-offset="2966" max-vertical-offset="3549">
+              <caret line="125" column="0" selection-start-line="125" selection-start-column="0" selection-end-line="125" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -863,7 +853,7 @@
       <workItem from="1400909114793" duration="6165000" />
       <workItem from="1402597105799" duration="34753000" />
       <workItem from="1403420180287" duration="14850000" />
-      <workItem from="1403506531758" duration="10040000" />
+      <workItem from="1403506531758" duration="10638000" />
     </task>
     <task id="LOCAL-00001" summary="Added more precise abstraction of interfaces">
       <created>1400532615329</created>
@@ -873,7 +863,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="93077000" />
+    <option name="totallyTimeSpent" value="93675000" />
   </component>
   <component name="TodoView" selected-index="0">
     <todo-panel id="selected-file">
@@ -897,7 +887,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-2" y="0" width="1370" height="742" extended-state="6" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32901135" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -1354,8 +1344,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Display/Matrix.ts">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-0.66486484" vertical-offset="2994" max-vertical-offset="3549">
-          <caret line="125" column="8" selection-start-line="125" selection-start-column="8" selection-end-line="125" selection-end-column="8" />
+        <state vertical-scroll-proportion="-0.6144144" vertical-offset="2966" max-vertical-offset="3549">
+          <caret line="125" column="0" selection-start-line="125" selection-start-column="0" selection-end-line="125" selection-end-column="0" />
           <folding />
         </state>
       </provider>
