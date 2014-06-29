@@ -611,6 +611,11 @@ var CCLScripting = function(workerUrl){
 			applyStroke(e, this);
 			defaultGroup.appendChild(e);
 		};
+		
+		this.clear = function(){
+			defaultGroup.innerHTML = "";
+		};
+		
 		this.__defineGetter__("filters", function(f){
 			return [];
 		});

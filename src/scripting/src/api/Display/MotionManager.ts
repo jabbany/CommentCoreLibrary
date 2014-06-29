@@ -45,6 +45,8 @@ module Display {
 		public play():void {
 			if (this._isRunning)
 				return;
+			if (this._dur === 0)
+				return;
 			this._isRunning = true;
 			var self:MotionManager = this;
 			var _lastTime:number = Date.now();

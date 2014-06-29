@@ -22,7 +22,7 @@ module Runtime {
 			this._oncallback = callback;
 		}
 
-		public dispatchEvent(event:string, data:any):void {
+		public dispatchEvent(event:string, data?:any):void {
 			if (this._oncallback !== null) {
 				this._oncallback(event, data);
 			}

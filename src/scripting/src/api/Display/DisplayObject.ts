@@ -9,9 +9,10 @@
 module Display {
 	class Transform implements ISerializable {
 		private _parent:DisplayObject;
+		private _scaleX:number;
+		private _scaleY:number;
 		private _matrix:Display.Matrix = new Matrix();
 		private _matrix3d:Display.Matrix3D = null;
-		private _m;
 
 		constructor(parent:DisplayObject) {
 			this._parent = parent;
@@ -39,8 +40,31 @@ module Display {
 			this._parent.transform = this;
 		}
 
+		/**
+		 * Returns the working matrix as a serializable object
+		 * @returns {*} Serializable Matrix
+		 */
+		public getMatrix():Display.ISerializable{
+			if(this._matrix){
+				return this._matrix;
+			}else{
+				return this._matrix3d;
+			}
+		}
+
+		/**
+		 * Returns matrix type in use
+		 * @returns {string} - "2d" or "3d"
+		 */
+		public getMatrixType():string{
+			return this._matrix ? "2d" : "3d";
+		}
+
 		public serialize():Object {
-			return {};
+			return {
+				"mode":this.getMatrixType(),
+				"matrix":this.getMatrix()
+			};
 		}
 
 	}
