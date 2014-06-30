@@ -34,6 +34,12 @@ div.abp{
 	text-size-adjust: none;
 	white-space: pre;
 }
+.cmt.paused{
+	-webkit-animation-play-state:paused;
+	-moz-animation-play-state:paused;
+	-o-animation-play-state:paused; 
+	animation-play-state:paused;
+}
 .cmt.noshadow{
 	text-shadow: none !important;
 	-webkit-text-stroke: none !important;
