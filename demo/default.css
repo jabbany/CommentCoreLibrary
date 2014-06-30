@@ -1,0 +1,197 @@
+body{
+	padding:0;
+	margin:0;
+	font-family: "open-sans", Verdana, sans-serif;
+	color:#fff;
+	background-color:#111;
+}
+
+h1, h2, h3{
+	padding:0;
+	margin:0 0 5px 0;
+}
+
+a {
+	color:#f88;
+	text-decoration:none;
+}
+
+a:hover{
+	text-decoration:underline;
+}
+
+.button{
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+#debugger-head {
+	color:#fff;
+	height:40px;
+	width:100%;
+	background-color:#333;
+	overflow:hidden;
+}
+
+#debugger-head .button{
+	background-color:#555;
+	float:left;
+	padding:10px 15px 12px 15px;
+	cursor:default;
+	border-right:4px dotted #333;
+}
+
+#debugger-head .button.active{
+	background-color:#55c;
+}
+
+#pf-area {
+	float:right;
+}
+#pf-area div{
+	float:left;
+	width:40px;
+	font-size:9px;
+	padding-left:3px;
+	border-left:1px solid #ccc;
+	height:40px;
+}
+
+.debugger-window{
+	position:relative;
+	background-color:#111;
+	outline: none;
+}
+
+.sidebar{
+	float:right;
+	background-color:#222;
+	width:20%;
+	padding:10px;
+	overflow:hidden;
+	min-width:270px;
+}
+
+.sidebar a.button{
+	background-color:#111;
+	float:left;
+	padding:5px 5px 5px 5px;
+	cursor:default;
+	border:1px solid #555;
+}
+
+.sidebar a.button:hover{
+	text-decoration:none;
+	background-color:#333;
+}
+
+.controls{
+	background-color:#111;
+	width:100%;
+	clear:both;
+}
+.controls .status{
+	background-color:#522;
+	float:left;
+	padding:10px 15px 12px 15px;
+	width:150px;
+	cursor:default;
+	border-right:4px dotted #111;
+}
+.controls .status.active{
+	background-color:#252;
+}
+.controls .button{
+	background-color:#222;
+	float:left;
+	padding:10px 15px 12px 15px;
+	cursor:default;
+	border-right:4px dotted #111;
+}
+
+.controls a.button{
+	color:#fff;
+}
+
+.controls .button:hover{
+	background-color:#555;
+	text-decoration:none;
+}
+
+#debugger-input{
+	position:relative;
+	height:400px;
+	margin:5px;
+}
+#debugger-input .input{
+	height:100%;
+}
+#debugger-input .button{
+	background-color:#111;
+	position:absolute;
+	bottom:0; left:10px;
+	padding:10px 15px 10px 15px;
+	cursor:default;
+	border:1px solid #555;
+}
+.iw .button{
+	background-color:#111;
+	padding:10px 15px 10px 15px;
+	cursor:default;
+	border:1px solid #555;
+	float:left;
+}
+#debugger-input .button:hover, .iw .button:hover{
+	background-color:#522;
+	cursor:pointer;
+}
+#debugger-input-area, #debugger-output {
+	text-wrap:pre;
+}
+#debugger-output{
+	background-color:#555;
+	height:80%;
+	font-family: Consolas, monospace;
+	font-size:20px;
+	overflow:auto;
+}
+
+.input {
+	background-color:#555;
+	min-width:100px;
+	min-height:20px;
+	padding:5px;
+	font-family: Consolas, monospace;
+	font-size:20px;
+}
+
+#c-region{
+	position:absolute;
+	bottom:0;
+	right:0;
+}
+
+#player-unit{
+	position:absolute;
+	top:0;
+	left:0;
+	width:640px;
+}
+
+#player{
+	position:relative;
+	margin:0;
+	padding:0;
+	height:480px;
+	width:100%;
+	background:#000;
+}
+
+#player:full-screen{ margin:10px 0 0 0; width:100%; height:100%;}
+#player:-webkit-full-screen{ margin:10px 0 0 0; width:100%; height:100%;}
+#player:-moz-full-screen{ margin:10px 0 0 0; width:100%; height:100%;}
+#player:-ms-full-screen{ margin:10px 0 0 0; width:100%; height:100%;}

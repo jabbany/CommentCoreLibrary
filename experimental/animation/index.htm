@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta http-equiv="X-UA-Compatible" value="IE=9">
+	<title>CCLAnim Library Test</title>
+	<style>
+		#pause:hover{
+			background:#f88;
+			color:#000;
+		}
+	</style>
+	
+	<script type="text/javascript">var $ = function(e){return window.document.getElementById(e);}</script>
+	<script src="animate.js" type="text/javascript"></script>
+	<script src="animate.translation.js" type="text/javascript"></script>
+	<script src="animate.opacity.js" type="text/javascript"></script>
+</head>
+<body style="background:#000;">
+	<div id="rbar" style="float:right;padding:20px;color:#f88;">
+		<h2 style="color:#fff">CCL Animation Library Demo</h2>
+		
+		<a id="pause" style="display:block; border:1px solid #f88; padding:10px;">Pause/Resume</a><br>
+	</div> 
+	<div id="total-elems" style="position:fixed;width:100px;bottom:10px;right:10px;padding:10px;color:#f88; border:1px solid #f88; font-size:24px;text-align:right; font-family:sans-serif;">0</div>
+	<div id="playground">
+	</div>
+	<script type="text/javascript">
+		var ctx = CCLAnim.createAnimateContext();
+		var total = 0;
+		function createObject(i){
+			var colors = ["#0ff","#f88", "#8ff", "#f8f", "#ff8"];
+			var n = document.createElement("div");
+			//n.setAttribute("id","object" + i);
+			n.style.position = "absolute";
+			n.style.top="10px";
+			n.style.width="10px";
+			n.style.left="10px";
+			n.style.height="10px";
+			n.style.background = colors[Math.round(Math.random() * 5)];
+			$("playground").appendChild(n);
+			return n;
+		}
+		
+		function playAround(e){
+			ctx.add(CCLAnim.Translate(
+				{to:
+					{x:Math.round(Math.random()*600),
+					y:Math.round(Math.random()*600)},
+				dur:Math.round(Math.random()*1000) + 4000}, e,function(elem){
+				
+				if(total < 600){
+					if(Math.random() > total/600){
+						playWith(1);
+					}
+				}
+				if(total > 100){
+					if(Math.random() < ((total - 100) / 400)){
+						elem.remove();
+						total--;
+						updateTotal();
+					}else{
+						playAround(elem);
+					}
+				}else{
+					playAround(elem);
+				}
+			}));
+			
+		}
+		function updateTotal(){
+			$("total-elems").innerText = total;	
+		}
+		
+		function playWith(n){
+			for(var i = 0; i < n; i++){
+				playAround(createObject(i));
+			}
+			total += n;
+			updateTotal();
+		}
+		setTimeout(function(){ctx.start();},100);
+		$('pause').addEventListener("click", function(e){
+			if(e && e.preventDefault)
+				e.preventDefault();
+			if(ctx.isStopped()){
+				ctx.start();
+			}else{
+				ctx.pause();
+			}
+		});
+		
+		playWith(20);
+	</script>
+</body>
+</html>

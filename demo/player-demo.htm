@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta http-equiv="X-UA-Compatible" value="IE=9">
+	<link rel="stylesheet" href="../default.css" />
+	<link rel="stylesheet" href="../build/base.css" />
+	<!-- Files Below May Be Combined/Concated into one on Deployment Servers -->
+	<script src="../CommentFilter.js"></script>
+	<script src="../CommentSpaceAllocator.js"></script>
+	<script src="../CommentCoreLibrary.js"></script>
+	<!-- A few helpers to do some decoding/fetching below-->
+	<script src="../libxml.js"></script>
+	<script src="../parsers/BilibiliFormat.js"></script>
+	<title>Testrun Player</title>
+</head>
+<body>
+	<div class="m20 abp" id="player">
+		<div id="commentCanvas" class="container"></div>
+		<video id="abpVideo" height="100%" width="100%" poster="http://content.bitsontherun.com/thumbs/bkaovAYt-720.jpg" controls="none">
+			<source src="http://content.bitsontherun.com/videos/bkaovAYt-52qL9xLP.mp4" type="video/mp4">
+			<source src="http://content.bitsontherun.com/videos/bkaovAYt-27m5HpIu.webm" type="video/webm">
+			<p class="warning">Your browser does not support HTML5 video.</p>
+		</video>
+	</div>
+	<script type="text/javascript">
+	var cm = null;
+	var timer = 0;
+	function togglePlayback(){
+		var videoPlayer = $('abpVideo');
+		if (videoPlayer == null)
+			return; //Called when not fully loaded
+		if (videoPlayer.paused){
+			if(cm != null){
+				timer = setInterval(function(){
+					cm.time(Math.round(videoPlayer.currentTime * 1000));
+				},10);
+			}
+			cm.startTimer();
+			videoPlayer.play(); 
+		}else{
+			if(cm != null){
+				cm.stopTimer();
+				clearTimeout(timer);
+			}
+			videoPlayer.pause(); 
+		}
+	}
+	window.addEventListener("load",function(){
+		//Hook basics
+		cm = new CommentManager($('commentCanvas'));
+		cm.init();
+		cm.clear();
+		try{
+			clearTimeout(timer);
+		}catch(e){}
+		$('player').addEventListener("click",function(){
+			togglePlayback();
+		});
+		CommentLoader("../tests/comment.xml",cm,'bilibili');
+		cm.startTimer();
+	});
+	</script>
+</body>
+</html>

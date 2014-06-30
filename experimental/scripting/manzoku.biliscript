@@ -1,0 +1,54 @@
+var count = 0;
+var bar = $.createShape({lifeTime:11,x:14});
+bar.graphics.beginGradientFill("linear", [0x009e96,0x005752], [0.8,0.8], [0x00, 0xFF], $.createMatrix(), "pad"); 
+bar.graphics.drawRect(0,340,512,24);
+bar.graphics.endFill();
+var mask = $.createShape({
+motion:{
+	x:{ fromValue:15, toValue: 640, startDelay:0, easing:"None"}
+},
+y:0,
+lifeTime:11
+});
+ mask.graphics.beginGradientFill("linear", [0x000000,0x000000], [1,1], [0x00, 0xFF], $.createMatrix(), "pad"); 
+ mask.graphics.drawRect(0,340,512,24);
+ mask.graphics.endFill();
+
+var percentage = $.createComment("满足100%",{
+  x:224,
+  y:340,
+  lifeTime:11,
+  color:0xffffff,
+ 	alpha:1,
+   fontsize:18
+  });
+function sync(){
+ if(count < 100){
+  count = Math.round((mask.x-15) * 100 / 512);
+ }
+  percentage.text = "满足" + count.toString() + "%";
+}
+interval(sync,10,800);
+
+
+
+function particleManzoku(setString){
+  for (i=0;i < 100;i++){
+    $.createComment(setString,{
+  x:Math.random() * 544,
+  y:Math.random() * 360,
+  lifeTime:5,
+  color:Utils.rgb(Math.random()*255,Math.random()*255,Math.random()*255),
+ 	alpha:Math.random(),
+   fontsize:Math.random() * 20+10
+  });
+  }
+}
+function discontented(){
+   particleManzoku("不满足!");
+}
+function contented(){
+  particleManzoku("满足!");
+}
+var y = $.createButton({x:16,y:340,text:"滿足!",onclick:contented});
+var n = $.createButton({x:445,y:340,text:"不满足!",width:80,onclick:discontented});

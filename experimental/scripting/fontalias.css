@@ -1,0 +1,15 @@
+/** Here because some UP-ers use chinese font names, and some of us are on Linux **/
+@font-face{
+	font-family: "\9ED1\4F53";
+	src:local('SimHei');
+}
+
+@font-face{
+	font-family: "\5B8B\4F53";
+	src:local('SimSun');
+}
+
+@font-face{
+	font-family: "\5E7C\5706";
+	src:local('YouYuan');
+}

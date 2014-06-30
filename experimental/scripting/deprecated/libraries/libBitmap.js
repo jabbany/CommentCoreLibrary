@@ -1,0 +1,3 @@
+var Bitmap = new function(){
+	
+};
