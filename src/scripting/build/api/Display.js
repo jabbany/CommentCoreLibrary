@@ -15,6 +15,21 @@ var Display;
             if (typeof ty === "undefined") { ty = 0; }
             this._data = [a, c, tx, b, d, ty, 0, 0, 1];
         }
+        Matrix.prototype.dotProduct = function (o) {
+            if (o.length < 9) {
+                throw new Error("Matrix dot product expects a matrix");
+            }
+            var res = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+            for (var i = 0; i < 3; i++) {
+                for (var j = 0; j < 3; j++) {
+                    for (var k = 0; k < 3; k++) {
+                        res[i * 3 + j] += this._data[i * 3 + k] * o[k * 3 + j];
+                    }
+                }
+            }
+            return res;
+        };
+
         Matrix.prototype.setTo = function (a, b, c, d, tx, ty) {
             if (typeof a === "undefined") { a = 1; }
             if (typeof b === "undefined") { b = 0; }
@@ -25,13 +40,44 @@ var Display;
             this._data = [a, c, tx, b, d, ty, 0, 0, 1];
         };
 
+        Matrix.prototype.translate = function (tX, tY) {
+            this._data[2] += tX;
+            this._data[5] += tY;
+        };
+
+        Matrix.prototype.rotate = function (q) {
+            this._data = this.dotProduct([
+                Math.cos(q), -Math.sin(q), 0,
+                Math.sin(q), Math.cos(q), 0,
+                0, 0, 1
+            ]);
+        };
+
+        Matrix.prototype.scale = function (sx, sy) {
+            this._data = this.dotProduct([
+                sx, 0, 0,
+                0, sy, 0,
+                0, 0, 1
+            ]);
+        };
+
         Matrix.prototype.identity = function () {
             this.setTo(1, 0, 0, 1, 0, 0);
         };
 
+        Matrix.prototype.createBox = function (sX, sY, q, tX, tY) {
+            this.identity();
+            this.rotate(q);
+            this.scale(sX, sY);
+            this.translate(tX, tY);
+        };
         Matrix.prototype.clone = function () {
             var a = this._data[0], b = this._data[3], c = this._data[1], d = this._data[4], tx = this._data[2], ty = this._data[5];
             return new Matrix(a, b, c, d, tx, ty);
+        };
+
+        Matrix.prototype.serialize = function () {
+            return this._data;
         };
         return Matrix;
     })();
@@ -53,6 +99,10 @@ var Display;
 
         Matrix3D.prototype.clone = function () {
             return new Matrix3D(this._data);
+        };
+
+        Matrix3D.prototype.serialize = function () {
+            return this._data;
         };
         return Matrix3D;
     })();
@@ -77,6 +127,15 @@ var Display;
         return null;
     }
     Display.createGradientBox = createGradientBox;
+
+    function projectVector(matrix, vector) {
+        return [];
+    }
+    Display.projectVector = projectVector;
+
+    function projectVectors(matrix, verts, projectedVerts, uvts) {
+    }
+    Display.projectVectors = projectVectors;
 
     /**
     * Transforms a JS Array into an AS3 Vector<int>.
@@ -326,8 +385,31 @@ var Display;
             this._parent.transform = this;
         };
 
+        /**
+        * Returns the working matrix as a serializable object
+        * @returns {*} Serializable Matrix
+        */
+        Transform.prototype.getMatrix = function () {
+            if (this._matrix) {
+                return this._matrix;
+            } else {
+                return this._matrix3d;
+            }
+        };
+
+        /**
+        * Returns matrix type in use
+        * @returns {string} - "2d" or "3d"
+        */
+        Transform.prototype.getMatrixType = function () {
+            return this._matrix ? "2d" : "3d";
+        };
+
         Transform.prototype.serialize = function () {
-            return {};
+            return {
+                "mode": this.getMatrixType(),
+                "matrix": this.getMatrix()
+            };
         };
         return Transform;
     })();
@@ -684,221 +766,6 @@ var Display;
     Display.DisplayObject = DisplayObject;
 })(Display || (Display = {}));
 /**
-* Sprite Polyfill for AS3.
-* Author: Jim Chen
-* Part of the CCLScripter
-*/
-/// <reference path="DisplayObject.ts" />
-var Display;
-(function (Display) {
-    var Sprite = (function (_super) {
-        __extends(Sprite, _super);
-        function Sprite(id) {
-            _super.call(this, id);
-        }
-        Sprite.prototype.serialize = function () {
-            var serialized = _super.prototype.serialize.call(this);
-            serialized["class"] = "Sprite";
-            return serialized;
-        };
-        return Sprite;
-    })(Display.DisplayObject);
-    Display.Sprite = Sprite;
-})(Display || (Display = {}));
-/**
-* MotionManager Polyfill for AS3.
-* Author: Jim Chen
-* Part of the CCLScripter
-*/
-/// <reference path="../Runtime.d.ts" />
-/// <reference path="DisplayObject.ts" />
-var Display;
-(function (Display) {
-    var MotionManager = (function () {
-        function MotionManager(o, dur) {
-            if (typeof dur === "undefined") { dur = 1000; }
-            this._isRunning = false;
-            this.oncomplete = null;
-            this._ttl = dur;
-            this._dur = dur;
-            this._parent = o;
-            this._timer = new Runtime.Timer(41, 0);
-        }
-
-        Object.defineProperty(MotionManager.prototype, "dur", {
-            get: function () {
-                return this._dur;
-            },
-            set: function (dur) {
-                this._dur = dur;
-                this._ttl = dur;
-                this._timer.stop();
-                this._timer = new Runtime.Timer(41, 0);
-            },
-            enumerable: true,
-            configurable: true
-        });
-
-        Object.defineProperty(MotionManager.prototype, "running", {
-            get: function () {
-                return this._isRunning;
-            },
-            enumerable: true,
-            configurable: true
-        });
-
-        MotionManager.prototype.reset = function () {
-            this._ttl = this._dur;
-        };
-
-        MotionManager.prototype.play = function () {
-            if (this._isRunning)
-                return;
-            this._isRunning = true;
-            var self = this;
-            var _lastTime = Date.now();
-            this._timer.addEventListener("timer", function () {
-                var dur = Date.now() - _lastTime;
-                self._dur -= dur;
-                if (self._dur <= 0) {
-                    self.stop();
-                    if (self.oncomplete) {
-                        self.oncomplete();
-                    }
-                    self._parent.unload();
-                }
-                _lastTime = Date.now();
-            });
-            this._timer.start();
-        };
-
-        MotionManager.prototype.stop = function () {
-            if (!this._isRunning)
-                return;
-            this._isRunning = false;
-            this._timer.stop();
-        };
-
-        MotionManager.prototype.forecasting = function (time) {
-            return false;
-        };
-
-        MotionManager.prototype.setPlayTime = function (playtime) {
-        };
-
-        MotionManager.prototype.initTween = function (motion, repeat) {
-            if (motion.hasOwnProperty("lifeTime")) {
-                this._ttl = motion["lifeTime"] * 1000;
-                if (isNaN(this._ttl)) {
-                    this._ttl = 3000;
-                }
-            }
-        };
-
-        MotionManager.prototype.initTweenGroup = function (motionGroup, lifeTime) {
-        };
-
-        MotionManager.prototype.setCompleteListener = function (listener) {
-            this.oncomplete = listener;
-        };
-        return MotionManager;
-    })();
-    Display.MotionManager = MotionManager;
-})(Display || (Display = {}));
-/// <reference path="DisplayObject.ts" />
-/// <reference path="MotionManager.ts" />
-/**
-* Compliant CommentButton Polyfill For BiliScriptEngine
-*/
-/// <reference path="Sprite.ts" />
-/// <reference path="IComment.ts" />
-/// <reference path="MotionManager.ts" />
-var Display;
-(function (Display) {
-    var CommentButton = (function (_super) {
-        __extends(CommentButton, _super);
-        function CommentButton(params) {
-            _super.call(this);
-            this._mM = new Display.MotionManager(this);
-            this.initStyle(params);
-            Runtime.registerObject(this);
-        }
-        /**
-        * Set the style for the UIComponent which this is
-        * @param styleProp - style to set
-        * @param value - value to set the style to
-        */
-        CommentButton.prototype.setStyle = function (styleProp, value) {
-            __trace("UIComponent.setStyle not implemented", "warn");
-        };
-
-        Object.defineProperty(CommentButton.prototype, "motionManager", {
-            get: function () {
-                return this._mM;
-            },
-            set: function (m) {
-                __trace("IComment.motionManager is read-only", "warn");
-            },
-            enumerable: true,
-            configurable: true
-        });
-
-
-        CommentButton.prototype.initStyle = function (style) {
-        };
-
-        CommentButton.prototype.serialize = function () {
-            var serialized = _super.prototype.serialize.call(this);
-            serialized["class"] = "Button";
-            return serialized;
-        };
-        return CommentButton;
-    })(Display.Sprite);
-
-    function createButton(params) {
-        return new CommentButton(params);
-    }
-    Display.createButton = createButton;
-})(Display || (Display = {}));
-/**
-* Compliant CommentCanvas Polyfill For BiliScriptEngine
-*/
-/// <reference path="Sprite.ts" />
-/// <reference path="IComment.ts" />
-/// <reference path="MotionManager.ts" />
-var Display;
-(function (Display) {
-    var CommentCanvas = (function (_super) {
-        __extends(CommentCanvas, _super);
-        function CommentCanvas(params) {
-            _super.call(this);
-            this._mM = new Display.MotionManager(this);
-            this.initStyle(params);
-            Runtime.registerObject(this);
-        }
-        Object.defineProperty(CommentCanvas.prototype, "motionManager", {
-            get: function () {
-                return this._mM;
-            },
-            set: function (m) {
-                __trace("IComment.motionManager is read-only", "warn");
-            },
-            enumerable: true,
-            configurable: true
-        });
-
-
-        CommentCanvas.prototype.initStyle = function (style) {
-        };
-        return CommentCanvas;
-    })(Display.Sprite);
-
-    function createCanvas(params) {
-        return new CommentCanvas(params);
-    }
-    Display.createCanvas = createCanvas;
-})(Display || (Display = {}));
-/**
 * Graphics Polyfill for AS3
 * Author: Jim Chen
 * Part of the CCLScripter
@@ -1068,6 +935,233 @@ var Display;
         return Graphics;
     })();
     Display.Graphics = Graphics;
+})(Display || (Display = {}));
+/**
+* Sprite Polyfill for AS3.
+* Author: Jim Chen
+* Part of the CCLScripter
+*/
+/// <reference path="DisplayObject.ts" />
+/// <reference path="Graphics.ts" />
+var Display;
+(function (Display) {
+    var Sprite = (function (_super) {
+        __extends(Sprite, _super);
+        function Sprite(id) {
+            _super.call(this, id);
+            this._graphics = new Display.Graphics(this);
+        }
+        Object.defineProperty(Sprite.prototype, "graphics", {
+            get: function () {
+                return this._graphics;
+            },
+            enumerable: true,
+            configurable: true
+        });
+
+        Sprite.prototype.serialize = function () {
+            var serialized = _super.prototype.serialize.call(this);
+            serialized["class"] = "Sprite";
+            return serialized;
+        };
+        return Sprite;
+    })(Display.DisplayObject);
+    Display.Sprite = Sprite;
+})(Display || (Display = {}));
+/**
+* MotionManager Polyfill for AS3.
+* Author: Jim Chen
+* Part of the CCLScripter
+*/
+/// <reference path="../Runtime.d.ts" />
+/// <reference path="DisplayObject.ts" />
+var Display;
+(function (Display) {
+    var MotionManager = (function () {
+        function MotionManager(o, dur) {
+            if (typeof dur === "undefined") { dur = 1000; }
+            this._isRunning = false;
+            this.oncomplete = null;
+            this._ttl = dur;
+            this._dur = dur;
+            this._parent = o;
+            this._timer = new Runtime.Timer(41, 0);
+        }
+
+        Object.defineProperty(MotionManager.prototype, "dur", {
+            get: function () {
+                return this._dur;
+            },
+            set: function (dur) {
+                this._dur = dur;
+                this._ttl = dur;
+                this._timer.stop();
+                this._timer = new Runtime.Timer(41, 0);
+            },
+            enumerable: true,
+            configurable: true
+        });
+
+        Object.defineProperty(MotionManager.prototype, "running", {
+            get: function () {
+                return this._isRunning;
+            },
+            enumerable: true,
+            configurable: true
+        });
+
+        MotionManager.prototype.reset = function () {
+            this._ttl = this._dur;
+        };
+
+        MotionManager.prototype.play = function () {
+            if (this._isRunning)
+                return;
+            if (this._dur === 0)
+                return;
+            this._isRunning = true;
+            var self = this;
+            var _lastTime = Date.now();
+            this._timer.addEventListener("timer", function () {
+                var dur = Date.now() - _lastTime;
+                self._dur -= dur;
+                if (self._dur <= 0) {
+                    self.stop();
+                    if (self.oncomplete) {
+                        self.oncomplete();
+                    }
+                    self._parent.unload();
+                }
+                _lastTime = Date.now();
+            });
+            this._timer.start();
+        };
+
+        MotionManager.prototype.stop = function () {
+            if (!this._isRunning)
+                return;
+            this._isRunning = false;
+            this._timer.stop();
+        };
+
+        MotionManager.prototype.forecasting = function (time) {
+            return false;
+        };
+
+        MotionManager.prototype.setPlayTime = function (playtime) {
+        };
+
+        MotionManager.prototype.initTween = function (motion, repeat) {
+            if (motion.hasOwnProperty("lifeTime")) {
+                this._ttl = motion["lifeTime"] * 1000;
+                if (isNaN(this._ttl)) {
+                    this._ttl = 3000;
+                }
+            }
+        };
+
+        MotionManager.prototype.initTweenGroup = function (motionGroup, lifeTime) {
+        };
+
+        MotionManager.prototype.setCompleteListener = function (listener) {
+            this.oncomplete = listener;
+        };
+        return MotionManager;
+    })();
+    Display.MotionManager = MotionManager;
+})(Display || (Display = {}));
+/// <reference path="DisplayObject.ts" />
+/// <reference path="MotionManager.ts" />
+/**
+* Compliant CommentButton Polyfill For BiliScriptEngine
+*/
+/// <reference path="Sprite.ts" />
+/// <reference path="IComment.ts" />
+/// <reference path="MotionManager.ts" />
+var Display;
+(function (Display) {
+    var CommentButton = (function (_super) {
+        __extends(CommentButton, _super);
+        function CommentButton(params) {
+            _super.call(this);
+            this._mM = new Display.MotionManager(this);
+            this.initStyle(params);
+            Runtime.registerObject(this);
+        }
+        /**
+        * Set the style for the UIComponent which this is
+        * @param styleProp - style to set
+        * @param value - value to set the style to
+        */
+        CommentButton.prototype.setStyle = function (styleProp, value) {
+            __trace("UIComponent.setStyle not implemented", "warn");
+        };
+
+        Object.defineProperty(CommentButton.prototype, "motionManager", {
+            get: function () {
+                return this._mM;
+            },
+            set: function (m) {
+                __trace("IComment.motionManager is read-only", "warn");
+            },
+            enumerable: true,
+            configurable: true
+        });
+
+
+        CommentButton.prototype.initStyle = function (style) {
+        };
+
+        CommentButton.prototype.serialize = function () {
+            var serialized = _super.prototype.serialize.call(this);
+            serialized["class"] = "Button";
+            return serialized;
+        };
+        return CommentButton;
+    })(Display.Sprite);
+
+    function createButton(params) {
+        return new CommentButton(params);
+    }
+    Display.createButton = createButton;
+})(Display || (Display = {}));
+/**
+* Compliant CommentCanvas Polyfill For BiliScriptEngine
+*/
+/// <reference path="Sprite.ts" />
+/// <reference path="IComment.ts" />
+/// <reference path="MotionManager.ts" />
+var Display;
+(function (Display) {
+    var CommentCanvas = (function (_super) {
+        __extends(CommentCanvas, _super);
+        function CommentCanvas(params) {
+            _super.call(this);
+            this._mM = new Display.MotionManager(this);
+            this.initStyle(params);
+            Runtime.registerObject(this);
+        }
+        Object.defineProperty(CommentCanvas.prototype, "motionManager", {
+            get: function () {
+                return this._mM;
+            },
+            set: function (m) {
+                __trace("IComment.motionManager is read-only", "warn");
+            },
+            enumerable: true,
+            configurable: true
+        });
+
+
+        CommentCanvas.prototype.initStyle = function (style) {
+        };
+        return CommentCanvas;
+    })(Display.Sprite);
+
+    function createCanvas(params) {
+        return new CommentCanvas(params);
+    }
+    Display.createCanvas = createCanvas;
 })(Display || (Display = {}));
 /**
 * Shape Polyfill for AS3.

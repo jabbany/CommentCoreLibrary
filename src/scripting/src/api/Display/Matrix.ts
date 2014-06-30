@@ -13,7 +13,7 @@ module Display {
 		}
 
 		private dotProduct(o:Array<number>):Array<number>{
-			if(other.length < 9){
+			if(o.length < 9){
 				throw new Error("Matrix dot product expects a matrix");
 			}
 			var res:Array<number> = [0,0,0,0,0,0,0,0,0];
