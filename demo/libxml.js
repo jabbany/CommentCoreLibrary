@@ -24,7 +24,7 @@ function CommentLoader(url,xcm,mode){
 					f.loadXML(xmlhttp.responseText);
 					cm.load(BilibiliParser(f, xmlhttp.responseText));
 				}else{
-					cm.load(BilibiliParser(xmlhttp.responseXML, xmlHTTP.responseText));
+					cm.load(BilibiliParser(xmlhttp.responseXML, xmlhttp.responseText));
 				}
 			}else if(mode == 'acfun'){
 				cm.load(AcfunParser(xmlhttp.responseText));
