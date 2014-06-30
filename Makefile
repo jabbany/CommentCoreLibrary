@@ -1,5 +1,5 @@
 BUILD_MINIFY = build/Parsers.js build/CommentCore.js
-SRC_CORE = src/CommentFilter.js src/CommentSpaceAllocator.js src/CommentCoreLibrary.js
+SRC_CORE = src/CommentFilter.js src/CommentSpaceAllocator.js src/CommentCoreLibraryTransition.js
 SRC_TRANSITION = src/CCLComment.js src/CommentFilter.js src/CommentTransitionSpaceAllocator.js src/CommentTransitionLibrary.js
 ACSRC ?= parsers/AcfunFormat.js
 BILISRC ?= parsers/BilibiliFormat.js

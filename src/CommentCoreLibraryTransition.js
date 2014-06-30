@@ -38,7 +38,6 @@ Array.prototype.binsert = function(what,how){
 };
 /****** Load Core Engine Classes ******/
 function CommentManager(stageObject){
-	var __timer = 0;
 	this.stage = stageObject;
 	this.def = {
 		opacity:1,
@@ -97,21 +96,8 @@ function CommentManager(stageObject){
 		}
 		return cmt;
 	};
-	this.startTimer = function(){
-		if(__timer > 0)
-			return;
-		var lastTPos = new Date().getTime();
-		var cmMgr = this;
-		__timer = window.setInterval(function(){
-			var elapsed = new Date().getTime() - lastTPos;
-			lastTPos = new Date().getTime();
-			cmMgr.onTimerEvent(elapsed,cmMgr);
-		},10);
-	};
-	this.stopTimer = function(){
-		window.clearInterval(__timer);
-		__timer = 0;
-	};
+	this.startTimer = function(){};
+	this.stopTimer = function(){};
 }
 	
 /** Public **/
@@ -200,12 +186,15 @@ CommentManager.prototype.sendComment = function(data){
 		if(data == null) return;
 	}
 	cmt = this.initCmt(cmt,data);
+	cmt.style.left = this.stage.width + "px";
 	this.stage.appendChild(cmt);
 	cmt.width = cmt.offsetWidth;
 	cmt.height = cmt.offsetHeight;
 	cmt.style.width = (cmt.w + 1) + "px";
 	cmt.style.height = (cmt.h - 3) + "px";
-	cmt.style.left = this.stage.width + "px";
+	cmt.style.transition = "all " + cmt.dur + "ms linear 0ms";
+	cmt.style.webkitTransition = "all " + cmt.dur + "ms linear 0ms";
+	cmt.style.left = -cmt.width + "px";
 	
 	if(this.filter != null && !this.filter.beforeSend(cmt)){
 		this.stage.removeChild(cmt);
@@ -267,8 +256,21 @@ CommentManager.prototype.sendComment = function(data){
 		}break;
 	}
 	this.runline.push(cmt);
+	var self = this;
+	cmt.addEventListener("transitionend", function(){
+		self.finish(cmt);
+		this.runline
+	});
+	cmt.addEventListener("webkitTransitionEnd", function(){
+		self.finish(cmt);
+	});
 };
 CommentManager.prototype.finish = function(cmt){
+	var index = this.runline.indexOf(cmt);
+	if(index >= 0){
+		this.runline.splice(index,1);
+	}
+	this.stage.removeChild(cmt);
 	switch(cmt.mode){
 		default:
 		case 1:{this.csa.scroll.remove(cmt);}break;
@@ -277,46 +279,5 @@ CommentManager.prototype.finish = function(cmt){
 		case 5:{this.csa.top.remove(cmt);}break;
 		case 6:{this.csa.reverse.remove(cmt);}break;
 		case 7:break;
-	}
-};
-/** Static Functions **/
-CommentManager.prototype.onTimerEvent = function(timePassed,cmObj){
-	for(var i= 0;i < cmObj.runline.length; i++){
-		var cmt = cmObj.runline[i];
-		if(cmt.hold){
-			continue;
-		}
-		cmt.ttl -= timePassed;
-		if(cmt.mode == 1 || cmt.mode == 2) {
-			cmt.style.left = (cmt.ttl / cmt.dur) * (cmObj.stage.width + cmt.width) - cmt.width + "px";
-		}else if(cmt.mode == 6) {
-			cmt.style.left = (1 - cmt.ttl / cmt.dur) * (cmObj.stage.width + cmt.width) - cmt.width + "px";
-		}else if(cmt.mode == 4 || cmt.mode == 5 || cmt.mode >= 7){
-			if(cmt.dur == null)
-				cmt.dur = 4000;
-			if(cmt.data.alphaFrom != null && cmt.data.alphaTo != null){
-				cmt.style.opacity = (cmt.data.alphaFrom - cmt.data.alphaTo) * 
-					(cmt.ttl/cmt.dur) + cmt.data.alphaTo;
-			}
-			if(cmt.mode == 7 && cmt.data.movable){
-				var posT = Math.min(Math.max(cmt.dur - cmt.data.moveDelay - cmt.ttl,0),
-					cmt.data.moveDuration) / cmt.data.moveDuration;
-				if(cmt.data.position !== "relative"){
-					cmt.style.top = ((cmt.data.toY - cmt.data.y) * posT + cmt.data.y) + "px";
-					cmt.style.left= ((cmt.data.toX - cmt.data.x) * posT + cmt.data.x) + "px";
-				}else{
-					cmt.style.top = (((cmt.data.toY - cmt.data.y) * posT + cmt.data.y) * cmObj.stage.height) + "px";
-					cmt.style.left= (((cmt.data.toX - cmt.data.x) * posT + cmt.data.x) * cmObj.stage.width) + "px";
-				}
-			}
-		}
-		if(cmObj.filter != null){
-			cmt = cmObj.filter.runtimeFilter(cmt);
-		}
-		if(cmt.ttl <= 0){
-			cmObj.stage.removeChild(cmt);
-			cmObj.runline.splice(i,1);//remove the comment
-			cmObj.finish(cmt);
-		}
 	}
 };
