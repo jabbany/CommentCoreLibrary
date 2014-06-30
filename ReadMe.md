@@ -20,7 +20,7 @@ free to learn from and extend from the CommentCoreLibrary.
 
 ## Testing on your browser
 You can see a live demo (most current source) 
-[here](http://sunnyli.github.com/CommentCorePlayer). Feel free to open 
+[here](http://jabbany.github.com/CommentCoreLibrary/demo). Feel free to open 
 tickets if this demo test has bugs. Remember to tell me your browser 
 vendor/version info though. PS, just a heads up, due to lack of
 fonts, Linux systems may render some fixed point animations wrong, this 
@@ -55,7 +55,7 @@ feature requests are welcome!
 高级弹幕效果 (5) 基础格式解析
 
 ## 测试
-项目开放测试于 [这里](http://sunnyli.github.com/CommentCorePlayer)。你可以
+项目开放测试于 [这里](http://jabbany.github.com/CommentCoreLibrary/demo)。你可以
 随时通过浏览器进行测试，如果有任何BUG等，非常欢迎提交Bug Ticket！ 不过记得告诉我你的
 浏览器版本和系统信息。PS，如果你在用Linux，请确保你有标准中文字体（宋体 Simsun【必需】
 ，黑体 Simhei【必需】，雅黑 Microsoft YaHei，幼圆 YouYuan，隶书），和日文字体

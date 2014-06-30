@@ -75,7 +75,7 @@ function Vimeo(vid){
     
     if(!Vimeo.apiReady){
     	var script = document.createElement('script');
-        script.src = 'http://a.vimeocdn.com/js/froogaloop2.min.js';
+        script.src = 'https://secure-a.vimeocdn.com/js/froogaloop2.min.js';
         var ref = document.getElementsByTagName('script')[0];
         ref.parentNode.insertBefore(script, ref);
     

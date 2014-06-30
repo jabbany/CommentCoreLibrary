@@ -7,7 +7,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta http-equiv="X-UA-Compatible" value="IE=9">
 <link rel="stylesheet" href="style.css" />
-<link rel="stylesheet" href="default.css" />
+<link rel="stylesheet" href="demo/default.css" />
 <link rel="stylesheet" href="build/base.css" />
 
 <!-- Comment List -->
@@ -21,10 +21,12 @@
 <script src="build/CommentCore.js"></script>
 
 <!-- A few helpers to do some decoding/fetching below-->
-<script src="libxml.js"></script>
+<script src="demo/libxml.js"></script>
 <script src="build/Parsers.js"></script>
 
-<!-- Extend Effects -->
+<!-- Graphical Elements Maybe-->
+
+<!-- Extend-->
 <script src="extend/fefx.js"></script>
 
 <!-- jQuery -->
@@ -133,7 +135,8 @@
 <a onclick="cd.load('tests/comment.xml');" href="javascript:;">Run Test 6</a>
 
 <p>Extended: <a onclick="cd.load('tests/extended.xml');" href="javascript:;">Run Test 7</a>
-    (WIP) <a onclick="cd.load('tests/bilibili.xml');" href="javascript:;">Run Test 8</a></p>
+  (WIP) <a onclick="cd.load('tests/bilibili.xml');" href="javascript:;">Run Test 8</a>
+<a onclick="cd.load('tests/kanpai.xml');" href="javascript:;">Run Test Scripting</a></p>
 <p>AcFun (Experimental) <a onclick="cd.load('tests/ACFun.json','acfun');" href="javascript:;">Run Test 1</a></p>
 
 <script>
@@ -159,7 +162,7 @@ function setDailyMotion(){
 function setVimeo(){
     try{ if (typeof cd != 'undefined') cd.destory(); }catch(e){console.log(e)}
     $("commentCanvas").innerHTML = "<video id=\"vmPlayer\"></video>";
-    cd = new Vimeo('5838112'); cfile='tests/comment.xml';
+    cd = new Vimeo('34816200'); cfile='tests/comment.xml';
 }
 function setNone(){
     try{ if (typeof cd != 'undefined') cd.destory(); }catch(e){console.log(e)}
@@ -191,7 +194,8 @@ setTimeout(function () {
 <a onclick="cd.toggleWindowedFullscreen()" href="javascript:;">Windowed Fullscreen</a>
 </p>
 
-<p>Links: <a href="demos/player-demo.htm">Demo with video</a> <a href="experimental">Experimental CSS3 Transition Library</a> <a href="transition-library-test.htm">CCL /w Transition Library (Alpha)</a></p>
+<p>Links: <a href="player-demo.htm">Demo with video</a> <a href="../experimental/animation">Experimental CSS3 Transition Library</a> <a href="transition-library-test.htm">CCL /w Transition Library (Alpha)</a></p>
+<p>Scripting: <a href="../experimental/scripting">Scripting Sandbox test</a> <a href="../experimental/scripting/ccl.htm">Using scripting with CCL (Alpha)</a> </p>
 
 </body>
 </html>

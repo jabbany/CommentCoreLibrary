@@ -96,6 +96,8 @@ function CommentManager(stageObject){
 			cmt.style.opacity = this.def.opacity;
 		if(data.alphaFrom != null)
 			cmt.style.opacity = data.alphaFrom;
+		if(data.border)
+			cmt.style.border = "1px solid #00ffff";
 		cmt.ttl = Math.round(4000 * this.def.globalScale);
 		cmt.dur = cmt.ttl;
 		if(cmt.mode === 1 || cmt.mode === 6 || cmt.mode === 2){
@@ -190,6 +192,13 @@ CommentManager.prototype.rescale = function(){
 	}
 };
 CommentManager.prototype.sendComment = function(data){
+	if(data.mode === 8){
+		console.log(data);
+		if(this.scripting){
+			console.log(this.scripting.eval(data.code));
+		}
+		return;
+	}
 	var cmt = document.createElement('div');
 	if(this.filter != null){
 		data = this.filter.doModify(data);
@@ -235,7 +244,6 @@ CommentManager.prototype.sendComment = function(data){
 			}
 		}break;
 	}
-	if(data.border) cmt.style.border = "1px solid #00ffff";
 	this.runline.push(cmt);
 };
 CommentManager.prototype.finish = function(cmt){

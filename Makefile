@@ -1,7 +1,8 @@
-SRC_CORE = CommentFilter.js CommentSpaceAllocator.js CommentCoreLibrary.js
-SRC_TRANSITION = CCLComment.js CommentFilter.js CommentTransitionSpaceAllocator.js CommentTransitionLibrary.js
+SRC_CORE = src/CommentFilter.js src/CommentSpaceAllocator.js src/CommentCoreLibrary.js
+SRC_TRANSITION = src/CCLComment.js src/CommentFilter.js src/CommentTransitionSpaceAllocator.js src/CommentTransitionLibrary.js
 ACSRC = parsers/AcfunFormat.js
 BILISRC = parsers/BilibiliFormat.js
+DIR = src/
 
 all: core parsers css
 core: $(SRC_CORE)
@@ -21,7 +22,7 @@ parserac:
 	cat $(ACSRC) > build/AParser.js
 
 css:
-	cp base.css build/base.css
+	cp  src/base.css build/base.css
 
 clean: 
 	rm build/CommentCore.js

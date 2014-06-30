@@ -9,9 +9,11 @@
 * mikunoshoushitu.xml - 逆天的弹幕，各种功力测试，__目前依然无法完全通过__，目测这个可以成为高级弹幕标准测试。
 * comment.xml - 基本滚动弹幕，高通量，测试过滤器用意
 * AcFun.json - 测试AcFun弹幕解析（尚不完全）
+* kanpai.xml - 脚本弹幕（中等难度）测试。目前无法靠谱的还原各种光晕/模糊过滤器效果。
 
 ## 人工构造样本
 （未出）
 * filter.xml - 各种模式下的弹幕不断重复，来测试过滤器和合并器。
 * scripting.xml (尚无) - 用于调戏高级脚本、图片、Canvas弹幕。
 * image.xml - 图片弹幕专用测试。
+* native.json - 播放器的原生模式，这个可以由解析后的timeline dump产生。

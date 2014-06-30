@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta http-equiv="X-UA-Compatible" value="IE=9">
+	<title>CCL-Compat BScript Test</title>
+	<style>
+		#codediv{width:48%; float:left;}
+		#playerdiv{width:48%; float:right;}
+		#output{font-family:Consolas, 'Courier New', monospace; font-size:20px;padding:10px; background:#020;
+		position:fixed; bottom:0; left:0; right:0; height:150px; overflow:auto; }
+		#player{border:1px solid #f88; width:100%;background-color:#100;position:relative;}
+		#code-input{width:100%;height:340px;display:block; border:1px solid #f88; padding:10px;background:#000;color:#f88;font-size:20px;}
+		.s-button, .button{display:block; border:1px solid #f88; padding:10px; background:#000; color:#f88; float:left;-moz-user-select: none; -khtml-user-select: none; -webkit-user-select: none; -o-user-select: none; user-select: none; cursor:default;}
+		.s-button:hover,.button:hover{background:#f88; color:#000;}
+		.button{font-size:12px;z-index:99;}
+	</style>
+	<script type="text/javascript">var $ = function(e){return window.document.getElementById(e);}</script>
+	<script src="bscript.js" type="text/javascript"></script>
+</head>
+<body style="background:#000;">
+	<h2 style="color:#fff">CCL Scripting Demo</h2>
+	<div id="codediv">
+		<div style="clear:both;">
+		<button class="s-button" id="evaluate">Execute (Sandbox)</button><button class="s-button" id="debug-basic">Debug Basic</button><button class="s-button" id="debug-svg">Debug SVGDraw GreenDam</button><button class="s-button" id="debug-svg-madoka">Debug Madoka</button><button class="s-button" id="debug-clear">Clear.Runtime</button>
+		</div>
+		<textarea id="code-input"></textarea>
+	</div>
+	<div id="playerdiv">
+		<div id="player" style="height:400px;clear:both;overflow:hidden;"></div>
+	</div>
+	<div id="output" style="color:#fff;">[Msg] 有关具体API信息请阅读 docs/scripting</div>
+	<script type="text/javascript">
+		bscripter = new CCLScripting.BridgedSandbox({}, $("player"));
+		bscripter.addEventListener("trace", function(data){
+			$("output").innerText = "[Trace] " + data + "\r\n" + $("output").innerText;
+		});
+		bscripter.addEventListener("cleanup", function(data){
+			$("output").innerText = "[Cleanup] " + data + "\r\n" + $("output").innerText;
+		});
+		$("evaluate").addEventListener("click", function(){
+			try{
+				var w = bscripter.eval($("code-input").value);
+				w.onerror = function(error){
+					$("output").innerText = error.message + "\r\n" + $("output").innerText;
+				};
+				console.log(w);
+			}catch(e){
+				$("output").innerText = e.message + "\r\n" + $("output").innerText;
+			}
+		});
+		function fetchFile(filename){
+			var xhr = new XMLHttpRequest();
+			xhr.onreadystatechange = function(){
+				if(xhr.readyState == 4 && xhr.status== 200){
+					$("code-input").value = xhr.responseText;
+				}
+			};
+			xhr.open("GET", filename, true);
+			xhr.send();
+		}
+		$("debug-basic").addEventListener("click", function(){
+			fetchFile("manzoku.biliscript");
+		});
+		$("debug-svg-madoka").addEventListener("click", function(){
+			fetchFile("madoka.biliscript");
+		});
+		$("debug-svg").addEventListener("click", function(){
+			fetchFile("greendam.biliscript");
+		});
+		$("debug-clear").addEventListener("click", function(){
+			bscripter.clear();
+		});
+	</script>
+</body>
+</html>

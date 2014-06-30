@@ -13,6 +13,7 @@ function CommentFilter(){
 		"5":true,
 		"6":true,
 		"7":true,
+		"8":true,
 		"17":true
 	};
 	this.doModify = function(cmt){
