@@ -24,9 +24,9 @@ function BilibiliParser(xmlDoc, text, warn){
     		}
     	}else{
     		// clobber some potentially bad things
-        	text = text.replace(new RegExp("</([^id])","g"), "</disabled $1");
+        	text = text.replace(new RegExp("</([^d])","g"), "</disabled $1");
         	text = text.replace(new RegExp("</(\S{2,})","g"), "</disabled $1");
-        	text = text.replace(new RegExp("<([^id/]\s)","g"), "<disabled $1");
+        	text = text.replace(new RegExp("<([^d/]\W*?)","g"), "<disabled $1");
         	text = text.replace(new RegExp("<([^/ ]{2,}\W*?)","g"), "<disabled $1");
         	console.log(text);
     	}
