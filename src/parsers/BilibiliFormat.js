@@ -3,7 +3,7 @@ Bilibili Format
 Licensed Under MIT License
  Takes in an XMLDoc/LooseXMLDoc and parses that into a Generic Comment List
 **/
-function BilibiliParser(xmlDoc, text){
+function BilibiliParser(xmlDoc, text, warn){
 	function fillRGB(string){
 		while(string.length < 6){
 			string = "0" + string;
@@ -18,8 +18,21 @@ function BilibiliParser(xmlDoc, text){
 	if(xmlDoc !== null){
         var elems = xmlDoc.getElementsByTagName('d');
     }else{
+    	if(warn){
+    		if(!confirm("XML Parse Error. \n Allow tag soup parsing?\n[WARNING: This is unsafe.]")){
+    			return [];
+    		}
+    	}else{
+    		// clobber some potentially bad things
+        	text = text.replace(new RegExp("</([^id])","g"), "</disabled $1");
+        	text = text.replace(new RegExp("</(\S{2,})","g"), "</disabled $1");
+        	text = text.replace(new RegExp("<([^id/]\s)","g"), "<disabled $1");
+        	text = text.replace(new RegExp("<([^/ ]{2,}\W*?)","g"), "<disabled $1");
+        	console.log(text);
+    	}
         var tmp = document.createElement("div");
         tmp.innerHTML = text;
+        console.log(tmp);
         var elems = tmp.getElementsByTagName('d');
     }
 	var tlist = [];
