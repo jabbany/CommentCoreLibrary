@@ -1,10 +1,33 @@
 /*绿坝娘~和谐你*/
-/*Kanpai*/
-var x = $.createShape({lifeTime:10,x:0,y:0});
- x.graphics.beginFill(0xffffff);
- x.graphics.drawRect(0,0,540,383);
- x.graphics.endFill();
+var g = $.createShape({lifeTime:360,x:0,y:0});
+ g.graphics.beginFill(0xffffff);
+ g.graphics.drawRect(0,0,540,383);
+ g.graphics.endFill();
 
+/*Background*/
+var h=$.createShape({x:0,y:0,alpha:0.2,lifeTime:300,motion:{
+alpha:{fromValue:0,toValue:0.5,lifeTime:1}}
+});
+h.graphics.beginFill(0x000000);
+h.graphics.drawRect(-5,-5,547,390);
+h.graphics.endFill();
+
+
+var g = $.createShape({x:-20,y:-20,lifeTime:300,motion:{
+alpha:{fromValue:0,toValue:0.99,lifeTime:1}}
+});
+g.graphics.beginFill(0xffffff);
+g.graphics.drawEllipse(10,16,560,380);
+g.graphics.endFill();
+g.filters=[$.createGlowFilter(0xFFFFFF,0.5,50,50,2,6,false,false),$.createBlurFilter(160,160)];
+
+var g = $.createShape({lifeTime:360,x:0,y:0,alpha:0.2,motion:{
+alpha:{fromValue:0,toValue:0.2,lifeTime:1}}
+});
+ g.graphics.beginFill(0x996600);
+ g.graphics.drawRect(0,0,540,383);
+ g.graphics.endFill()
+/*绿坝娘~和谐你*/
 var s = $.createShape({lifeTime:7,motionGroup:[
 {x:{fromValue:5,toValue:10,lifeTime:2},alpha:{fromValue:0,toValue:1,lifeTime:2}},
 {x:{fromValue:10,toValue:15,lifeTime:3}},

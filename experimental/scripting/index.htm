@@ -7,16 +7,19 @@
 	<style>
 		#codediv{width:48%; float:left;}
 		#playerdiv{width:48%; float:right;}
-		#output{font-family:Consolas, 'Courier New', monospace; font-size:20px;padding:10px; background:#020;
-		position:fixed; bottom:0; left:0; right:0; height:150px; overflow:auto; }
+		#output{font-family:Consolas, 'Courier New', monospace; font-size:12px;padding:10px; background:#000;
+		position:fixed; bottom:0; left:0; right:0; height:150px; overflow:auto; color:#ccc;border-top:1px dotted #fff;}
 		#player{border:1px solid #f88; width:100%;background-color:#100;position:relative;}
 		#code-input{width:100%;height:340px;display:block; border:1px solid #f88; padding:10px;background:#000;color:#f88;font-size:20px;}
 		.s-button, .button{display:block; border:1px solid #f88; padding:10px; background:#000; color:#f88; float:left;-moz-user-select: none; -khtml-user-select: none; -webkit-user-select: none; -o-user-select: none; user-select: none; cursor:default;}
 		.s-button:hover,.button:hover{background:#f88; color:#000;}
 		.button{font-size:12px;z-index:99;}
+		pre{margin:0;}
+		pre.error{color:#f00;}
+		pre.warning{color:#FFC500;}
 	</style>
 	<script type="text/javascript">var $ = function(e){return window.document.getElementById(e);}</script>
-	<script src="bscript.js" type="text/javascript"></script>
+	<script src="../../src/scripting/Host.js" type="text/javascript"></script>
 </head>
 <body style="background:#000;">
 	<h2 style="color:#fff">CCL Scripting Demo</h2>
@@ -29,22 +32,24 @@
 	<div id="playerdiv">
 		<div id="player" style="height:400px;clear:both;overflow:hidden;"></div>
 	</div>
-	<div id="output" style="color:#fff;">[Msg] 有关具体API信息请阅读 docs/scripting</div>
+	<div id="output">[Msg] 有关具体API信息请阅读 docs/scripting</div>
 	<script type="text/javascript">
-		bscripter = new CCLScripting.BridgedSandbox({}, $("player"));
-		bscripter.addEventListener("trace", function(data){
-			$("output").innerText = "[Trace] " + data + "\r\n" + $("output").innerText;
-		});
-		bscripter.addEventListener("cleanup", function(data){
-			$("output").innerText = "[Cleanup] " + data + "\r\n" + $("output").innerText;
-		});
+		bscripter = new CCLScripting("../../src/scripting/Worker.js");
+		bscripter.logger = new function(){
+			this.log = function(t){
+				$("output").innerHTML = "<pre>" + t.toString() + "</pre>" + $("output").innerHTML;
+			};
+			this.error = function(t){
+				$("output").innerHTML = "<pre class='error'>" + t.toString() + "</pre>" + $("output").innerHTML;
+			};
+			this.warn = function(t){
+				$("output").innerHTML = "<pre class='warning'>" + t.toString() + "</pre>" + $("output").innerHTML;
+			};
+		};
+		sandbox = bscripter.getSandbox($("player"));
 		$("evaluate").addEventListener("click", function(){
 			try{
-				var w = bscripter.eval($("code-input").value);
-				w.onerror = function(error){
-					$("output").innerText = error.message + "\r\n" + $("output").innerText;
-				};
-				console.log(w);
+				sandbox.eval($("code-input").value);
 			}catch(e){
 				$("output").innerText = e.message + "\r\n" + $("output").innerText;
 			}
@@ -69,7 +74,7 @@
 			fetchFile("greendam.biliscript");
 		});
 		$("debug-clear").addEventListener("click", function(){
-			bscripter.clear();
+			//bscripter.clear();
 		});
 	</script>
 </body>

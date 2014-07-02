@@ -24,9 +24,9 @@ function CommentLoader(url,xcm,callback,mode){
 					var f = new ActiveXObject("Microsoft.XMLDOM");
 					f.async = false;
 					f.loadXML(xmlhttp.responseText);
-					cm.load(BilibiliParser(f));
+					cm.load(BilibiliParser(f, xmlhttp.responseText));
 				}else{
-					cm.load(BilibiliParser(xmlhttp.responseXML));
+					cm.load(BilibiliParser(xmlhttp.responseXML, xmlhttp.responseText));
 				}
 			}else if(mode == 'acfun'){
 				cm.load(AcfunParser(xmlhttp.responseText));
@@ -35,3 +35,7 @@ function CommentLoader(url,xcm,callback,mode){
 		}
 	}
 }
+/*************************
+* Tiny Shorthand
+**************************/
+$ = function(a){return document.getElementById(a);};

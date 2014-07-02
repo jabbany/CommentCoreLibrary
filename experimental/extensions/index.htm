@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" value="IE=9">
+<link rel="stylesheet" href="../../demo/default.css" />
+<link rel="stylesheet" href="../../build/base.css" />
+<!-- Run 'make' to build the file -->
+<script src="../../build/CommentCoreLibrary.js"></script>
+
+<!-- A few helpers to do some decoding/fetching below-->
+<script src="player.js"></script>
+<script src="../../extend/ass2dm.js"></script>
+
+<title>Testrun Sandbox For ASS Subtitles</title>
+</head>
+<body>
+<div id="player-unit" style="width:100%;">
+	<div class="m20 abp" id="player" style="width:100%;height:600px;">
+		<div id="commentCanvas" class="container"></div>
+		<video id="abpVideo" autobuffer="true" data-setup="{}" width="100%" height="100%" style="z-index:-1;width:100%;height:100%;top:0;left:0;right:0;bottom:0;" autobuffer="true">
+			<source src="http://tools.kanoha.org/ccltestingvideos/%5bYYDM-11FANS%5d%5bStrike_Witches%5d%5bBDRIP%5d%5b01%5d%5bX264_AAC%5d%5b1280X720%5d.mp4" type="video/mp4">
+		</video>
+	</div>
+	<div class="controls">
+		<a onclick="play();" class="button" href="javascript:;">Play</a>
+		<a onclick="stop();" class="button" href="javascript:;">Pause</a>
+	</div>
+</div>
+
+<p>Scripting: <a href="../../demo/">&larr; Back to main test</a> </p>
+<script>
+$ = function(e){return document.getElementById(e);};
+var isWindowedFullscreen = false;
+function launchFullScreen(element) {
+	cm.setBounds();
+	if(element.requestFullscreen) {
+		element.requestFullscreen();
+	} else if(element.mozRequestFullscreen) {
+		element.mozRequestFullscreen();
+	} else if(element.webkitRequestFullscreen) {
+		element.webkitRequestFullscreen();
+	}
+}
+
+function launchWindowFull(element){
+	if(!isWindowedFullscreen){
+		element.style.position = "fixed";
+		element.style.top = "0";
+		element.style.bottom = "0";
+		element.style.left = "0";
+		element.style.right = "0";
+		element.style.width = "auto";
+		element.style.height = "auto";
+	}else{
+		element.style.position = "";
+		element.style.top = "";
+		element.style.bottom = "";
+		element.style.left = "";
+		element.style.right = "";
+	}
+	cm.getBounds();
+	isWindowedFullscreen = !isWindowedFullscreen;
+}
+
+var cm = new CommentManager($('commentCanvas'));
+cm.init();
+
+function rescale(){
+	var aspectRatio = $("abpVideo").videoHeight / $("abpVideo").videoWidth;
+	var myRatio = $("abpVideo").offsetHeight / $("abpVideo").offsetWidth;
+	var realVideoHeight = aspectRatio > myRatio ? $("abpVideo").offsetHeight : $("abpVideo").offsetWidth * aspectRatio;
+	var realVideoWidth = aspectRatio > myRatio ? $("abpVideo").offsetHeight / aspectRatio : $("abpVideo").offsetWidth;
+	$("commentCanvas").style.bottom = "auto";
+	$("commentCanvas").style.top = ($("abpVideo").offsetHeight - realVideoHeight)/2 + "px";
+	$("commentCanvas").style.height = realVideoHeight + "px";
+	$("commentCanvas").style.left = ($("abpVideo").offsetWidth - realVideoWidth)/2 + "px";
+	$("commentCanvas").style.right = "auto";
+	$("commentCanvas").style.width = realVideoWidth + "px";
+	cm.setBounds();
+	return {width: realVideoWidth, height: realVideoHeight}
+};
+
+function loadASS(file){
+	load(file, function(text){
+		var timeline = parseASS(text, rescale());
+		rescale();
+		cm.load(timeline);
+	});
+}
+
+function play(){
+	$("abpVideo").play();
+	loadASS('../../tests/subtitles/[YYDM-11FANS][Strike_Witches][BDRIP][01][X264_AAC][1280X720].uni_gb.ass');
+}
+
+function stop(){
+	$("abpVideo").pause();
+}
+
+window.addEventListener("load", function(){
+	bind($("abpVideo"),cm);
+});
+</script>
+</body>
+</html>

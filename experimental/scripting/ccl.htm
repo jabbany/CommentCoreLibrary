@@ -4,30 +4,39 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta http-equiv="X-UA-Compatible" value="IE=9">
 <link rel="stylesheet" href="../../demo/default.css" />
-<link rel="stylesheet" href="../../build/base.css" />
+<link rel="stylesheet" href="../../build/style.css" />
 <!-- Run 'make' to build the file -->
-<script src="../../build/CommentCore.js"></script>
+<script src="../../build/CommentCoreLibrary.js"></script>
 
 <!-- A few helpers to do some decoding/fetching below-->
 <script src="../../demo/libxml.js"></script>
-<script src="../../build/Parsers.js"></script>
 
 <!-- Scripting Extensions -->
-<script src="bscript.js"></script>
+<script src="../../src/scripting/Host.js"></script>
 
 <title>Testrun Sandbox For CCL /w Scripting Enabled</title>
 </head>
 <body>
-<div class="m20 abp" id="player">
-	<div id="commentCanvas" class="container"></div>
-	<video id="abpVideo" autobuffer="true" data-setup="{}" width="100%" height="100%" style="z-index:-1;width:100%;height:100%;top:0;left:0;right:0;bottom:0;" preload="auto">
-	</video>
+<div id="player-unit" style="width:540px;">
+	<div class="m20 abp" id="player" style="height:384px;">
+		<div id="commentCanvas" class="container"></div>
+		<video id="abpVideo" autobuffer="true" data-setup="{}" width="100%" height="100%" style="z-index:-1;width:100%;height:100%;top:0;left:0;right:0;bottom:0;" preload="auto">
+		</video>
+	</div>
+	<div class="controls">
+		<a class="button" onclick="stop();" href="javascript:;">Stop</a>
+		<a class="button" onclick="resume();" href="javascript:;">Resume</a>
+		<div style="clear:both;"></div>
+	<div>
+	<h2>Tests</h2>
+	<div class="controls">
+		<a class="button" onclick="load('../../tests/kanpai.xml');" href="javascript:;">Run Scripting 1 (Pure)</a>
+		<a class="button" onclick="load('../../tests/tsubasa.xml');" href="javascript:;">Run Scripting 2 (Mixed)</a>
+		<div style="clear:both;"></div>
+	</div>
+	<div style="clear:both;"></div>
 </div>
-<a onclick="stop();" href="javascript:;">Stop</a>
-<a onclick="resume();" href="javascript:;">Resume</a>
-<a onclick="load('../../tests/kanpai.xml');" href="javascript:;">Run Scripting 1</a>
-
-<p>Scripting: <a href="../../">&larr; Back to main test</a> </p>
+<p>Scripting: <a href="../../demo/">&larr; Back to main test</a> </p>
 <script>
 var isWindowedFullscreen = false;
 function launchFullScreen(element) {
@@ -62,8 +71,8 @@ function launchWindowFull(element){
 }
 
 var cm = new CommentManager($('commentCanvas'));
-var bscripter = new CCLScripting.BridgedSandbox(cm, $("commentCanvas"));
-cm.scripting = bscripter;
+var bscripter = new CCLScripting("../../src/scripting/Worker.js");
+cm.scripting = bscripter.getSandbox($("commentCanvas"));
 cm.init();
 
 var tmr=0;

@@ -28,8 +28,13 @@ function CommentSpaceAllocator(w,h){
 		cmt.y = cmt.offsetTop;
 		cmt.x = cmt.offsetLeft;
 		cmt.right = cmt.offsetLeft + cmt.offsetWidth;
-		cmt.height = cmt.offsetHeight;
-		cmt.width = cmt.offsetWidth;
+		if(cmt.w && cmt.h){
+			cmt.width = cmt.w;
+			cmt.height = cmt.h;
+		}else{
+			cmt.height = cmt.offsetHeight;
+			cmt.width = cmt.offsetWidth;
+		}
 		cmt.top = cmt.offsetTop;
 		cmt.left = cmt.offsetLeft;
 		return cmt;
