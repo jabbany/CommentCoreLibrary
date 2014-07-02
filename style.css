@@ -1,11 +1,11 @@
 /* ==============================
-	CommentCoreLibrary Styles
+    CommentCoreLibrary Styles
 ============================== */
 
-/* outer wrapper */
-#chrome{
-	height: 430px;
-	width: 950px;
+/* wrapper */
+#player{
+    height: 430px;
+    width: 950px;
     border: groove 0.2em gray;
     border-radius: 3px;
 }
@@ -15,12 +15,10 @@
     height: 100%;
     width: 100%;
 }
-
 :-moz-full-screen .abp{
-	height: calc(100% - 25px);
-	width: 100%;
+    height: calc(100% - 25px);
+    width: 100%;
 }
-
 :-webkit-full-screen .ls{
     position: absolute;
     top: 0;
@@ -28,15 +26,15 @@
     height: 100%;
     width: 100%;
 }
-
 :-webkit-full-screen .abp{
-	height: -webkit-calc(100% - 25px);
+    height: -webkit-calc(100% - 25px);
     width: 100%;
 }
+:full-screen{
+    margin:10px 0 0 0; width:100%; height:100%;
+}
 
-:full-screen{ margin:10px 0 0 0; width:100%; height:100%;}
-
-/* left side */
+/* left section */
 .ls{
 	float: left;
 }
@@ -48,78 +46,14 @@
 	height:405px;
 	background:#000;
 }
-
 .abp video{
     width: 100%;
     height: 100%;
 }
 
-/* comment input */
+/* comment input field */
 .ls form#danmu{
 	width: 100%;
     background: lightgrey;
     text-align:  center;
-}
-
-/* yt fix */
-.abp #ytTitleFix{
-	position: absolute;
-	width: 100%;
-	height: 60px;
-	z-index: 2;
-}
-
-.abp #ytFullHide{
-	position: absolute;
-	right: 0px;
-	width: 138px;
-	height: 30px;
-	z-index: 3;
-}
-
-/* Comment Overlay */
-.abp .container{	
-	overflow:hidden;
-	display:block;
-	z-index:1;
-	position:absolute;
-	top:0;
-	left:0;
-	bottom:0;
-	right:0;
-	-webkit-touch-callout: none;
-	-webkit-user-select: none;
-	-khtml-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
-	user-select: none;
-}
-
-.abp .container .cmt{
-	padding:3px 0 0 0;margin:0;
-	line-height:100%;
-	font-family:Simhei,Simsun,Heiti,"MS Mincho","Meiryo","Microsoft Yahei",monospace;
-	font-weight:bold;
-	text-decoration:none;
-	text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
-	color:#fff;
-	letter-spacing:0;
-	font-size:25px;
-	position:absolute;
-	word-break:none;
-	text-wrap:none;
-	pointer-events: none;
-	border:0 !important;
-	/*display: none;			/* hide comments */
-}
-
-.cmt.noshadow{
-	text-shadow: none !important;
-	-webkit-text-stroke: none !important;
-}
-
-.webkit-helper{
-	text-shadow: none;
-	-webkit-text-stroke: 0.2px black;
-	font-weight:bold;
 }

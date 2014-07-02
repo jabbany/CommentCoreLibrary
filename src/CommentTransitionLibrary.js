@@ -3,7 +3,7 @@
 * Author : Jim Chen
 * Licensing : MIT License
 ******/
-$_ = function(a){return document.getElementById(a);};
+$ = function(a){return document.getElementById(a);};
 var ABGlobal = {
 	is_webkit:function(){
 		try{
@@ -90,20 +90,8 @@ function CommentManager(stageObject){
 		if(this.def.opacity != 1 && data.mode == 1)
 			domObject.style.opacity = this.def.opacity;
 		if(data.alphaFrom != null)
-<<<<<<< HEAD:CommentCoreLibrary.js
-			cmt.style.opacity = data.alphaFrom;
-		cmt.ttl = 4000;
-		cmt.dur = 4000;
-        if ((cmt.mode == 1 || cmt.mode == 2 || cmt.mode == 6) && this.stage.offsetWidth > 540){
-            // keep comment speed consistent in full screen
-            cmt.ttl *= this.stage.offsetWidth / 540;
-            cmt.dur *= this.stage.offsetWidth / 540;
-        }
-		return cmt;
-=======
 			domObject.style.opacity = data.alphaFrom;
 		return domObject;
->>>>>>> master:src/CommentTransitionLibrary.js
 	};
 	
 	this.initCommentMovement = function(cmtObj){

@@ -1,26 +1,60 @@
-// html5 media shim
+/* ========================================
+	HTML5 Media Wrapper
+======================================== */
 
-function html5_init(){
-	window.media = $_('html5Media');
+Video.prototype = new CommentDisplay();
+
+function Video(video){
+    var self = this;
+	this.player = video;
     
-    media.addEventListener('loadedmetadata', function() {
-        load("tests/"+cid+".xml");
+    // alias for common operations
+    this.play = function(){
+        this.player.play();
+    }
+    
+    this.pause = function(){
+        this.player.pause();
+    }
+    
+    this.stop = function(){
+        this.player.pause();
+        this.stopCmt();
+    }
+    
+    // events
+    this.player.addEventListener('loadedmetadata', function() {
+        self.load(cfile);
     }, false)
     
-    media.addEventListener('play', function() {
-        resume();
+    this.player.addEventListener('play', function() {
+        self.resumeCmt();
     }, false)
     
-    media.addEventListener('pause', function() {
-        stop();
+    this.player.addEventListener('pause', function() {
+        self.pauseCmt();
     }, false)
     
-    media.addEventListener('seeked', function() {
-        playhead = media.currentTime * 1000;
-        resume();
+    this.player.addEventListener('seeked', function() {
+        self.position = this.currentTime * 1000;
+        self.resumeCmt();
     }, false)
     
-    media.addEventListener('ended', function() {
-        cm.clear();
+    this.player.addEventListener('ended', function() {
+        self.stopCmt();
     }, false)
+    
+    // dereference
+    this.destory = function(){
+        this.stop();
+        delete this.player;
+        while (this.cm.stage.hasChildNodes())
+            this.cm.stage.removeChild(this.cm.stage.firstChild);
+    }
+}
+
+
+
+function Audio(){
+    // ...   
 }

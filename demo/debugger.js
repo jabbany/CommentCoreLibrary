@@ -12,6 +12,9 @@ var tests = {
 	"test-s":"tests/kanpai.xml",
 	"test-ac-1":{"f":'tests/ACFun.json',"p":"acfun"},
 	"test-ac-2":{"f":'tests/ac940133.json',"p":"acfun"},
+    "test-ts-1":"tests/invalid/no_closing.xml",
+    "test-ts-2":"tests/invalid/syntax_error.xml",
+    "test-ts-3":"tests/invalid/xss.xml"
 };
 
 var debugs = {
