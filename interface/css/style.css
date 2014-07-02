@@ -1,0 +1,47 @@
+/* Comment List */
+.cmtList{
+	overflow-y: hidden;
+	font-size: 0.9em;
+	height: 430px;
+}
+.cmtList .bDiv{
+    overflow: auto;
+    height: 380px;
+}
+
+/** Tabs **/
+.tablist .tabholder{
+	top:0;
+    left:0;
+    right:0;
+    height:24px;
+}
+/* Tab Content */
+.tablist .tab{
+    clear: both;
+    position: relative;
+    top: -1px;
+}
+.tablist .tabholder .tabbtn{
+	background: #FAFAFA url(images/fhbg.gif) repeat-x bottom;
+	height:21px;
+    width:80px;
+	padding:3px 0 0 0;
+	cursor:default;
+	float:left;
+	text-align:center;
+	border-right:1px solid #ccc;
+}
+.tablist .tabholder .current{
+	background:#fff !important;
+}
+
+.scrollbar{
+	cursor:default;height:20px;position:relative;margin:5px;
+}
+.scrollbar .scrollbar-track{
+	cursor:default;border:1px solid #ccc;top:5px;left:5px;right:5px;bottom:5px;height:10px;
+}
+.scrollbar .scrollbar-floater{
+	cursor:default;height:15px;width:15px;border:1px solid #aaa;background:#eee;top:2px;
+}

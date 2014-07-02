@@ -1,0 +1,59 @@
+/* ==============================
+    CommentCoreLibrary Styles
+============================== */
+
+/* wrapper */
+#player{
+    height: 430px;
+    width: 950px;
+    border: groove 0.2em gray;
+    border-radius: 3px;
+}
+
+/* FullScreen */
+:-moz-full-screen .ls{
+    height: 100%;
+    width: 100%;
+}
+:-moz-full-screen .abp{
+    height: calc(100% - 25px);
+    width: 100%;
+}
+:-webkit-full-screen .ls{
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+}
+:-webkit-full-screen .abp{
+    height: -webkit-calc(100% - 25px);
+    width: 100%;
+}
+:full-screen{
+    margin:10px 0 0 0; width:100%; height:100%;
+}
+
+/* left section */
+.ls{
+	float: left;
+}
+
+/* display */
+.abp{
+	position:relative;
+	width:540px;
+	height:405px;
+	background:#000;
+}
+.abp video{
+    width: 100%;
+    height: 100%;
+}
+
+/* comment input field */
+.ls form#danmu{
+	width: 100%;
+    background: lightgrey;
+    text-align:  center;
+}

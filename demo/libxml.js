@@ -3,7 +3,9 @@
 * Licensed Under the MIT License
 * Copyright (c) 2012 Jim Chen ( CQZ, Jabbany )
 ************************/
-function CommentLoader(url,xcm,mode){
+function CommentLoader(url,xcm,callback,mode){
+    if(callback == null)
+        callback = function(){return;};
 	if(mode == null)
 		mode = 'bilibili';
 	if (window.XMLHttpRequest){
@@ -29,6 +31,7 @@ function CommentLoader(url,xcm,mode){
 			}else if(mode == 'acfun'){
 				cm.load(AcfunParser(xmlhttp.responseText));
 			}
+            callback();
 		}
 	}
 }

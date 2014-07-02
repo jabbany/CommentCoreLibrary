@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+<title>CommentCorePlayer Test Page</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" value="IE=9">
+<link rel="stylesheet" href="style.css" />
+<link rel="stylesheet" href="build/style.css" />
+
+<!-- Comment List -->
+<link rel="stylesheet" href="interface/css/style.css" />
+<link rel="stylesheet" href="interface/css/flexgrid.css" />
+<script src="interface/js/flexgrid.js"></script>
+<script src="interface/js/scrollbar.js"></script>
+<script src="interface/js/tabmanager.js"></script>
+
+<!-- Run 'make' to build the file -->
+<script src="build/CommentCoreLibrary.js"></script>
+
+<!-- A few helpers to do some decoding/fetching below-->
+<script src="demo/libxml.js"></script>
+<script src="build/Parsers.js"></script>
+
+<!-- Graphical Elements Maybe-->
+
+<!-- Extend-->
+<script src="extend/fefx.js"></script>
+
+<!-- jQuery -->
+<script src="extend/jquery-1.8.0.min.js"></script>
+<script>$.noConflict();</script>
+
+<!-- Initialization -->
+<script src="CommentInit.js"></script>
+
+<!-- Integrate with other video site/service -->
+<script src="providers/yt.js"></script>
+<script src="providers/dm.js"></script>
+<script src="providers/vm.js"></script>
+<script src="providers/html5.js"></script>
+</head>
+
+
+<body>
+<div id="player">
+	<div class="ls">
+		<div class="abp">
+			<div id="commentCanvas" class="container">
+				<!--
+				<video id="ytPlayer"><script>ytid='AEV8cBND7EY'; cfile='tests/sweetdevil.xml';</script></video>
+				<video id="vmPlayer"><script>vmid='5838112'; cfile='tests/comment.xml';</script></video>
+				<video id="dmPlayer"><script>dmid='xqcwbi'; cfile='tests/comment.xml';</script></video>
+				-->
+				<video id="ytPlayer"><script>ytid='AEV8cBND7EY'; cfile='tests/sweetdevil.xml';</script></video>
+			</div>
+		</div>
+        <!-- comment form -->
+		<form id="danmu">
+			<span>
+				Mode:
+				<select name="mode" id="mode">
+					<option value="1" selected>default</option>
+					<option value="6">reverse</option>
+					<option value="2">underscroll</option>
+					<option value="5">top</option>
+					<option value="4">bottom</option>
+				</select>
+			</span>
+			<span>
+				Size:
+				<select name="fontsize" id="fontsize">
+					<option value="15">Small</option>
+					<option value="25" selected>Medium</option>
+					<option value="38">Large</option>
+				</select>
+			</span>
+			<input type="text" placeholder="comment here" name="comment" maxlength="50" autofocus />
+			<input type="submit" value="Comment" />
+		</form>
+	</div>
+	<!-- comment list -->
+    <div class="cmtList">
+        <div id="sidebar" class="tablist">
+            <div class="tabholder">
+                <div id="tab_commentlist" class="tabbtn current">Comment</div>
+                <div id="tab_playersettings" class="tabbtn">Setting</div>
+                <div style="padding: 2px; color: lightgrey; text-align: center;"><noscript>Please enable JavaScript</noscript></div>
+            </div>
+            <div id="commentListTab" class="tab">
+                <div class="flexigrid">
+                    <div class="hDiv">
+                        <div class="hDivBox"></div>
+                        <table cellpadding="0" cellspacing="0" style="width:100%;">
+                            <thead>
+                                <tr>
+                                    <th id="tb-ref1" style="width:40px;"><div>Time</div></th>
+                                    <th id="tb-ref2"><div>Comment</div></th>
+                                    <th id="tb-ref3" style="width:120px;"><div>Date</div></th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                    <div class="bDiv">
+                        <table id="CommentList" cellpadding="0" cellspacing="0" border="0"></table>
+                    </div>
+                </div>
+            </div>
+            <div id="playerSettingsTab" class="tab" style="display:none;background:#fff;">
+                <div style="padding:10px;">
+                    Opacity:
+                    <div id="opacitySettings" class="scrollbar"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<br />
+<a onclick="cd.stop();" href="javascript:;">Stop</a>
+<a onclick="cd.resume();" href="javascript:;">Resume</a>
+<a onclick="cd.load('tests/test.xml');" href="javascript:;">Run Test 1</a>
+<a onclick="cd.load('tests/test2.xml');" href="javascript:;">Run Test 2</a>
+<a onclick="cd.load('tests/rokubunnoichi.xml');" href="javascript:;">Run Test 3</a>
+<a onclick="cd.load('tests/mikunoshoushitsu.xml');" href="javascript:;">Run Test 4</a>
+<a onclick="cd.load('tests/unowen.xml');" href="javascript:;">Run Test 5</a>
+<a onclick="cd.load('tests/comment.xml');" href="javascript:;">Run Test 6</a>
+
+<p>Extended: <a onclick="cd.load('tests/extended.xml');" href="javascript:;">Run Test 7</a>
+  (WIP) <a onclick="cd.load('tests/bilibili.xml');" href="javascript:;">Run Test 8</a>
+<a onclick="cd.load('tests/kanpai.xml');" href="javascript:;">Run Test Scripting</a></p>
+<p>AcFun (Experimental) <a onclick="cd.load('tests/ACFun.json','acfun');" href="javascript:;">Run Test 1</a></p>
+
+<script>
+function setHTML5(){
+    try{ if (typeof cd != 'undefined') cd.destory(); }catch(e){console.log(e)}
+    $("commentCanvas").innerHTML = "<video id= \"html5Media\" controls>"
+        + "<source type=\"video/mp4\" src=\"http://media.w3.org/2010/05/sintel/trailer.mp4\"></source>"
+        + "<source type=\"video/webm\" src=\"http://media.w3.org/2010/05/sintel/trailer.webm\"></source>"
+        + "<source type=\"video/ogg\" src=\"http://media.w3.org/2010/05/sintel/trailer.ogv\"></source>"
+        + "</video>";
+    cd = new Video($('html5Media')); cfile="tests/comment.xml";
+}
+function setYouTube(){
+    try{ if (typeof cd != 'undefined') cd.destory(); }catch(e){console.log(e)}
+    $("commentCanvas").innerHTML = "<video id=\"ytPlayer\"></video>";
+    cd = new YouTube(); cfile='tests/sweetdevil.xml';
+}
+function setDailyMotion(){
+    try{ if (typeof cd != 'undefined') cd.destory(); }catch(e){console.log(e)}
+    $("commentCanvas").innerHTML = "<video id=\"dmPlayer\"></video>";
+    cd = new DailyMotion('xqcwbi'); cfile='tests/comment.xml';
+}
+function setVimeo(){
+    try{ if (typeof cd != 'undefined') cd.destory(); }catch(e){console.log(e)}
+    $("commentCanvas").innerHTML = "<video id=\"vmPlayer\"></video>";
+    cd = new Vimeo('34816200'); cfile='tests/comment.xml';
+}
+function setNone(){
+    try{ if (typeof cd != 'undefined') cd.destory(); }catch(e){console.log(e)}
+    $("commentCanvas").innerHTML = "";
+    cd=new CommentDisplay();
+}
+// initialize by default
+cd = new CommentDisplay();
+setTimeout(function () {
+    cd.load('tests/rokubunnoichi.xml');
+}, 100);
+</script>
+
+<p>Source:
+<a onclick="setYouTube()" href="javascript:;">YouTube</a>
+<a onclick="setDailyMotion()" href="javascript:;">DailyMotion</a>
+<a onclick="setVimeo()" href="javascript:;">Vimeo</a>
+<a onclick="setHTML5()" href="javascript:;">HTML5</a>
+<a onclick='setNone()' href="javascript:;">None</a>
+<a onclick="document.location.reload(true)" href="javascript:;">Reload</a>
+</p>
+
+<p>Filters: <a onclick="cd.cm.filter.setRuntimeFilter(fefx.center_dim);" href="javascript:;">Apply Center-Transparency</a>
+<a onclick="cd.cm.filter.setRuntimeFilter(fefx.center_speedup);" href="javascript:;">Apply Center-Speedup</a>
+<a onclick="cd.cm.filter.setRuntimeFilter(null);" href="javascript:;">Clear Runtime Filters</a>
+</p>
+
+<p>APIs: <a onclick="cd.toggleFullscreen()" href="javascript:;">Fullscreen</a>
+<a onclick="cd.toggleWindowedFullscreen()" href="javascript:;">Windowed Fullscreen</a>
+</p>
+
+<p>Links: <a href="player-demo.htm">Demo with video</a> <a href="../experimental/animation">Experimental CSS3 Transition Library</a> <a href="transition-library-test.htm">CCL /w Transition Library (Alpha)</a></p>
+<p>Scripting: <a href="../experimental/scripting">Scripting Sandbox test</a> <a href="../experimental/scripting/ccl.htm">Using scripting with CCL (Alpha)</a> </p>
+
+</body>
+</html>

@@ -21,7 +21,7 @@ tickets if this demo test has bugs. Remember to tell me your browser
 vendor/version info though. PS, just a heads up, due to lack of
 fonts, Linux systems may render some fixed point animations wrong, this 
 is normal. You should install the basic chinese font SimHei for accurate
-positioning. 
+positioning.
 
 ## License
 The CommentCoreLibrary is licensed under the permissive MIT License. If 
