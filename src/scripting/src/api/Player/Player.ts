@@ -148,4 +148,14 @@ module Player{
 	export function toString(){
 		return "[player Player]";
 	}
+
+	/** Update Listeners **/
+	__schannel("Update:DimensionUpdate", function(payload){
+		_width = payload["stageWidth"];
+		_height = payload["stageHeight"];
+		if(payload.hasOwnProperty("videoWidth") && payload.hasOwnProperty("videoHeight")) {
+			_videoWidth = payload["videoWidth"];
+			_videoHeight = payload["videoHeight"];
+		}
+	});
 }

@@ -1313,6 +1313,9 @@ var Display;
 
 
         CommentButton.prototype.initStyle = function (style) {
+            if (style.hasOwnProperty("parent")) {
+                style["parent"].addChild(this);
+            }
         };
 
         CommentButton.prototype.serialize = function () {
@@ -1357,6 +1360,9 @@ var Display;
 
 
         CommentCanvas.prototype.initStyle = function (style) {
+            if (style.hasOwnProperty("parent")) {
+                style["parent"].addChild(this);
+            }
         };
         return CommentCanvas;
     })(Display.Sprite);
@@ -1428,6 +1434,9 @@ var Display;
 
 
         CommentShape.prototype.initStyle = function (style) {
+            if (style.hasOwnProperty("parent")) {
+                style["parent"].addChild(this);
+            }
             if (style["lifeTime"]) {
                 this._mM.dur = style["lifeTime"] * 1000;
             }
@@ -1664,6 +1673,9 @@ var Display;
             if (style["bold"]) {
                 this.getTextFormat().bold = style["bold"];
             }
+            if (style.hasOwnProperty("parent")) {
+                style["parent"].addChild(this);
+            }
             this._mM.play();
         };
         return CommentField;
@@ -1783,6 +1795,16 @@ var Display;
         return "[display Display]";
     }
     Display.toString = toString;
+
+    /** Update Listeners **/
+    __schannel("Update:DimensionUpdate", function (payload) {
+        _width = payload["stageWidth"];
+        _height = payload["stageHeight"];
+        if (payload.hasOwnProperty("screenWidth") && payload.hasOwnProperty("screenHeight")) {
+            _fullScreenWidth = payload["screenWidth"];
+            _fullScreenHeight = payload["screenHeight"];
+        }
+    });
 })(Display || (Display = {}));
 
 var $ = Display;

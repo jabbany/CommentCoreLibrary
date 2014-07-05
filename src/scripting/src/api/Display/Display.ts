@@ -107,6 +107,16 @@ module Display {
 	export function toString() {
 		return "[display Display]";
 	}
+
+	/** Update Listeners **/
+	__schannel("Update:DimensionUpdate", function(payload){
+		_width = payload["stageWidth"];
+		_height = payload["stageHeight"];
+		if(payload.hasOwnProperty("screenWidth") && payload.hasOwnProperty("screenHeight")) {
+			_fullScreenWidth = payload["screenWidth"];
+			_fullScreenHeight = payload["screenHeight"];
+		}
+	});
 }
 
 var $ = Display;

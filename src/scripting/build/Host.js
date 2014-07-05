@@ -234,7 +234,7 @@ var CCLScripting = function(workerUrl){
 	CCLScripting.prototype.BridgedSandbox.prototype.init = function(){
 		var self = this;
 		/** Post whatever we need to **/
-		self.send("Update:dimension", self.getContext().getDimensions());
+		self.send("Update:DimensionUpdate", self.getContext().getDimensions());
 		/** Hook Listeners **/
 		this.addListener("Runtime::alert", function(msg){
 			alert(msg);
@@ -355,6 +355,10 @@ var CCLScripting = function(workerUrl){
 			data.y = y;
 			this.DOM.style.top = data.y + "px";
 		};
+		this.setAlpha = function(a){
+			data.alpha = a;
+			this.DOM.style.opacity = a;
+		}
 		/** Load x,y **/
 		this.setX(data.x);
 		this.setY(data.y);
@@ -364,6 +368,12 @@ var CCLScripting = function(workerUrl){
 			this.DOM.innerHTML = "";
 			this.DOM.appendChild(_("text",text));
 		};
+		this.__defineSetter__("alpha", function(f){
+			this.setAlpha(f);
+		});
+		this.__defineGetter__("alpha", function(f){
+			return data.alpha;
+		});
 		this.__defineSetter__("x", function(f){
 			this.setX(f);
 		});
@@ -459,11 +469,17 @@ var CCLScripting = function(workerUrl){
 		this.__defineSetter__("y", function(f){
 			this.setY(f);
 		});
+		this.__defineSetter__("alpha", function(f){
+			this.setAlpha(f);
+		});
 		this.__defineGetter__("x", function(f){
 			return this._x;
 		});
 		this.__defineGetter__("y", function(f){
 			return this._y;
+		});
+		this.__defineGetter__("alpha", function(f){
+			return this._alpha;
 		});
 		/** /PROPS **/
 		
@@ -526,6 +542,14 @@ var CCLScripting = function(workerUrl){
 			this._y = y;
 			__(defaultGroup,{
 				"transform":"translate(" + this._x + "," + this._y + ")"
+			});
+		};
+		this.setAlpha = function(alpha){
+			if(!alpha)
+				return;
+			this._alpha = alpha;
+			__(defaultGroup,{
+				"opacity":this._alpha
 			});
 		};
 		this.moveTo = function(params){

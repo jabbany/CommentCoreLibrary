@@ -24,6 +24,9 @@ module Display {
 		}
 
 		public initStyle(style:Object):void {
+			if(style.hasOwnProperty("parent")){
+				(<DisplayObject> style["parent"]).addChild(this);
+			}
 			if (style["lifeTime"]) {
 				this._mM.dur = style["lifeTime"] * 1000;
 			}

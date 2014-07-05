@@ -10,13 +10,18 @@
 
 <!-- A few helpers to do some decoding/fetching below-->
 <script src="../../demo/libxml.js"></script>
-
+<style>
+pre{margin:0;}
+pre.error{color:#f00;}
+pre.warning{color:#FFC500;}
+</style>
 <!-- Scripting Extensions -->
 <script src="../../src/scripting/build/Host.js"></script>
 
 <title>Testrun Sandbox For CCL /w Scripting Enabled</title>
 </head>
 <body>
+<div style="position:absolute;right:0; top:0; width: 45%; overflow:auto; height:384px; padding:3px;" id="debug-console"></div>
 <div id="player-unit" style="width:540px;clear:both;">
 	<div class="m20 abp" id="player" style="height:384px;">
 		<div id="commentCanvas" class="container"></div>
@@ -78,6 +83,37 @@ function launchWindowFull(element){
 
 var cm = new CommentManager($('commentCanvas'));
 var bscripter = new CCLScripting("../../src/scripting/build/Worker.js");
+bscripter.logger = new function(){
+	this.log = function(t){
+		var pre = document.createElement("pre");
+		pre.textContent = t.toString();
+		$("debug-console").appendChild(pre);
+		while($("debug-console").children.length > 200){
+			$("debug-console").removeChild($("debug-console").children[0]);
+		}
+		$("debug-console").scrollTop = 100000;
+	};
+	this.error = function(t){
+		var pre = document.createElement("pre");
+		pre.textContent = t.toString();
+		pre.className = "error";
+		$("debug-console").appendChild(pre);
+		while($("debug-console").children.length > 200){
+			$("debug-console").removeChild($("debug-console").children[0]);
+		}
+		$("debug-console").scrollTop = 100000;
+	};
+	this.warn = function(t){
+		var pre = document.createElement("pre");
+		pre.textContent = t.toString();
+		pre.className = "warning";
+		$("debug-console").appendChild(pre);
+		while($("debug-console").children.length > 200){
+			$("debug-console").removeChild($("debug-console").children[0]);
+		}
+		$("debug-console").scrollTop = 100000;
+	};
+};
 cm.scripting = bscripter.getSandbox($("commentCanvas"));
 cm.init();
 

@@ -32,7 +32,9 @@ module Display {
 		}
 
 		public initStyle(style:Object):void {
-
+			if(style.hasOwnProperty("parent")){
+				(<DisplayObject> style["parent"]).addChild(this);
+			}
 		}
 
 		public serialize():Object{

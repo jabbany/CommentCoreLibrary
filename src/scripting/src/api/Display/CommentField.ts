@@ -79,6 +79,9 @@ module Display {
 			if (style["bold"]) {
 				this.getTextFormat().bold = style["bold"];
 			}
+			if(style.hasOwnProperty("parent")){
+				(<DisplayObject> style["parent"]).addChild(this);
+			}
 			this._mM.play();
 		}
 	}

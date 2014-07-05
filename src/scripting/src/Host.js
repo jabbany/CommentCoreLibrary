@@ -234,7 +234,7 @@ var CCLScripting = function(workerUrl){
 	CCLScripting.prototype.BridgedSandbox.prototype.init = function(){
 		var self = this;
 		/** Post whatever we need to **/
-		self.send("Update:dimension", self.getContext().getDimensions());
+		self.send("Update:DimensionUpdate", self.getContext().getDimensions());
 		/** Hook Listeners **/
 		this.addListener("Runtime::alert", function(msg){
 			alert(msg);
