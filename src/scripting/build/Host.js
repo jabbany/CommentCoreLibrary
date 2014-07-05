@@ -649,7 +649,9 @@ var CCLScripting = function(workerUrl){
 		};
 		
 		this.clear = function(){
-			defaultGroup.innerHTML = "";
+			while (defaultGroup.lastChild) {
+				defaultGroup.removeChild(defaultGroup.lastChild);
+			}
 		};
 		
 		this.__defineGetter__("filters", function(f){
@@ -689,7 +691,7 @@ var CCLScripting = function(workerUrl){
 							0,0,0,cR,0,
 							0,0,0,cG,0,
 							0,0,0,cB,0,
-							0,0,0,0,1,
+							0,0,0,1,0,
 						];
 						dFilter.appendChild(__("feColorMatrix",{
 							"type":"matrix",

@@ -17,7 +17,7 @@
 <title>Testrun Sandbox For CCL /w Scripting Enabled</title>
 </head>
 <body>
-<div id="player-unit" style="width:540px;">
+<div id="player-unit" style="width:540px;clear:both;">
 	<div class="m20 abp" id="player" style="height:384px;">
 		<div id="commentCanvas" class="container"></div>
 		<video id="abpVideo" autobuffer="true" data-setup="{}" width="100%" height="100%" style="z-index:-1;width:100%;height:100%;top:0;left:0;right:0;bottom:0;" preload="auto">
@@ -27,16 +27,21 @@
 		<a class="button" onclick="stop();" href="javascript:;">Stop</a>
 		<a class="button" onclick="resume();" href="javascript:;">Resume</a>
 		<div style="clear:both;"></div>
-	<div>
-	<h2>Tests</h2>
-	<div class="controls">
-		<a class="button" onclick="load('../../tests/kanpai.xml');" href="javascript:;">Run Scripting 1 (Pure)</a>
-		<a class="button" onclick="load('../../tests/tsubasa.xml');" href="javascript:;">Run Scripting 2 (Mixed)</a>
-		<a class="button" onclick="load('../../tests/comment-festival-v3.xml');" href="javascript:;">Run Scripting 3 (WTF)</a>
-		<div style="clear:both;"></div>
 	</div>
 	<div style="clear:both;"></div>
 </div>
+<div style="margin-top:450px;">
+	<h2>Tests</h2>
+	<div class="controls">
+		<a class="button" onclick="load('../../tests/scripting/kanpai.xml');" href="javascript:;">Run Scripting 1 (Pure) [Kanpai]</a>
+		<a class="button" onclick="load('../../tests/scripting/tsubasa.xml');" href="javascript:;">Run Scripting 2 (Mixed) [Tusbasa]</a>
+		<a class="button" onclick="load('../../tests/scripting/comment-festival-v3.xml');" href="javascript:;">Run Scripting 3 (Large) [Comment Festival v3]</a>
+		<a class="button" onclick="load('../../tests/scripting/jinzou-enemy.xml');" href="javascript:;">Run Scripting 4 (drawPath) [Jinzou Enemy]</a>
+		<a class="button" onclick="load('../../tests/scripting/crazy-night.xml');" href="javascript:;">Run Scripting 5 (textures &amp; 3d) [Crazy Night]</a>
+		<a class="button" onclick="load('../../tests/scripting/round-and-round.xml');" href="javascript:;">Run Scripting 6 (Akari engine) [Round and Round]</a>
+		<div style="clear:both;"></div>
+	</div>
+</div>	
 <p>Scripting: <a href="../../demo/">&larr; Back to main test</a> </p>
 <script>
 var isWindowedFullscreen = false;
