@@ -5,6 +5,12 @@
 */
 var Display;
 (function (Display) {
+    var Point = (function () {
+        function Point() {
+        }
+        return Point;
+    })();
+    Display.Point = Point;
     var Matrix = (function () {
         function Matrix(a, b, c, d, tx, ty) {
             if (typeof a === "undefined") { a = 1; }
@@ -93,8 +99,105 @@ var Display;
                 this.identity();
             }
         }
+        Matrix3D.prototype.dotProduct = function (a, b) {
+            if (a.length !== 16 || b.length !== 16) {
+                throw new Error("Matrix3D dot product expects a matrix3d");
+            }
+            var res = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            for (var i = 0; i < 4; i++) {
+                for (var j = 0; j < 4; j++) {
+                    for (var k = 0; k < 4; k++) {
+                        res[i * 4 + j] += a[i * 4 + k] * b[k * 4 + j];
+                    }
+                }
+            }
+            return res;
+        };
+
+        Matrix3D.prototype.rotationMatrix = function (angle, axis) {
+            var sT = Math.sin(angle), cT = Math.cos(angle);
+            return [
+                cT + axis.x * axis.x * (1 - cT), axis.x * axis.y * (1 - cT) - axis.z * sT, axis.x * axis.z * (1 - cT) + axis.y * sT, 0,
+                axis.x * axis.y * (1 - cT) + axis.z * sT, cT + axis.y * axis.y * (1 - cT), axis.y * axis.z * (1 - cT) - axis.x * sT, 0,
+                axis.z * axis.x * (1 - cT) - axis.y * sT, axis.z * axis.y * (1 - cT) + axis.x * sT, cT + axis.z * axis.z * (1 - cT), 0,
+                0, 0, 0, 1
+            ];
+        };
+
         Matrix3D.prototype.identity = function () {
             this._data = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
+        };
+
+        Matrix3D.prototype.append = function (lhs) {
+            this._data = this.dotProduct(lhs._data, this._data);
+        };
+
+        Matrix3D.prototype.appendRotation = function (degrees, axis, pivotPoint) {
+            if (typeof pivotPoint === "undefined") { pivotPoint = null; }
+            if (pivotPoint !== null) {
+                this.appendTranslation(pivotPoint.x, pivotPoint.y, pivotPoint.z);
+            }
+            this._data = this.dotProduct(this.rotationMatrix(degrees * Math.PI / 180, axis), this._data);
+            if (pivotPoint !== null) {
+                this.appendTranslation(-pivotPoint.x, -pivotPoint.y, -pivotPoint.z);
+            }
+        };
+
+        Matrix3D.prototype.appendTranslation = function (x, y, z) {
+        };
+
+        Matrix3D.prototype.prepend = function (rhs) {
+            this._data = this.dotProduct(this._data, rhs._data);
+        };
+
+        Matrix3D.prototype.prependRotation = function (degrees, axis, pivotPoint) {
+            if (typeof pivotPoint === "undefined") { pivotPoint = null; }
+            if (pivotPoint !== null) {
+                this.prependTranslation(pivotPoint.x, pivotPoint.y, pivotPoint.z);
+            }
+            this._data = this.dotProduct(this._data, this.rotationMatrix(degrees * Math.PI / 180, axis));
+            if (pivotPoint !== null) {
+                this.prependTranslation(-pivotPoint.x, -pivotPoint.y, -pivotPoint.z);
+            }
+        };
+
+        Matrix3D.prototype.prependTranslation = function (x, y, z) {
+        };
+
+        Matrix3D.prototype.transformVector = function (v) {
+            var rx = this._data[0] * v.x + this._data[1] * v.y + this._data[2] * v.z + this._data[3] * v.w;
+            var ry = this._data[4] * v.x + this._data[5] * v.y + this._data[6] * v.z + this._data[7] * v.w;
+            var rz = this._data[8] * v.x + this._data[9] * v.y + this._data[10] * v.z + this._data[11] * v.w;
+            var rw = this._data[12] * v.x + this._data[13] * v.y + this._data[14] * v.z + this._data[15] * v.w;
+            return new Vector3D(rx, ry, rz, rw);
+        };
+
+        /**
+        * Given an array of numbers representing vectors, postMultiply them to the current matrix.
+        * @param vin - input (x,y,z)
+        * @param vout - output (x,y,z)
+        */
+        Matrix3D.prototype.transformVectors = function (vin, vout) {
+            if (vin.length % 3 !== 0) {
+                __trace("Matrix3D.transformVectors expects input size to be multiple of 3.", "err");
+                return;
+            }
+            for (var i = 0; i < vin.length / 3; i++) {
+                var x = vin[i * 3], y = vin[i * 3 + 1], z = vin[i * 3 + 2];
+                var rx = this._data[0] * x + this._data[1] * y + this._data[2] * z;
+                var ry = this._data[4] * x + this._data[5] * y + this._data[6] * z;
+                var rz = this._data[8] * x + this._data[9] * y + this._data[10] * z;
+                vout.push(rx, ry, rz);
+            }
+        };
+
+        Matrix3D.prototype.transpose = function () {
+            this._data = [
+                this._data[0], this._data[4], this._data[8], this._data[12],
+                this._data[1], this._data[5], this._data[9], this._data[13],
+                this._data[2], this._data[6], this._data[10], this._data[14],
+                this._data[3], this._data[7], this._data[11], this._data[15]
+            ];
         };
 
         Matrix3D.prototype.clone = function () {
@@ -107,6 +210,27 @@ var Display;
         return Matrix3D;
     })();
     Display.Matrix3D = Matrix3D;
+
+    var Vector3D = (function () {
+        function Vector3D(x, y, z, w) {
+            if (typeof x === "undefined") { x = 0; }
+            if (typeof y === "undefined") { y = 0; }
+            if (typeof z === "undefined") { z = 0; }
+            if (typeof w === "undefined") { w = 0; }
+            this.x = x;
+            this.y = y;
+            this.z = z;
+            this.w = w;
+        }
+        Vector3D.prototype.toString = function () {
+            return "(x=" + this.x + ", y=" + this.y + ", z=" + this.z + ", w=" + this.w + ")";
+        };
+        Vector3D.X_AXIS = new Vector3D(1, 0, 0);
+        Vector3D.Y_AXIS = new Vector3D(0, 1, 0);
+        Vector3D.Z_AXIS = new Vector3D(0, 0, 1);
+        return Vector3D;
+    })();
+    Display.Vector3D = Vector3D;
 
     function createMatrix() {
         return new Matrix();
@@ -128,14 +252,43 @@ var Display;
     }
     Display.createGradientBox = createGradientBox;
 
+    function createVector3D(x, y, z, w) {
+        if (typeof x === "undefined") { x = 0; }
+        if (typeof y === "undefined") { y = 0; }
+        if (typeof z === "undefined") { z = 0; }
+        if (typeof w === "undefined") { w = 0; }
+        return new Vector3D(x, y, z, w);
+    }
+    Display.createVector3D = createVector3D;
+
     function projectVector(matrix, vector) {
         return [];
     }
     Display.projectVector = projectVector;
 
     function projectVectors(matrix, verts, projectedVerts, uvts) {
+        while (projectedVerts.length > 0) {
+            projectedVerts.pop();
+        }
+        if (verts.length % 3 !== 0) {
+            __trace("Display.projectVectors input vertex Vector must be a multiple of 3.", "err");
+            return;
+        }
+        var transformed = [];
+        matrix.transformVectors(verts, transformed);
+        for (var i = 0; i < transformed.length / 3; i++) {
+            var x = transformed[i * 3], y = transformed[i * 3 + 1];
+            projectedVerts.push(x, y);
+        }
     }
     Display.projectVectors = projectVectors;
+
+    function createPoint(x, y) {
+        if (typeof x === "undefined") { x = 0; }
+        if (typeof y === "undefined") { y = 0; }
+        return new Point();
+    }
+    Display.createPoint = createPoint;
 
     /**
     * Transforms a JS Array into an AS3 Vector<int>.
@@ -924,6 +1077,45 @@ var Display;
         */
         Graphics.prototype.endFill = function () {
             this._callDrawMethod("endFill", []);
+        };
+
+        /**
+        * Given a list of vertices (and optionally indices). Draws triangles to the screen
+        * @param verts - Vertices (x,y) as a list
+        * @param indices - Indices for positions in verts[2 * i], verts[2 * i + 1]
+        * @param uvtData - Texture mapping stuff. Not supported any time soon.
+        * @param culling - "none" shows all triangles, "positive"/"negative" will cull triangles by normal along z-axis
+        */
+        Graphics.prototype.drawTriangles = function (verts, indices, uvtData, culling) {
+            if (typeof indices === "undefined") { indices = null; }
+            if (typeof uvtData === "undefined") { uvtData = null; }
+            if (typeof culling === "undefined") { culling = "none"; }
+            if (indices === null) {
+                indices = [];
+                for (var i = 0; i < verts.length; i += 2) {
+                    indices.push(i / 2);
+                }
+            } else {
+                indices = indices.slice(0);
+            }
+            if (indices.length % 3 !== 0) {
+                __trace("Graphics.drawTriangles malformed indices count. Must be multiple of 3.", "err");
+                return;
+            }
+
+            /** Do culling of triangles here to lessen work later **/
+            if (culling !== "none") {
+                for (var i = 0; i < indices.length / 3; i++) {
+                    var ux = verts[2 * indices[i * 3 + 1]] - verts[2 * indices[i * 3]], uy = verts[2 * indices[i * 3 + 1] + 1] - verts[2 * indices[i * 3] + 1], vx = verts[2 * indices[i * 3 + 2]] - verts[2 * indices[i * 3 + 1]], vy = verts[2 * indices[i * 3 + 2] + 1] - verts[2 * indices[i * 3 + 1] + 1];
+                    var zcomp = ux * vy - vx * uy;
+                    if (zcomp < 0 && culling === "positive" || zcomp > 0 && culling === "negative") {
+                        /** Remove the indices. Leave the vertices. **/
+                        indices.splice(i * 3, 3);
+                        i--;
+                    }
+                }
+            }
+            this._callDrawMethod("drawTriangles", [verts, indices, culling]);
         };
 
         /**

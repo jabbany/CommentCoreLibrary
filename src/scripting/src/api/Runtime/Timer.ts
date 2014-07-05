@@ -159,7 +159,7 @@ module Runtime{
 						self.currentCount++;
 						self.dispatchEvent("timer");
 					}
-					lastTime = elapsed;
+					lastTime = Date.now();
 					if(self._repeatCount > 0 &&
 						self._repeatCount <= self.currentCount){
 						self.stop();
@@ -205,7 +205,7 @@ module Runtime{
 
 	/** Timer Related **/
 	var masterTimer:TimerRuntime = new TimerRuntime();
-	var internalTimer:Timer = new Timer(20);
+	var internalTimer:Timer = new Timer(50);
 	var enterFrameDispatcher:Function = function () {
 		for (var object in Runtime.registeredObjects) {
 			if (object.substring(0, 2) === "__") {
@@ -215,7 +215,7 @@ module Runtime{
 		}
 	};
 	masterTimer.start();
-	//internalTimer.start();
+	internalTimer.start();
 	internalTimer.addEventListener("timer", enterFrameDispatcher);
 	/**
 	 *  Get the master timer instance
