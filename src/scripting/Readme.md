@@ -5,7 +5,7 @@ Scripting Platform 脚本开发
 
 Building
 ------------------------
-目前还不自动 build ，这里只有 API 头头。
+编译 Scripting 请运行 make
 
 
 Documentation

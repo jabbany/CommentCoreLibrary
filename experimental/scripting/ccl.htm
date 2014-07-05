@@ -12,7 +12,7 @@
 <script src="../../demo/libxml.js"></script>
 
 <!-- Scripting Extensions -->
-<script src="../../src/scripting/Host.js"></script>
+<script src="../../src/scripting/build/Host.js"></script>
 
 <title>Testrun Sandbox For CCL /w Scripting Enabled</title>
 </head>
@@ -32,6 +32,7 @@
 	<div class="controls">
 		<a class="button" onclick="load('../../tests/kanpai.xml');" href="javascript:;">Run Scripting 1 (Pure)</a>
 		<a class="button" onclick="load('../../tests/tsubasa.xml');" href="javascript:;">Run Scripting 2 (Mixed)</a>
+		<a class="button" onclick="load('../../tests/comment-festival-v3.xml');" href="javascript:;">Run Scripting 3 (WTF)</a>
 		<div style="clear:both;"></div>
 	</div>
 	<div style="clear:both;"></div>
@@ -71,7 +72,7 @@ function launchWindowFull(element){
 }
 
 var cm = new CommentManager($('commentCanvas'));
-var bscripter = new CCLScripting("../../src/scripting/Worker.js");
+var bscripter = new CCLScripting("../../src/scripting/build/Worker.js");
 cm.scripting = bscripter.getSandbox($("commentCanvas"));
 cm.init();
 
