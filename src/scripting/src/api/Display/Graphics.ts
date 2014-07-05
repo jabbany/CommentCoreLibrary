@@ -124,6 +124,16 @@ module Display {
 		}
 
 		/**
+		 * Executes a list of drawing commands with their data given in the data array
+		 * @param commands - Commands by index
+		 * @param data - List of data
+		 * @param winding - evenOdd or nonZero
+		 */
+		public drawPath(commands:Array<number>, data:Array<number>, winding:string = "evenOdd"):void{
+			this._callDrawMethod("drawPath",[commands, data, winding]);
+		}
+
+		/**
 		 * Fill next shape with solid color
 		 * @param color
 		 * @param alpha

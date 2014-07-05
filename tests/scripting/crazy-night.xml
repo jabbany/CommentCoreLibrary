@@ -1,4 +1,3 @@
-
 <?xml version="1.0" encoding="UTF-8"?><i><chatserver>chat.bilibili.com</chatserver><chatid>602517</chatid><mission>0</mission><source>e-r</source><ds>149911212</ds><de>155180719</de><max_count>0</max_count><d p="0.217,8,25,16777215,1353147172,2,92de3cf6,149911212">/*红幕*/
 function redCurtain()
 {var colors = [0xFC0808,0xBF0D0D ];
@@ -43,9 +42,9 @@ var gf1=$.createGlowFilter(0xF7D4D4/*光晕颜色*/,0.8/*Alpha*/,0/*水平模糊
  for(var i=0;i&lt;t.length;i++)
  {var w=$.createComment(t[i],{x:x1-wz/1.8,y:y1,lifeTime:lt,alpha:1,motionGroup:[ 
  { alpha: {fromValue:0,toValue:0,lifeTime:key*(i+1)}}, 
-   {x:{fromValue:x1-wz/1.8,toValue:x1+i*(wz+15)/1.8,lifeTime:0.2,easing:cubic},alpha: {fromValue:0,toValue:1,lifeTime:0.2}},
+   {x:{fromValue:x1-wz/1.8,toValue:x1+i*(wz+15)/1.8,lifeTime:0.2},alpha: {fromValue:0,toValue:1,lifeTime:0.2}},
    { alpha: {fromValue:1,toValue:1,lifeTime:1}},
-   {x:{fromValue:x1+i*(wz+15)/1.8,toValue:x1+i*wz/1.8-4,lifeTime:key*(i+1),easing:cubic},alpha: {fromValue:1,toValue:0,lifeTime:key*(i+1)}}    
+   {x:{fromValue:x1+i*(wz+15)/1.8,toValue:x1+i*wz/1.8-4,lifeTime:key*(i+1)},alpha: {fromValue:1,toValue:0,lifeTime:key*(i+1)}}    
  ]});
 w.fontsize=wz;
 w.font="宋体";
@@ -75,7 +74,7 @@ timer(function(){textPxjy(t44,0,345,14,2.098);},8822);
 {
 	
 	var key=0;
-var gf1=$.createGlowFilter(0xF70505/*光晕颜色*/,0.7/*Alpha*/,12/*水平模糊量*/,12/*垂直模糊量*/,2/*印记或跨页的强度*/,10/*应用滤镜的次数*/,ture/*是否为内侧发光*/,false/*是否具有挖空效果*/);	
+var gf1=$.createGlowFilter(0xF70505/*光晕颜色*/,0.7/*Alpha*/,12/*水平模糊量*/,12/*垂直模糊量*/,2/*印记或跨页的强度*/,10/*应用滤镜的次数*/,true/*是否为内侧发光*/,false/*是否具有挖空效果*/);	
 	interval(function(){key=key+1;var n=$.createComment(key,{x:x,y:y,lifeTime:t/i,color:0xFFFFFF,alpha:1});
            n.fontsize=100;n.filters=[gf1];	},t*1000/i,i);
 
@@ -91,7 +90,7 @@ function textPx(t,x1,y1,wz,lt)
 {
 var key1=lt/0.04;
 var key2=360/key1;
-var gf1=$.createGlowFilter(0xFFFFFF/*光晕颜色*/,0.7/*Alpha*/,12/*水平模糊量*/,12/*垂直模糊量*/,2/*印记或跨页的强度*/,10/*应用滤镜的次数*/,ture/*是否为内侧发光*/,false/*是否具有挖空效果*/);
+var gf1=$.createGlowFilter(0xFFFFFF/*光晕颜色*/,0.7/*Alpha*/,12/*水平模糊量*/,12/*垂直模糊量*/,2/*印记或跨页的强度*/,10/*应用滤镜的次数*/,true/*是否为内侧发光*/,false/*是否具有挖空效果*/);
 
  var i=0;
  	interval(function(){ var w=$.createComment(t,{x:x1,y:y1,lifeTime:3,alpha:1});
@@ -104,7 +103,7 @@ w.fontsize=wz;
 timer(function(){numberOut(0.9,238,128,3);textPx("\n \n は\n じ\n ま\n る\n よ",270,185,20,1);},6622);</d>
 <d p="12,8,25,16777215,1353247144,2,92de3cf6,150612825">function flower(x,y)
 {
-var gf1=$.createGlowFilter(0x000000/*光晕颜色*/,0.7/*Alpha*/,40/*水平模糊量*/,3/*垂直模糊量*/,2/*印记或跨页的强度*/,2/*应用滤镜的次数*/,ture/*是否为内侧发
+var gf1=$.createGlowFilter(0x000000/*光晕颜色*/,0.7/*Alpha*/,40/*水平模糊量*/,3/*垂直模糊量*/,2/*印记或跨页的强度*/,2/*应用滤镜的次数*/,true/*是否为内侧发
 
 光*/,false/*是否具有挖空效果*/);
 t="*｡ﾟ❀｡**❈**｡ﾟ❀｡**❈**｡ﾟ❀｡**❈**｡*｡ﾟ❀｡**❈**｡ﾟ❀｡**❈**｡ﾟ❀｡**❈**｡";
@@ -119,10 +118,10 @@ w.font="宋体";
 
 function crazyLogo()
 { 
-var gf1=$.createGlowFilter(0xF50742/*光晕颜色*/,1/*Alpha*/,10/*水平模糊量*/,10/*垂直模糊量*/,2/*印记或跨页的强度*/,2/*应用滤镜的次数*/,ture/*是否为内侧发
+var gf1=$.createGlowFilter(0xF50742/*光晕颜色*/,1/*Alpha*/,10/*水平模糊量*/,10/*垂直模糊量*/,2/*印记或跨页的强度*/,2/*应用滤镜的次数*/,true/*是否为内侧发
 
 光*/,false/*是否具有挖空效果*/);
-var gf2=$.createGlowFilter(0x7CEEFD/*光晕颜色*/,1/*Alpha*/,10/*水平模糊量*/,10/*垂直模糊量*/,2/*印记或跨页的强度*/,2/*应用滤镜的次数*/,ture/*是否为内侧发
+var gf2=$.createGlowFilter(0x7CEEFD/*光晕颜色*/,1/*Alpha*/,10/*水平模糊量*/,10/*垂直模糊量*/,2/*印记或跨页的强度*/,2/*应用滤镜的次数*/,true/*是否为内侧发
 
 光*/,false/*是否具有挖空效果*/);
 
@@ -170,7 +169,7 @@ timer(function(){crazyLogo();flower(0,40);
 flower(0,322);},990);</d>
 <d p="15,8,25,16777215,1353247668,2,92de3cf6,150615879"> function arrow(t,x1,y1,x2,lt)
 {
-var gf1=$.createGlowFilter(0xffffff/*光晕颜色*/,0.8/*Alpha*/,0/*水平模糊量*/,0/*垂直模糊量*/,5/*印记或跨页的强度*/,10/*应用滤镜的次数*/,ture/*是否为内侧发光*/,false/*是否具有挖空效果*/);		
+var gf1=$.createGlowFilter(0xffffff/*光晕颜色*/,0.8/*Alpha*/,0/*水平模糊量*/,0/*垂直模糊量*/,5/*印记或跨页的强度*/,10/*应用滤镜的次数*/,true/*是否为内侧发光*/,false/*是否具有挖空效果*/);		
 var c = $.createCanvas({x:x1,y:y1,lifeTime:lt,motionGroup:[{rotationX:{ fromValue: 0, toValue: 360, lifeTime: 0.5}},{rotationX:{ fromValue: 0, toValue: 360, lifeTime: 0.5}},{rotationX:{ fromValue: 0, toValue: 360, lifeTime: 1}},{rotationX:{ fromValue: 0, toValue: 360, lifeTime: 1}},{rotationX:{ fromValue: 0, toVaclue: 360, lifeTime: 1}},{rotationX:{ fromValue: 0, toValue: 360, lifeTime: 1}},{rotationX:{ fromValue: 0, toValue: 360, lifeTime: 1}},{rotationX:{ fromValue: 0, toValue: 360, lifeTime: 1}}]});
 var w=$.createComment(t,{x:0,y:-10,lifeTime:lt,alpha:1,parent:c,motionGroup:[
    {x:{fromValue:0,toValue:x2,lifeTime:0.5,easing:exponential}}   ]});
@@ -184,7 +183,7 @@ var t2="◀────";
 
 function textOut(t,x1,y1,wz,lt,cs)
 {
-var gf1=$.createGlowFilter(0xffffff/*光晕颜色*/,0.8/*Alpha*/,0/*水平模糊量*/,0/*垂直模糊量*/,5/*印记或跨页的强度*/,10/*应用滤镜的次数*/,ture/*是否为内侧发光*/,false/*是否具有挖空效果*/);	
+var gf1=$.createGlowFilter(0xffffff/*光晕颜色*/,0.8/*Alpha*/,0/*水平模糊量*/,0/*垂直模糊量*/,5/*印记或跨页的强度*/,10/*应用滤镜的次数*/,true/*是否为内侧发光*/,false/*是否具有挖空效果*/);	
  var w=$.createComment(t,{x:x1,y:y1,lifeTime:lt,alpha:1,motion:{alpha:{ fromValue: 0, toValue: 1, lifeTime:0.5}}});
  w.fontsize=wz;
 w.font="华文楷体";
@@ -230,7 +229,7 @@ arrow(t2,450,135,-100,3.5);},11490);</d>
 	var x=key*50;		
 	for(var i=0;i&lt;8;i++)
 	{var c=$.createCanvas({x:0,y:384,lifeTime:7,motionGroup:[
-	{x:{fromValue:0,toValue:641,lifeTime:4.2,easing:cubic},y:{fromValue:384,toValue:-71,lifeTime:4.2,easing:cubic}	}]	});
+	{x:{fromValue:0,toValue:641,lifeTime:4.2},y:{fromValue:384,toValue:-71,lifeTime:4.2}	}]	});
 	var g = $.createShape({x:0,y:0,lifeTime:4.2,parent:c});
  	g.graphics.beginFill(0xFFFFFF,0.2);	
 	 g.graphics.drawCircle(0,0,100);}
@@ -247,7 +246,7 @@ arrow(t2,450,135,-100,3.5);},11490);</d>
 
 function textRoad(t,x1,y1,wz,lt,cs,rz)
 {
-var gf1=$.createGlowFilter(0x000000/*光晕颜色*/,0.8/*Alpha*/,0/*水平模糊量*/,0/*垂直模糊量*/,0/*印记或跨页的强度*/,0/*应用滤镜的次数*/,ture/*是否为内侧发光*/,false/*是否具有挖空效果*/);	
+var gf1=$.createGlowFilter(0x000000/*光晕颜色*/,0.8/*Alpha*/,0/*水平模糊量*/,0/*垂直模糊量*/,0/*印记或跨页的强度*/,0/*应用滤镜的次数*/,true/*是否为内侧发光*/,false/*是否具有挖空效果*/);	
  var w=$.createComment(t,{x:x1,y:y1,lifeTime:lt,alpha:1});
 w.rotationZ=rz;
  w.fontsize=wz;
@@ -301,7 +300,7 @@ function textOut1(t,x1,y1,wz,lt,gfc)
 
 var key=lt/t.length;
 
-var gf1=$.createGlowFilter(gfc/*光晕颜色*/,1/*Alpha*/,2/*水平模糊量*/,2/*垂直模糊量*/,5/*印记或跨页的强度*/,5/*应用滤镜的次数*/,ture/*是否为内侧发光*/,false/*是否具有挖空效果*/);
+var gf1=$.createGlowFilter(gfc/*光晕颜色*/,1/*Alpha*/,2/*水平模糊量*/,2/*垂直模糊量*/,5/*印记或跨页的强度*/,5/*应用滤镜的次数*/,true/*是否为内侧发光*/,false/*是否具有挖空效果*/);
 
 var i=0;
 interval(function(){i++;var getw=t.substring(i-1,i);	
@@ -318,7 +317,7 @@ function textOut2(t,x1,y1,wz,lt,gfc)
 
 var key=lt/t.length;
 
-var gf1=$.createGlowFilter(gfc/*光晕颜色*/,1/*Alpha*/,2/*水平模糊量*/,2/*垂直模糊量*/,5/*印记或跨页的强度*/,5/*应用滤镜的次数*/,ture/*是否为内侧发光*/,false/*是否具有挖空效果*/);
+var gf1=$.createGlowFilter(gfc/*光晕颜色*/,1/*Alpha*/,2/*水平模糊量*/,2/*垂直模糊量*/,5/*印记或跨页的强度*/,5/*应用滤镜的次数*/,true/*是否为内侧发光*/,false/*是否具有挖空效果*/);
 
 var i=0;
 interval(function(){i++;var getw=t.substring(i-1,i);	
@@ -343,7 +342,7 @@ t2="(女僕)「接受我們萬全的招待♪」";
  function textP(t,x,y1,wz,lt,ws)
 {	
 var x1=270-wz/1.8*t.length;
-var gf1=$.createGlowFilter(0xffffff/*光晕颜色*/,1/*Alpha*/,0/*水平模糊量*/,0/*垂直模糊量*/,0/*印记或跨页的强度*/,0/*应用滤镜的次数*/,ture/*是否为内侧发光*/,false/*是否具有挖空效果*/);
+var gf1=$.createGlowFilter(0xffffff/*光晕颜色*/,1/*Alpha*/,0/*水平模糊量*/,0/*垂直模糊量*/,0/*印记或跨页的强度*/,0/*应用滤镜的次数*/,true/*是否为内侧发光*/,false/*是否具有挖空效果*/);
  var w=$.createComment(t,{x:x1,y:y1,lifeTime:lt,alpha:1,motionGroup:[
 {alpha: {fromValue:0,toValue:1,lifeTime:1}}
  ]});
@@ -363,7 +362,7 @@ timer(function(){textP(t2,0,365,15,2.7,0x39f55c);},2200);</d>
 <d p="40,8,25,16777215,1353396388,2,92de3cf6,151370259"> function textM(t,x1,y1,x2,y2,wz,gfc,lt,rz)
 {	
 
-var gf1=$.createGlowFilter(gfc/*光晕颜色*/,1/*Alpha*/,2/*水平模糊量*/,2/*垂直模糊量*/,5/*印记或跨页的强度*/,5/*应用滤镜的次数*/,ture/*是否为内侧发光*/,false/*是否具有挖空效果*/);
+var gf1=$.createGlowFilter(gfc/*光晕颜色*/,1/*Alpha*/,2/*水平模糊量*/,2/*垂直模糊量*/,5/*印记或跨页的强度*/,5/*应用滤镜的次数*/,true/*是否为内侧发光*/,false/*是否具有挖空效果*/);
  var w=$.createComment(t,{x:x1,y:y1,lifeTime:lt,alpha:1,motionGroup:[
 {alpha: {fromValue:0,toValue:1,lifeTime:0.5}},
 {x:{fromValue:x1,toValue:x2,easing:bounce,lifeTime:0.8},y:{fromValue:y1,toValue:y2,easing:bounce,lifeTime:0.8}}
@@ -393,7 +392,7 @@ function textOut1(t,x1,y1,x2,wz,lt,gfc)
 
 var key=lt/t.length;
 
-var gf1=$.createGlowFilter(gfc/*光晕颜色*/,1/*Alpha*/,2/*水平模糊量*/,2/*垂直模糊量*/,5/*印记或跨页的强度*/,5/*应用滤镜的次数*/,ture/*是否为内侧发光*/,false/*是否具有挖空效果*/);
+var gf1=$.createGlowFilter(gfc/*光晕颜色*/,1/*Alpha*/,2/*水平模糊量*/,2/*垂直模糊量*/,5/*印记或跨页的强度*/,5/*应用滤镜的次数*/,true/*是否为内侧发光*/,false/*是否具有挖空效果*/);
 
 var i=0;
 interval(function(){i++;var getw=t.substring(i-1,i);	
@@ -459,7 +458,7 @@ y1=Utils.rand(42,300);
 var tw= t.substring(i-1,i);
 
 getgfc=Utils.rand(0,6);
-var gf1=$.createGlowFilter(gfc[getgfc]/*光晕颜色*/,0.5/*Alpha*/,5/*水平模糊量*/,5/*垂直模糊量*/,5/*印记或跨页的强度*/,2/*应用滤镜的次数*/,ture/*是否为内侧发光*/,false/*是否具有挖空效果*/);
+var gf1=$.createGlowFilter(gfc[getgfc]/*光晕颜色*/,0.5/*Alpha*/,5/*水平模糊量*/,5/*垂直模糊量*/,5/*印记或跨页的强度*/,2/*应用滤镜的次数*/,true/*是否为内侧发光*/,false/*是否具有挖空效果*/);
 
 var w=$.createComment(tw,{x:x1,y:y1,lifeTime:0.7,alpha:0.5});
 
@@ -477,7 +476,7 @@ interval(function(){helpYourself(t1);},0,50);},100);</d>
 {
 
 
-var gf1=$.createGlowFilter(gfc/*光晕颜色*/,1/*Alpha*/,2/*水平模糊量*/,2/*垂直模糊量*/,5/*印记或跨页的强度*/,5/*应用滤镜的次数*/,ture/*是否为内侧发光*/,false/*是否具有挖空效果*/);
+var gf1=$.createGlowFilter(gfc/*光晕颜色*/,1/*Alpha*/,2/*水平模糊量*/,2/*垂直模糊量*/,5/*印记或跨页的强度*/,5/*应用滤镜的次数*/,true/*是否为内侧发光*/,false/*是否具有挖空效果*/);
 
 var i=0;
 interval(function(){i++;var getw=t.substring(i-1,i);	
@@ -497,7 +496,7 @@ function Up()
 {
 t2="●";
 
-var gf1=$.createGlowFilter(0xFF1C60/*光晕颜色*/,1/*Alpha*/,2/*水平模糊量*/,2/*垂直模糊量*/,5/*印记或跨页的强度*/,5/*应用滤镜的次数*/,ture/*是否为内侧发光*/,false/*是否具有挖空效果*/);
+var gf1=$.createGlowFilter(0xFF1C60/*光晕颜色*/,1/*Alpha*/,2/*水平模糊量*/,2/*垂直模糊量*/,5/*印记或跨页的强度*/,5/*应用滤镜的次数*/,true/*是否为内侧发光*/,false/*是否具有挖空效果*/);
 
 
 interval(function(){
@@ -516,7 +515,7 @@ function huluhulu(t,x1,y1,wz,gfc,lt)
 {
 
 
-var gf1=$.createGlowFilter(gfc/*光晕颜色*/,1/*Alpha*/,0/*水平模糊量*/,0/*垂直模糊量*/,0/*印记或跨页的强度*/,0/*应用滤镜的次数*/,ture/*是否为内侧发光*/,false/*是否具有挖空效果*/);
+var gf1=$.createGlowFilter(gfc/*光晕颜色*/,1/*Alpha*/,0/*水平模糊量*/,0/*垂直模糊量*/,0/*印记或跨页的强度*/,0/*应用滤镜的次数*/,true/*是否为内侧发光*/,false/*是否具有挖空效果*/);
 var c = $.createCanvas({x:270,y:192,lifeTime:5,motionGroup:[{rotationZ:{ fromValue:0, toValue:-360, lifeTime:2}} ]});
 var i=0;
 interval(function(){i++;var getw=t.substring(i-1,i);	
@@ -544,13 +543,13 @@ t33="︵\n 女\n 仆\n ︶\n ﹁\n 他\n 也\n 好\n ？\n ♪\n ﹂" ;
  function textPxjy(t,x1,y1,x2,wz,lt,cs,gls)
 {
 
-var gf1=$.createGlowFilter(gls/*光晕颜色*/,1/*Alpha*/,2/*水平模糊量*/,2/*垂直模糊量*/,5/*印记或跨页的强度*/,2/*应用滤镜的次数*/,ture/*是否为内侧发光*/,false/*是否具有挖空效果*/);
+var gf1=$.createGlowFilter(gls/*光晕颜色*/,1/*Alpha*/,2/*水平模糊量*/,2/*垂直模糊量*/,5/*印记或跨页的强度*/,2/*应用滤镜的次数*/,true/*是否为内侧发光*/,false/*是否具有挖空效果*/);
 
 
 
 	var w=$.createComment(t,{x:x1,y:y1,lifeTime:lt,alpha:1,motionGroup:[ 
    {x:{fromValue:x1,toValue:(x2+x1)/2,lifeTime:0.8}},
-   {x:{fromValue:(x2+x1)/2,toValue:x2,lifeTime:0.2,easing:cubic},alpha: {fromValue:1,toValue:0,lifeTime:0.2}}
+   {x:{fromValue:(x2+x1)/2,toValue:x2,lifeTime:0.2},alpha: {fromValue:1,toValue:0,lifeTime:0.2}}
       
  ]});
 w.font="宋体";	
@@ -595,10 +594,10 @@ var my2=300;
 var wx2=30+(i-4)*150;
 }
 switch (i) {
-  case 0:{t="みんなで大騒ぎ";var gf1=$.createGlowFilter(gfc[i]/*光晕颜色*/,0.8/*Alpha*/,5/*水平模糊量*/,5/*垂直模糊量*/,5/*印记或跨页的强度*/,5/*应用滤镜的次数*/,ture/*是否为内侧发光*/,false/*是否具有挖空效果*/);
+  case 0:{t="みんなで大騒ぎ";var gf1=$.createGlowFilter(gfc[i]/*光晕颜色*/,0.8/*Alpha*/,5/*水平模糊量*/,5/*垂直模糊量*/,5/*印记或跨页的强度*/,5/*应用滤镜的次数*/,true/*是否为内侧发光*/,false/*是否具有挖空效果*/);
 var g = $.createShape({x:x1,y:y1,lifeTime:2.4,motionGroup:[  
    {x:{fromValue:x1,toValue:0,lifeTime:1.2}   },{x:{fromValue:0,toValue:-540,lifeTime:1.2}}]});
-g.graphics.lineStyle(2/*粗细*/, gfc[i]/*颜色*/, 0.5/*透明度*/, false/*完整像素ture或false*/, "vertical"/*缩放normal,none等*/,"none"/*端点类型none、round 和 square*/, "miter"/*拐角bevel、miter 和 round*/, 10/*切断尖角数*/);
+g.graphics.lineStyle(2/*粗细*/, gfc[i]/*颜色*/, 0.5/*透明度*/, false/*完整像素true或false*/, "vertical"/*缩放normal,none等*/,"none"/*端点类型none、round 和 square*/, "miter"/*拐角bevel、miter 和 round*/, 10/*切断尖角数*/);
 	g.graphics.lineTo(541,0);
 
 var w=$.createComment(t,{x:x1+200,y:y1-40,lifeTime:2.4,alpha:1,motionGroup:[ 
@@ -611,10 +610,10 @@ w.font="宋体";
 w.color=0xffffff;
 w.fontsize=20;}
     break;
-  default:{t="全員大轟動";var gf1=$.createGlowFilter(gfc[i]/*光晕颜色*/,0.8/*Alpha*/,2/*水平模糊量*/,2/*垂直模糊量*/,5/*印记或跨页的强度*/,5/*应用滤镜的次数*/,ture/*是否为内侧发光*/,false/*是否具有挖空效果*/);
+  default:{t="全員大轟動";var gf1=$.createGlowFilter(gfc[i]/*光晕颜色*/,0.8/*Alpha*/,2/*水平模糊量*/,2/*垂直模糊量*/,5/*印记或跨页的强度*/,5/*应用滤镜的次数*/,true/*是否为内侧发光*/,false/*是否具有挖空效果*/);
 var g = $.createShape({x:x1,y:y1,lifeTime:2.4,motionGroup:[  
    {x:{fromValue:x1,toValue:0,lifeTime:1.2}   },{y:{fromValue:y1,toValue:my2,lifeTime:1.2}}]});
-g.graphics.lineStyle(2/*粗细*/, gfc[i]/*颜色*/, 0.5/*透明度*/, false/*完整像素ture或false*/, "vertical"/*缩放normal,none等*/,"none"/*端点类型none、round 和 square*/, "miter"/*拐角bevel、miter 和 round*/, 10/*切断尖角数*/);
+g.graphics.lineStyle(2/*粗细*/, gfc[i]/*颜色*/, 0.5/*透明度*/, false/*完整像素true或false*/, "vertical"/*缩放normal,none等*/,"none"/*端点类型none、round 和 square*/, "miter"/*拐角bevel、miter 和 round*/, 10/*切断尖角数*/);
 	g.graphics.lineTo(541,0);
 
 var w=$.createComment(t,{x:x1+200,y:y1-40,lifeTime:2.4,alpha:1,motionGroup:[ 
@@ -665,7 +664,7 @@ timer(function(){blackScreen();},800);},1000);
 <d p="58,8,25,16777215,1353507807,2,92de3cf6,151784153"> function textsin(t,x1,y1,wz,lt,cs,gls)
 {
 
-var gf1=$.createGlowFilter(gls/*光晕颜色*/,1/*Alpha*/,0/*水平模糊量*/,0/*垂直模糊量*/,0/*印记或跨页的强度*/,0/*应用滤镜的次数*/,ture/*是否为内侧发光*/,false/*是否具有挖空效果*/);
+var gf1=$.createGlowFilter(gls/*光晕颜色*/,1/*Alpha*/,0/*水平模糊量*/,0/*垂直模糊量*/,0/*印记或跨页的强度*/,0/*应用滤镜的次数*/,true/*是否为内侧发光*/,false/*是否具有挖空效果*/);
 
 var key=150;
 for(var i=1;i&lt;=t.length;i++)
@@ -708,7 +707,7 @@ t11="前進吧！ Crazy nighT　帷幕已開啟";
  function textOut(t,x1,y1,wz,lt,cs,gls)
 {
 
-var gf1=$.createGlowFilter(gls/*光晕颜色*/,1/*Alpha*/,0/*水平模糊量*/,0/*垂直模糊量*/,0/*印记或跨页的强度*/,0/*应用滤镜的次数*/,ture/*是否为内侧发光*/,false/*是否具有挖空效果*/);
+var gf1=$.createGlowFilter(gls/*光晕颜色*/,1/*Alpha*/,0/*水平模糊量*/,0/*垂直模糊量*/,0/*印记或跨页的强度*/,0/*应用滤镜的次数*/,true/*是否为内侧发光*/,false/*是否具有挖空效果*/);
 
 
 for(var i=1;i&lt;=t.length;i++)
@@ -746,7 +745,7 @@ t11="興致高昂吧";
 
  function textfontsize(t,x1,y1,wz)
 {
-var gf1=$.createGlowFilter(gls/*光晕颜色*/,1/*Alpha*/,0/*水平模糊量*/,0/*垂直模糊量*/,0/*印记或跨页的强度*/,0/*应用滤镜的次数*/,ture/*是否为内侧发光*/,false/*是否具有挖空效果*/);	
+var gf1=$.createGlowFilter(gls/*光晕颜色*/,1/*Alpha*/,0/*水平模糊量*/,0/*垂直模糊量*/,0/*印记或跨页的强度*/,0/*应用滤镜的次数*/,true/*是否为内侧发光*/,false/*是否具有挖空效果*/);	
  var w=$.createComment(t,{x:x1,y:y1,lifeTime:2.3,alpha:0.7});
  w.fontsize=wz;
 w.font="宋体";
@@ -762,7 +761,7 @@ function textUp(t,x1,y1,y2,wz,gfc,lt)
 {
 
 
-var gf1=$.createGlowFilter(gfc/*光晕颜色*/,1/*Alpha*/,2/*水平模糊量*/,2/*垂直模糊量*/,5/*印记或跨页的强度*/,5/*应用滤镜的次数*/,ture/*是否为内侧发光*/,false/*是否具有挖空效果*/);
+var gf1=$.createGlowFilter(gfc/*光晕颜色*/,1/*Alpha*/,2/*水平模糊量*/,2/*垂直模糊量*/,5/*印记或跨页的强度*/,5/*应用滤镜的次数*/,true/*是否为内侧发光*/,false/*是否具有挖空效果*/);
 
 var i=0;
 interval(function(){i++;var getw=t.substring(i-1,i);	
@@ -803,11 +802,11 @@ function black2Screen()
 {
 	
 	
-	var gf=$.createGlowFilter(0xffffff,0.8,1,1,1,1,ture,false);			
+	var gf=$.createGlowFilter(0xffffff,0.8,1,1,1,1,true,false);			
 	var c=$.createCanvas({x:x1,y:y1,lifeTime:2});  /*x:270,y:197中点坐标*/
 	var i=0;
 	 interval(function(){ i++;	var g = $.createShape({x:0,y:0,lifeTime:0.04,parent:c});
- 	g.graphics.lineStyle(3/*粗细*/, 0x000000/*颜色*/, 1/*透明度*/, false/*完整像素ture或false*/, "vertical"/*缩放normal,none等*/,"none"/*端点类型none、round 和 square*/, "miter"/*拐角bevel、miter 和 round*/, 10/*切断尖角的数字*/);	
+ 	g.graphics.lineStyle(3/*粗细*/, 0x000000/*颜色*/, 1/*透明度*/, false/*完整像素true或false*/, "vertical"/*缩放normal,none等*/,"none"/*端点类型none、round 和 square*/, "miter"/*拐角bevel、miter 和 round*/, 10/*切断尖角的数字*/);	
 	 g.graphics.drawCircle(0,0,25*i);
         g.filters=[gf];},40,25);
 	 
@@ -824,7 +823,7 @@ t11="按劇本來演就好嘛";
  function textUD(t,x1,y1,wz,lt,cs,gls)
 {
 
-var gf1=$.createGlowFilter(gls/*光晕颜色*/,1/*Alpha*/,0/*水平模糊量*/,0/*垂直模糊量*/,0/*印记或跨页的强度*/,0/*应用滤镜的次数*/,ture/*是否为内侧发光*/,false/*是否具有挖空效果*/);
+var gf1=$.createGlowFilter(gls/*光晕颜色*/,1/*Alpha*/,0/*水平模糊量*/,0/*垂直模糊量*/,0/*印记或跨页的强度*/,0/*应用滤镜的次数*/,true/*是否为内侧发光*/,false/*是否具有挖空效果*/);
 
 var key=-1;
 for(var i=1;i&lt;=t.length;i++)
@@ -864,7 +863,7 @@ textUD(t11,150,200,30,2.4,0xffffff,0xffffff);
 	var c2=$.createCanvas({x:-541,y:197,lifeTime:2.36,motionGroup:[{x:{fromValue:-541,toValue:541/2,lifeTime:0.5}},
 {x:{fromValue:541/2,toValue:700,lifeTime:0.5},alpha:{fromValue:1,toValue:0,lifeTime:0.5}}]});  /*x:270,y:197中点坐标*/
 	var g2 = $.createShape({x:-310,y:0,lifeTime:2.36,parent:c2});
-	g2.graphics.lineStyle(10/*粗细*/, 0xF90606/*颜色*/, 1/*透明度*/, false/*完整像素ture或false*/, "vertical"/*缩放normal,none等*/,"none"/*端点类型none、round 和 square*/, "miter"/*拐角bevel、miter 和 round*/, 10/*切断尖角的数字*/);
+	g2.graphics.lineStyle(10/*粗细*/, 0xF90606/*颜色*/, 1/*透明度*/, false/*完整像素true或false*/, "vertical"/*缩放normal,none等*/,"none"/*端点类型none、round 和 square*/, "miter"/*拐角bevel、miter 和 round*/, 10/*切断尖角的数字*/);
 	g2.graphics.lineTo(1000,0);
         g2.filters=null;
 }
@@ -875,7 +874,7 @@ textUD(t11,150,200,30,2.4,0xffffff,0xffffff);
 	t2="拋開一切不要多想了嘛";
 function noThink(t,key)
 {
-var gf1=$.createGlowFilter(0x000000/*光晕颜色*/,1/*Alpha*/,0/*水平模糊量*/,0/*垂直模糊量*/,0/*印记或跨页的强度*/,0/*应用滤镜的次数*/,ture/*是否为内侧发光*/,false/*是否具有挖空效果*/);
+var gf1=$.createGlowFilter(0x000000/*光晕颜色*/,1/*Alpha*/,0/*水平模糊量*/,0/*垂直模糊量*/,0/*印记或跨页的强度*/,0/*应用滤镜的次数*/,true/*是否为内侧发光*/,false/*是否具有挖空效果*/);
 var c3=$.createCanvas({x:250,y:180,lifeTime:2.36,motionGroup:[
 {rotationX:{fromValue:0,toValue:360,lifeTime:0.8}}]});
 
@@ -907,11 +906,11 @@ timer(function(){noThink(t2,100);},700);
 {
 	
 	
-	var gf=$.createGlowFilter(0x000000,0.8,1,1,1,1,ture,false);			
+	var gf=$.createGlowFilter(0x000000,0.8,1,1,1,1,true,false);			
 	var c=$.createCanvas({x:x1,y:y1,lifeTime:2});  /*x:270,y:197中点坐标*/
 	var i=0;
 	 interval(function(){ i++;	var g = $.createShape({x:0,y:0,lifeTime:0.04,parent:c});
- 	g.graphics.lineStyle(3/*粗细*/, cs/*颜色*/, 1/*透明度*/, false/*完整像素ture或false*/, "vertical"/*缩放normal,none等*/,"none"/*端点类型none、round 和 square*/, "miter"/*拐角bevel、miter 和 round*/, 10/*切断尖角的数字*/);	
+ 	g.graphics.lineStyle(3/*粗细*/, cs/*颜色*/, 1/*透明度*/, false/*完整像素true或false*/, "vertical"/*缩放normal,none等*/,"none"/*端点类型none、round 和 square*/, "miter"/*拐角bevel、miter 和 round*/, 10/*切断尖角的数字*/);	
 	 g.graphics.drawCircle(0,0,25*i);
         g.filters=[gf];},40,25);
 	 
@@ -923,7 +922,7 @@ t11="轉啊轉啊　數著1、2、3　讓我醉你也醉吧";
 
 function huluhu(x1,y1,t)
 {
-var gf1=$.createGlowFilter(0x000000/*光晕颜色*/,1/*Alpha*/,0/*水平模糊量*/,0/*垂直模糊量*/,0/*印记或跨页的强度*/,0/*应用滤镜的次数*/,ture/*是否为内侧发光*/,false/*是否具有挖空效果*/);
+var gf1=$.createGlowFilter(0x000000/*光晕颜色*/,1/*Alpha*/,0/*水平模糊量*/,0/*垂直模糊量*/,0/*印记或跨页的强度*/,0/*应用滤镜的次数*/,true/*是否为内侧发光*/,false/*是否具有挖空效果*/);
 wz=30;
 
  var i=0;
@@ -981,11 +980,11 @@ var y1=583-x1;
 
 
 
-	var gf1=$.createGlowFilter(glc,0.8,1,1,1,1,ture,false);			
+	var gf1=$.createGlowFilter(glc,0.8,1,1,1,1,true,false);			
 	var c=$.createCanvas({x:x1,y:y1,lifeTime:lt,motion:{rotationZ:{fromValue:0,toValue:360*lt,lifeTime:lt}}});  /*x:270,y:197中点坐标*/
 	var i=0;
 	 interval(function(){ i++;	var g = $.createShape({x:0,y:0,lifeTime:0.035,parent:c});
- 	g.graphics.lineStyle(1/*粗细*/, cs/*颜色*/, 0.5/*透明度*/, false/*完整像素ture或false*/, "vertical"/*缩放normal,none等*/,"none"/*端点类型none、round 和 square*/, "miter"/*拐角bevel、miter 和 round*/, 10/*切断尖角的数字*/);	
+ 	g.graphics.lineStyle(1/*粗细*/, cs/*颜色*/, 0.5/*透明度*/, false/*完整像素true或false*/, "vertical"/*缩放normal,none等*/,"none"/*端点类型none、round 和 square*/, "miter"/*拐角bevel、miter 和 round*/, 10/*切断尖角的数字*/);	
 	 g.graphics.drawCircle(0,0,10*i);
         g.filters=[gf1];},40,25);			
 	var j=0;
@@ -1044,7 +1043,7 @@ t11="沸騰起來吧";
 function textP(t,x1,y1,wz,rz)
 {
 var c=$.createCanvas({x:x1,y:y1,lifeTime:1.25}); 
-var gf1=$.createGlowFilter(0xffffff,0.8,1,1,1,1,ture,false);	
+var gf1=$.createGlowFilter(0xffffff,0.8,1,1,1,1,true,false);	
 var w=$.createComment(t,{x:0,y:0,lifeTime:1.25,alpha:1,parent:c,motionGroup:[{alpha:{fromValue:0,toValue:1,lifeTime:0.5}}]});w.color=0x000000; /*这里这里*/
 w.fontsize=wz;
 w.font="宋体";
@@ -1056,10 +1055,10 @@ timer(function(){textP(t1,110,250,40,-50);},1800);
 timer(function(){textP(t11,250,160,25,-45);},1800);</d>
 <d p="73,8,25,16777215,1353757877,2,92de3cf6,152676885">/*73.00*/
 function blackline(){
-	var gf=$.createGlowFilter(0x000000,0.8,0,0,0,0,ture,false);			
+	var gf=$.createGlowFilter(0x000000,0.8,0,0,0,0,true,false);			
 	var c1=$.createCanvas({x:541/2,y:192,lifeTime:2.1,motionGroup:[{rotationZ:{fromValue:0,toValue:29,lifeTime:0.7}}]});  /*x:270,y:197中点坐标*/
 	var g1 = $.createShape({x:-541/2,y:150,lifeTime:2.1,parent:c1});
-	g1.graphics.lineStyle(3/*粗细*/, 0x000000/*颜色*/, 1/*透明度*/, false/*完整像素ture或false*/, "vertical"/*缩放normal,none等*/,"none"/*端点类型none、round 和 square*/, "miter"/*拐角bevel、miter 和 round*/, 10/*切断尖角的数字*/);
+	g1.graphics.lineStyle(3/*粗细*/, 0x000000/*颜色*/, 1/*透明度*/, false/*完整像素true或false*/, "vertical"/*缩放normal,none等*/,"none"/*端点类型none、round 和 square*/, "miter"/*拐角bevel、miter 和 round*/, 10/*切断尖角的数字*/);
 	g1.graphics.lineTo(541,-300);
         g1.filters=[gf];
 	
@@ -1067,7 +1066,7 @@ function blackline(){
 	var c2=$.createCanvas({x:541/2,y:192,lifeTime:2.1,motionGroup:[
 {rotationZ:{fromValue:0,toValue:119+90,lifeTime:0.7}}]});  /*x:270,y:197中点坐标*/
 	var g2 = $.createShape({x:-541/2,y:150,lifeTime:2.1,parent:c2});
-	g2.graphics.lineStyle(3/*粗细*/, 0x000000/*颜色*/, 1/*透明度*/, false/*完整像素ture或false*/, "vertical"/*缩放normal,none等*/,"none"/*端点类型none、round 和 square*/, "miter"/*拐角bevel、miter 和 round*/, 10/*切断尖角的数字*/);
+	g2.graphics.lineStyle(3/*粗细*/, 0x000000/*颜色*/, 1/*透明度*/, false/*完整像素true或false*/, "vertical"/*缩放normal,none等*/,"none"/*端点类型none、round 和 square*/, "miter"/*拐角bevel、miter 和 round*/, 10/*切断尖角的数字*/);
 	g2.graphics.lineTo(541,-300);
         g2.filters=[gf];
 }
@@ -1078,7 +1077,7 @@ t1="単 純";
 function textP1(t,x1,y1,wz,rz)
 {
 var c=$.createCanvas({x:x1,y:y1,lifeTime:0.8}); 
-var gf1=$.createGlowFilter(0xffffff,0.8,1,1,1,1,ture,false);	
+var gf1=$.createGlowFilter(0xffffff,0.8,1,1,1,1,true,false);	
 var w=$.createComment(t,{x:-68,y:-28,lifeTime:0.8,alpha:1,parent:c,motionGroup:[{alpha:{fromValue:0,toValue:1,lifeTime:0.1}}]});w.color=0x000000; /*这里这里*/
 w.fontsize=wz;
 w.font="宋体";
@@ -1094,7 +1093,7 @@ t22="未免太過無聊";
 function textP(t,x1,y1,wz,rz)
 {
 var c=$.createCanvas({x:-500,y:y1,lifeTime:1.37,motionGroup:[{x:{fromValue:-500,toValue:x1,lifeTime:0.27}}]}); 
-var gf1=$.createGlowFilter(0xffffff,0.8,1,1,1,1,ture,false);	
+var gf1=$.createGlowFilter(0xffffff,0.8,1,1,1,1,true,false);	
 var w=$.createComment(t,{x:0,y:0,lifeTime:1.37,alpha:1,parent:c});w.color=0x000000; /*这里这里*/
 w.fontsize=wz;
 w.font="宋体";
@@ -1116,7 +1115,7 @@ textP(t22,180,200,30,0);},1050);
 function blackNight()
 {
 var c=$.createCanvas({x:0,y:192,lifeTime:12});
-var gf1=$.createGlowFilter(0x000000,0.8,0,0,0,0,ture,false);
+var gf1=$.createGlowFilter(0x000000,0.8,0,0,0,0,true,false);
 
 
 /*75.00字幕*/
@@ -1152,7 +1151,7 @@ w.filters=w2.filters=[gfl];
 
 /*总共是8.545，7.848 底层黑幕 */
 
-var gf=$.createGlowFilter(0x000000,0.8,2,2,2,2,ture,false);
+var gf=$.createGlowFilter(0x000000,0.8,2,2,2,2,true,false);
 var i=0;
 timer(function(){
 interval(function(){ 
@@ -1193,7 +1192,7 @@ function moon()
 {
 	
 	
-	var gf=$.createGlowFilter(0xFFFFFF,0.8,5,5,1,10,ture,false);		
+	var gf=$.createGlowFilter(0xFFFFFF,0.8,5,5,1,10,true,false);		
 	var c=$.createCanvas({x:270,y:197,lifeTime:10});
 	 var i=0;
 	 interval(function(){
@@ -1216,7 +1215,7 @@ function moon()
 	var cKey=Utils.rand(0,7);
 	var pKey=$.createCanvas({x:xKey,y:342,lifeTime:9});
 	pKey.rotationZ=Utils.rand(5,45);
-	var gf2=$.createGlowFilter(cl[cKey],1,15,15,2,8,ture,false);
+	var gf2=$.createGlowFilter(cl[cKey],1,15,15,2,8,true,false);
 	var g2= $.createShape({x:0,y:80,lifeTime:lt,parent:pKey,motionGroup:[{alpha:{fromValue:0,toValue:1,lifeTime:0.5}},{y:{fromValue:80,toValue:-500,lifeTime:speedKey-0.5}}]});
  	g2.graphics.beginFill(cl[cKey],0.9);	
 	 g2.graphics.drawCircle(0,0,fontsizeKey);
@@ -1235,7 +1234,7 @@ g2.filters=[gf2];
 function showClock(cx,cy,H,M)              /*cx,cy钟表位置参数*/
 { var c = $.createCanvas({x:cx,y:cy,lifeTime:7});
 	var R=100;
-	var gf1=$.createGlowFilter(0xFFD700/*光晕颜色*/,0.8/*Alpha*/,2/*水平模糊量*/,2/*垂直模糊量*/,25/*印记或跨页的强度*/,10/*应用滤镜的次数*/,ture/*是否为内侧发光
+	var gf1=$.createGlowFilter(0xFFD700/*光晕颜色*/,0.8/*Alpha*/,2/*水平模糊量*/,2/*垂直模糊量*/,25/*印记或跨页的强度*/,10/*应用滤镜的次数*/,true/*是否为内侧发光
 
 */,false/*是否具有挖空效果*/);
     var clockNbm=["Ⅻ","Ⅰ","Ⅱ","Ⅲ","Ⅳ","Ⅴ","Ⅵ","Ⅶ","Ⅷ","Ⅸ","Ⅹ","Ⅺ"];
@@ -1565,14 +1564,14 @@ var cl=["0x990af3","0x0c62af","0xf70b10","0xFF1C60","0xf5c60a","0xf1f40b","0x39f
 	var i=0;
 var x1=270-wz/1.8*t.length;    /*置中，指定则换x*/
 var key=(lt-1-0.2)/(2*t.length);
-var gf1=$.createGlowFilter(0xF7D4D4/*光晕颜色*/,0.8/*Alpha*/,0/*水平模糊量*/,0/*垂直模糊量*/,0/*印记或跨页的强度*/,0/*应用滤镜的次数*/,ture/*是否为内侧发光*/,false/*是否具有挖空效果*/);	
+var gf1=$.createGlowFilter(0xF7D4D4/*光晕颜色*/,0.8/*Alpha*/,0/*水平模糊量*/,0/*垂直模糊量*/,0/*印记或跨页的强度*/,0/*应用滤镜的次数*/,true/*是否为内侧发光*/,false/*是否具有挖空效果*/);	
 interval(function() {
 	i++;
 	var tw= t.substring(i-1,i);
 var w=$.createComment(tw,{x:x1-wz*0.9,y:y1,lifeTime:lt,alpha:1,motionGroup:[ 
-   {x:{fromValue:x1-wz*0.9,toValue:x1+i*wz*0.95,lifeTime:0.2,easing:cubic},alpha: {fromValue:0,toValue:1,lifeTime:0.2}},
+   {x:{fromValue:x1-wz*0.9,toValue:x1+i*wz*0.95,lifeTime:0.2},alpha: {fromValue:0,toValue:1,lifeTime:0.2}},
    { alpha: {fromValue:1,toValue:1,lifeTime:1}},
-   {x:{fromValue:x1+i*wz*0.95,toValue:x1+i*wz/1.8-4,lifeTime:key*(i+1),easing:cubic},alpha: {fromValue:1,toValue:0,lifeTime:key*(i+1)}}    
+   {x:{fromValue:x1+i*wz*0.95,toValue:x1+i*wz/1.8-4,lifeTime:key*(i+1)},alpha: {fromValue:1,toValue:0,lifeTime:key*(i+1)}}    
  ]});
 if(vcc==1&amp;&amp;i&gt;=6&amp;&amp;i&lt;=16)
 {w.color=cl[2];}
@@ -1602,7 +1601,7 @@ var cl=["0x990af3","0x0c62af","0xf70b10","0xFF1C60","0xf5c60a","0xf1f40b","0x39f
 	var i=0;
 var x1=270-wz/1.8*t.length;    /*置中，指定则换x*/
 
-var gf2=$.createGlowFilter(cl[2]/*光晕颜色*/,0.8/*Alpha*/,2/*水平模糊量*/,2/*垂直模糊量*/,2/*印记或跨页的强度*/,2/*应用滤镜的次数*/,ture/*是否为内侧发光*/,false/*是否具有挖空效果*/);		
+var gf2=$.createGlowFilter(cl[2]/*光晕颜色*/,0.8/*Alpha*/,2/*水平模糊量*/,2/*垂直模糊量*/,2/*印记或跨页的强度*/,2/*应用滤镜的次数*/,true/*是否为内侧发光*/,false/*是否具有挖空效果*/);		
 interval(function() {
 	i++;
 	var tw= t.substring(i-1,i);
@@ -1653,7 +1652,7 @@ openMoon();},300);</d>
 {
 	
 	var lt=0.04;
-	var gf=$.createGlowFilter(0xFFFFFF,0.8,18,18,1,10,ture,false);			
+	var gf=$.createGlowFilter(0xFFFFFF,0.8,18,18,1,10,true,false);			
 	var c=$.createCanvas({x:270,y:197,lifeTime:19});
 	var i=0;
 	 interval(function(){ i++;
@@ -1724,7 +1723,7 @@ function theLight(t,y1,wz,lt)
 var cl=["0x990af3","0x0c62af","0xf70b10","0xFF1C60","0xf5c60a","0xf1f40b","0x39f55c","0x13d3be","0x000000","0xF7CA00"];
 
 gf1=$.createGlowFilter(0xFFFFFF,0.5,60,60,3,6,false,false);
-gf2=$.createGlowFilter(cl[2],1,2,2,2,6,ture,false);
+gf2=$.createGlowFilter(cl[2],1,2,2,2,6,true,false);
 var g=$.createShape({x:541/2,y:192,lifeTime:lt});
 g.graphics.beginFill(0xffffff);
 g.graphics.drawCircle(0,0,100);
@@ -1799,7 +1798,7 @@ function daoying(t,x1,y1,wz,gfn,lt,r1,r2)
 {
 var x1=(541-wz*0.9*t.length)/2;
 var cl=["0x990af3","0x0c62af","0xf70b10","0xFF1C60","0xf5c60a","0xf1f40b","0x39f55c","0x13d3be","0x000000","0xF7CA00"];
-var gf1=$.createGlowFilter(cl[gfn],1,2,2,2,6,ture,false);
+var gf1=$.createGlowFilter(cl[gfn],1,2,2,2,6,true,false);
 for(i=1;i&lt;=t.length;i++)
 {
 
@@ -1837,7 +1836,7 @@ function daoyingp(t,x1,y1,wz,gfn,lt,r1,r2,cln)
 {
 var x1=(541-wz*0.9*t.length)/2;
 var cl=["0x990af3","0x0c62af","0xf70b10","0xFF1C60","0xf5c60a","0xf1f40b","0x39f55c","0x13d3be","0x000000","0xffffff"];
-var gf1=$.createGlowFilter(cl[gfn],1,2,2,2,6,ture,false);
+var gf1=$.createGlowFilter(cl[gfn],1,2,2,2,6,true,false);
 for(i=1;i&lt;=t.length;i++)
 {
 
@@ -2438,7 +2437,7 @@ t11="(人偶雙子)\n   吶 、\n \n 似乎、沒有了呢...！\n ";
 t1b="\n \n 【下一頁】";
 function dialogue(t,x1,y1,x2,wz,lt,cln,v)
 {
-var gf1=$.createGlowFilter(0x000000/*光晕颜色*/,1/*Alpha*/,2/*水平模糊量*/,2/*垂直模糊量*/,15/*印记或跨页的强度*/,10/*应用滤镜的次数*/,ture/*是否为内侧发光*/,false/*是否具有挖空效果*/);	
+var gf1=$.createGlowFilter(0x000000/*光晕颜色*/,1/*Alpha*/,2/*水平模糊量*/,2/*垂直模糊量*/,15/*印记或跨页的强度*/,10/*应用滤镜的次数*/,true/*是否为内侧发光*/,false/*是否具有挖空效果*/);	
 var cl=["0x990af3","0x0c62af","0xf70b10","0xFF1C60","0xf5c60a","0xf1f40b","0x39f55c","0x13d3be","0x000000","0xF7CA00"];
 var w=$.createComment(t,{x:x1,y:y1,lifeTime:lt,alpha:1,motionGroup:[{alpha:{fromValue:0,toValue:1,lifeTime:0.3},x:{fromValue:x1,toValue:x2,lifeTime:2.5}}]});	
 	w.color=cl[cln];
@@ -2466,7 +2465,7 @@ function funlogo(x1,y1,lt)
 var c1= $.createCanvas({x:x1,y:y1,lifeTime:lt,motionGroup:[{rotationY:{fromValue:0,toValue:360*lt,lifeTime:lt}}]});
 
 	var g1= $.createShape({x:0,y:0,lifeTime:lt,parent:c1});
-	g1.graphics.lineStyle(10/*粗细*/, 0x000000/*颜色*/, 1/*透明度*/, false/*完整像素ture或false*/, "vertical"/*缩放normal,none等*/,"none"/*端点类型none、round 和 square*/, "miter"/*拐角bevel、miter 和 round*/, 10/*切断尖角的数字*/);
+	g1.graphics.lineStyle(10/*粗细*/, 0x000000/*颜色*/, 1/*透明度*/, false/*完整像素true或false*/, "vertical"/*缩放normal,none等*/,"none"/*端点类型none、round 和 square*/, "miter"/*拐角bevel、miter 和 round*/, 10/*切断尖角的数字*/);
 	g1.graphics.drawCircle(0,0,100);
 	
         g1.filters=null;
@@ -2475,7 +2474,7 @@ var c1= $.createCanvas({x:x1,y:y1,lifeTime:lt,motionGroup:[{rotationY:{fromValue
 var c2= $.createCanvas({x:x1,y:y1,lifeTime:lt,motionGroup:[{rotationX:{fromValue:0,toValue:360*lt,lifeTime:lt}}]});
 
 	var g2= $.createShape({x:0,y:0,lifeTime:lt,parent:c2});
-	g2.graphics.lineStyle(10/*粗细*/, 0x000000/*颜色*/, 1/*透明度*/, false/*完整像素ture或false*/, "vertical"/*缩放normal,none等*/,"none"/*端点类型none、round 和 square*/, "miter"/*拐角bevel、miter 和 round*/, 10/*切断尖角的数字*/);
+	g2.graphics.lineStyle(10/*粗细*/, 0x000000/*颜色*/, 1/*透明度*/, false/*完整像素true或false*/, "vertical"/*缩放normal,none等*/,"none"/*端点类型none、round 和 square*/, "miter"/*拐角bevel、miter 和 round*/, 10/*切断尖角的数字*/);
 	g2.graphics.drawCircle(0,0,100);
 	
         g2.filters=null;
@@ -2578,7 +2577,7 @@ t2="(少女人形)「ツクマデ...」";
 t22="(人偶少女)「點亮之前...」";
 function fBack(t,y1,wz,lt,cln,r1,r2)
 {
-var gf1=$.createGlowFilter(0x000000/*光晕颜色*/,1/*Alpha*/,2/*水平模糊量*/,2/*垂直模糊量*/,8/*印记或跨页的强度*/,5/*应用滤镜的次数*/,ture/*是否为内侧发光*/,false/*是否具有挖空效果*/);
+var gf1=$.createGlowFilter(0x000000/*光晕颜色*/,1/*Alpha*/,2/*水平模糊量*/,2/*垂直模糊量*/,8/*印记或跨页的强度*/,5/*应用滤镜的次数*/,true/*是否为内侧发光*/,false/*是否具有挖空效果*/);
 var cl=["0x990af3","0x0c62af","0xf70b10","0xFF1C60","0xf5c60a","0xf1f40b","0x39f55c","0x13d3be","0x000000","0xffffff"];
 var getwz=wz*10;
 var getx1=(541-getwz*t.length*0.9)/2;

@@ -6,15 +6,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d872933e-151d-45f2-bea4-5399a376f23e" name="Default" comment="Added more precise abstraction of interfaces">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build/CommentCoreLibrary.js" afterPath="$PROJECT_DIR$/build/CommentCoreLibrary.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripting/build/api/Display.js" afterPath="$PROJECT_DIR$/src/scripting/build/api/Display.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripting/src/api/Display/Graphics.ts" afterPath="$PROJECT_DIR$/src/scripting/src/api/Display/Graphics.ts" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripting/build/Host.js" afterPath="$PROJECT_DIR$/src/scripting/build/Host.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripting/src/Host.js" afterPath="$PROJECT_DIR$/src/scripting/src/Host.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripting/Makefile" afterPath="$PROJECT_DIR$/src/scripting/Makefile" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripting/src/api/Display/Matrix.ts" afterPath="$PROJECT_DIR$/src/scripting/src/api/Display/Matrix.ts" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripting/build/api/Runtime.js" afterPath="$PROJECT_DIR$/src/scripting/build/api/Runtime.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripting/src/api/Runtime/Timer.ts" afterPath="$PROJECT_DIR$/src/scripting/src/api/Runtime/Timer.ts" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripting/build/api/ScriptManager.js" afterPath="$PROJECT_DIR$/src/scripting/build/api/ScriptManager.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripting/src/api/ScriptManager.js" afterPath="$PROJECT_DIR$/src/scripting/src/api/ScriptManager.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripting/src/Unpacker.js" afterPath="$PROJECT_DIR$/src/scripting/src/Unpacker.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tests/scripting/crazy-night.xml" afterPath="$PROJECT_DIR$/tests/scripting/crazy-night.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tests/scripting/round-and-round.xml" afterPath="$PROJECT_DIR$/tests/scripting/round-and-round.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="CommentCoreLibrary.iws" />
@@ -46,7 +45,7 @@
       <file leaf-file-name="Button.ts" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/scripting/src/Host/Unpacker/Button.ts">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="273">
+            <state vertical-scroll-proportion="0.0" vertical-offset="105" max-vertical-offset="273">
               <caret line="5" column="0" selection-start-line="5" selection-start-column="0" selection-end-line="5" selection-end-column="0" />
               <folding />
             </state>
@@ -56,7 +55,7 @@
       <file leaf-file-name="Display.ts" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Display/Display.ts">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2478">
+            <state vertical-scroll-proportion="0.0" vertical-offset="1092" max-vertical-offset="2478">
               <caret line="52" column="31" selection-start-line="52" selection-start-column="31" selection-end-line="52" selection-end-column="31" />
               <folding />
             </state>
@@ -76,7 +75,7 @@
       <file leaf-file-name="MotionManager.ts" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Display/MotionManager.ts">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="1613" max-vertical-offset="2205">
+            <state vertical-scroll-proportion="0.0" vertical-offset="1008" max-vertical-offset="2205">
               <caret line="48" column="23" selection-start-line="48" selection-start-column="23" selection-end-line="48" selection-end-column="23" />
               <folding />
             </state>
@@ -103,12 +102,14 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Timer.ts" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="Timer.ts" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Runtime/Timer.ts">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.20777027" vertical-offset="4224" max-vertical-offset="5166">
+            <state vertical-scroll-proportion="0.0" vertical-offset="4224" max-vertical-offset="5166">
               <caret line="207" column="42" selection-start-line="207" selection-start-column="42" selection-end-line="207" selection-end-column="42" />
-              <folding />
+              <folding>
+                <marker date="1404525005348" expanded="true" signature="61:5615" placeholder="..." />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -116,8 +117,18 @@
       <file leaf-file-name="Graphics.ts" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Display/Graphics.ts">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="3402" max-vertical-offset="4347">
-              <caret line="186" column="49" selection-start-line="186" selection-start-column="49" selection-end-line="186" selection-end-column="49" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="3285" max-vertical-offset="4557">
+              <caret line="168" column="46" selection-start-line="168" selection-start-column="46" selection-end-line="168" selection-end-column="46" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ScriptManager.js" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/scripting/src/api/ScriptManager.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.07368421" vertical-offset="0" max-vertical-offset="756">
+              <caret line="2" column="8" selection-start-line="2" selection-start-column="8" selection-end-line="2" selection-end-column="8" />
               <folding />
             </state>
           </provider>
@@ -126,7 +137,7 @@
       <file leaf-file-name="Filter.ts" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Display/Filter.ts">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="283" max-vertical-offset="2898">
+            <state vertical-scroll-proportion="0.0" vertical-offset="2751" max-vertical-offset="2898">
               <caret line="131" column="5" selection-start-line="131" selection-start-column="5" selection-end-line="131" selection-end-column="5" />
               <folding />
             </state>
@@ -162,7 +173,6 @@
         <option value="$PROJECT_DIR$/src/scripting/src/api/Display/IComment.ts" />
         <option value="$PROJECT_DIR$/src/scripting/src/api/Display/Shape.ts" />
         <option value="$PROJECT_DIR$/src/scripting/src/api/Tween/Tween.ts" />
-        <option value="$PROJECT_DIR$/src/scripting/src/api/ScriptManager.js" />
         <option value="$PROJECT_DIR$/src/scripting/src/api/OOAPI.d.ts" />
         <option value="$PROJECT_DIR$/src/scripting/src/OOAPI.js" />
         <option value="$PROJECT_DIR$/src/scripting/src/Worker.js" />
@@ -195,8 +205,9 @@
         <option value="$PROJECT_DIR$/src/scripting/src/Host/Unpacker/Button.ts" />
         <option value="$PROJECT_DIR$/src/scripting/src/api/Display/MotionManager.ts" />
         <option value="$PROJECT_DIR$/src/scripting/src/api/Display/Matrix.ts" />
-        <option value="$PROJECT_DIR$/src/scripting/src/api/Display/Graphics.ts" />
         <option value="$PROJECT_DIR$/src/scripting/src/api/Runtime/Timer.ts" />
+        <option value="$PROJECT_DIR$/src/scripting/src/api/Display/Graphics.ts" />
+        <option value="$PROJECT_DIR$/src/scripting/src/api/ScriptManager.js" />
       </list>
     </option>
   </component>
@@ -233,6 +244,7 @@
       <sortByType />
     </navigator>
     <panes>
+      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -569,7 +581,6 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="PackagesPane" />
       <pane id="Scope" />
     </panes>
   </component>
@@ -848,6 +859,7 @@
       <workItem from="1403420180287" duration="14850000" />
       <workItem from="1403506531758" duration="10638000" />
       <workItem from="1404497352707" duration="13450000" />
+      <workItem from="1404542750219" duration="1628000" />
     </task>
     <task id="LOCAL-00001" summary="Added more precise abstraction of interfaces">
       <created>1400532615329</created>
@@ -857,7 +869,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="107125000" />
+    <option name="totallyTimeSpent" value="108753000" />
   </component>
   <component name="TodoView" selected-index="0">
     <todo-panel id="selected-file">
@@ -881,7 +893,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-2" y="0" width="1370" height="742" extended-state="6" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32901135" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -903,12 +915,12 @@
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.20272315" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="combo" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32901135" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3286385" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39906102" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="combo" />
     </layout>
   </component>
   <component name="Vcs.Log.UiProperties">
@@ -973,13 +985,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="2982" max-vertical-offset="4746">
           <caret line="150" column="8" selection-start-line="150" selection-start-column="8" selection-end-line="150" selection-end-column="49" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/scripting/src/api/ScriptManager.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="756">
-          <caret line="14" column="30" selection-start-line="14" selection-start-column="30" selection-end-line="14" selection-end-column="30" />
         </state>
       </provider>
     </entry>
@@ -1071,7 +1076,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="3692" max-vertical-offset="5880">
           <caret line="232" column="6" selection-start-line="232" selection-start-column="6" selection-end-line="232" selection-end-column="6" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1086,7 +1090,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="21" max-vertical-offset="651">
           <caret line="18" column="9" selection-start-line="18" selection-start-column="9" selection-end-line="18" selection-end-column="9" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1094,7 +1097,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="249" max-vertical-offset="903">
           <caret line="2" column="3" selection-start-line="2" selection-start-column="3" selection-end-line="2" selection-end-column="3" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1102,7 +1104,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="42" max-vertical-offset="798">
           <caret line="22" column="9" selection-start-line="22" selection-start-column="9" selection-end-line="22" selection-end-column="9" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1110,7 +1111,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="1188" max-vertical-offset="2205">
           <caret line="72" column="9" selection-start-line="72" selection-start-column="9" selection-end-line="72" selection-end-column="9" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1125,7 +1125,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1995">
           <caret line="23" column="30" selection-start-line="23" selection-start-column="30" selection-end-line="23" selection-end-column="30" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1133,7 +1132,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="228" max-vertical-offset="1113">
           <caret line="31" column="9" selection-start-line="31" selection-start-column="9" selection-end-line="31" selection-end-column="9" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1141,7 +1139,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="818" max-vertical-offset="2415">
           <caret line="55" column="5" selection-start-line="55" selection-start-column="5" selection-end-line="55" selection-end-column="5" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1157,7 +1154,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="630">
           <caret line="9" column="55" selection-start-line="9" selection-start-column="55" selection-end-line="9" selection-end-column="55" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1180,7 +1176,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="248" max-vertical-offset="840">
           <caret line="23" column="30" selection-start-line="23" selection-start-column="30" selection-end-line="23" selection-end-column="30" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1188,7 +1183,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="1827" max-vertical-offset="15666">
           <caret line="6" column="0" selection-start-line="6" selection-start-column="0" selection-end-line="6" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1203,7 +1197,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="252">
           <caret line="6" column="0" selection-start-line="6" selection-start-column="0" selection-end-line="6" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1211,7 +1204,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="231">
           <caret line="5" column="0" selection-start-line="5" selection-start-column="0" selection-end-line="5" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1219,7 +1211,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="231">
           <caret line="5" column="0" selection-start-line="5" selection-start-column="0" selection-end-line="5" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1227,7 +1218,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="1102" max-vertical-offset="1659">
           <caret line="57" column="13" selection-start-line="57" selection-start-column="13" selection-end-line="57" selection-end-column="13" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1235,7 +1225,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="3228" max-vertical-offset="3843">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1251,7 +1240,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-2.7894738" vertical-offset="1842" max-vertical-offset="7623">
           <caret line="12" column="31" selection-start-line="12" selection-start-column="31" selection-end-line="12" selection-end-column="31" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1259,7 +1247,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="568">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1295,14 +1282,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Display/Graphics.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="3402" max-vertical-offset="4347">
-          <caret line="186" column="49" selection-start-line="186" selection-start-column="49" selection-end-line="186" selection-end-column="49" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Display/MotionManager.ts">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="711" max-vertical-offset="2205">
@@ -1321,8 +1300,26 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Runtime/Timer.ts">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.20777027" vertical-offset="4224" max-vertical-offset="5166">
+        <state vertical-scroll-proportion="0.0" vertical-offset="4224" max-vertical-offset="5166">
           <caret line="207" column="42" selection-start-line="207" selection-start-column="42" selection-end-line="207" selection-end-column="42" />
+          <folding>
+            <marker date="1404525005348" expanded="true" signature="61:5615" placeholder="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Display/Graphics.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="3285" max-vertical-offset="4557">
+          <caret line="168" column="46" selection-start-line="168" selection-start-column="46" selection-end-line="168" selection-end-column="46" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/scripting/src/api/ScriptManager.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.07368421" vertical-offset="0" max-vertical-offset="756">
+          <caret line="2" column="8" selection-start-line="2" selection-start-column="8" selection-end-line="2" selection-end-column="8" />
           <folding />
         </state>
       </provider>

@@ -370,6 +370,12 @@ var CCLScripting = function(workerUrl){
 		this.__defineSetter__("y", function(f){
 			this.setY(f);
 		});
+		this.__defineGetter__("x", function(f){
+			return data.x;
+		});
+		this.__defineGetter__("y", function(f){
+			return data.y;
+		});
 		this.__defineGetter__("text", function(f){
 			return this.DOM.textContent;
 		});
@@ -468,7 +474,8 @@ var CCLScripting = function(workerUrl){
 		};
 		this.fill = {
 			fill:"none",
-			alpha:1
+			alpha:1,
+			fillRule:"nonzero"
 		};
 		var toRGB = function(number){
 			var string = parseInt(number).toString(16);
@@ -497,7 +504,8 @@ var CCLScripting = function(workerUrl){
 		var applyFill = function(p, ref){
 			__(p, {
 				"fill": ref.fill.fill,
-				"fill-opacity": ref.fill.alpha
+				"fill-opacity": ref.fill.alpha,
+				"fill-rule": ref.fill.fillRule
 			});
 		};
 		
@@ -571,6 +579,53 @@ var CCLScripting = function(workerUrl){
 			if(state.lastPath){
 				applyStroke(state.lastPath, this);
 			}
+		};
+		this.drawPath = function(params){
+			var commands = params[0];
+			var data = params[1];
+			this.fill.fillRule = (params[2] === "nonZero" ? "nonzero" : "evenodd");
+			var d = "M0 0";
+			for(var i = 0; i < commands.length; i++){
+				switch(commands[i]){
+					default:
+					case 0:{
+						/* NoOp x0 */
+						continue;
+					}break;
+					case 1: {
+						/* MoveTo x2 */
+						d += " M" + data.splice(0,2).join(" ");
+					}break;
+					case 2: {
+						/* LineTo x2 */
+						d += " L" + data.splice(0,2).join(" ");
+					}break;
+					case 3: {
+						/* CurveTo x4 */
+						d += " Q" + data.splice(0,4).join(" ");
+					}break;
+					case 4: {
+						/* wide MoveTo x4 */
+						data.splice(0,2);
+						d += " M" + data.splice(0,2).join(" ");
+					}break;
+					case 5: {
+						/* wide LineTo x4 */
+						data.splice(0,2);
+						d += " L" + data.splice(0,2).join(" ");
+					}break;
+					case 6: {
+						/* CubicCurveTo x6 */
+						d += " C" + data.splice(0,6).join(" ");
+					}break;
+				}
+			};
+			var path = __("path",{
+				"d": d
+			});
+			applyFill(path, this);
+			applyStroke(path, this);
+			defaultGroup.appendChild(path);
 		};
 		this.beginFill = function(params){
 			if(params.length === 0)
