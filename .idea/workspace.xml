@@ -5,23 +5,7 @@
     <option name="SCOPE_TYPE" value="3" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d872933e-151d-45f2-bea4-5399a376f23e" name="Default" comment="Added more precise abstraction of interfaces">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/demo/transition-library-test.htm" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/scripting/Compatibility.md" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/experimental/scripting/3dsphere.biliscript" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/experimental/scripting/ccl.htm" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/experimental/scripting/fontalias.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/experimental/scripting/greendam.biliscript" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/experimental/scripting/index.htm" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/experimental/scripting/madoka.biliscript" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/experimental/scripting/manzoku.biliscript" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/scripting/Instances.md" afterPath="$PROJECT_DIR$/docs/scripting/Instances.md" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/scripting/OOAPI.md" afterPath="$PROJECT_DIR$/docs/scripting/OOAPI.md" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/scripting/Readme.md" afterPath="$PROJECT_DIR$/docs/scripting/Readme.md" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/scripting/Display/Readme.md" afterPath="$PROJECT_DIR$/docs/scripting/Display/Readme.md" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/demo/debugger.js" afterPath="$PROJECT_DIR$/demo/debugger.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/demo/index.htm" afterPath="$PROJECT_DIR$/demo/index.htm" />
-    </list>
+    <list default="true" id="d872933e-151d-45f2-bea4-5399a376f23e" name="Default" comment="Added more precise abstraction of interfaces" />
     <ignored path="CommentCoreLibrary.iws" />
     <ignored path=".idea/workspace.xml" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -897,7 +881,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-2" y="0" width="1370" height="742" extended-state="6" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32901135" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
