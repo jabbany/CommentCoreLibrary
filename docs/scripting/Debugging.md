@@ -1,4 +1,4 @@
-Errors and Warnings 错误和警告
+错误和警告 （Errors and Warnings）
 ============================================
 We try to replicate as much functionality as we can, but sometimes it is just 
 very hard to do. In such cases we will usually silently drop the functionality
@@ -9,7 +9,7 @@ raise an error or fatal error. These cases are very rare.
 抛弃一个方法实现，并输出一个警告。有时一个函数关乎运行的正确性时，我们才会抛出一个错误或者一个致命性
 错误。
 
-Fatal Errors 致命性错误
+致命性错误 （Fatal Errors）
 --------------------------------------------
 
 ### Syntax Error 语法错误
@@ -24,7 +24,7 @@ Fatal Errors 致命性错误
 ### Security Error 安全冲突
 试图调用被禁止的函数或者没有提供正确的Key。
 
-Errors 错误
+错误 （Errors）
 ---------------------------------------------
 在 CCL 引擎中，有两种引发普通错误的可能性。一种是引发了内部普通错误，另一种是引发了`new Error()`
 引发内部普通错误时，你的代码不会获知错误，这种情况的错误主要是由于我们API还原上的互换性问题。在这个
@@ -35,7 +35,7 @@ Errors 错误
 一个致命性错误进而阻止之后代码的运行。
 
 
-Warnings 警告
+警告 （Warnings）
 ----------------------------------------------
 警告包括如下三种：
 
@@ -52,7 +52,7 @@ Unsupported Warning是CCLScripter产生的非关键性的“未实现”警告�
 非法操作警告多出现于试图写入只读属性，或是试图调用非法函数，调用方法不正确等的警告。一般说明某个操作
 无效，但是不会影响执行。
 
-Log 日志
+日志 （Log）
 ----------------------------------------------
 日志可以通过 `trace()` 产生。有时内部函数也会 trace 自己，不过这种情况很少。用户可以关闭日志和
 警告的产生，但是不能关闭错误。

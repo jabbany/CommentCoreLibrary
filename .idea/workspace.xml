@@ -6,19 +6,21 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d872933e-151d-45f2-bea4-5399a376f23e" name="Default" comment="Added more precise abstraction of interfaces">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripting/src/api/Display/CommentButton.ts" afterPath="$PROJECT_DIR$/src/scripting/src/api/Display/CommentButton.ts" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripting/src/api/Display/CommentCanvas.ts" afterPath="$PROJECT_DIR$/src/scripting/src/api/Display/CommentCanvas.ts" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripting/src/api/Display/CommentField.ts" afterPath="$PROJECT_DIR$/src/scripting/src/api/Display/CommentField.ts" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripting/src/api/Display/CommentShape.ts" afterPath="$PROJECT_DIR$/src/scripting/src/api/Display/CommentShape.ts" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripting/build/api/Display.js" afterPath="$PROJECT_DIR$/src/scripting/build/api/Display.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripting/src/api/Display/Display.ts" afterPath="$PROJECT_DIR$/src/scripting/src/api/Display/Display.ts" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripting/build/Host.js" afterPath="$PROJECT_DIR$/src/scripting/build/Host.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripting/src/Host.js" afterPath="$PROJECT_DIR$/src/scripting/src/Host.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripting/build/api/Player.js" afterPath="$PROJECT_DIR$/src/scripting/build/api/Player.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripting/src/api/Player/Player.ts" afterPath="$PROJECT_DIR$/src/scripting/src/api/Player/Player.ts" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripting/src/Unpacker.js" afterPath="$PROJECT_DIR$/src/scripting/src/Unpacker.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/experimental/scripting/ccl.htm" afterPath="$PROJECT_DIR$/experimental/scripting/ccl.htm" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/demo/transition-library-test.htm" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/docs/scripting/Compatibility.md" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/experimental/scripting/3dsphere.biliscript" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/experimental/scripting/ccl.htm" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/experimental/scripting/fontalias.css" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/experimental/scripting/greendam.biliscript" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/experimental/scripting/index.htm" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/experimental/scripting/madoka.biliscript" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/experimental/scripting/manzoku.biliscript" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/scripting/Instances.md" afterPath="$PROJECT_DIR$/docs/scripting/Instances.md" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/scripting/OOAPI.md" afterPath="$PROJECT_DIR$/docs/scripting/OOAPI.md" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/scripting/Readme.md" afterPath="$PROJECT_DIR$/docs/scripting/Readme.md" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/scripting/Display/Readme.md" afterPath="$PROJECT_DIR$/docs/scripting/Display/Readme.md" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/demo/debugger.js" afterPath="$PROJECT_DIR$/demo/debugger.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/demo/index.htm" afterPath="$PROJECT_DIR$/demo/index.htm" />
     </list>
     <ignored path="CommentCoreLibrary.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -46,21 +48,51 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="Player.ts" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Player/Player.ts">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="2895" max-vertical-offset="3486">
-              <caret line="158" column="9" selection-start-line="158" selection-start-column="9" selection-end-line="158" selection-end-column="9" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="MotionManager.ts" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Display/MotionManager.ts">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0" vertical-offset="1504" max-vertical-offset="2205">
               <caret line="29" column="51" selection-start-line="29" selection-start-column="51" selection-end-line="29" selection-end-column="51" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Utils.ts" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Utils/Utils.ts">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2961">
+              <caret line="2" column="19" selection-start-line="2" selection-start-column="19" selection-end-line="2" selection-end-column="19" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="TextField.ts" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Display/TextField.ts">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="315" max-vertical-offset="2205">
+              <caret line="72" column="9" selection-start-line="72" selection-start-column="9" selection-end-line="72" selection-end-column="9" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Shape.ts" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Display/Shape.ts">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="41" max-vertical-offset="672">
+              <caret line="21" column="54" selection-start-line="21" selection-start-column="54" selection-end-line="21" selection-end-column="54" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Bitmap.ts" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Display/Bitmap.ts">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="570">
+              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -76,21 +108,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Typo.ts" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="Typo.ts" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/scripting/src/api/external/Typo.ts">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.22105263" vertical-offset="0" max-vertical-offset="570">
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="252">
               <caret line="6" column="0" selection-start-line="6" selection-start-column="0" selection-end-line="6" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="DisplayObject.ts" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Display/DisplayObject.ts">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="7623">
-              <caret line="12" column="31" selection-start-line="12" selection-start-column="31" selection-end-line="12" selection-end-column="31" />
               <folding />
             </state>
           </provider>
@@ -101,26 +123,6 @@
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0" vertical-offset="354" max-vertical-offset="1155">
               <caret line="34" column="45" selection-start-line="34" selection-start-column="45" selection-end-line="34" selection-end-column="45" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="CommentBitmap.ts" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Display/CommentBitmap.ts">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="21" max-vertical-offset="651">
-              <caret line="18" column="9" selection-start-line="18" selection-start-column="9" selection-end-line="18" selection-end-column="9" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="CommentCanvas.ts" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Display/CommentCanvas.ts">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="228" max-vertical-offset="840">
-              <caret line="25" column="12" selection-start-line="25" selection-start-column="12" selection-end-line="27" selection-end-column="13" />
               <folding />
             </state>
           </provider>
@@ -861,7 +863,7 @@
       <workItem from="1403420180287" duration="14850000" />
       <workItem from="1403506531758" duration="10638000" />
       <workItem from="1404497352707" duration="13450000" />
-      <workItem from="1404542750219" duration="4626000" />
+      <workItem from="1404542750219" duration="7900000" />
     </task>
     <task id="LOCAL-00001" summary="Added more precise abstraction of interfaces">
       <created>1400532615329</created>
@@ -871,7 +873,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="111751000" />
+    <option name="totallyTimeSpent" value="115025000" />
   </component>
   <component name="TodoView" selected-index="0">
     <todo-panel id="selected-file">
@@ -955,13 +957,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/experimental/animation/animate.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="2924" max-vertical-offset="3633">
-          <caret line="156" column="43" selection-start-line="156" selection-start-column="43" selection-end-line="156" selection-end-column="43" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/CommentTransitionLibrary.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="5187" max-vertical-offset="6531">
@@ -1068,18 +1063,11 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Display/TextField.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="1188" max-vertical-offset="2205">
-          <caret line="72" column="9" selection-start-line="72" selection-start-column="9" selection-end-line="72" selection-end-column="9" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Runtime.d.ts">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="818" max-vertical-offset="2415">
           <caret line="55" column="5" selection-start-line="55" selection-start-column="5" selection-end-line="55" selection-end-column="5" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -1095,14 +1083,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="630">
           <caret line="9" column="55" selection-start-line="9" selection-start-column="55" selection-end-line="9" selection-end-column="55" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Display/Shape.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="41" max-vertical-offset="672">
-          <caret line="21" column="54" selection-start-line="21" selection-start-column="54" selection-end-line="21" selection-end-column="54" />
           <folding />
         </state>
       </provider>
@@ -1182,14 +1162,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="568">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Utils/Utils.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="2120" max-vertical-offset="2961">
-          <caret line="133" column="39" selection-start-line="133" selection-start-column="39" selection-end-line="133" selection-end-column="39" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1333,8 +1305,40 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/scripting/src/api/external/Typo.ts">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.22105263" vertical-offset="0" max-vertical-offset="570">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="252">
           <caret line="6" column="0" selection-start-line="6" selection-start-column="0" selection-end-line="6" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Utils/Utils.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2961">
+          <caret line="2" column="19" selection-start-line="2" selection-start-column="19" selection-end-line="2" selection-end-column="19" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Display/TextField.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="315" max-vertical-offset="2205">
+          <caret line="72" column="9" selection-start-line="72" selection-start-column="9" selection-end-line="72" selection-end-column="9" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Display/Shape.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="41" max-vertical-offset="672">
+          <caret line="21" column="54" selection-start-line="21" selection-start-column="54" selection-end-line="21" selection-end-column="54" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Display/Bitmap.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="570">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
         </state>
       </provider>

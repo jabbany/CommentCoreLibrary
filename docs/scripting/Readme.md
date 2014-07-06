@@ -1,4 +1,4 @@
-CCLScripting API 定义 (API Definitions)
+CCLScripting API 定义 (API Definitions）
 ===========================
 
 CCLScripting 是一套在最大可能的程度上兼容Bilibili代码弹幕语法和环境的安全的高层接口。
@@ -11,7 +11,7 @@ transmission layer and uses it alone to communicate with the player to perform
 operations. With this design we are able to run otherwise untrusted JavaScript
 code in a controlled environment.
 
-沙箱局限性 (Sandbox Limitations)
+沙箱局限性 (Sandbox Limitations）
 ----------------------------
 
 沙箱并不是完美的，它在很多方面提供了更多的可控性，其中之一就是可以直接派发 XMLHttpRequest 请求。

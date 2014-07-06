@@ -1,8 +1,8 @@
 Kagerou Display Engine AS3接口实现
 ===============================================
-Kagerou Display Engine 是一套通过模拟 B 站提供的元件API实现的视觉元件双向沟通与操作的API系统。
-它建立了一套最底线的 AS3 接口，来供程序使用并接入。Kagerou Display Engine的命名由一套HTML5的
-Flash运行空间 Smokescreen 启发。
+Kagerou Display Engine （KagerouEngine） 是一套通过模拟 B 站提供的元件API实现的视觉元件
+双向沟通与操作的API系统。它建立了一套最底线的 AS3 接口，来供程序使用并接入。Kagerou Display 
+Engine的命名由一套HTML5的Flash运行空间 Smokescreen 启发。
 
 基础框架 (Basic Framework)
 -----------------------------------------------
@@ -24,17 +24,26 @@ Flash运行空间 Smokescreen 启发。
 - DisplayObject
     - Transform
         - Matrix
+        - Matrix3D
+        - Vector3D
     - Filter
+        - Matrix
 - Shape
+    - Graphics
+- Sprite
     - Graphics
 - IComment
     - MotionManager
-        -ITween
+        - ITween
 
 私有成员 (Private Members)
 -------------------------------------------------
 上述的各个类有可能存在私有类，即只能通过别的对象来进行访问。比如 TextField 的基础存在形式会是
 CommentField，而 DisplayObject 则不会自行独立出现，虽然它代表了整个底层系统的视觉元件。
+
+同时由于JS没有标记private的能力，很多私有属性会可以访问。我们非常不建议对这些树形进行直接更改，
+因为那会导致与沙箱外产生不同步，同时也不能保证在其他的环境下同样操作依然可行。大部分私有属性都带有
+“_” 预置下划线（Prefix Underscore）。
 
 克隆组件 (Cloning Objects)
 -----------------------------------------------
@@ -57,18 +66,21 @@ CommentField，而 DisplayObject 则不会自行独立出现，虽然它代表�
     // a,b 为不同对象实例，但是绑定了同一个 CommentField
     a.matrix = m1;
     // 此时 CommentField 的变换Matrix是 m1， a.matrix == m1，b.matrix != m1
-    b.matrix = new Matrix();
+    b.matrix = m2;
     // 此时 CommentField 的变换Matrix是 m2， a.matrix == m1，b.matrix == m2
     // a.matrix !== b.matrix
     // 此时 b 是 CommentField 的真实 transform，而再次读取 CommentField 的
     // transform属性將返回错误的transform信息 
 
+注意这里我们 clone 的是 `Transform` 而不是 Matrix。克隆 Matrix 可以通过 Matrix 自带的 
+`clone()` 方法。
+
 对于数据类，克隆可能并没有那么大的影响，但是这些操作也应当尽可能避免，因为不知道何时会引发出影响。
 一些疑似安全的类：
 
 - TextFormat
-- Filter
-- Matrix
+- Filter (GlowFilter, BlurFilter etc.)
+- Matrix (Matrix3D, Vector3D, Point etc.)
 
 根对象和元对象 (Root and Meta Objects)
 -----------------------------------------------
@@ -83,7 +95,7 @@ CommentField，而 DisplayObject 则不会自行独立出现，虽然它代表�
 -----------------------------------------------
 为了实现影子实例和强绑定，每一个需要影子的对象都会保存它或者它的父对象的一个唯一的识别符。这个识别符
 由 `Runtime` 获得。继承 `DisplayObject` 的对象都会允许你通过 `getId()` 获取这个值。ID相同
-的两个对象是强绑定的，可以认为二者相同。
+的两个对象是强绑定在同一个外部对象上的，可以认为对二者的操作会产生相同的效果。
 
 卸载对象 (Unloading Objects)
 -----------------------------------------------
