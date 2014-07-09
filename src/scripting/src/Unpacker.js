@@ -540,7 +540,40 @@
 	};
 	
 	ScriptingContext.prototype.Unpack.Sprite = function(stage, data, ctx){
-		this.DOM = _("div",{"style":{"position":"absolute"}});
+		this.DOM = _("div",{"style":{
+			"position":"absolute",
+			"top": data.y ? data.y + "px" : "0px",
+			"left": data.x ? data.x + "px" : "0px",
+			"width":"100%",
+			"height":"100%",
+			"overflow":"visible"
+		}});
+		
+		data.scaleX = 1;
+		data.scaleY = 1; 
+		
+		this.__defineSetter__("scaleX", function(f){
+			if(f > 50)
+				return;
+			data.scaleX = f;
+			for(var i = 0; i < this.DOM.children.length; i++){
+				this.DOM.children[i].style.transform = "scale(" + data.scaleX + "," + data.scaleY + ")";
+			}
+		});
+		this.__defineSetter__("scaleY", function(f){
+			if(f > 50)
+				return;
+			data.scaleY = f;
+			for(var i = 0; i < this.DOM.children.length; i++){
+				this.DOM.children[i].style.transform = "scale(" + data.scaleX + "," + data.scaleY + ")";
+			}
+		});
+		this.__defineGetter__("scaleX", function(f){
+			return data.scaleX;
+		});
+		this.__defineGetter__("scaleY", function(f){
+			return data.scaleY;
+		});
 		
 		this.__defineSetter__("x", function(f){
 			this.setX(f);
@@ -576,6 +609,12 @@
 			if(!child)
 				return;
 			if(child.DOM){
+				if(child.getClass() === "Shape"){
+					child.DOM.style.left = -this.x + "px";
+					child.DOM.style.top = -this.y + "px";
+					child.setX(this.x);
+					child.setY(this.y);
+				}
 				this.DOM.appendChild(child.DOM);
 			}else{
 				ctx.invokeError("Sprite.addChild failed. Attempted to add non object","err");

@@ -54,6 +54,14 @@ module Display {
 			this.propertyUpdate("text", this._text);
 		}
 
+		get length():number {
+			return this.text.length;
+		}
+
+		set length(l:number) {
+			__trace("TextField.length is read-only.", "warn");
+		}
+
 		get htmlText():string {
 			return this.text;
 		}
@@ -61,6 +69,24 @@ module Display {
 		set htmlText(text:string) {
 			__trace("TextField.htmlText is restricted due to security policy.", "warn");
 			this.text = text.replace(/<\/?[^>]+(>|$)/g, "");
+		}
+
+		set textWidth(w:number){
+			__trace("TextField.textWidth is read-only","warn");
+		}
+
+		set textHeight(h:number){
+			__trace("TextField.textHeight is read-only","warn");
+		}
+
+		get textWidth():number{
+			/** TODO: Fix this to actually calculate the width **/
+			return this._text.length * this._textFormat.size;
+		}
+
+		get textHeight():number{
+			/** TODO: Fix this to actually calculate the height **/
+			return this._textFormat.size;
 		}
 
 		get color():number {

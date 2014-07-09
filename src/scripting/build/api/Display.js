@@ -71,6 +71,10 @@ var Display;
             this.setTo(1, 0, 0, 1, 0, 0);
         };
 
+        Matrix.prototype.createGradientBox = function (width, height, rotation, tX, tY) {
+            this.createBox(width, height, rotation, tX, tY);
+        };
+
         Matrix.prototype.createBox = function (sX, sY, q, tX, tY) {
             this.identity();
             this.rotate(q);
@@ -600,6 +604,33 @@ var Display;
                 return;
             }
             this._hasSetDefaults = true;
+            try  {
+                /** Try reading the defaults from motion fields **/
+                if (defaults.hasOwnProperty("motion")) {
+                    var motion = defaults["motion"];
+                    if (motion.hasOwnProperty("alpha")) {
+                        this._alpha = motion["alpha"]["fromValue"];
+                    }
+                    if (motion.hasOwnProperty("x")) {
+                        this._x = motion["x"]["fromValue"];
+                    }
+                    if (motion.hasOwnProperty("y")) {
+                        this._y = motion["y"]["fromValue"];
+                    }
+                } else if (defaults.hasOwnProperty("motionGroup") && defaults["motionGroup"] && defaults["motionGroup"].length > 0) {
+                    var motion = defaults["motionGroup"][0];
+                    if (motion.hasOwnProperty("alpha")) {
+                        this._alpha = motion["alpha"]["fromValue"];
+                    }
+                    if (motion.hasOwnProperty("x")) {
+                        this._x = motion["x"]["fromValue"];
+                    }
+                    if (motion.hasOwnProperty("y")) {
+                        this._y = motion["y"]["fromValue"];
+                    }
+                }
+            } catch (e) {
+            }
             if (defaults.hasOwnProperty("alpha")) {
                 this._alpha = defaults["alpha"];
             }
@@ -765,6 +796,32 @@ var Display;
             },
             set: function (val) {
                 __trace("DisplayObject.z is not supported", "warn");
+            },
+            enumerable: true,
+            configurable: true
+        });
+
+
+        Object.defineProperty(DisplayObject.prototype, "width", {
+            get: function () {
+                return this._width;
+            },
+            set: function (w) {
+                this._width = w;
+                this.propertyUpdate("width", w);
+            },
+            enumerable: true,
+            configurable: true
+        });
+
+
+        Object.defineProperty(DisplayObject.prototype, "height", {
+            get: function () {
+                return this._height;
+            },
+            set: function (h) {
+                this._height = h;
+                this.propertyUpdate("height", h);
             },
             enumerable: true,
             configurable: true
@@ -1315,8 +1372,6 @@ var Display;
                 }
                 if (!mProp.hasOwnProperty("lifeTime")) {
                     mProp["lifeTime"] = this._dur;
-                } else {
-                    mProp["lifeTime"] *= 1000;
                 }
                 var src = {}, dst = {};
                 src[movingVars] = mProp["fromValue"];
@@ -1429,6 +1484,7 @@ var Display;
         function CommentCanvas(params) {
             _super.call(this);
             this._mM = new Display.MotionManager(this);
+            this.setDefaults(params);
             this.initStyle(params);
             Runtime.registerObject(this);
             this.bindParent(params);
@@ -1624,6 +1680,18 @@ var Display;
         });
 
 
+        Object.defineProperty(TextField.prototype, "length", {
+            get: function () {
+                return this.text.length;
+            },
+            set: function (l) {
+                __trace("TextField.length is read-only.", "warn");
+            },
+            enumerable: true,
+            configurable: true
+        });
+
+
         Object.defineProperty(TextField.prototype, "htmlText", {
             get: function () {
                 return this.text;
@@ -1636,6 +1704,32 @@ var Display;
             configurable: true
         });
 
+
+
+
+        Object.defineProperty(TextField.prototype, "textWidth", {
+            get: function () {
+                /** TODO: Fix this to actually calculate the width **/
+                return this._text.length * this._textFormat.size;
+            },
+            set: function (w) {
+                __trace("TextField.textWidth is read-only", "warn");
+            },
+            enumerable: true,
+            configurable: true
+        });
+
+        Object.defineProperty(TextField.prototype, "textHeight", {
+            get: function () {
+                /** TODO: Fix this to actually calculate the height **/
+                return this._textFormat.size;
+            },
+            set: function (h) {
+                __trace("TextField.textHeight is read-only", "warn");
+            },
+            enumerable: true,
+            configurable: true
+        });
 
         Object.defineProperty(TextField.prototype, "color", {
             get: function () {

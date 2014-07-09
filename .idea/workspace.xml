@@ -6,32 +6,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d872933e-151d-45f2-bea4-5399a376f23e" name="Default" comment="Added more precise abstraction of interfaces">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/scripting/build/Host.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/scripting/build/OOAPI.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/scripting/build/Worker.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/scripting/build/api/Function.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/scripting/build/api/Global.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/scripting/build/api/Player.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/scripting/build/api/Runtime.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/scripting/build/api/ScriptManager.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/scripting/build/api/Tween.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/scripting/build/api/Utils.js" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripting/src/api/Display/CommentBitmap.ts" afterPath="$PROJECT_DIR$/src/scripting/src/api/Display/CommentBitmap.ts" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripting/src/api/Display/CommentButton.ts" afterPath="$PROJECT_DIR$/src/scripting/src/api/Display/CommentButton.ts" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripting/src/api/Display/CommentCanvas.ts" afterPath="$PROJECT_DIR$/src/scripting/src/api/Display/CommentCanvas.ts" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripting/src/api/Display/CommentField.ts" afterPath="$PROJECT_DIR$/src/scripting/src/api/Display/CommentField.ts" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripting/src/api/Display/CommentShape.ts" afterPath="$PROJECT_DIR$/src/scripting/src/api/Display/CommentShape.ts" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripting/build/api/Display.js" afterPath="$PROJECT_DIR$/src/scripting/build/api/Display.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripting/src/api/Display/DisplayObject.ts" afterPath="$PROJECT_DIR$/src/scripting/src/api/Display/DisplayObject.ts" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripting/src/api/Function.js" afterPath="$PROJECT_DIR$/src/scripting/src/api/Function.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripting/src/Host.js" afterPath="$PROJECT_DIR$/src/scripting/src/Host.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripting/Makefile" afterPath="$PROJECT_DIR$/src/scripting/Makefile" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripting/build/Host.js" afterPath="$PROJECT_DIR$/src/scripting/build/Host.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripting/src/api/Display/Matrix.ts" afterPath="$PROJECT_DIR$/src/scripting/src/api/Display/Matrix.ts" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripting/src/api/Display/MotionManager.ts" afterPath="$PROJECT_DIR$/src/scripting/src/api/Display/MotionManager.ts" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripting/src/api/Player/Player.ts" afterPath="$PROJECT_DIR$/src/scripting/src/api/Player/Player.ts" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripting/src/api/Display/TextField.ts" afterPath="$PROJECT_DIR$/src/scripting/src/api/Display/TextField.ts" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripting/build/api/Tween.js" afterPath="$PROJECT_DIR$/src/scripting/build/api/Tween.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripting/src/api/Tween/Tween.ts" afterPath="$PROJECT_DIR$/src/scripting/src/api/Tween/Tween.ts" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripting/src/Unpacker.js" afterPath="$PROJECT_DIR$/src/scripting/src/Unpacker.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripting/src/Worker.js" afterPath="$PROJECT_DIR$/src/scripting/src/Worker.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/demo/scripting/ccl.htm" afterPath="$PROJECT_DIR$/demo/scripting/ccl.htm" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tests/scripting/crazy-night.xml" afterPath="$PROJECT_DIR$/tests/scripting/crazy-night.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="CommentCoreLibrary.iws" />
@@ -63,8 +48,8 @@
       <file leaf-file-name="MotionManager.ts" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Display/MotionManager.ts">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="2391" max-vertical-offset="3024">
-              <caret line="98" column="30" selection-start-line="98" selection-start-column="30" selection-end-line="98" selection-end-column="30" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="2335" max-vertical-offset="2982">
+              <caret line="111" column="17" selection-start-line="111" selection-start-column="17" selection-end-line="111" selection-end-column="17" />
               <folding />
             </state>
           </provider>
@@ -73,18 +58,28 @@
       <file leaf-file-name="DisplayObject.ts" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Display/DisplayObject.ts">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="1925" max-vertical-offset="8232">
-              <caret line="89" column="52" selection-start-line="89" selection-start-column="52" selection-end-line="89" selection-end-column="52" />
+            <state vertical-scroll-proportion="-7.5925927" vertical-offset="5381" max-vertical-offset="9261">
+              <caret line="266" column="12" selection-start-line="266" selection-start-column="12" selection-end-line="266" selection-end-column="12" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Tween.ts" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="TextField.ts" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Display/TextField.ts">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="1060" max-vertical-offset="2751">
+              <caret line="61" column="51" selection-start-line="61" selection-start-column="51" selection-end-line="61" selection-end-column="51" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Tween.ts" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Tween/Tween.ts">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.7360862" vertical-offset="4672" max-vertical-offset="5544">
-              <caret line="242" column="33" selection-start-line="242" selection-start-column="33" selection-end-line="242" selection-end-column="33" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="4903" max-vertical-offset="5586">
+              <caret line="206" column="19" selection-start-line="206" selection-start-column="19" selection-end-line="206" selection-end-column="19" />
               <folding />
             </state>
           </provider>
@@ -100,21 +95,21 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Graphics.ts" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Display/Graphics.ts">
+      <file leaf-file-name="CommentCanvas.ts" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Display/CommentCanvas.ts">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="2627" max-vertical-offset="4557">
-              <caret line="168" column="46" selection-start-line="168" selection-start-column="46" selection-end-line="168" selection-end-column="46" />
+            <state vertical-scroll-proportion="0.2631579" vertical-offset="102" max-vertical-offset="1134">
+              <caret line="12" column="37" selection-start-line="12" selection-start-column="37" selection-end-line="12" selection-end-column="37" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="CommentCanvas.ts" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Display/CommentCanvas.ts">
+      <file leaf-file-name="Sprite.ts" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Display/Sprite.ts">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="417" max-vertical-offset="1113">
-              <caret line="40" column="13" selection-start-line="40" selection-start-column="13" selection-end-line="40" selection-end-column="13" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="60" max-vertical-offset="630">
+              <caret line="9" column="55" selection-start-line="9" selection-start-column="55" selection-end-line="9" selection-end-column="55" />
               <folding />
             </state>
           </provider>
@@ -123,18 +118,18 @@
       <file leaf-file-name="CommentField.ts" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Display/CommentField.ts">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="1624" max-vertical-offset="2247">
-              <caret line="93" column="13" selection-start-line="93" selection-start-column="13" selection-end-line="93" selection-end-column="13" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2247">
+              <caret line="12" column="12" selection-start-line="12" selection-start-column="12" selection-end-line="12" selection-end-column="37" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="CommentButton.ts" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Display/CommentButton.ts">
+      <file leaf-file-name="Matrix.ts" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Display/Matrix.ts">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="606" max-vertical-offset="1428">
-              <caret line="49" column="13" selection-start-line="49" selection-start-column="13" selection-end-line="49" selection-end-column="13" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="1197" max-vertical-offset="6678">
+              <caret line="57" column="9" selection-start-line="57" selection-start-column="9" selection-end-line="57" selection-end-column="9" />
               <folding />
             </state>
           </provider>
@@ -143,18 +138,8 @@
       <file leaf-file-name="CommentShape.ts" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Display/CommentShape.ts">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="563" max-vertical-offset="1155">
+            <state vertical-scroll-proportion="0.0" vertical-offset="156" max-vertical-offset="1155">
               <caret line="16" column="28" selection-start-line="16" selection-start-column="28" selection-end-line="16" selection-end-column="28" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="CommentBitmap.ts" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Display/CommentBitmap.ts">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="63" max-vertical-offset="798">
-              <caret line="10" column="36" selection-start-line="10" selection-start-column="36" selection-end-line="10" selection-end-column="36" />
               <folding />
             </state>
           </provider>
@@ -200,7 +185,6 @@
         <option value="$PROJECT_DIR$/src/scripting/src/api/Scripting.d.ts" />
         <option value="$PROJECT_DIR$/src/scripting/build/api/Display.js" />
         <option value="$PROJECT_DIR$/src/scripting/src/api/Utils/Utils.ts" />
-        <option value="$PROJECT_DIR$/src/scripting/src/api/Display/TextField.ts" />
         <option value="$PROJECT_DIR$/src/scripting/src/api/Runtime/Runtime.ts" />
         <option value="$PROJECT_DIR$/src/scripting/src/api/Display/Sprite.ts" />
         <option value="$PROJECT_DIR$/src/scripting/src/Host/Host.ts" />
@@ -208,22 +192,23 @@
         <option value="$PROJECT_DIR$/src/scripting/src/Host/Unpacker/Sprite.ts" />
         <option value="$PROJECT_DIR$/src/scripting/src/Host/Unpacker/TextField.ts" />
         <option value="$PROJECT_DIR$/src/scripting/src/Host/Unpacker/Button.ts" />
-        <option value="$PROJECT_DIR$/src/scripting/src/api/Display/Matrix.ts" />
         <option value="$PROJECT_DIR$/src/scripting/src/api/Runtime/Timer.ts" />
         <option value="$PROJECT_DIR$/src/scripting/src/api/Display/Graphics.ts" />
         <option value="$PROJECT_DIR$/src/scripting/src/api/ScriptManager.js" />
         <option value="$PROJECT_DIR$/src/scripting/src/api/Display/Display.ts" />
         <option value="$PROJECT_DIR$/src/scripting/src/api/Player/Player.ts" />
         <option value="$PROJECT_DIR$/src/scripting/src/api/Utils/Easing.ts" />
-        <option value="$PROJECT_DIR$/src/scripting/src/api/Display/DisplayObject.ts" />
         <option value="$PROJECT_DIR$/src/scripting/src/api/Display/CommentBitmap.ts" />
         <option value="$PROJECT_DIR$/src/scripting/src/api/Tween/Easing.ts" />
         <option value="$PROJECT_DIR$/src/scripting/src/api/Display/CommentShape.ts" />
-        <option value="$PROJECT_DIR$/src/scripting/src/api/Display/CommentCanvas.ts" />
-        <option value="$PROJECT_DIR$/src/scripting/src/api/Display/CommentField.ts" />
         <option value="$PROJECT_DIR$/src/scripting/src/api/Display/CommentButton.ts" />
-        <option value="$PROJECT_DIR$/src/scripting/src/api/Display/MotionManager.ts" />
+        <option value="$PROJECT_DIR$/src/scripting/src/api/Display/Matrix.ts" />
+        <option value="$PROJECT_DIR$/src/scripting/src/api/Display/DisplayObject.ts" />
+        <option value="$PROJECT_DIR$/src/scripting/src/api/Display/CommentField.ts" />
+        <option value="$PROJECT_DIR$/src/scripting/src/api/Display/TextField.ts" />
         <option value="$PROJECT_DIR$/src/scripting/src/api/Tween/Tween.ts" />
+        <option value="$PROJECT_DIR$/src/scripting/src/api/Display/MotionManager.ts" />
+        <option value="$PROJECT_DIR$/src/scripting/src/api/Display/CommentCanvas.ts" />
       </list>
     </option>
   </component>
@@ -260,7 +245,7 @@
       <sortByType />
     </navigator>
     <panes>
-      <pane id="Scope" />
+      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -597,7 +582,7 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="PackagesPane" />
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -877,6 +862,7 @@
       <workItem from="1404497352707" duration="13450000" />
       <workItem from="1404542750219" duration="7900000" />
       <workItem from="1404616229718" duration="22215000" />
+      <workItem from="1404880676303" duration="3979000" />
     </task>
     <task id="LOCAL-00001" summary="Added more precise abstraction of interfaces">
       <created>1400532615329</created>
@@ -886,7 +872,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="137240000" />
+    <option name="totallyTimeSpent" value="141219000" />
   </component>
   <component name="TodoView" selected-index="0">
     <todo-panel id="selected-file">
@@ -930,7 +916,7 @@
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.20499243" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.20499243" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -942,10 +928,10 @@
     <layout-to-restore>
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32901135" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24962178" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32980332" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32901135" sideWeight="0.5" order="0" side_tool="true" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24962178" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="IDEtalk Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32901135" sideWeight="0.5" order="0" side_tool="true" content_ui="tabs" />
       <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32980332" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32901135" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32901135" sideWeight="0.5" order="13" side_tool="false" content_ui="tabs" />
@@ -963,8 +949,8 @@
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="true" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3286385" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24962178" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39906102" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
     </layout-to-restore>
   </component>
@@ -1112,14 +1098,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Display/Sprite.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="630">
-          <caret line="9" column="55" selection-start-line="9" selection-start-column="55" selection-end-line="9" selection-end-column="55" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/scripting/src/OOAPI.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="1799" max-vertical-offset="2877">
@@ -1198,14 +1176,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Display/Matrix.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="5158" max-vertical-offset="6594">
-          <caret line="254" column="33" selection-start-line="254" selection-start-column="33" selection-end-line="254" selection-end-column="33" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/scripting/src/api/ScriptManager.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="756">
@@ -1225,7 +1195,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="672">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1233,15 +1202,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="252">
           <caret line="6" column="0" selection-start-line="6" selection-start-column="0" selection-end-line="6" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Display/TextField.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="315" max-vertical-offset="2205">
-          <caret line="72" column="9" selection-start-line="72" selection-start-column="9" selection-end-line="72" selection-end-column="9" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1257,7 +1217,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="570">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1309,34 +1268,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Display/CommentField.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="1624" max-vertical-offset="2247">
-          <caret line="93" column="13" selection-start-line="93" selection-start-column="13" selection-end-line="93" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Display/CommentShape.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="249" max-vertical-offset="1155">
-          <caret line="16" column="28" selection-start-line="16" selection-start-column="28" selection-end-line="16" selection-end-column="28" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Display/CommentBitmap.ts">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="63" max-vertical-offset="798">
           <caret line="10" column="36" selection-start-line="10" selection-start-column="36" selection-end-line="10" selection-end-column="36" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Display/CommentCanvas.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="354" max-vertical-offset="1113">
-          <caret line="40" column="13" selection-start-line="40" selection-start-column="13" selection-end-line="40" selection-end-column="13" />
           <folding />
         </state>
       </provider>
@@ -1349,6 +1284,46 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Display/Sprite.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="60" max-vertical-offset="630">
+          <caret line="9" column="55" selection-start-line="9" selection-start-column="55" selection-end-line="9" selection-end-column="55" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Tween/Tween.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="4903" max-vertical-offset="5586">
+          <caret line="206" column="19" selection-start-line="206" selection-start-column="19" selection-end-line="206" selection-end-column="19" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Display/DisplayObject.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-7.5925927" vertical-offset="5381" max-vertical-offset="9261">
+          <caret line="266" column="12" selection-start-line="266" selection-start-column="12" selection-end-line="266" selection-end-column="12" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Display/MotionManager.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="2335" max-vertical-offset="2982">
+          <caret line="111" column="17" selection-start-line="111" selection-start-column="17" selection-end-line="111" selection-end-column="17" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Display/Matrix.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="1197" max-vertical-offset="6678">
+          <caret line="57" column="9" selection-start-line="57" selection-start-column="9" selection-end-line="57" selection-end-column="9" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Player/Player.ts">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="3189" max-vertical-offset="3759">
@@ -1357,26 +1332,34 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Display/DisplayObject.ts">
+    <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Display/TextField.ts">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="1610" max-vertical-offset="8232">
-          <caret line="89" column="52" selection-start-line="89" selection-start-column="52" selection-end-line="89" selection-end-column="52" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="1060" max-vertical-offset="2751">
+          <caret line="61" column="51" selection-start-line="61" selection-start-column="51" selection-end-line="61" selection-end-column="51" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Display/MotionManager.ts">
+    <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Display/CommentField.ts">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="2391" max-vertical-offset="3024">
-          <caret line="98" column="30" selection-start-line="98" selection-start-column="30" selection-end-line="98" selection-end-column="30" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2247">
+          <caret line="12" column="12" selection-start-line="12" selection-start-column="12" selection-end-line="12" selection-end-column="37" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Tween/Tween.ts">
+    <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Display/CommentShape.ts">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.7360862" vertical-offset="4672" max-vertical-offset="5544">
-          <caret line="242" column="33" selection-start-line="242" selection-start-column="33" selection-end-line="242" selection-end-column="33" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="249" max-vertical-offset="1155">
+          <caret line="16" column="28" selection-start-line="16" selection-start-column="28" selection-end-line="16" selection-end-column="28" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Display/CommentCanvas.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.2631579" vertical-offset="102" max-vertical-offset="1134">
+          <caret line="12" column="37" selection-start-line="12" selection-start-column="37" selection-end-line="12" selection-end-column="37" />
           <folding />
         </state>
       </provider>

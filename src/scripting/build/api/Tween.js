@@ -270,7 +270,7 @@ var Tween;
         if (typeof src === "undefined") { src = {}; }
         if (typeof duration === "undefined") { duration = 0; }
         if (typeof easing === "undefined") { easing = null; }
-        var t = new ITween(object, duration);
+        var t = new ITween(object, duration * 1000);
         t.step = createStepFunction(object, dest, src, t);
         if (easing !== null) {
             t.easing = easing;
@@ -310,12 +310,12 @@ var Tween;
     Tween.scale = scale;
 
     function delay(src, delay) {
-        var newTween = new ITween(src.target, src.duration + delay);
+        var newTween = new ITween(src.target, src.duration + delay * 1000);
         newTween.step = function (target, currentTime, totalTime) {
-            if (currentTime <= delay) {
+            if (currentTime <= delay * 1000) {
                 return;
             }
-            src.step(target, currentTime - delay, totalTime);
+            src.step(target, currentTime - delay * 1000, totalTime);
         };
         return newTween;
     }
@@ -338,6 +338,8 @@ var Tween;
     Tween.repeat = repeat;
 
     function slice(src, from, to) {
+        from *= 1000;
+        to *= 1000;
         var newTween = new ITween(src.target, to - from);
         newTween.step = function (target, currentTime, totalTime) {
             src.step(target, from + currentTime, src.duration);

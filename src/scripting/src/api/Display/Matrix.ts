@@ -61,6 +61,10 @@ module Display {
 			this.setTo(1, 0, 0, 1, 0, 0);
 		}
 
+		public createGradientBox(width:number, height:number, rotation:number, tX:number, tY:number):void{
+			this.createBox(width, height, rotation, tX, tY);
+		}
+
 		public createBox(sX:number, sY:number, q:number, tX:number, tY:number):void{
 			this.identity();
 			this.rotate(q);

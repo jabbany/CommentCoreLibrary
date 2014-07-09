@@ -1008,7 +1008,7 @@ if(j==25)
 var w=$.createComment(t,{x:x2,y:y2,lifeTime:lt,alpha:1,parent:c,motion:{alpha:{fromValue:0,toValue:1,lifeTime:0.1}}});w.color=0xffffff; /*这里这里*/
 w.fontsize=100;
 w.font="宋体";
-w.filters=[gfl];
+w.filters=[gf1];
 }	
 	
 },10,25);
@@ -1144,7 +1144,7 @@ var w2=$.createComment(t2,{x:90,y:0,lifeTime:2.499,alpha:1,parent:c,motionGroup:
 w2.color=w.color=0xffffff; 
 w.fontsize=w2.fontsize=40;
 w.font=w2.font="宋体";
-w.filters=w2.filters=[gfl];
+w.filters=w2.filters=[gf1];
 }
 },0,25);
 

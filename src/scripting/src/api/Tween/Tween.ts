@@ -145,7 +145,7 @@ module Tween{
 	}
 
 	export function tween(object:any, dest:Object = {}, src:Object = {}, duration:number = 0, easing:Function = null):ITween{
-		var t:ITween = new ITween(object, duration);
+		var t:ITween = new ITween(object, duration * 1000);
 		t.step = createStepFunction(object, dest, src, t);
 		if(easing !== null){
 			t.easing = easing;
@@ -178,12 +178,12 @@ module Tween{
 	}
 
 	export function delay(src:ITween, delay:number):ITween{
-		var newTween:ITween = new ITween(src.target, src.duration + delay);
+		var newTween:ITween = new ITween(src.target, src.duration + delay * 1000);
 		newTween.step = function(target:any, currentTime:number, totalTime:number){
-			if(currentTime <= delay){
+			if(currentTime <= delay * 1000){
 				return;
 			}
-			src.step(target, currentTime - delay, totalTime);
+			src.step(target, currentTime - delay * 1000, totalTime);
 		}
 		return newTween;
 	}
@@ -203,6 +203,8 @@ module Tween{
 	}
 
 	export function slice(src:ITween, from:number, to:number):ITween{
+		from *= 1000;
+		to *= 1000;
 		var newTween:ITween = new ITween(src.target, to - from);
 		newTween.step = function(target:any, currentTime:number, totalTime:number){
 			src.step(target, from + currentTime, src.duration);

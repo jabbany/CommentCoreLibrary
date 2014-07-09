@@ -80,6 +80,8 @@ module Display {
 		private _alpha:number = 1;
 		private _x:number = 0;
 		private _y:number = 0;
+		private _width:number;
+		private _height:number;
 		private _scaleX:number = 1;
 		private _scaleY:number = 1;
 		private _filters:Array<Filter> = [];
@@ -102,6 +104,35 @@ module Display {
 				return;
 			}
 			this._hasSetDefaults = true;
+			try{
+				/** Try reading the defaults from motion fields **/
+				if (defaults.hasOwnProperty("motion")) {
+					var motion:Object = defaults["motion"];
+					if (motion.hasOwnProperty("alpha")) {
+						this._alpha = motion["alpha"]["fromValue"];
+					}
+					if (motion.hasOwnProperty("x")) {
+						this._x = motion["x"]["fromValue"];
+					}
+					if (motion.hasOwnProperty("y")) {
+						this._y = motion["y"]["fromValue"];
+					}
+				}else if(defaults.hasOwnProperty("motionGroup") &&
+					defaults["motionGroup"] && defaults["motionGroup"].length > 0){
+					var motion:Object = defaults["motionGroup"][0];
+					if (motion.hasOwnProperty("alpha")) {
+						this._alpha = motion["alpha"]["fromValue"];
+					}
+					if (motion.hasOwnProperty("x")) {
+						this._x = motion["x"]["fromValue"];
+					}
+					if (motion.hasOwnProperty("y")) {
+						this._y = motion["y"]["fromValue"];
+					}
+				}
+			}catch(e){
+
+			}
 			if (defaults.hasOwnProperty("alpha")) {
 				this._alpha = defaults["alpha"];
 			}
@@ -230,6 +261,24 @@ module Display {
 
 		get z():number {
 			return 0;
+		}
+
+		set width(w:number){
+			this._width = w;
+			this.propertyUpdate("width", w);
+		}
+
+		get width():number{
+			return this._width;
+		}
+
+		set height(h:number){
+			this._height = h;
+			this.propertyUpdate("height", h);
+		}
+
+		get height():number{
+			return this._height;
 		}
 
 		set visible(visible:boolean) {
