@@ -13,6 +13,8 @@ module Display {
 			this.setDefaults(params);
 			this.initStyle(params);
 			Runtime.registerObject(this);
+			this.bindParent(params);
+			this._mM.play();
 		}
 
 		set fontsize(size:number){
@@ -63,6 +65,12 @@ module Display {
 			__trace("IComment.motionManager is read-only", "warn");
 		}
 
+		private bindParent(params:Object):void{
+			if(params.hasOwnProperty("parent")){
+				(<DisplayObject> params["parent"]).addChild(this);
+			}
+		}
+
 		public initStyle(style:Object):void {
 			if (style["lifeTime"]) {
 				this._mM.dur = style["lifeTime"] * 1000;
@@ -79,10 +87,11 @@ module Display {
 			if (style["bold"]) {
 				this.getTextFormat().bold = style["bold"];
 			}
-			if(style.hasOwnProperty("parent")){
-				(<DisplayObject> style["parent"]).addChild(this);
+			if(style.hasOwnProperty("motionGroup")){
+				this._mM.initTweenGroup(style["motionGroup"], this._mM.dur);
+			}else if(style.hasOwnProperty("motion")){
+				this._mM.initTween(style["motion"], false);
 			}
-			this._mM.play();
 		}
 	}
 

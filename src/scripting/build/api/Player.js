@@ -38,7 +38,7 @@ var Player;
 /// <reference path="Sound.ts" />
 var Player;
 (function (Player) {
-    var _state;
+    var _state = "";
     var _time;
     var _commentList;
     var _refreshRate;
@@ -46,6 +46,7 @@ var Player;
     var _height;
     var _videoWidth;
     var _videoHeight;
+    var _lastUpdate;
 
     Player.state;
     Player.time;
@@ -67,7 +68,11 @@ var Player;
     });
     Object.defineProperty(Player, 'time', {
         get: function () {
-            return _time;
+            if (_state !== "playing") {
+                return _time;
+            } else {
+                return _time + (Date.now() - _lastUpdate);
+            }
         },
         set: function (value) {
             __trace("Player.time is read-only", "warn");
@@ -208,5 +213,11 @@ var Player;
             _videoWidth = payload["videoWidth"];
             _videoHeight = payload["videoHeight"];
         }
+    });
+
+    __schannel("Update:TimeUpdate", function (payload) {
+        _state = payload["state"];
+        _time = payload["time"];
+        _lastUpdate = Date.now();
     });
 })(Player || (Player = {}));

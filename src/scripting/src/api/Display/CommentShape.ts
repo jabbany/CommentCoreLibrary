@@ -11,8 +11,10 @@ module Display {
 		constructor(params:Object) {
 			super();
 			this.setDefaults(params);
-			this.initStyle(params);// This is for the special styles
-			Runtime.registerObject(<any> this);
+			this.initStyle(params);
+			Runtime.registerObject(this);
+			this.bindParent(params);
+			this._mM.play();
 		}
 
 		get motionManager():MotionManager {
@@ -23,14 +25,21 @@ module Display {
 			__trace("IComment.motionManager is read-only", "warn");
 		}
 
-		public initStyle(style:Object):void {
-			if(style.hasOwnProperty("parent")){
-				(<DisplayObject> style["parent"]).addChild(this);
+		private bindParent(params:Object):void{
+			if(params.hasOwnProperty("parent")){
+				(<DisplayObject> params["parent"]).addChild(this);
 			}
+		}
+
+		public initStyle(style:Object):void {
 			if (style["lifeTime"]) {
 				this._mM.dur = style["lifeTime"] * 1000;
 			}
-			this._mM.play();
+			if(style.hasOwnProperty("motionGroup")){
+				this._mM.initTweenGroup(style["motionGroup"], this._mM.dur);
+			}else if(style.hasOwnProperty("motion")){
+				this._mM.initTween(style["motion"], false);
+			}
 		}
 
 	}

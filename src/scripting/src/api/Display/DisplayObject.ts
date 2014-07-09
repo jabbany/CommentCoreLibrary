@@ -7,6 +7,11 @@
 /// <reference path="ISerializable.ts" />
 /// <reference path="Filter.ts" />
 module Display {
+	class ColorTransform implements ISerializable{
+		public serialize():Object{
+			return {};
+		}
+	}
 	class Transform implements ISerializable {
 		private _parent:DisplayObject;
 		private _scaleX:number;
@@ -69,6 +74,7 @@ module Display {
 
 	}
 	export class DisplayObject implements ISerializable, Runtime.RegisterableObject {
+		private static SANDBOX_EVENTS:Array<string> = ["enterFrame"];
 		/** This represents an element in the HTML rendering **/
 		private _id:string;
 		private _alpha:number = 1;
@@ -107,6 +113,22 @@ module Display {
 			}
 		}
 
+		/**
+		 * These are meant to be internal public methods, so they
+		 * are named noun-verb instead of verb-noun
+		 */
+
+		public eventToggle(eventName:string,mode:string = "enable"):void {
+			if(DisplayObject.SANDBOX_EVENTS.indexOf(eventName) > -1){
+				return; /* No need to notify */
+			}
+			__pchannel("Runtime:ManageEvent", {
+				"id": this._id,
+				"name": eventName,
+				"mode": mode
+			});
+		}
+
 		public propertyUpdate(propertyName:string, updatedValue:any):void {
 			__pchannel("Runtime:UpdateProperty", {
 				"id": this._id,
@@ -142,7 +164,7 @@ module Display {
 		}
 
 		set filters(filters:Array<Filter>) {
-			this._filters = filters;
+			this._filters = filters ? filters : [];
 			var serializedFilters:Array<Object> = [];
 			for (var i = 0; i < this._filters.length; i++) {
 				serializedFilters.push(this._filters[i].serialize());
@@ -259,7 +281,7 @@ module Display {
 		}
 
 		get parent():DisplayObject {
-			return this._parent;
+			return this._parent !== null ? this._parent : Display.root;
 		}
 
 		/** AS3 Stuff **/
@@ -286,15 +308,22 @@ module Display {
 				this._listeners[event] = [];
 			}
 			this._listeners[event].push(listener);
+			if(this._listeners[event].length === 1){
+				this.eventToggle(event, "enable");
+			}
 		}
 
 		public removeEventListener(event:string, listener:Function):void {
-			if (!this._listeners.hasOwnProperty(event)) {
+			if (!this._listeners.hasOwnProperty(event) ||
+				this._listeners["event"].length === 0) {
 				return;
 			}
 			var index = this._listeners[event].indexOf(listener);
 			if (index >= 0) {
 				this._listeners[event].splice(index, 1);
+			}
+			if(this._listeners[event].length === 1){
+				this.eventToggle(event, "disable");
 			}
 		}
 
