@@ -48,7 +48,7 @@ var CCLScripting = function(workerUrl){
 		};
 		this.updateProperty = function(objectId, propName, value){
 			if(!objects[objectId]){
-				scripter.logger.error("Object not found.");
+				scripter.logger.error("Object (" + objectId + ") not found.");
 				return;
 			}
 			if(objects[objectId][propName] === undefined){
@@ -61,7 +61,7 @@ var CCLScripting = function(workerUrl){
 		};
 		this.callMethod = function(objectId, methodName, params){
 			if(!objects[objectId]){
-				scripter.logger.error("Object not found.");
+				scripter.logger.error("Object (" + objectId + ") not found.");
 				return;
 			}
 			if(!objects[objectId][methodName]){
@@ -80,7 +80,27 @@ var CCLScripting = function(workerUrl){
 				};
 			}
 		};
-		
+		this.getObject = function(objectId){
+			if(!objects.hasOwnProperty(objectId)){
+				scripter.logger.error("Object (" + objectId + ") not found.");
+				return objects[objectId];
+			}
+			return objects[objectId];
+		};
+		this.invokeError = function(msg, mode){
+			switch(mode){
+				case "err":
+					scripter.logger.error(msg);
+					break;
+				case "warn":
+					scripter.logger.warn(msg);
+					break;
+				default:
+				case "log":
+					scripter.logger.log(msg);
+					break;
+			}
+		};
 		this.clear = function(){
 			
 		};

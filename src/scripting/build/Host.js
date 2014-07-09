@@ -48,7 +48,7 @@ var CCLScripting = function(workerUrl){
 		};
 		this.updateProperty = function(objectId, propName, value){
 			if(!objects[objectId]){
-				scripter.logger.error("Object not found.");
+				scripter.logger.error("Object (" + objectId + ") not found.");
 				return;
 			}
 			if(objects[objectId][propName] === undefined){
@@ -61,7 +61,7 @@ var CCLScripting = function(workerUrl){
 		};
 		this.callMethod = function(objectId, methodName, params){
 			if(!objects[objectId]){
-				scripter.logger.error("Object not found.");
+				scripter.logger.error("Object (" + objectId + ") not found.");
 				return;
 			}
 			if(!objects[objectId][methodName]){
@@ -80,7 +80,27 @@ var CCLScripting = function(workerUrl){
 				};
 			}
 		};
-		
+		this.getObject = function(objectId){
+			if(!objects.hasOwnProperty(objectId)){
+				scripter.logger.error("Object (" + objectId + ") not found.");
+				return objects[objectId];
+			}
+			return objects[objectId];
+		};
+		this.invokeError = function(msg, mode){
+			switch(mode){
+				case "err":
+					scripter.logger.error(msg);
+					break;
+				case "warn":
+					scripter.logger.warn(msg);
+					break;
+				default:
+				case "log":
+					scripter.logger.log(msg);
+					break;
+			}
+		};
 		this.clear = function(){
 			
 		};
@@ -821,6 +841,19 @@ var CCLScripting = function(workerUrl){
 	ScriptingContext.prototype.Unpack.Sprite = function(stage, data, ctx){
 		this.DOM = _("div",{"style":{"position":"absolute"}});
 		
+		this.__defineSetter__("x", function(f){
+			this.setX(f);
+		});
+		this.__defineSetter__("y", function(f){
+			this.setY(f);
+		});
+		this.__defineGetter__("x", function(f){
+			return this.DOM.offsetLeft;
+		});
+		this.__defineGetter__("y", function(f){
+			return this.DOM.offsetTop;
+		});
+		
 		this.setX = function(x){
 			this.DOM.style.left = x + "px";
 		};
@@ -835,6 +868,28 @@ var CCLScripting = function(workerUrl){
 		
 		this.setHeight = function(height){
 			this.DOM.style.height = height + "px";
+		};
+		
+		this.addChild = function(childitem){
+			var child = ctx.getObject(childitem);
+			if(!child)
+				return;
+			if(child.DOM){
+				this.DOM.appendChild(child.DOM);
+			}else{
+				ctx.invokeError("Sprite.addChild failed. Attempted to add non object","err");
+			}
+		};
+		
+		this.removeChild = function(childitem){
+			var child = ctx.getObject(childitem);
+			if(!child)
+				return;
+			try{
+				this.DOM.removeChild(child.DOM);
+			}catch(e){
+				ctx.invokeError(e.stack, "err");
+			}
 		};
 		
 		this.unload = function(){

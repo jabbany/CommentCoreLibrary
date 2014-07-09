@@ -86,7 +86,7 @@ var bscripter = new CCLScripting("../../src/scripting/build/Worker.js");
 bscripter.logger = new function(){
 	this.log = function(t){
 		var pre = document.createElement("pre");
-		pre.textContent = t.toString();
+		pre.textContent = "[" + (window.playhead / 1000) + "] " + t.toString();
 		$("debug-console").appendChild(pre);
 		while($("debug-console").children.length > 200){
 			$("debug-console").removeChild($("debug-console").children[0]);
@@ -95,7 +95,7 @@ bscripter.logger = new function(){
 	};
 	this.error = function(t){
 		var pre = document.createElement("pre");
-		pre.textContent = t.toString();
+		pre.textContent = "[" + (window.playhead / 1000) + "] " + t.toString();
 		pre.className = "error";
 		$("debug-console").appendChild(pre);
 		while($("debug-console").children.length > 200){
@@ -105,7 +105,7 @@ bscripter.logger = new function(){
 	};
 	this.warn = function(t){
 		var pre = document.createElement("pre");
-		pre.textContent = t.toString();
+		pre.textContent = "[" + (window.playhead / 1000) + "] " + t.toString();
 		pre.className = "warning";
 		$("debug-console").appendChild(pre);
 		while($("debug-console").children.length > 200){

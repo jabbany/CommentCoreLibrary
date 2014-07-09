@@ -502,6 +502,14 @@ var Display;
 /// <reference path="Filter.ts" />
 var Display;
 (function (Display) {
+    var ColorTransform = (function () {
+        function ColorTransform() {
+        }
+        ColorTransform.prototype.serialize = function () {
+            return {};
+        };
+        return ColorTransform;
+    })();
     var Transform = (function () {
         function Transform(parent) {
             this._matrix = new Display.Matrix();
@@ -603,6 +611,22 @@ var Display;
             }
         };
 
+        /**
+        * These are meant to be internal public methods, so they
+        * are named noun-verb instead of verb-noun
+        */
+        DisplayObject.prototype.eventToggle = function (eventName, mode) {
+            if (typeof mode === "undefined") { mode = "enable"; }
+            if (DisplayObject.SANDBOX_EVENTS.indexOf(eventName) > -1) {
+                return;
+            }
+            __pchannel("Runtime:ManageEvent", {
+                "id": this._id,
+                "name": eventName,
+                "mode": mode
+            });
+        };
+
         DisplayObject.prototype.propertyUpdate = function (propertyName, updatedValue) {
             __pchannel("Runtime:UpdateProperty", {
                 "id": this._id,
@@ -651,7 +675,7 @@ var Display;
                 return this._filters;
             },
             set: function (filters) {
-                this._filters = filters;
+                this._filters = filters ? filters : [];
                 var serializedFilters = [];
                 for (var i = 0; i < this._filters.length; i++) {
                     serializedFilters.push(this._filters[i].serialize());
@@ -813,7 +837,7 @@ var Display;
 
         Object.defineProperty(DisplayObject.prototype, "parent", {
             get: function () {
-                return this._parent;
+                return this._parent !== null ? this._parent : Display.root;
             },
             set: function (p) {
                 __trace("DisplayObject.parent is read-only", "warn");
@@ -846,15 +870,21 @@ var Display;
                 this._listeners[event] = [];
             }
             this._listeners[event].push(listener);
+            if (this._listeners[event].length === 1) {
+                this.eventToggle(event, "enable");
+            }
         };
 
         DisplayObject.prototype.removeEventListener = function (event, listener) {
-            if (!this._listeners.hasOwnProperty(event)) {
+            if (!this._listeners.hasOwnProperty(event) || this._listeners["event"].length === 0) {
                 return;
             }
             var index = this._listeners[event].indexOf(listener);
             if (index >= 0) {
                 this._listeners[event].splice(index, 1);
+            }
+            if (this._listeners[event].length === 1) {
+                this.eventToggle(event, "disable");
             }
         };
 
@@ -914,6 +944,7 @@ var Display;
         DisplayObject.prototype.getId = function () {
             return this._id;
         };
+        DisplayObject.SANDBOX_EVENTS = ["enterFrame"];
         return DisplayObject;
     })();
     Display.DisplayObject = DisplayObject;
@@ -1177,6 +1208,7 @@ var Display;
 * Part of the CCLScripter
 */
 /// <reference path="../Runtime.d.ts" />
+/// <reference path="../Tween.d.ts" />
 /// <reference path="DisplayObject.ts" />
 var Display;
 (function (Display) {
@@ -1238,6 +1270,9 @@ var Display;
                 _lastTime = Date.now();
             });
             this._timer.start();
+            if (this._tween) {
+                this._tween.play();
+            }
         };
 
         MotionManager.prototype.stop = function () {
@@ -1245,6 +1280,9 @@ var Display;
                 return;
             this._isRunning = false;
             this._timer.stop();
+            if (this._tween) {
+                this._tween.stop();
+            }
         };
 
         MotionManager.prototype.forecasting = function (time) {
@@ -1252,18 +1290,52 @@ var Display;
         };
 
         MotionManager.prototype.setPlayTime = function (playtime) {
-        };
-
-        MotionManager.prototype.initTween = function (motion, repeat) {
-            if (motion.hasOwnProperty("lifeTime")) {
-                this._ttl = motion["lifeTime"] * 1000;
-                if (isNaN(this._ttl)) {
-                    this._ttl = 3000;
+            this._ttl = this._dur - playtime;
+            if (this._tween) {
+                if (this._isRunning) {
+                    this._tween.gotoAndPlay(playtime);
+                } else {
+                    this._tween.gotoAndStop(playtime);
                 }
             }
         };
 
+        MotionManager.prototype.motionSetToTween = function (motion) {
+            var tweens = [];
+            for (var movingVars in motion) {
+                if (!motion.hasOwnProperty(movingVars)) {
+                    continue;
+                }
+                var mProp = motion[movingVars];
+                if (!mProp.hasOwnProperty("fromValue")) {
+                    continue;
+                }
+                if (!mProp.hasOwnProperty("toValue")) {
+                    mProp["toValue"] = mProp["fromValue"];
+                }
+                if (!mProp.hasOwnProperty("lifeTime")) {
+                    mProp["lifeTime"] = this._dur;
+                } else {
+                    mProp["lifeTime"] *= 1000;
+                }
+                var src = {}, dst = {};
+                src[movingVars] = mProp["fromValue"];
+                dst[movingVars] = mProp["toValue"];
+                tweens.push(Tween.tween(this._parent, dst, src, mProp["lifeTime"], mProp["easing"]));
+            }
+            return Tween.parallel.apply(Tween, tweens);
+        };
+
+        MotionManager.prototype.initTween = function (motion, repeat) {
+            this._tween = this.motionSetToTween(motion);
+        };
+
         MotionManager.prototype.initTweenGroup = function (motionGroup, lifeTime) {
+            var tweens = [];
+            for (var i = 0; i < motionGroup.length; i++) {
+                tweens.push(this.motionSetToTween(motionGroup[i]));
+            }
+            this._tween = Tween.serial.apply(Tween, tweens);
         };
 
         MotionManager.prototype.setCompleteListener = function (listener) {
@@ -1290,6 +1362,8 @@ var Display;
             this._mM = new Display.MotionManager(this);
             this.initStyle(params);
             Runtime.registerObject(this);
+            this.bindParent(params);
+            this._mM.play();
         }
         /**
         * Set the style for the UIComponent which this is
@@ -1312,9 +1386,20 @@ var Display;
         });
 
 
+        CommentButton.prototype.bindParent = function (params) {
+            if (params.hasOwnProperty("parent")) {
+                params["parent"].addChild(this);
+            }
+        };
+
         CommentButton.prototype.initStyle = function (style) {
-            if (style.hasOwnProperty("parent")) {
-                style["parent"].addChild(this);
+            if (style["lifeTime"]) {
+                this._mM.dur = style["lifeTime"] * 1000;
+            }
+            if (style.hasOwnProperty("motionGroup")) {
+                this._mM.initTweenGroup(style["motionGroup"], this._mM.dur);
+            } else if (style.hasOwnProperty("motion")) {
+                this._mM.initTween(style["motion"], false);
             }
         };
 
@@ -1346,6 +1431,8 @@ var Display;
             this._mM = new Display.MotionManager(this);
             this.initStyle(params);
             Runtime.registerObject(this);
+            this.bindParent(params);
+            this._mM.play();
         }
         Object.defineProperty(CommentCanvas.prototype, "motionManager", {
             get: function () {
@@ -1359,9 +1446,20 @@ var Display;
         });
 
 
+        CommentCanvas.prototype.bindParent = function (params) {
+            if (params.hasOwnProperty("parent")) {
+                params["parent"].addChild(this);
+            }
+        };
+
         CommentCanvas.prototype.initStyle = function (style) {
-            if (style.hasOwnProperty("parent")) {
-                style["parent"].addChild(this);
+            if (style["lifeTime"]) {
+                this._mM.dur = style["lifeTime"] * 1000;
+            }
+            if (style.hasOwnProperty("motionGroup")) {
+                this._mM.initTweenGroup(style["motionGroup"], this._mM.dur);
+            } else if (style.hasOwnProperty("motion")) {
+                this._mM.initTween(style["motion"], false);
             }
         };
         return CommentCanvas;
@@ -1418,8 +1516,10 @@ var Display;
             _super.call(this);
             this._mM = new Display.MotionManager(this);
             this.setDefaults(params);
-            this.initStyle(params); // This is for the special styles
+            this.initStyle(params);
             Runtime.registerObject(this);
+            this.bindParent(params);
+            this._mM.play();
         }
         Object.defineProperty(CommentShape.prototype, "motionManager", {
             get: function () {
@@ -1433,14 +1533,21 @@ var Display;
         });
 
 
-        CommentShape.prototype.initStyle = function (style) {
-            if (style.hasOwnProperty("parent")) {
-                style["parent"].addChild(this);
+        CommentShape.prototype.bindParent = function (params) {
+            if (params.hasOwnProperty("parent")) {
+                params["parent"].addChild(this);
             }
+        };
+
+        CommentShape.prototype.initStyle = function (style) {
             if (style["lifeTime"]) {
                 this._mM.dur = style["lifeTime"] * 1000;
             }
-            this._mM.play();
+            if (style.hasOwnProperty("motionGroup")) {
+                this._mM.initTweenGroup(style["motionGroup"], this._mM.dur);
+            } else if (style.hasOwnProperty("motion")) {
+                this._mM.initTween(style["motion"], false);
+            }
         };
         return CommentShape;
     })(Display.Shape);
@@ -1588,6 +1695,8 @@ var Display;
             this.setDefaults(params);
             this.initStyle(params);
             Runtime.registerObject(this);
+            this.bindParent(params);
+            this._mM.play();
         }
 
         Object.defineProperty(CommentField.prototype, "fontsize", {
@@ -1657,6 +1766,12 @@ var Display;
         });
 
 
+        CommentField.prototype.bindParent = function (params) {
+            if (params.hasOwnProperty("parent")) {
+                params["parent"].addChild(this);
+            }
+        };
+
         CommentField.prototype.initStyle = function (style) {
             if (style["lifeTime"]) {
                 this._mM.dur = style["lifeTime"] * 1000;
@@ -1673,10 +1788,11 @@ var Display;
             if (style["bold"]) {
                 this.getTextFormat().bold = style["bold"];
             }
-            if (style.hasOwnProperty("parent")) {
-                style["parent"].addChild(this);
+            if (style.hasOwnProperty("motionGroup")) {
+                this._mM.initTweenGroup(style["motionGroup"], this._mM.dur);
+            } else if (style.hasOwnProperty("motion")) {
+                this._mM.initTween(style["motion"], false);
             }
-            this._mM.play();
         };
         return CommentField;
     })(Display.TextField);

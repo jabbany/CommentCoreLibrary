@@ -35,3 +35,5 @@ function foreach(dtype, f){
 	}
 	return;
 };
+
+var none = null;

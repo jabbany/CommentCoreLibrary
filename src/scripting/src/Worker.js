@@ -16,6 +16,9 @@ importScripts('api/Runtime.js', 'api/ScriptManager.js', 'api/Player.js', 'api/Di
 
 /** Immediately Hook into the eval channel, blocking future hooks **/
 __schannel("::eval", function(msg){
+	if(Tween && Tween.extendWithEasingFunctions){
+		Tween.extendWithEasingFunctions(this);
+	}
 	eval(msg);
 });
 __schannel("::debug", function(msg){

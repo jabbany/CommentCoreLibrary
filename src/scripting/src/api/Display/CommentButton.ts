@@ -12,6 +12,8 @@ module Display {
 			super();
 			this.initStyle(params);
 			Runtime.registerObject(this);
+			this.bindParent(params);
+			this._mM.play();
 		}
 
 		/**
@@ -31,9 +33,20 @@ module Display {
 			__trace("IComment.motionManager is read-only", "warn");
 		}
 
+		private bindParent(params:Object):void{
+			if(params.hasOwnProperty("parent")){
+				(<DisplayObject> params["parent"]).addChild(this);
+			}
+		}
+
 		public initStyle(style:Object):void {
-			if(style.hasOwnProperty("parent")){
-				(<DisplayObject> style["parent"]).addChild(this);
+			if (style["lifeTime"]) {
+				this._mM.dur = style["lifeTime"] * 1000;
+			}
+			if(style.hasOwnProperty("motionGroup")){
+				this._mM.initTweenGroup(style["motionGroup"], this._mM.dur);
+			}else if(style.hasOwnProperty("motion")){
+				this._mM.initTween(style["motion"], false);
 			}
 		}
 
