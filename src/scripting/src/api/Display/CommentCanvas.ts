@@ -10,6 +10,7 @@ module Display {
 
 		constructor(params:Object) {
 			super();
+			this.setDefaults(params);
 			this.initStyle(params);
 			Runtime.registerObject(this);
 			this.bindParent(params);

@@ -109,8 +109,6 @@ module Display {
 				}
 				if(!mProp.hasOwnProperty("lifeTime")){
 					mProp["lifeTime"] = this._dur;
-				}else{
-					mProp["lifeTime"] *= 1000;
 				}
 				var src:Object = {}, dst:Object = {};
 				src[movingVars] = mProp["fromValue"];
