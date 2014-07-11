@@ -51,12 +51,12 @@ module Display {
 			this._isRunning = true;
 			var self:MotionManager = this;
 			var _lastTime:number = Date.now();
-			this._timer.addEventListener("timer", function(){
+			this._timer.addEventListener("timer", function () {
 				var dur:number = Date.now() - _lastTime;
 				self._dur -= dur;
-				if(self._dur <= 0){
+				if (self._dur <= 0) {
 					self.stop();
-					if(self.oncomplete){
+					if (self.oncomplete) {
 						self.oncomplete();
 					}
 					self._parent.unload();
@@ -64,7 +64,7 @@ module Display {
 				_lastTime = Date.now();
 			});
 			this._timer.start();
-			if(this._tween){
+			if (this._tween) {
 				this._tween.play();
 			}
 		}
@@ -74,7 +74,7 @@ module Display {
 				return;
 			this._isRunning = false;
 			this._timer.stop();
-			if(this._tween) {
+			if (this._tween) {
 				this._tween.stop();
 			}
 		}
@@ -85,34 +85,37 @@ module Display {
 
 		public setPlayTime(playtime:number):void {
 			this._ttl = this._dur - playtime;
-			if(this._tween) {
-				if(this._isRunning) {
+			if (this._tween) {
+				if (this._isRunning) {
 					this._tween.gotoAndPlay(playtime);
-				}else{
+				} else {
 					this._tween.gotoAndStop(playtime);
 				}
 			}
 		}
 
-		private motionSetToTween(motion:Object):Tween.ITween{
+		private motionSetToTween(motion:Object):Tween.ITween {
 			var tweens:Array<Tween.ITween> = [];
-			for(var movingVars in motion){
-				if(!motion.hasOwnProperty(movingVars)){
+			for (var movingVars in motion) {
+				if (!motion.hasOwnProperty(movingVars)) {
 					continue;
 				}
 				var mProp:Object = motion[movingVars];
-				if(!mProp.hasOwnProperty("fromValue")){
+				if (!mProp.hasOwnProperty("fromValue")) {
 					continue;
 				}
-				if(!mProp.hasOwnProperty("toValue")){
+				if (!mProp.hasOwnProperty("toValue")) {
 					mProp["toValue"] = mProp["fromValue"];
 				}
-				if(!mProp.hasOwnProperty("lifeTime")){
+				if (!mProp.hasOwnProperty("lifeTime")) {
 					mProp["lifeTime"] = this._dur;
 				}
 				var src:Object = {}, dst:Object = {};
 				src[movingVars] = mProp["fromValue"];
 				dst[movingVars] = mProp["toValue"];
+				if (typeof mProp["easing"] === "string") {
+					mProp["easing"] = Tween.getEasingFuncByName(mProp["easing"]);
+				}
 				tweens.push(Tween.tween(this._parent, dst, src, mProp["lifeTime"], mProp["easing"]));
 			}
 			return Tween.parallel.apply(Tween, tweens);
@@ -124,7 +127,7 @@ module Display {
 
 		public initTweenGroup(motionGroup:Array<Object>, lifeTime:number):void {
 			var tweens:Array<Tween.ITween> = [];
-			for(var i = 0; i < motionGroup.length; i++){
+			for (var i = 0; i < motionGroup.length; i++) {
 				tweens.push(this.motionSetToTween(motionGroup[i]));
 			}
 			this._tween = Tween.serial.apply(Tween, tweens);

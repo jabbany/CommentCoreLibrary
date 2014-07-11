@@ -295,6 +295,7 @@ var CCLScripting = function(workerUrl){
 		this.addListener("Runtime:UpdateProperty", function(pl){
 			self.getContext().updateProperty(pl.id, pl.name, pl.value);
 		});
+		self.getContext().registerObject("__root", {"class":"SpriteRoot"});
 	};
 })();
 /** Define some Unpackers **/
@@ -336,6 +337,7 @@ var CCLScripting = function(workerUrl){
 		this.DOM = _("div",{
 			"style":{
 				"position":"absolute",
+				"opacity":data.alpha != null ? data.alpha : 1
 			},
 			"className":"cmt"
 		});
@@ -419,19 +421,23 @@ var CCLScripting = function(workerUrl){
 			this.setFilters([f]);
 		});
 		this.setFilters = function(params){
+			var shadows = [];
 			for(var i = 0; i < params[0].length; i++){
 				var filter = params[0][i];
 				if(filter.type === "blur"){
-					this.DOM.style.color = "transparent";
-					this.DOM.style.textShadow = [0,0, Math.max(
+					//this.DOM.style.color = "transparent";
+					shadows.push([0,0, Math.max(
 							filter.params.blurX, filter.params.blurY) + 
-						"px"].join(" "); 
+						"px"].join(" ")); 
 				}else if(filter.type === "glow"){
-					this.DOM.style.textShadow = [0,0, Math.max(
-							filter.params.blurX, filter.params.blurY) + 
-						"px", getColor(filter.params.color)].join(" "); 
+					for(var i = 0; i < Math.min(2, filter.params.strength); i++){
+						shadows.push([0,0, Math.max(
+								filter.params.blurX, filter.params.blurY) + 
+							"px", getColor(filter.params.color)].join(" ")); 
+					}
 				}
 			};
+			this.DOM.style.textShadow = shadows.join(",");
 		};
 		
 		/** Common **/
@@ -545,7 +551,10 @@ var CCLScripting = function(workerUrl){
 			});
 		};
 		
-		var state = {lastPath : null};
+		var state = {
+			lastPath : null,
+			scheduleClear: [],
+		};
 		
 		/** Public methods **/
 		this.setX = function(x){
@@ -670,6 +679,7 @@ var CCLScripting = function(workerUrl){
 			applyFill(path, this);
 			applyStroke(path, this);
 			defaultGroup.appendChild(path);
+			this._clear();
 		};
 		this.beginFill = function(params){
 			if(params.length === 0)
@@ -683,6 +693,16 @@ var CCLScripting = function(workerUrl){
 			this.fill.fill = "none";
 		};
 		this.drawRect = function(params){
+			if(state.drawing)
+				console.log(state.drawing);
+			if(params[2] < 0){
+				params[0] -= params[2];
+				params[2] = -params[2];
+			}
+			if(params[3] < 0){
+				params[1] -= params[3];
+				params[3] = -params[3];
+			}
 			var r = __("rect",{
 				"x": params[0],
 				"y": params[1],
@@ -733,6 +753,7 @@ var CCLScripting = function(workerUrl){
 			if(params[1].length % 3 !== 0){
 				throw new Error("Illegal drawTriangles index argument. Indices array size must be a multiple of 3.");
 			}
+			var commands = [], data = [];
 			for(var i = 0; i < params[1].length / 3; i++){
 				var a = params[1][3 * i],
 					b = params[1][3 * i + 1],
@@ -740,17 +761,35 @@ var CCLScripting = function(workerUrl){
 				var ax = params[0][2 * a], ay = params[0][2 * a + 1];
 				var bx = params[0][2 * b], by = params[0][2 * b + 1];
 				var cx = params[0][2 * c], cy = params[0][2 * c + 1];
-				this.moveTo([ax,ay]);
-				this.lineTo([bx,by]);
-				this.lineTo([cx,cy]);
-				this.lineTo([ax,ay]);
+				commands.push(1,2,2,2);
+				data.push(ax,ay,bx,by,cx,cy,ax,ay);
 			}
+			this.drawPath([commands,data,"evenOdd"]);
+		};
+		
+		this._clear = function(){
+			if(state.scheduleClear.length < 1)
+				return;
+			if(state.scheduleTimer > -1){
+				clearTimeout(state.scheduleTimer);
+				state.scheduleTimer = -1;
+			}
+			while (defaultGroup.lastChild && state.scheduleClear.length > 0) {
+				defaultGroup.removeChild(state.scheduleClear.pop());
+			}
+			state.scheduleClear = [];
 		};
 		
 		this.clear = function(){
-			while (defaultGroup.lastChild) {
-				defaultGroup.removeChild(defaultGroup.lastChild);
+			var children = defaultGroup.children ? defaultGroup.children : defaultGroup.childNodes;
+			for (var i = 0; i < children.length; i++) {
+				state.scheduleClear.push(children[i]);
 			}
+			var self = this;
+			state.scheduleTimer = setTimeout(function(){
+				self._clear();
+				state.scheduleTimer = -1;
+			}, 60);
 		};
 		
 		this.__defineGetter__("filters", function(f){
@@ -761,7 +800,6 @@ var CCLScripting = function(workerUrl){
 		});
 		this.setFilters = function(params){
 			var filters = params[0];
-			//Remove old filters
 			this.DOM.removeChild(defaultEffects);
 			defaultEffects = __("defs");
 			for(var i = 0; i < filters.length; i++){
@@ -851,6 +889,153 @@ var CCLScripting = function(workerUrl){
 		data.scaleX = 1;
 		data.scaleY = 1; 
 		
+		this.__defineSetter__("scaleX", function(f){
+			if(f > 50)
+				return;
+			data.scaleX = f;
+			return;
+			for(var i = 0; i < this.DOM.children.length; i++){
+				this.DOM.children[i].style.transform = "scale(" + data.scaleX + "," + data.scaleY + ")";
+			}
+		});
+		this.__defineSetter__("scaleY", function(f){
+			if(f > 50)
+				return;
+			data.scaleY = f;
+			return;
+			for(var i = 0; i < this.DOM.children.length; i++){
+				this.DOM.children[i].style.transform = "scale(" + data.scaleX + "," + data.scaleY + ")";
+			}
+		});
+		this.__defineGetter__("scaleX", function(f){
+			return data.scaleX;
+		});
+		this.__defineGetter__("scaleY", function(f){
+			return data.scaleY;
+		});
+		
+		this.__defineSetter__("x", function(f){
+			this.setX(f);
+		});
+		this.__defineSetter__("y", function(f){
+			this.setY(f);
+		});
+		this.__defineGetter__("x", function(f){
+			return this.DOM.offsetLeft;
+		});
+		this.__defineGetter__("y", function(f){
+			return this.DOM.offsetTop;
+		});
+		
+		this.setX = function(x){
+			this.DOM.style.left = x + "px";
+		};
+		
+		this.setY = function(y){
+			this.DOM.style.top = y + "px";
+		};
+		
+		this.setWidth = function(width){
+			this.DOM.style.width = width + "px";
+		};
+		
+		this.setHeight = function(height){
+			this.DOM.style.height = height + "px";
+		};
+		
+		this.addChild = function(childitem){
+			var child = ctx.getObject(childitem);
+			if(!child)
+				return;
+			if(child.DOM){
+				if(child.getClass() === "Shape"){
+					child.DOM.style.left = -this.x + "px";
+					child.DOM.style.top = -this.y + "px";
+					child.setX(this.x);
+					child.setY(this.y);
+				}
+				this.DOM.appendChild(child.DOM);
+			}else{
+				ctx.invokeError("Sprite.addChild failed. Attempted to add non object","err");
+			}
+		};
+		
+		this.removeChild = function(childitem){
+			var child = ctx.getObject(childitem);
+			if(!child)
+				return;
+			try{
+				this.DOM.removeChild(child.DOM);
+			}catch(e){
+				ctx.invokeError(e.stack, "err");
+			}
+		};
+		
+		this.unload = function(){
+			try{
+				stage.removeChild(this.DOM);
+			}catch(e){};
+		};
+		// Hook child
+		stage.appendChild(this.DOM);
+	}
+	
+	ScriptingContext.prototype.Unpack.SpriteRoot = function(stage, data, ctx){
+		this.DOM = stage;
+		this.addChild = function(childitem){
+			var child = ctx.getObject(childitem);
+			if(!child)
+				return;
+			if(child.DOM){
+				if(child.getClass() === "Shape"){
+					child.DOM.style.left = -this.x + "px";
+					child.DOM.style.top = -this.y + "px";
+					child.setX(this.x);
+					child.setY(this.y);
+				}
+				this.DOM.appendChild(child.DOM);
+			}else{
+				ctx.invokeError("Sprite.addChild failed. Attempted to add non object","err");
+			}
+		};
+		
+		this.removeChild = function(childitem){
+			var child = ctx.getObject(childitem);
+			if(!child)
+				return;
+			try{
+				this.DOM.removeChild(child.DOM);
+			}catch(e){
+				ctx.invokeError(e.stack, "err");
+			}
+		};
+	};
+	
+	ScriptingContext.prototype.Unpack.Button = function(stage, data, ctx){
+		this.DOM = _("div",{
+			"className":"button",
+			"style":{
+				"position":"absolute",
+				"top": data.y ? data.y + "px" : "0px",
+				"left": data.x ? data.x + "px" : "0px"
+			}
+		},[_("text", data.text)]);
+		
+		data.scaleX = 1;
+		data.scaleY = 1; 
+		this.__defineSetter__("filters", function(f){
+			// Ignore now
+		});
+		this.__defineGetter__("filters", function(f){
+			return [];
+		});
+		this.__defineSetter__("alpha", function(f){
+			data.alpha = Math.min(Math.max(f,0),1);
+			this.DOM.style.opacity = data.alpha + "";
+		});
+		this.__defineGetter__("alpha", function(f){
+			return data.alpha !== undefined ? data.alpha : 1;
+		});
 		this.__defineSetter__("scaleX", function(f){
 			if(f > 50)
 				return;

@@ -129,8 +129,8 @@ module Display {
 		 * @param data - List of data
 		 * @param winding - evenOdd or nonZero
 		 */
-		public drawPath(commands:Array<number>, data:Array<number>, winding:string = "evenOdd"):void{
-			this._callDrawMethod("drawPath",[commands, data, winding]);
+		public drawPath(commands:Array<number>, data:Array<number>, winding:string = "evenOdd"):void {
+			this._callDrawMethod("drawPath", [commands, data, winding]);
 		}
 
 		/**
@@ -170,36 +170,36 @@ module Display {
 		 * @param uvtData - Texture mapping stuff. Not supported any time soon.
 		 * @param culling - "none" shows all triangles, "positive"/"negative" will cull triangles by normal along z-axis
 		 */
-		public drawTriangles(verts:Array<number>, indices:Array<number> = null, uvtData:Array<number> = null, culling:String = "none"):void{
-			if(indices === null){
+		public drawTriangles(verts:Array<number>, indices:Array<number> = null, uvtData:Array<number> = null, culling:String = "none"):void {
+			if (indices === null) {
 				indices = [];
-				for(var i = 0; i < verts.length; i+=2){
+				for (var i = 0; i < verts.length; i += 2) {
 					indices.push(i / 2);
 				}
-			}else{
+			} else {
 				indices = indices.slice(0);
 			}
-			if(indices.length % 3 !== 0){
-				__trace("Graphics.drawTriangles malformed indices count. Must be multiple of 3.","err");
+			if (indices.length % 3 !== 0) {
+				__trace("Graphics.drawTriangles malformed indices count. Must be multiple of 3.", "err");
 				return;
 			}
 			/** Do culling of triangles here to lessen work later **/
-			if(culling !== "none") {
+			if (culling !== "none") {
 				for (var i = 0; i < indices.length / 3; i++) {
 					var ux = verts[2 * indices[i * 3 + 1]] - verts[2 * indices[i * 3]],
 						uy = verts[2 * indices[i * 3 + 1] + 1] - verts[2 * indices[i * 3] + 1],
 						vx = verts[2 * indices[i * 3 + 2]] - verts[2 * indices[i * 3 + 1]],
 						vy = verts[2 * indices[i * 3 + 2] + 1] - verts[2 * indices[i * 3 + 1] + 1];
 					var zcomp = ux * vy - vx * uy;
-					if(zcomp < 0 && culling === "positive" ||
-						zcomp > 0 && culling === "negative"){
+					if (zcomp < 0 && culling === "positive" ||
+						zcomp > 0 && culling === "negative") {
 						/** Remove the indices. Leave the vertices. **/
 						indices.splice(i * 3, 3);
 						i--;
 					}
 				}
 			}
-			this._callDrawMethod("drawTriangles",[verts, indices, culling]);
+			this._callDrawMethod("drawTriangles", [verts, indices, culling]);
 		}
 
 		/**

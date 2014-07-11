@@ -11,7 +11,7 @@ Root Element 根（舞台）对象
 
 事件监听的潜在问题（Listener Problems）
 ----------------------------------
-Root元素由于和其他的元素在监听器构造上有截然不同的设计需求，因为弹幕舞台很可能会由多个播放器同时
+Root元素和其他的元素在监听器构造上有截然不同的设计需求，因为弹幕舞台很可能会由多个播放器同时
 占用。在其余的API中，我们都可以认为 KagerouEngine 显示端可以独占舞台，但是在 root 元素上我们
 不能这样认为。这一限制条件，加之 [影子对象](../Instances.md) 的设计，由控制外播放元件产生的
 对象，我们没有沙箱内绑定。在触发诸如 `Event.ADDED` 事件时，我们就没有办法有效的体现这些对象的
@@ -77,4 +77,21 @@ stage.dispatchEvent(new CustomEvent("deregisterKagerou",{
 `ThisObjectName` 那个字段里面发挥。
 
 ### 使用临时的DisplayObject
-使用的时候要小心，
+使用的时候要小心，不是所有的属性都被支持，不是所有的值都会返回正确。还有就是把Object实例导出后
+有可能会遇到Object消亡。举例如下：
+
+```JavaScript
+var outside;
+function listener(e){
+    var tempDO = e.target;
+    outside = tempDO;
+}
+$.root.addEventListener("added",listener);
+```
+
+随后，这个Object消亡了。如果有正确的 deregister ，那么沙箱内的 Runtime 下应该不会注册这个
+Object，但是其依然可以根据保存的既有 objectId 调用沙箱外的 Context。但是因为对象一进不存在，
+所以调用会失败。
+
+一般来说我们认为在监听器函数内部的连贯操作下应该不会发生 target 消亡的情况。但是这也不是保证。
+

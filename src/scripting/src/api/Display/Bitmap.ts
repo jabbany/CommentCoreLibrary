@@ -3,7 +3,16 @@
  * Author: Jim Chen
  * Part of the CCLScripter
  */
-module Display {
-	class Bitmap extends DisplayObject {
+module Bitmap{
+	export class Bitmap extends Display.DisplayObject {
+		public bitmapData:Bitmap.BitmapData
+
+	}
+	export class IBitmapData{
+
+	}
+	export function createBitmapData(){
+
 	}
 }
+

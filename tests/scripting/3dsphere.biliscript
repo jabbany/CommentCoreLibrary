@@ -9,14 +9,15 @@
  */
 
 /** 
-* Works well with filters off at 200,40,9 
-* or with filters on at 200, 20, 5
+* // Updated script so that we are much more efficient!
+* Works well with filters off at 200, 40, 9 
+* or with filters on at 200, 40, 9 too!
 **/
 /*** CONFIG ****/
 
 var fill = true;
 var wireframe = true;
-var filters = false;
+var filters = false; // change to true to enable filters
 var radius = 200;
 var detail = 40;
 var stripes = 9;

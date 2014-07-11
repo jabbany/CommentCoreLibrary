@@ -98,6 +98,32 @@ var Tween;
         }
     }
     Tween.extendWithEasingFunctions = extendWithEasingFunctions;
+
+    function getEasingFuncByName(easing) {
+        if (typeof easing === "undefined") { easing = "None"; }
+        easing = easing.toLowerCase();
+        switch (easing) {
+            case "none":
+            case "linear":
+            default:
+                return Tween.linear;
+            case "exponential":
+                return Tween.exponential;
+            case "circular":
+                return Tween.circuar;
+            case "quadratic":
+                return Tween.quadratic;
+            case "cubic":
+                return Tween.cubic;
+            case "quartic":
+                return Tween.quartic;
+            case "quintic":
+                return Tween.quintic;
+            case "sine":
+                return Tween.sine;
+        }
+    }
+    Tween.getEasingFuncByName = getEasingFuncByName;
 })(Tween || (Tween = {}));
 
 /** Remove when unnecessary **/
@@ -368,6 +394,9 @@ var Tween;
                 var currentTween = args[newTween["lastSeek"]];
                 currentTween.step(currentTween.target, currentTime - start[newTween["lastSeek"]], currentTween.duration);
                 return;
+            } else {
+                var oldTween = args[newTween["lastSeek"]];
+                oldTween.step(oldTween.target, oldTween.duration, oldTween.duration);
             }
             for (var seek = 0; seek < end.length; seek++) {
                 if (currentTime < end[seek]) {
@@ -395,10 +424,7 @@ var Tween;
         var newTween = new ITween({}, totalTime);
         newTween.step = function (target, currentTime, totalTime) {
             for (var i = 0; i < tweens.length; i++) {
-                if (currentTime > tweens[i].duration) {
-                    continue;
-                }
-                tweens[i].step(tweens[i].target, currentTime, tweens[i].duration);
+                tweens[i].step(tweens[i].target, Math.min(currentTime, tweens[i].duration), tweens[i].duration);
             }
         };
         return newTween;

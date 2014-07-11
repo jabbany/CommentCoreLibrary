@@ -25,6 +25,7 @@ declare module Tween {
     * @param runtime - Runtime to extend the easing function to
     */
     function extendWithEasingFunctions(runtime: any): void;
+    function getEasingFuncByName(easing?: string): Function;
 }
 declare module Tween {
     class ITween {
@@ -32,12 +33,14 @@ declare module Tween {
         private _duration;
         private _isPlaying;
         private _currentTime;
+        private _repeats;
         private _timer;
         public easing: Function;
         public step: Function;
         constructor(target: any, duration?: number);
         public duration : number;
         public position : number;
+        public repeat : number;
         public target : any;
         public clone(): ITween;
         public scale(factor: number): void;

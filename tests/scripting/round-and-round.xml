@@ -204,8 +204,7 @@ Timer = function()
   var deltaTime = 0;
   var sampleCount = 1;
   
-  return
-  {
+  return {
     time : 0,
     
     /* Function: update
@@ -350,8 +349,7 @@ function Binder( params )
   
   foreach( params.properties, setBindings );
   
-  return
-  {
+  return {
     
     /* Function: update
      * Updates the object to fit the timeline.
@@ -384,8 +382,7 @@ function Binder( params )
  */
 Binder.Link = function( params )
 {
-  return
-  {
+  return {
     name : params.name,
     linkFunc : params.linkFunc || null
   };
@@ -401,8 +398,7 @@ Binder.Link = function( params )
  */
 Binder.Sequence = function( params )
 {
-  return
-  {
+  return {
     sequence : params.sequence,
     value : params.value
   };
@@ -773,8 +769,7 @@ function Composition( params )
     canvas.addChild( layers[ i ].source );
   }
   
-  return
-  {
+  return {
     width : params.width || $.width,
     height : params.height || $.height,
     startTime : params.startTime || 0,
@@ -948,7 +943,7 @@ function MainComposition( params )
     return MainComposition( Factory.cloneObject( params ) );
   };
   
-  // Return Composition
+  // return Composition
   return composition;
 }
 
@@ -1390,7 +1385,7 @@ function Replicator( constructor, count, paramsFunction )
     objects.push( constructor.apply( this, newParams ) );
   }
   
-  // Return result
+  // return result
   return objects;
 }
 
@@ -1635,8 +1630,7 @@ Global._set( "__class_keymode_helperRnr", KeyframeMode );
  */
 function Keyframe( params )
 {
-  return
-  {
+  return {
     time : params.time,
     value : params.value,
     interpolation : params.interpolation || NumberInterpolation.linear,
@@ -1733,7 +1727,7 @@ function KeyframesBind( params )
     return currentIndex;
   };
   
-  // Return the binding function
+  // return the binding function
   return function( time )
   {
     // Apply behavior if exists
@@ -1769,7 +1763,7 @@ function KeyframesBind( params )
         var weight1 = currentKey.weight * ( 1 - tFactor );
         var weight2 = nextKey.weight * tFactor;
         
-        // Return a weighted average
+        // return a weighted average
         return ( value1 * weight1 + value2 * weight2 ) / ( weight1 + weight2 );
       }
     }
@@ -1867,7 +1861,7 @@ function WiggleKeyframes( params )
       // Scale vector to fit amount constraint
       var scaledVector = vectorScale( randVector, params.amount / vectorLength( randVector ) );
       
-      // Return result
+      // return result
       return vectorAdd( origin, scaledVector );
     }
     else
@@ -1891,7 +1885,7 @@ function WiggleKeyframes( params )
     // Repeat first for consistency
     keyframes.push( Key({ time : params.startTime + params.stepTime * ( ++ c ) - 1, value : params.origin, interpolation : NumberInterpolation.hold }) );
     
-    // Return keyframes
+    // return keyframes
     return keyframes;
   }
   else
@@ -1906,7 +1900,7 @@ function WiggleKeyframes( params )
     // Repeat first for consistency
     keyframes.push( Key({ time : params.startTime + params.stepTime * ( ++ c ), value : keyframes[ 0 ].value, interpolation : params.interpolation || NumberInterpolation.cubic.easeInOut }) );
     
-    // Return keyframes
+    // return keyframes
     return keyframes;
   }
 }
@@ -5048,7 +5042,7 @@ var Rnr = {
       drawSegment( i );
     }
     
-    // Return the shape
+    // return the shape
     return shape;
   },
   
@@ -5112,7 +5106,7 @@ var Rnr = {
     // End fill
     shape.graphics.endFill();
     
-    // Return the shape
+    // return the shape
     return shape;
   },
   
@@ -5233,8 +5227,7 @@ var Rnr = {
         var startY = Math.random() * 920.0;
         var fontSize = 48 + Math.round( Math.random() * 48 );
   
-        return
-        [{
+        return [{
           inPoint : 0,
           outPoint : 11926,
           dictionary : Rnr.Typography.Mincho.Dynamic,
@@ -5288,8 +5281,7 @@ var Rnr = {
         var inPoint = 339 + 827.5862 * index;
         var finPoint = inPoint + 827.5862 * 6;
         
-        return
-        [{
+        return [{
           source : Rnr.Spinner({ numParts : index % 4 + 2, breakPercentage : 50, innerOffsetPercentage : 4 * ( index % 2 * 2 - 1 ), outerRadius : index * 75 + 100, innerRadius : index * 75 + 50 }),
           inPoint : inPoint,
           outPoint : 11926,
@@ -5355,8 +5347,7 @@ var Rnr = {
       // Swipe Spinner
       ForceMB(
       {
-        layers : _( Layer, 8, function() { return
-        [{
+        layers : _( Layer, 8, function() { return [{
           source : Rnr.Spinner({ numParts : 3, breakPercentage : 50, innerOffsetPercentage : 4, outerRadius : 500, innerRadius : 183.5755975 }),
           inPoint : 11926,
           outPoint : 13581,
@@ -5385,8 +5376,7 @@ var Rnr = {
       // Invert Solids
       ForceMB(
       {
-        layers : _( Layer, 4, function() { return
-        [{
+        layers : _( Layer, 4, function() { return [{
           source : Solid({ width : 1280, height : 720, color : 0xFFFFFF }),
           inPoint : 11926,
           outPoint : 13581,
@@ -5406,8 +5396,7 @@ var Rnr = {
       }),
       ForceMB(
       {
-        layers : _( Layer, 4, function() { return
-        [{
+        layers : _( Layer, 4, function() { return [{
           source : Solid({ width : 1280, height : 720, color : 0xFFFFFF }),
           inPoint : 11926,
           outPoint : 13581,
@@ -5441,8 +5430,7 @@ var Rnr = {
     [
       // The beat spinners
       ForceMB({
-        layers : _( Layer, 6, function() { return
-        [{
+        layers : _( Layer, 6, function() { return [{
           source : Rnr.Spinner({ numParts : 4, breakPercentage : 25, innerOffsetPercentage : -4, outerRadius : 100, innerRadius : 50 }),
           inPoint : 13581,
           outPoint : 26822,
@@ -5478,8 +5466,7 @@ var Rnr = {
         }];})
       }),
       ForceMB({
-        layers : _( Layer, 8, function() { return
-        [{
+        layers : _( Layer, 8, function() { return [{
           source : Rnr.Spinner({ numParts : 4, breakPercentage : 25, innerOffsetPercentage : 4, outerRadius : 200, innerRadius : 150 }),
           inPoint : 13581,
           outPoint : 26822,
@@ -5519,8 +5506,7 @@ var Rnr = {
       ForceMB({
         layers : _( Layer, 10, function() {
           
-        return
-        [{
+        return [{
           source : Rnr.Gear({ numTeeth : 3, toothPercent : 50, toothLength : 50, outerRadius : 300, innerRadius : 250 }),
           inPoint : 13581,
           outPoint : 26822,
@@ -5819,7 +5805,7 @@ var Rnr = {
       });
     };
     
-    // Return the final comp
+    // return the final comp
     return Comp(
     {
       width : 1280,
@@ -6367,8 +6353,7 @@ var Rnr = {
           var initX = Math.random() * 1280.0;
           var initY = Math.random() * 720.0;
           
-          return
-          [{
+          return [{
             source : function()
             {
               var shape = Shape();
@@ -6406,7 +6391,7 @@ var Rnr = {
       });
     };
     
-    // Return the comp
+    // return the comp
     return Comp(
   {
       width : 1280,
@@ -6428,8 +6413,7 @@ var Rnr = {
             keyframes : WiggleKeys({ origin : [ 0, 0 ], numSteps : 32, startTime : 53305, stepTime : 206.89655, amount : 5, interpolation : NI.dimension( NI.cubic.easeInOut ) })
           });
           
-          return
-          [{
+          return [{
             source : Rnr.Typography.Mincho.Static[ "思いまで" ](),
             inPoint : 53305,
             outPoint : 55788,
@@ -6481,8 +6465,7 @@ var Rnr = {
             keyframes : WiggleKeys({ origin : [ 0, 0 ], numSteps : 32, startTime : 54546, stepTime : 206.89655, amount : 5, interpolation : NI.dimension( NI.cubic.easeInOut ) })
           });
           
-          return
-          [{
+          return [{
             source : Rnr.Typography.Mincho.Static[ "偽られ" ](),
             inPoint : 54546,
             outPoint : 57029,
@@ -6534,8 +6517,7 @@ var Rnr = {
             keyframes : WiggleKeys({ origin : [ 0, 0 ], numSteps : 32, startTime : 55788, stepTime : 206.89655, amount : 5, interpolation : NI.dimension( NI.cubic.easeInOut ) })
           });
           
-          return
-          [{
+          return [{
             source : Rnr.Typography.Mincho.Static[ "出会えずに" ](),
             inPoint : 55788,
             outPoint : 58271,
@@ -6587,8 +6569,7 @@ var Rnr = {
             keyframes : WiggleKeys({ origin : [ 0, 0 ], numSteps : 32, startTime : 57029, stepTime : 206.89655, amount : 5, interpolation : NI.dimension( NI.cubic.easeInOut ) })
           });
           
-          return
-          [{
+          return [{
             source : Rnr.Typography.Mincho.Static[ "見つからぬ" ](),
             inPoint : 57029,
             outPoint : 59512,
@@ -6636,8 +6617,7 @@ var Rnr = {
         ForceMB(
         {
           layers : _( Layer, 8, function() {
-            return
-            [{
+            return [{
               source : Rnr.Typography.Mincho.Static[ "本当の思い" ](),
               inPoint : 58271,
               outPoint : 59926,
@@ -6674,8 +6654,7 @@ var Rnr = {
             keyframes : WiggleKeys({ origin : [ 0, 0 ], numSteps : 32, startTime : 59926, stepTime : 206.89655, amount : 5, interpolation : NI.dimension( NI.cubic.easeInOut ) })
           });
           
-          return
-          [{
+          return [{
             source : Rnr.Typography.Mincho.Static[ "いつまでも" ](),
             inPoint : 59926,
             outPoint : 62408,
@@ -6727,8 +6706,7 @@ var Rnr = {
             keyframes : WiggleKeys({ origin : [ 0, 0 ], numSteps : 32, startTime : 61167, stepTime : 206.89655, amount : 5, interpolation : NI.dimension( NI.cubic.easeInOut ) })
           });
           
-          return
-          [{
+          return [{
             source : Rnr.Typography.Mincho.Static[ "変わらずに" ](),
             inPoint : 61167,
             outPoint : 63560,
@@ -6780,8 +6758,7 @@ var Rnr = {
             keyframes : WiggleKeys({ origin : [ 0, 0 ], numSteps : 32, startTime : 62408, stepTime : 206.89655, amount : 5, interpolation : NI.dimension( NI.cubic.easeInOut ) })
           });
           
-          return
-          [{
+          return [{
             source : Rnr.Typography.Mincho.Static[ "流れてく" ](),
             inPoint : 62408,
             outPoint : 64891,
@@ -6833,8 +6810,7 @@ var Rnr = {
             keyframes : WiggleKeys({ origin : [ 0, 0 ], numSteps : 32, startTime : 63560, stepTime : 206.89655, amount : 5, interpolation : NI.dimension( NI.cubic.easeInOut ) })
           });
           
-          return
-          [{
+          return [{
             source : Rnr.Typography.Mincho.Static[ "この同じ" ](),
             inPoint : 63560,
             outPoint : 66133,
@@ -6882,8 +6858,7 @@ var Rnr = {
         ForceMB(
         {
           layers : _( Layer, 8, function() {
-            return
-            [{
+            return [{
               source : Rnr.Typography.Mincho.Static[ "時間" ](),
               inPoint : 64891,
               outPoint : 66546,
@@ -6919,8 +6894,7 @@ var Rnr = {
         ForceMB(
         {
           layers : _( Layer, 8, function() {
-            return
-            [{
+            return [{
               source : Rnr.Typography.Mincho.Static[ "のなかにも" ](),
               inPoint : 65719,
               outPoint : 66546,
@@ -6965,8 +6939,7 @@ var Rnr = {
             keyframes : WiggleKeys({ origin : [ 0, 0 ], numSteps : 32, startTime : 66546, stepTime : 206.89655, amount : 5, interpolation : NI.dimension( NI.cubic.easeInOut ) })
           });
           
-          return
-          [{
+          return [{
             source : Rnr.Typography.Mincho.Static[ "重なって" ](),
             inPoint : 66546,
             outPoint : 69029,
@@ -7018,8 +6991,7 @@ var Rnr = {
             keyframes : WiggleKeys({ origin : [ 0, 0 ], numSteps : 32, startTime : 67788, stepTime : 206.89655, amount : 5, interpolation : NI.dimension( NI.cubic.easeInOut ) })
           });
           
-          return
-          [{
+          return [{
             source : Rnr.Typography.Mincho.Static[ "夢を見る" ](),
             inPoint : 67788,
             outPoint : 70271,
@@ -7071,8 +7043,7 @@ var Rnr = {
             keyframes : WiggleKeys({ origin : [ 0, 0 ], numSteps : 32, startTime : 69029, stepTime : 206.89655, amount : 5, interpolation : NI.dimension( NI.cubic.easeInOut ) })
           });
           
-          return
-          [{
+          return [{
             source : Rnr.Typography.Mincho.Static[ "そんな人" ](),
             inPoint : 69029,
             outPoint : 71512,
@@ -7124,8 +7095,7 @@ var Rnr = {
             keyframes : WiggleKeys({ origin : [ 0, 0 ], numSteps : 32, startTime : 70271, stepTime : 206.89655, amount : 5, interpolation : NI.dimension( NI.cubic.easeInOut ) })
           });
           
-          return
-          [{
+          return [{
             source : Rnr.Typography.Mincho.Static[ "いるはずと" ](),
             inPoint : 70271,
             outPoint : 72753,
@@ -7173,8 +7143,7 @@ var Rnr = {
         ForceMB(
         {
           layers : _( Layer, 8, function() {
-            return
-            [{
+            return [{
               source : Rnr.Typography.Mincho.Static[ "信じる" ](),
               inPoint : 71512,
               outPoint : 73167,
@@ -7210,8 +7179,7 @@ var Rnr = {
         ForceMB(
         {
           layers : _( Layer, 8, function() {
-            return
-            [{
+            return [{
               source : Rnr.Typography.Mincho.Static[ "のならば" ](),
               inPoint : 72339,
               outPoint : 73167,
@@ -7289,8 +7257,7 @@ var Rnr = {
             keyframes : WiggleKeys({ origin : [ 0, 0 ], numSteps : 32, startTime : 73167, stepTime : 206.89655, amount : 5, interpolation : NI.dimension( NI.cubic.easeInOut ) })
           });
           
-          return
-          [{
+          return [{
             source : Rnr.Typography.Mincho.Static[ "このままで" ](),
             inPoint : 73167,
             outPoint : 75650,
@@ -7342,8 +7309,7 @@ var Rnr = {
             keyframes : WiggleKeys({ origin : [ 0, 0 ], numSteps : 32, startTime : 74408, stepTime : 206.89655, amount : 5, interpolation : NI.dimension( NI.cubic.easeInOut ) })
           });
           
-          return
-          [{
+          return [{
             source : Rnr.Typography.Mincho.Static[ "いたくない" ](),
             inPoint : 74408,
             outPoint : 76891,
@@ -7395,8 +7361,7 @@ var Rnr = {
             keyframes : WiggleKeys({ origin : [ 0, 0 ], numSteps : 32, startTime : 75650, stepTime : 206.89655, amount : 5, interpolation : NI.dimension( NI.cubic.easeInOut ) })
           });
           
-          return
-          [{
+          return [{
             source : Rnr.Typography.Mincho.Static[ "こんなのは" ](),
             inPoint : 75650,
             outPoint : 78133,
@@ -7448,8 +7413,7 @@ var Rnr = {
             keyframes : WiggleKeys({ origin : [ 0, 0 ], numSteps : 32, startTime : 76891, stepTime : 206.89655, amount : 5, interpolation : NI.dimension( NI.cubic.easeInOut ) })
           });
           
-          return
-          [{
+          return [{
             source : Rnr.Typography.Mincho.Static[ "違うはず" ](),
             inPoint : 76891,
             outPoint : 79374,
@@ -7497,8 +7461,7 @@ var Rnr = {
         ForceMB(
         {
           layers : _( Layer, 8, function() {
-            return
-            [{
+            return [{
               source : Rnr.Typography.Mincho.Static[ "私は" ](),
               inPoint : 78133,
               outPoint : 81443,
@@ -7534,8 +7497,7 @@ var Rnr = {
         ForceMB(
         {
           layers : _( Layer, 8, function() {
-            return
-            [{
+            return [{
               source : Rnr.Typography.Mincho.Static[ "変わることが" ](),
               inPoint : 78690,
               outPoint : 81443,
@@ -7691,8 +7653,7 @@ var Rnr = {
         {
           layers : _( CompLayer, 6, function()
           {
-            return
-            [{
+            return [{
                 composition : CheckerboardCube(),
                 inPoint : 81443,
                 outPoint : 109581,
@@ -7746,8 +7707,7 @@ var Rnr = {
         {
           layers : _( Layer, 6, function()
           {
-            return
-            [{
+            return [{
               source : Rnr.Typography.Mincho.Static[ "巡りゆく" ](),
               inPoint : 81443,
               outPoint : 82684,
@@ -7794,8 +7754,7 @@ var Rnr = {
         {
           layers : _( Layer, 6, function()
           {
-            return
-            [{
+            return [{
               source : Rnr.Typography.Mincho.Static[ "空間は" ](),
               inPoint : 82271,
               outPoint : 83512,
@@ -7864,8 +7823,7 @@ var Rnr = {
         {
           layers : _( Layer, 6, function()
           {
-            return
-            [{
+            return [{
               source : Rnr.Typography.Mincho.Static[ "人ごみに" ](),
               inPoint : 83098,
               outPoint : 84339,
@@ -7892,8 +7850,7 @@ var Rnr = {
         {
           layers : _( Layer, 6, function()
           {
-            return
-            [{
+            return [{
               source : Rnr.Typography.Mincho.Static[ "飲まれて" ](),
               inPoint : 83926,
               outPoint : 85167,
@@ -7940,8 +7897,7 @@ var Rnr = {
         {
           layers : _( Layer, 6, function()
           {
-            return
-            [{
+            return [{
               source : Rnr.Typography.Mincho.Static[ "出会えてた" ](),
               inPoint : 84753,
               outPoint : 85995,
@@ -7988,8 +7944,7 @@ var Rnr = {
         {
           layers : _( Layer, 6, function()
           {
-            return
-            [{
+            return [{
               source : Rnr.Typography.Mincho.Static[ "はずなのに" ](),
               inPoint : 85581,
               outPoint : 86822,
@@ -8058,8 +8013,7 @@ var Rnr = {
         {
           layers : _( Layer, 6, function()
           {
-            return
-            [{
+            return [{
               source : Rnr.Typography.Mincho.Static[ "今でも" ](),
               inPoint : 86408,
               outPoint : 87650,
@@ -8086,8 +8040,7 @@ var Rnr = {
         {
           layers : _( Layer, 6, function()
           {
-            return
-            [{
+            return [{
               source : Rnr.Typography.Mincho.Static[ "わからず" ](),
               inPoint : 87236,
               outPoint : 88477,
@@ -8143,8 +8096,7 @@ var Rnr = {
         {
           layers : _( Layer, 6, function()
           {
-            return
-            [{
+            return [{
               source : Rnr.Typography.Mincho.Static[ "同じ時刻" ](),
               inPoint : 88064,
               outPoint : 89305,
@@ -8199,8 +8151,7 @@ var Rnr = {
         {
           layers : _( Layer, 6, function()
           {
-            return
-            [{
+            return [{
               source : Rnr.Typography.Mincho.Static[ "同じ場所" ](),
               inPoint : 88891,
               outPoint : 89719,
@@ -8258,8 +8209,7 @@ var Rnr = {
               {
                 layers : _( Layer, 6, function()
                 {
-                  return
-                  [{
+                  return [{
                     source : Rnr.Typography.Mincho.Static[ "重ね合う" ](),
                     inPoint : 0,
                     outPoint : 30,
@@ -8329,8 +8279,7 @@ var Rnr = {
               {
                 layers : _( Layer, 6, function()
                 {
-                  return
-                  [{
+                  return [{
                     source : Rnr.Typography.Mincho.Static[ "そのことも" ](),
                     inPoint : 0,
                     outPoint : 30,
@@ -8399,8 +8348,7 @@ var Rnr = {
         {
           layers : _( DVTLayer, 6, function()
           {
-            return
-            [{
+            return [{
               inPoint : 92615,
               outPoint : 95098,
               dictionary : Rnr.Typography.Mincho.Dynamic,
@@ -8474,8 +8422,7 @@ var Rnr = {
           var startY = Math.random() * 1280.0;
           var fontSize = 48 + Math.round( Math.random() * 48 );
     
-          return
-          [{
+          return [{
             inPoint : 94684 + index * 206.8965517,
             outPoint : 109581,
             dictionary : Rnr.Typography.Mincho.Dynamic,
@@ -8546,8 +8493,7 @@ var Rnr = {
         {
           layers : _( Layer, 6, function()
           {
-            return
-            [{
+            return [{
               source : Rnr.Typography.Mincho.Static[ "巡りゆく" ](),
               inPoint : 94684,
               outPoint : 95926,
@@ -8594,8 +8540,7 @@ var Rnr = {
         {
           layers : _( Layer, 6, function()
           {
-            return
-            [{
+            return [{
               source : Rnr.Typography.Mincho.Static[ "空間が" ](),
               inPoint : 95512,
               outPoint : 96753,
@@ -8664,8 +8609,7 @@ var Rnr = {
         {
           layers : _( Layer, 6, function()
           {
-            return
-            [{
+            return [{
               source : Rnr.Typography.Mincho.Static[ "貴方さえ" ](),
               inPoint : 96339,
               outPoint : 97581,
@@ -8692,8 +8636,7 @@ var Rnr = {
         {
           layers : _( CompLayer, 6, function()
           {
-            return
-            [{
+            return [{
               composition : Comp(
               {
                 width : 1280,
@@ -8873,8 +8816,7 @@ var Rnr = {
         {
           layers : _( Layer, 6, function()
           {
-            return
-            [{
+            return [{
               source : Rnr.Typography.Mincho.Static[ "偽りの" ](),
               inPoint : 97995,
               outPoint : 99236,
@@ -8921,8 +8863,7 @@ var Rnr = {
         {
           layers : _( Layer, 6, function()
           {
-            return
-            [{
+            return [{
               source : Rnr.Typography.Mincho.Static[ "時の中" ](),
               inPoint : 98822,
               outPoint : 100064,
@@ -8991,8 +8932,7 @@ var Rnr = {
         {
           layers : _( Layer, 6, function()
           {
-            return
-            [{
+            return [{
               source : Rnr.Typography.Mincho.Static[ "出会える" ](),
               inPoint : 99650,
               outPoint : 100891,
@@ -9019,8 +8959,7 @@ var Rnr = {
         {
           layers : _( Layer, 6, function()
           {
-            return
-            [{
+            return [{
               source : Rnr.Typography.Mincho.Static[ "信じて" ](),
               inPoint : 100477,
               outPoint : 101719,
@@ -9076,8 +9015,7 @@ var Rnr = {
         {
           layers : _( Layer, 6, function()
           {
-            return
-            [{
+            return [{
               source : Rnr.Typography.Mincho.Static[ "1度だけ" ](),
               inPoint : 101305,
               outPoint : 102133,
@@ -9134,8 +9072,7 @@ var Rnr = {
         {
           layers : _( Layer, 6, function()
           {
-            return
-            [{
+            return [{
               source : Rnr.Typography.Mincho.Static[ "すれ違う" ](),
               inPoint : 102133,
               outPoint : 102960,
@@ -9223,8 +9160,7 @@ var Rnr = {
         {
           layers : _( Layer, 6, function()
           {
-            return
-            [{
+            return [{
               source : Rnr.Typography.Mincho.Static[ "その場所で" ](),
               inPoint : 102960,
               outPoint : 104615,
@@ -9252,8 +9188,7 @@ var Rnr = {
         {
           layers : _( Layer, 6, function()
           {
-            return
-            [{
+            return [{
               source : Rnr.Typography.Mincho.Static[ "始まりの" ](),
               inPoint : 103788,
               outPoint : 105857,
@@ -9310,8 +9245,7 @@ var Rnr = {
         {
           layers : _( DVTLayer, 6, function()
           {
-            return
-            [{
+            return [{
               inPoint : 105857,
               outPoint : 108339,
               dictionary : Rnr.Typography.Mincho.Dynamic,
@@ -9394,8 +9328,7 @@ var Rnr = {
         var inPoint = 107926 + 413.7931 * index;
         var outPoint = inPoint + 1655.17241;
         
-        return
-        [{
+        return [{
           source : Rnr.Spinner({ numParts : index % 4 + 2, breakPercentage : 50, innerOffsetPercentage : 4 * ( index % 2 * 2 - 1 ), outerRadius : 100, innerRadius : 50 }),
           inPoint : inPoint,
           outPoint : outPoint,
@@ -9425,8 +9358,7 @@ var Rnr = {
         var inPoint = 114546 + 206.89655 * index2;
         var outPoint = inPoint + 1655.17241;
         
-        return
-        [{
+        return [{
           source : Rnr.Spinner({ numParts : index2 % 4 + 2, breakPercentage : 50, innerOffsetPercentage : 4 * ( index2 % 2 * 2 - 1 ), outerRadius : 200, innerRadius : 150 }),
           inPoint : inPoint,
           outPoint : outPoint,

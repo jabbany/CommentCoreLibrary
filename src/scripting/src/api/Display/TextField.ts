@@ -12,6 +12,7 @@ module Display {
 		public bold:boolean;
 		public italic:boolean;
 		public underline:boolean;
+
 		constructor(font:string = "SimHei", size:number = 25, color:number = 0xFFFFFF, bold:boolean = false, italic:boolean = false, underline:boolean = false, url:string = "", target:string = "", align:string = "left", leftMargin:number = 0, rightMargin:number = 0, indent:number = 0, leading:number = 0) {
 			this.font = font;
 			this.size = size;
@@ -71,20 +72,20 @@ module Display {
 			this.text = text.replace(/<\/?[^>]+(>|$)/g, "");
 		}
 
-		set textWidth(w:number){
-			__trace("TextField.textWidth is read-only","warn");
+		set textWidth(w:number) {
+			__trace("TextField.textWidth is read-only", "warn");
 		}
 
-		set textHeight(h:number){
-			__trace("TextField.textHeight is read-only","warn");
+		set textHeight(h:number) {
+			__trace("TextField.textHeight is read-only", "warn");
 		}
 
-		get textWidth():number{
+		get textWidth():number {
 			/** TODO: Fix this to actually calculate the width **/
 			return this._text.length * this._textFormat.size;
 		}
 
-		get textHeight():number{
+		get textHeight():number {
 			/** TODO: Fix this to actually calculate the height **/
 			return this._textFormat.size;
 		}

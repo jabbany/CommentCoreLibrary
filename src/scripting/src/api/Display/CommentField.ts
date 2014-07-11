@@ -17,43 +17,43 @@ module Display {
 			this._mM.play();
 		}
 
-		set fontsize(size:number){
+		set fontsize(size:number) {
 			var tf = this.getTextFormat();
 			tf.size = size;
 			this.setTextFormat(tf);
 		}
 
-		get fontsize():number{
+		get fontsize():number {
 			return this.getTextFormat().fontsize;
 		}
 
-		set font(fontname:string){
+		set font(fontname:string) {
 			var tf = this.getTextFormat();
 			tf.font = fontname;
 			this.setTextFormat(tf);
 		}
 
-		get font():string{
+		get font():string {
 			return this.getTextFormat().font;
 		}
 
-		set align(a:string){
+		set align(a:string) {
 			var tf = this.getTextFormat();
 			tf.align = a;
 			this.setTextFormat(tf);
 		}
 
-		get align():string{
+		get align():string {
 			return this.getTextFormat().align;
 		}
 
-		set bold(b:boolean){
+		set bold(b:boolean) {
 			var tf = this.getTextFormat();
 			tf.bold = b;
 			this.setTextFormat(tf);
 		}
 
-		get bold():boolean{
+		get bold():boolean {
 			return this.getTextFormat().bold;
 		}
 
@@ -65,8 +65,8 @@ module Display {
 			__trace("IComment.motionManager is read-only", "warn");
 		}
 
-		private bindParent(params:Object):void{
-			if(params.hasOwnProperty("parent")){
+		private bindParent(params:Object):void {
+			if (params.hasOwnProperty("parent")) {
 				(<DisplayObject> params["parent"]).addChild(this);
 			}
 		}
@@ -87,9 +87,9 @@ module Display {
 			if (style["bold"]) {
 				this.getTextFormat().bold = style["bold"];
 			}
-			if(style.hasOwnProperty("motionGroup")){
+			if (style.hasOwnProperty("motionGroup")) {
 				this._mM.initTweenGroup(style["motionGroup"], this._mM.dur);
-			}else if(style.hasOwnProperty("motion")){
+			} else if (style.hasOwnProperty("motion")) {
 				this._mM.initTween(style["motion"], false);
 			}
 		}
