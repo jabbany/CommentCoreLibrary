@@ -295,5 +295,6 @@ var CCLScripting = function(workerUrl){
 		this.addListener("Runtime:UpdateProperty", function(pl){
 			self.getContext().updateProperty(pl.id, pl.name, pl.value);
 		});
+		self.getContext().registerObject("__root", {"class":"SpriteRoot"});
 	};
 })();

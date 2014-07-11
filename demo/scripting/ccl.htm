@@ -14,6 +14,17 @@
 pre{margin:0;}
 pre.error{color:#f00;}
 pre.warning{color:#FFC500;}
+.s-button, .abp .button{
+	display:block; border:1px solid #f88; padding:8px 6px 8px 6px; 
+	background:#000; color:#f88; float:left;
+	-moz-user-select: none;
+	-khtml-user-select: none; 
+	-webkit-user-select: none; 
+	-o-user-select: none; 
+	user-select: none; 
+	cursor:default;
+}
+.s-button:hover,.abp .button:hover{background:#f88; color:#000;}
 </style>
 <!-- Scripting Extensions -->
 <script src="../../src/scripting/build/Host.js"></script>
@@ -138,14 +149,28 @@ function load(dmf,dmfmd){
 }
 function stop(){
 	cm.stopTimer();
+	if(cm.scripting){
+		cm.scripting.send("Update:TimeUpdate",{
+			"state":"pause",
+			"time":playhead
+		});
+	}
 	clearTimeout(tmr);
 }
 function resume(){
 	cm.startTimer();
 	start = new Date().getTime() - playhead;
+	var lasthead = playhead;
 	tmr = setInterval(function(){
 		playhead = new Date().getTime() - start;
 		cm.time(playhead);
+		if(cm.scripting && playhead - lasthead > 300 ){
+			cm.scripting.send("Update:TimeUpdate",{
+				"state":"pause",
+				"time":playhead
+			});
+			lasthead = playhead;
+		}
 	},10);
 }
 </script>

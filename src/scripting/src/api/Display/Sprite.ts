@@ -8,6 +8,7 @@
 module Display {
 	export class Sprite extends DisplayObject {
 		private _graphics:Graphics = new Graphics(this);
+
 		constructor(id?:string) {
 			super(id);
 		}

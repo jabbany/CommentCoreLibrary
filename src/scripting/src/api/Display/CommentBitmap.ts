@@ -19,8 +19,8 @@ module Display {
 			__trace("IComment.motionManager is read-only", "warn");
 		}
 
-		private bindParent(params:Object):void{
-			if(params.hasOwnProperty("parent")){
+		private bindParent(params:Object):void {
+			if (params.hasOwnProperty("parent")) {
 				(<DisplayObject> params["parent"]).addChild(this);
 			}
 		}

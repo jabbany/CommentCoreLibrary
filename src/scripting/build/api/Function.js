@@ -31,7 +31,9 @@ function clone(a){
 
 function foreach(dtype, f){
 	for(var x in dtype){
-		f(x, dtype[x]);
+		if(dtype.hasOwnProperty(x)){
+			f(x, dtype[x]);
+		}
 	}
 	return;
 };

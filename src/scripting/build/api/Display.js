@@ -81,6 +81,7 @@ var Display;
             this.scale(sX, sY);
             this.translate(tX, tY);
         };
+
         Matrix.prototype.clone = function () {
             var a = this._data[0], b = this._data[3], c = this._data[1], d = this._data[4], tx = this._data[2], ty = this._data[5];
             return new Matrix(a, b, c, d, tx, ty);
@@ -514,12 +515,25 @@ var Display;
         };
         return ColorTransform;
     })();
+
     var Transform = (function () {
         function Transform(parent) {
             this._matrix = new Display.Matrix();
             this._matrix3d = null;
             this._parent = parent;
         }
+
+        Object.defineProperty(Transform.prototype, "parent", {
+            get: function () {
+                return this._parent;
+            },
+            set: function (p) {
+                this._parent = p;
+            },
+            enumerable: true,
+            configurable: true
+        });
+
 
 
         Object.defineProperty(Transform.prototype, "matrix3D", {
@@ -546,7 +560,37 @@ var Display;
             configurable: true
         });
 
-        Transform.prototype.updateProperty = function (propertyName, value) {
+        Transform.prototype.box3d = function (sX, sY, sZ, rotX, rotY, rotZ, tX, tY, tZ) {
+            if (typeof sX === "undefined") { sX = 1; }
+            if (typeof sY === "undefined") { sY = 1; }
+            if (typeof sZ === "undefined") { sZ = 1; }
+            if (typeof rotX === "undefined") { rotX = 0; }
+            if (typeof rotY === "undefined") { rotY = 0; }
+            if (typeof rotZ === "undefined") { rotZ = 0; }
+            if (typeof tX === "undefined") { tX = 0; }
+            if (typeof tY === "undefined") { tY = 0; }
+            if (typeof tZ === "undefined") { tZ = 0; }
+            if (this._matrix !== null) {
+                this._matrix = null;
+                this._matrix3d = new Display.Matrix3D();
+            }
+            this._matrix3d.identity();
+        };
+
+        Transform.prototype.box = function (sX, sY, rot, tX, tY) {
+            if (typeof sX === "undefined") { sX = 1; }
+            if (typeof sY === "undefined") { sY = 1; }
+            if (typeof rot === "undefined") { rot = 0; }
+            if (typeof tX === "undefined") { tX = 0; }
+            if (typeof tY === "undefined") { tY = 0; }
+            if (this._matrix) {
+                this._matrix.createBox(sX, sY, rot, tX, tY);
+            } else {
+                this.box3d(sX, sY, 1, 0, 0, rot, tX, tY, 0);
+            }
+        };
+
+        Transform.prototype.update = function () {
             this._parent.transform = this;
         };
 
@@ -570,6 +614,19 @@ var Display;
             return this._matrix ? "2d" : "3d";
         };
 
+        /**
+        * Clones the current transform object
+        * The new transform still binds to the old DisplayObject
+        * unless the parent is modifed
+        * @returns {Transform} - Clone of transform object
+        */
+        Transform.prototype.clone = function () {
+            var t = new Transform(this._parent);
+            t._matrix = this._matrix;
+            t._matrix3d = this._matrix3d;
+            return t;
+        };
+
         Transform.prototype.serialize = function () {
             return {
                 "mode": this.getMatrixType(),
@@ -584,8 +641,13 @@ var Display;
             this._alpha = 1;
             this._x = 0;
             this._y = 0;
+            this._z = 0;
             this._scaleX = 1;
             this._scaleY = 1;
+            this._scaleZ = 1;
+            this._rotationX = 0;
+            this._rotationY = 0;
+            this._rotationZ = 0;
             this._filters = [];
             this._visible = false;
             this._listeners = {};
@@ -650,6 +712,7 @@ var Display;
             if (typeof mode === "undefined") { mode = "enable"; }
             if (DisplayObject.SANDBOX_EVENTS.indexOf(eventName) > -1) {
                 return;
+                /* No need to notify */
             }
             __pchannel("Runtime:ManageEvent", {
                 "id": this._id,
@@ -709,6 +772,9 @@ var Display;
                 this._filters = filters ? filters : [];
                 var serializedFilters = [];
                 for (var i = 0; i < this._filters.length; i++) {
+                    if (!this.filters[i]) {
+                        continue;
+                    }
                     serializedFilters.push(this._filters[i].serialize());
                 }
                 this.propertyUpdate("filters", serializedFilters);
@@ -721,15 +787,92 @@ var Display;
             get: function () {
                 return Display.root;
             },
+            set: function (s) {
+                __trace("DisplayObject.root is read-only.", "warn");
+            },
             enumerable: true,
             configurable: true
         });
 
 
+        Object.defineProperty(DisplayObject.prototype, "stage", {
+            get: function () {
+                return Display.root;
+            },
+            set: function (s) {
+                __trace("DisplayObject.stage is read-only.", "warn");
+            },
+            enumerable: true,
+            configurable: true
+        });
+
+
+        /** Start Transform Area **/
+        DisplayObject.prototype._updateBox = function () {
+            if (this._transform.getMatrixType() === "3d") {
+                this._transform.box3d(this._scaleX, this._scaleY, this._scaleZ, this._rotationX, this._rotationY, this._rotationZ, 0, 0, this._z);
+            } else {
+                this._transform.box(this._scaleX, this._scaleY, this._rotationZ);
+            }
+        };
 
 
 
 
+
+
+
+
+
+
+
+        Object.defineProperty(DisplayObject.prototype, "rotationX", {
+            get: function () {
+                return this._rotationX;
+            },
+            set: function (x) {
+                this._rotationX = x;
+                this._updateBox();
+            },
+            enumerable: true,
+            configurable: true
+        });
+
+        Object.defineProperty(DisplayObject.prototype, "rotationY", {
+            get: function () {
+                return this._rotationY;
+            },
+            set: function (y) {
+                this._rotationY = y;
+                this._updateBox();
+            },
+            enumerable: true,
+            configurable: true
+        });
+
+        Object.defineProperty(DisplayObject.prototype, "rotationZ", {
+            get: function () {
+                return this._rotationZ;
+            },
+            set: function (z) {
+                this._rotationZ = z;
+                this._updateBox();
+            },
+            enumerable: true,
+            configurable: true
+        });
+
+        Object.defineProperty(DisplayObject.prototype, "rotation", {
+            get: function () {
+                return this._rotationZ;
+            },
+            set: function (r) {
+                this._rotationZ = r;
+                this._updateBox();
+            },
+            enumerable: true,
+            configurable: true
+        });
 
         Object.defineProperty(DisplayObject.prototype, "scaleX", {
             get: function () {
@@ -737,7 +880,7 @@ var Display;
             },
             set: function (val) {
                 this._scaleX = val;
-                this.propertyUpdate("scaleX", val);
+                this._updateBox();
             },
             enumerable: true,
             configurable: true
@@ -749,7 +892,7 @@ var Display;
             },
             set: function (val) {
                 this._scaleY = val;
-                this.propertyUpdate("scaleY", val);
+                this._updateBox();
             },
             enumerable: true,
             configurable: true
@@ -757,10 +900,11 @@ var Display;
 
         Object.defineProperty(DisplayObject.prototype, "scaleZ", {
             get: function () {
-                return 1;
+                return this._scaleZ;
             },
             set: function (val) {
-                __trace("DisplayObject.scaleZ is not supported", "warn");
+                this._scaleZ = val;
+                this._updateBox();
             },
             enumerable: true,
             configurable: true
@@ -792,10 +936,11 @@ var Display;
 
         Object.defineProperty(DisplayObject.prototype, "z", {
             get: function () {
-                return 0;
+                return this._z;
             },
             set: function (val) {
-                __trace("DisplayObject.z is not supported", "warn");
+                this._z = val;
+                this._updateBox();
             },
             enumerable: true,
             configurable: true
@@ -806,6 +951,7 @@ var Display;
             get: function () {
                 return this._width;
             },
+            /** End Transform Area **/
             set: function (w) {
                 this._width = w;
                 this.propertyUpdate("width", w);
@@ -859,6 +1005,9 @@ var Display;
             },
             set: function (t) {
                 this._transform = t;
+                if (this._transform.parent !== this) {
+                    this._transform.parent = this;
+                }
                 this.propertyUpdate("transform", this._transform.serialize());
             },
             enumerable: true,
@@ -945,6 +1094,15 @@ var Display;
             }
         };
 
+        Object.defineProperty(DisplayObject.prototype, "numChildren", {
+            /** DisplayObjectContainer **/
+            get: function () {
+                return this._children.length;
+            },
+            enumerable: true,
+            configurable: true
+        });
+
         DisplayObject.prototype.addChild = function (o) {
             this._children.push(o);
             o._parent = this;
@@ -954,10 +1112,37 @@ var Display;
         DisplayObject.prototype.removeChild = function (o) {
             var index = this._children.indexOf(o);
             if (index >= 0) {
-                this._children.splice(index, 1);
-                o._parent = null;
-                this.methodCall("removeChild", o._id);
+                this.removeChildAt(index);
             }
+        };
+
+        DisplayObject.prototype.getChildAt = function (index) {
+            if (index < 0 || index > this._children.length) {
+                throw new RangeError("No child at index " + index);
+            }
+            return this._children[index];
+        };
+
+        DisplayObject.prototype.getChildIndex = function (o) {
+            return this._children.indexOf(o);
+        };
+
+        DisplayObject.prototype.removeChildAt = function (index) {
+            var o = this.getChildAt(index);
+            this._children.splice(index, 1);
+            o._parent = null;
+            this.methodCall("removeChild", o._id);
+        };
+
+        DisplayObject.prototype.removeChildren = function (begin, end) {
+            if (typeof end === "undefined") { end = this._children.length; }
+            var removed = this._children.splice(begin, end - begin);
+            var ids = [];
+            for (var i = 0; i < removed.length; i++) {
+                removed[i]._parent = null;
+                ids.push(removed[i]._id);
+            }
+            this.methodCall("removeChildren", ids);
         };
 
         /**
@@ -969,6 +1154,30 @@ var Display;
                 this._parent.removeChild(this);
             } else {
                 this.root.removeChild(this);
+            }
+        };
+
+        DisplayObject.prototype.toString = function () {
+            return "[" + (this._name.length > 0 ? this._name : "displayObject") + " DisplayObject]@" + this._id;
+        };
+
+        /**
+        * Clones the current display object
+        */
+        DisplayObject.prototype.clone = function () {
+            var alternate = new DisplayObject();
+            alternate._transform = this._transform;
+            alternate._x = this._x;
+            alternate._y = this._y;
+            alternate.alpha = this._alpha;
+            return alternate;
+        };
+
+        DisplayObject.prototype.hasOwnProperty = function (prop) {
+            if (prop === "clone") {
+                return true;
+            } else {
+                return Object.prototype.hasOwnProperty.call(this, prop);
             }
         };
 
@@ -1376,6 +1585,9 @@ var Display;
                 var src = {}, dst = {};
                 src[movingVars] = mProp["fromValue"];
                 dst[movingVars] = mProp["toValue"];
+                if (typeof mProp["easing"] === "string") {
+                    mProp["easing"] = Tween.getEasingFuncByName(mProp["easing"]);
+                }
                 tweens.push(Tween.tween(this._parent, dst, src, mProp["lifeTime"], mProp["easing"]));
             }
             return Tween.parallel.apply(Tween, tweens);
@@ -1415,6 +1627,8 @@ var Display;
         function CommentButton(params) {
             _super.call(this);
             this._mM = new Display.MotionManager(this);
+            this._label = "";
+            this.setDefaults(params);
             this.initStyle(params);
             Runtime.registerObject(this);
             this.bindParent(params);
@@ -1451,6 +1665,9 @@ var Display;
             if (style["lifeTime"]) {
                 this._mM.dur = style["lifeTime"] * 1000;
             }
+            if (style.hasOwnProperty("text")) {
+                this._label = style["text"];
+            }
             if (style.hasOwnProperty("motionGroup")) {
                 this._mM.initTweenGroup(style["motionGroup"], this._mM.dur);
             } else if (style.hasOwnProperty("motion")) {
@@ -1461,6 +1678,7 @@ var Display;
         CommentButton.prototype.serialize = function () {
             var serialized = _super.prototype.serialize.call(this);
             serialized["class"] = "Button";
+            serialized["text"] = this._label;
             return serialized;
         };
         return CommentButton;
