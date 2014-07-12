@@ -37,13 +37,20 @@
 		this.DOM = _("div",{
 			"style":{
 				"position":"absolute",
-				"opacity":data.alpha != null ? data.alpha : 1
+				"opacity":data.alpha != null ? data.alpha : 1,
+				"transformOrigin":"0 0 0"
 			},
 			"className":"cmt"
 		});
 		/** Load the text **/
 		this.DOM.appendChild(document.createTextNode(data.text));
 		var getColor = function(c){
+			if(typeof c === "string"){
+				c = parseInt(c);
+				if(c === NaN){
+					c = 0;
+				}
+			}
 			var color = c.toString(16);
 			while(color.length < 6){
 				color = "0" + color;
@@ -120,6 +127,22 @@
 		this.__defineSetter__("filters", function(f){
 			this.setFilters([f]);
 		});
+		
+		this.__defineGetter__("transform", function(f){
+			return {};
+		});
+		this.__defineGetter__("transform", function(f){
+			return {};
+		});
+		this.__defineSetter__("transform", function(f){
+			if(f.mode === "2d"){
+				var rm = [f.matrix[0],f.matrix[3], f.matrix[1], f.matrix[4], f.matrix[2], f.matrix[5]];
+				var _transform = "matrix(" + (rm.join(",")) + ")";
+			}else{
+				var _transform = "matrix3d(" + (f.matrix.join(",")) + ")";
+			}
+			this.DOM.style.transform = _transform;
+		});
 		this.setFilters = function(params){
 			var shadows = [];
 			for(var i = 0; i < params[0].length; i++){
@@ -152,18 +175,21 @@
 	
 	ScriptingContext.prototype.Unpack.Shape = function(stage, data, ctx){
 		this.DOM = _("svg",{
-			"width":stage.offsetWidth, 
-			"height":stage.offsetHeight,
+			"width":stage.offsetWidth * 2,
+			"height":stage.offsetHeight * 2,
 			"style":{
 				"position":"absolute",
 				"top":"0px",
 				"left":"0px",
-				"width":"100%",
-				"height":"100%"
-		}});
+				"width":(stage.offsetWidth * 2) + "px",
+				"height":(stage.offsetWidth * 2) + "px"
+			}
+		});
 		this._x = data.x ? data.x : 0;
 		this._y = data.y ? data.y : 0;
 		this._alpha = data.alpha ? data.alpha : 1;
+		this._transform = "";
+		
 		// Helpers
 		var __ = function(e, attr){
 			if(typeof e === "string"){
@@ -179,15 +205,18 @@
 			}
 			return elem;
 		};
+		
 		var defaultEffects = __("defs");
-		var defaultGroup = __("g",{
+		var defaultGroup =  __("g",{
+		});
+		var defaultContainer = __("g",{
 			"transform":"translate(" + this._x + "," + this._y + ")",
 			"opacity":this._alpha,
 		});
-		var defaultGroupWithEffects = defaultGroup;
+		defaultContainer.appendChild(defaultGroup);
+		var defaultGroupWithEffects = defaultContainer;
 		this.DOM.appendChild(defaultEffects);
-		this.DOM.appendChild(defaultGroup);
-		
+		this.DOM.appendChild(defaultGroupWithEffects);
 		/** PROPS **/
 		this.__defineSetter__("x", function(f){
 			this.setX(f);
@@ -206,6 +235,27 @@
 		});
 		this.__defineGetter__("alpha", function(f){
 			return this._alpha;
+		});
+		this.__defineGetter__("transform", function(f){
+			return {};
+		});
+		this.__defineSetter__("transform", function(f){
+			if(f.mode === "2d"){
+				var rm = [f.matrix[0],f.matrix[3], f.matrix[1], f.matrix[4], f.matrix[2], f.matrix[5]];
+				this._transform = "matrix(" + (rm.join(",")) + ")";
+			}else{
+				this._transform = "matrix3d(" + (f.matrix.join(",")) + ")";
+			}
+			if(f.mode === "2d"){
+				this.DOM.style.transform = "matrix(1,0,0,1,0,0)";
+				__(defaultGroup,{
+					"transform":this._transform
+				});
+			}else{
+				// We must resort to HTML
+				this.DOM.style.transformOrigin = (this._x + offsetX) + "px " + (this._y + offsetY) + "px 0";
+				this.DOM.style.transform = this._transform;
+			}
 		});
 		/** /PROPS **/
 		
@@ -255,29 +305,38 @@
 			lastPath : null,
 			scheduleClear: [],
 		};
+		/** Offsets for canvas **/
+		var offsetX = 0, offsetY = 0;
 		
+		this.offset = function(x,y){
+			offsetX = x;
+			offsetY = y;
+			__(defaultContainer,{
+				"transform":"translate(" + (this._x + offsetX) + "," + (this._y + offsetY) + ")"
+			});
+		};
 		/** Public methods **/
 		this.setX = function(x){
 			if(!x)
 				return;
 			this._x = x;
-			__(defaultGroup,{
-				"transform":"translate(" + this._x + "," + this._y + ")"
+			__(defaultContainer,{
+				"transform":"translate(" + (this._x + offsetX) + "," + (this._y + offsetY) + ")"
 			});
 		};
 		this.setY = function(y){
 			if(!y)
 				return;
 			this._y = y;
-			__(defaultGroup,{
-				"transform":"translate(" + this._x + "," + this._y + ")"
+			__(defaultContainer,{
+				"transform":"translate(" + (this._x + offsetX) + "," + (this._y + offsetY) + ")"
 			});
 		};
 		this.setAlpha = function(alpha){
 			if(!alpha)
 				return;
 			this._alpha = alpha;
-			__(defaultGroup,{
+			__(defaultContainer,{
 				"opacity":this._alpha
 			});
 		};
@@ -396,11 +455,11 @@
 			if(state.drawing)
 				console.log(state.drawing);
 			if(params[2] < 0){
-				params[0] -= params[2];
+				params[0] += params[2];
 				params[2] = -params[2];
 			}
 			if(params[3] < 0){
-				params[1] -= params[3];
+				params[1] += params[3];
 				params[3] = -params[3];
 			}
 			var r = __("rect",{
@@ -555,7 +614,7 @@
 			this.DOM.appendChild(defaultEffects);
 			// Apply filters
 			this.DOM.removeChild(defaultGroupWithEffects);
-			var tGroup = defaultGroup;
+			var tGroup = defaultContainer;
 			for(var i = 0; i < filters.length; i++){
 				var layeredG = __("g",{
 					"filter":"url(#" + "fe" + filters[i].type + i + ")"
@@ -583,35 +642,18 @@
 			"left": data.x ? data.x + "px" : "0px",
 			"width":"100%",
 			"height":"100%",
-			"overflow":"visible"
+			"overflow":"visible",
+			"transformOrigin":"0 0 0"
 		}});
 		
 		data.scaleX = 1;
 		data.scaleY = 1; 
-		
-		this.__defineSetter__("scaleX", function(f){
-			if(f > 50)
-				return;
-			data.scaleX = f;
-			return;
-			for(var i = 0; i < this.DOM.children.length; i++){
-				this.DOM.children[i].style.transform = "scale(" + data.scaleX + "," + data.scaleY + ")";
-			}
+		data.children = [];
+		this.__defineSetter__("alpha", function(f){
+			this.DOM.style.opacity = f;
 		});
-		this.__defineSetter__("scaleY", function(f){
-			if(f > 50)
-				return;
-			data.scaleY = f;
-			return;
-			for(var i = 0; i < this.DOM.children.length; i++){
-				this.DOM.children[i].style.transform = "scale(" + data.scaleX + "," + data.scaleY + ")";
-			}
-		});
-		this.__defineGetter__("scaleX", function(f){
-			return data.scaleX;
-		});
-		this.__defineGetter__("scaleY", function(f){
-			return data.scaleY;
+		this.__defineGetter__("alpha", function(f){
+			return this.DOM.style.opacity;
 		});
 		
 		this.__defineSetter__("x", function(f){
@@ -626,7 +668,18 @@
 		this.__defineGetter__("y", function(f){
 			return this.DOM.offsetTop;
 		});
-		
+		this.__defineGetter__("transform", function(f){
+			return {};
+		});
+		this.__defineSetter__("transform", function(f){
+			if(f.mode === "2d"){
+				var rm = [f.matrix[0],f.matrix[3], f.matrix[1], f.matrix[4], f.matrix[2], f.matrix[5]];
+				var _transform = "matrix(" + (rm.join(",")) + ")";
+			}else{
+				var _transform = "matrix3d(" + (f.matrix.join(",")) + ")";
+			}
+			this.DOM.style.transform = _transform;
+		});
 		this.setX = function(x){
 			this.DOM.style.left = x + "px";
 		};
@@ -645,14 +698,15 @@
 		
 		this.addChild = function(childitem){
 			var child = ctx.getObject(childitem);
+			data.children.push(child);
 			if(!child)
 				return;
 			if(child.DOM){
 				if(child.getClass() === "Shape"){
-					child.DOM.style.left = -this.x + "px";
-					child.DOM.style.top = -this.y + "px";
-					child.setX(this.x);
-					child.setY(this.y);
+					var tX = this.x + (stage.offsetWidth / 2), tY = this.y + (stage.offsetHeight / 2);
+					child.offset(tX, tY);
+					child.DOM.style.left = -tX+ "px";
+					child.DOM.style.top = -tY+ "px";
 				}
 				this.DOM.appendChild(child.DOM);
 			}else{
@@ -723,6 +777,16 @@
 		
 		data.scaleX = 1;
 		data.scaleY = 1; 
+		this.__defineGetter__("transform", function(f){
+			return {};
+		});
+		this.__defineSetter__("transform", function(f){
+			//if(f.mode === "2d"){
+			//	this.DOM.style.transform = "matrix(" + (f.matrix.slice(0,6).join(",")) + ")";
+			//}else{
+			//	this.DOM.style.transform = "matrix3d(" + (f.matrix.join(",")) + ")";
+			//}
+		});
 		this.__defineSetter__("filters", function(f){
 			// Ignore now
 		});

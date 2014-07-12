@@ -97,7 +97,7 @@ var gf1=$.createGlowFilter(0xFFFFFF/*光晕颜色*/,0.7/*Alpha*/,12/*水平模�
 w.font="宋体";
 w.filters=[gf1];i++;w.rotationZ=i*key2;},40,key1);
  
-w.fontsize=wz;
+//w.fontsize=wz;
 }
 
 timer(function(){numberOut(0.9,238,128,3);textPx("\n \n は\n じ\n ま\n る\n よ",270,185,20,1);},6622);</d>
@@ -226,7 +226,7 @@ arrow(t2,450,135,-100,3.5);},11490);</d>
 	
 	
 	
-	var x=key*50;		
+	//var x=key*50;		
 	for(var i=0;i&lt;8;i++)
 	{var c=$.createCanvas({x:0,y:384,lifeTime:7,motionGroup:[
 	{x:{fromValue:0,toValue:641,lifeTime:4.2},y:{fromValue:384,toValue:-71,lifeTime:4.2}	}]	});

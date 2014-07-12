@@ -103,6 +103,8 @@
 		$("debug-clear").addEventListener("click", function(){
 			//bscripter.clear();
 		});
+		$("player").style.perspective = $("player").offsetWidth * Math.tan(40 * Math.PI/180) / 2 + "px";
+		$("player").webkitPerspective = $("player").offsetWidth * Math.tan(40 * Math.PI/180) / 2 + "px";
 	</script>
 </body>
 </html>

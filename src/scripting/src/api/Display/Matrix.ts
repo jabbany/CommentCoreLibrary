@@ -143,7 +143,21 @@ module Display {
 		}
 
 		public appendTranslation(x:number, y:number, z:number):void {
+			this._data = this.dotProduct([
+				1, 0, 0, x,
+				0, 1, 0, y,
+				0, 0, 1, z,
+				0, 0, 0, 1
+			],this._data);
+		}
 
+		public appendScale(sX:number = 1, sY:number = 1, sZ:number = 1):void{
+			this._data = this.dotProduct([
+				sX, 0, 0, 0,
+				0, sY, 0, 0,
+				0, 0, sZ, 0,
+				0, 0, 0,  1
+			],this._data);
 		}
 
 		public prepend(rhs:Matrix3D):void {
@@ -161,7 +175,21 @@ module Display {
 		}
 
 		public prependTranslation(x:number, y:number, z:number):void {
+			this._data = this.dotProduct(this._data, [
+				1, 0, 0, x,
+				0, 1, 0, y,
+				0, 0, 1, z,
+				0, 0, 0, 1
+			]);
+		}
 
+		public prependScale(sX:number, sY:number, sZ:number):void{
+			this._data = this.dotProduct(this._data, [
+				sX, 0, 0, 0,
+				0, sY, 0, 0,
+				0, 0, sZ, 0,
+				0, 0, 0,  1
+			]);
 		}
 
 		public transformVector(v:Vector3D):Vector3D {

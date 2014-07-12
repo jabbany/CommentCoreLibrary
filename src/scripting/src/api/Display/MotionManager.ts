@@ -116,7 +116,11 @@ module Display {
 				if (typeof mProp["easing"] === "string") {
 					mProp["easing"] = Tween.getEasingFuncByName(mProp["easing"]);
 				}
-				tweens.push(Tween.tween(this._parent, dst, src, mProp["lifeTime"], mProp["easing"]));
+				if(mProp.hasOwnProperty("startDelay")){
+					tweens.push(Tween.delay(Tween.tween(this._parent, dst, src, mProp["lifeTime"], mProp["easing"]), mProp["startDelay"] / 1000));
+				}else {
+					tweens.push(Tween.tween(this._parent, dst, src, mProp["lifeTime"], mProp["easing"]));
+				}
 			}
 			return Tween.parallel.apply(Tween, tweens);
 		}

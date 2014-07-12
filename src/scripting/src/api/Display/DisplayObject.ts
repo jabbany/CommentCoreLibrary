@@ -54,6 +54,11 @@ module Display {
 				this._matrix3d = new Matrix3D();
 			}
 			this._matrix3d.identity();
+			this._matrix3d.appendRotation(rotX, Vector3D.X_AXIS);
+			this._matrix3d.appendRotation(rotY, Vector3D.Y_AXIS);
+			this._matrix3d.appendRotation(rotZ, Vector3D.Z_AXIS);
+			this._matrix3d.appendScale(sX, sY, sZ);
+			this._matrix3d.appendTranslation(tX, tY, tZ);
 		}
 
 		public box(sX:number = 1, sY:number = 1, rot:number = 0, tX:number = 0, tY:number = 0):void {
@@ -104,7 +109,7 @@ module Display {
 		public serialize():Object {
 			return {
 				"mode": this.getMatrixType(),
-				"matrix": this.getMatrix()
+				"matrix": this.getMatrix().serialize()
 			};
 		}
 
@@ -269,22 +274,23 @@ module Display {
 		}
 
 		/** Start Transform Area **/
-		private _updateBox():void{
-			if(this._transform.getMatrixType() === "3d"){
+		private _updateBox(mode:string = this._transform.getMatrixType()):void{
+			if(mode === "3d"){
 				this._transform.box3d(this._scaleX, this._scaleY, this._scaleZ, this._rotationX, this._rotationY, this._rotationZ, 0, 0, this._z);
 			}else{
-				this._transform.box(this._scaleX, this._scaleY, this._rotationZ);
+				this._transform.box(this._scaleX, this._scaleY, this._rotationZ * Math.PI / 180);
 			}
+			this.transform = this._transform;
 		}
 
 		set rotationX(x:number){
 			this._rotationX = x;
-			this._updateBox();
+			this._updateBox("3d");
 		}
 
 		set rotationY(y:number){
 			this._rotationY = y;
-			this._updateBox();
+			this._updateBox("3d");
 		}
 
 		set rotationZ(z:number){
@@ -309,7 +315,7 @@ module Display {
 
 		set scaleZ(val:number) {
 			this._scaleZ = val;
-			this._updateBox();
+			this._updateBox("3d");
 		}
 
 		set x(val:number) {

@@ -149,6 +149,24 @@ var Display;
         };
 
         Matrix3D.prototype.appendTranslation = function (x, y, z) {
+            this._data = this.dotProduct([
+                1, 0, 0, x,
+                0, 1, 0, y,
+                0, 0, 1, z,
+                0, 0, 0, 1
+            ], this._data);
+        };
+
+        Matrix3D.prototype.appendScale = function (sX, sY, sZ) {
+            if (typeof sX === "undefined") { sX = 1; }
+            if (typeof sY === "undefined") { sY = 1; }
+            if (typeof sZ === "undefined") { sZ = 1; }
+            this._data = this.dotProduct([
+                sX, 0, 0, 0,
+                0, sY, 0, 0,
+                0, 0, sZ, 0,
+                0, 0, 0, 1
+            ], this._data);
         };
 
         Matrix3D.prototype.prepend = function (rhs) {
@@ -167,6 +185,21 @@ var Display;
         };
 
         Matrix3D.prototype.prependTranslation = function (x, y, z) {
+            this._data = this.dotProduct(this._data, [
+                1, 0, 0, x,
+                0, 1, 0, y,
+                0, 0, 1, z,
+                0, 0, 0, 1
+            ]);
+        };
+
+        Matrix3D.prototype.prependScale = function (sX, sY, sZ) {
+            this._data = this.dotProduct(this._data, [
+                sX, 0, 0, 0,
+                0, sY, 0, 0,
+                0, 0, sZ, 0,
+                0, 0, 0, 1
+            ]);
         };
 
         Matrix3D.prototype.transformVector = function (v) {
@@ -575,6 +608,11 @@ var Display;
                 this._matrix3d = new Display.Matrix3D();
             }
             this._matrix3d.identity();
+            this._matrix3d.appendRotation(rotX, Display.Vector3D.X_AXIS);
+            this._matrix3d.appendRotation(rotY, Display.Vector3D.Y_AXIS);
+            this._matrix3d.appendRotation(rotZ, Display.Vector3D.Z_AXIS);
+            this._matrix3d.appendScale(sX, sY, sZ);
+            this._matrix3d.appendTranslation(tX, tY, tZ);
         };
 
         Transform.prototype.box = function (sX, sY, rot, tX, tY) {
@@ -630,7 +668,7 @@ var Display;
         Transform.prototype.serialize = function () {
             return {
                 "mode": this.getMatrixType(),
-                "matrix": this.getMatrix()
+                "matrix": this.getMatrix().serialize()
             };
         };
         return Transform;
@@ -808,12 +846,14 @@ var Display;
 
 
         /** Start Transform Area **/
-        DisplayObject.prototype._updateBox = function () {
-            if (this._transform.getMatrixType() === "3d") {
+        DisplayObject.prototype._updateBox = function (mode) {
+            if (typeof mode === "undefined") { mode = this._transform.getMatrixType(); }
+            if (mode === "3d") {
                 this._transform.box3d(this._scaleX, this._scaleY, this._scaleZ, this._rotationX, this._rotationY, this._rotationZ, 0, 0, this._z);
             } else {
-                this._transform.box(this._scaleX, this._scaleY, this._rotationZ);
+                this._transform.box(this._scaleX, this._scaleY, this._rotationZ * Math.PI / 180);
             }
+            this.transform = this._transform;
         };
 
 
@@ -832,7 +872,7 @@ var Display;
             },
             set: function (x) {
                 this._rotationX = x;
-                this._updateBox();
+                this._updateBox("3d");
             },
             enumerable: true,
             configurable: true
@@ -844,7 +884,7 @@ var Display;
             },
             set: function (y) {
                 this._rotationY = y;
-                this._updateBox();
+                this._updateBox("3d");
             },
             enumerable: true,
             configurable: true
@@ -904,7 +944,7 @@ var Display;
             },
             set: function (val) {
                 this._scaleZ = val;
-                this._updateBox();
+                this._updateBox("3d");
             },
             enumerable: true,
             configurable: true
@@ -1588,7 +1628,11 @@ var Display;
                 if (typeof mProp["easing"] === "string") {
                     mProp["easing"] = Tween.getEasingFuncByName(mProp["easing"]);
                 }
-                tweens.push(Tween.tween(this._parent, dst, src, mProp["lifeTime"], mProp["easing"]));
+                if (mProp.hasOwnProperty("startDelay")) {
+                    tweens.push(Tween.delay(Tween.tween(this._parent, dst, src, mProp["lifeTime"], mProp["easing"]), mProp["startDelay"] / 1000));
+                } else {
+                    tweens.push(Tween.tween(this._parent, dst, src, mProp["lifeTime"], mProp["easing"]));
+                }
             }
             return Tween.parallel.apply(Tween, tweens);
         };
@@ -1968,7 +2012,7 @@ var Display;
 
         TextField.prototype.setTextFormat = function (tf) {
             this._textFormat = tf;
-            this.methodCall("setTextFormat", tf);
+            this.methodCall("setTextFormat", tf.serialize());
         };
 
         TextField.prototype.appendText = function (t) {

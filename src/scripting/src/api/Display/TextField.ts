@@ -105,7 +105,7 @@ module Display {
 
 		public setTextFormat(tf:any) {
 			this._textFormat = <TextFormat> tf;
-			this.methodCall("setTextFormat", tf);
+			this.methodCall("setTextFormat", tf.serialize());
 		}
 
 		public appendText(t:string):void {

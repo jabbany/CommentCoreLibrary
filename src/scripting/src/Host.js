@@ -169,12 +169,7 @@ var CCLScripting = function(workerUrl){
 		};
 		
 		var WorkerHook = function(event){
-			try{
-				var resp = JSON.parse(event.data);	
-			}catch(e){
-				console.log(e);
-				return;
-			}
+			var resp = JSON.parse(event.data);	
 			if(resp.channel === ""){
 				switch(resp.mode){
 					case "log":

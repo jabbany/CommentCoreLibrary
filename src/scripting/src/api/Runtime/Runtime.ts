@@ -44,7 +44,7 @@ module Runtime {
 	var _registeredObjects:Object = {
 		"__self": new MetaObject("__self"),
 		"__player": new MetaObject("__player"),
-		"__root": new MetaObject("__root"),
+		"__root": new MetaObject("__root")
 	};
 
 	export var registeredObjects:Object;
