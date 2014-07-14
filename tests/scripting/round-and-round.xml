@@ -768,7 +768,9 @@ function Composition( params )
   {
     canvas.addChild( layers[ i ].source );
   }
-  
+  /** FIX : Make startTime, duration etc. available **/
+  var startTime = params.startTime || 0;
+  var duration = params.duration || 60000;
   return {
     width : params.width || $.width,
     height : params.height || $.height,

@@ -275,8 +275,8 @@ var Display;
     }
     Display.createMatrix = createMatrix;
 
-    function createMatrix3D() {
-        return new Matrix3D();
+    function createMatrix3D(iv) {
+        return new Matrix3D(iv);
     }
     Display.createMatrix3D = createMatrix3D;
 
@@ -603,7 +603,7 @@ var Display;
             if (typeof tX === "undefined") { tX = 0; }
             if (typeof tY === "undefined") { tY = 0; }
             if (typeof tZ === "undefined") { tZ = 0; }
-            if (this._matrix !== null) {
+            if (this._matrix !== null || this._matrix3d === null) {
                 this._matrix = null;
                 this._matrix3d = new Display.Matrix3D();
             }
@@ -980,7 +980,7 @@ var Display;
             },
             set: function (val) {
                 this._z = val;
-                this._updateBox();
+                this._updateBox("3d");
             },
             enumerable: true,
             configurable: true

@@ -262,8 +262,8 @@ module Display {
 		return new Matrix();
 	}
 
-	export function createMatrix3D():any {
-		return new Matrix3D();
+	export function createMatrix3D(iv:Array<number>):any {
+		return new Matrix3D(iv);
 	}
 
 	export function createColorTransform():any {

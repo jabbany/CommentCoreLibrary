@@ -49,7 +49,7 @@ module Display {
 		}
 
 		public box3d(sX:number = 1, sY:number = 1, sZ:number = 1, rotX:number = 0, rotY:number = 0, rotZ:number = 0, tX:number = 0, tY:number = 0, tZ:number = 0):void {
-			if(this._matrix !== null){
+			if(this._matrix !== null || this._matrix3d === null){
 				this._matrix = null;
 				this._matrix3d = new Matrix3D();
 			}
@@ -330,7 +330,7 @@ module Display {
 
 		set z(val:number) {
 			this._z = val;
-			this._updateBox();
+			this._updateBox("3d");
 		}
 
 		get rotationX():number{

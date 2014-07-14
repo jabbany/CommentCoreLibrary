@@ -129,6 +129,23 @@ module Utils{
 		}, interval);
 		return ivl;
 	}
+
+	/**
+	 * Clears a scheduled timeout. If timeout id is not recognized no action
+	 * is performed
+	 * @param tid - timeout id, returned by timer
+	 */
+	export function clearTimeout(tid:number):void{
+		Runtime.getTimer().clearTimeout(tid);
+	}
+
+	/**
+	 * Clears an interval timer. If we are in timers mode then do nothing
+	 * @param iid - interval id
+	 */
+	export function clearInterval(iid:number):void{
+		Runtime.getTimer().clearInterval(iid);
+	}
 }
 
 var getTimer:Function = Utils.getTimer;

@@ -166,6 +166,25 @@ var Utils;
         return ivl;
     }
     Utils.interval = interval;
+
+    /**
+    * Clears a scheduled timeout. If timeout id is not recognized no action
+    * is performed
+    * @param tid - timeout id, returned by timer
+    */
+    function clearTimeout(tid) {
+        Runtime.getTimer().clearTimeout(tid);
+    }
+    Utils.clearTimeout = clearTimeout;
+
+    /**
+    * Clears an interval timer. If we are in timers mode then do nothing
+    * @param iid - interval id
+    */
+    function clearInterval(iid) {
+        Runtime.getTimer().clearInterval(iid);
+    }
+    Utils.clearInterval = clearInterval;
 })(Utils || (Utils = {}));
 
 var getTimer = Utils.getTimer;

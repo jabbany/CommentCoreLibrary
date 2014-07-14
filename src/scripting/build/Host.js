@@ -397,6 +397,12 @@ var CCLScripting = function(workerUrl){
 			this.DOM.innerHTML = "";
 			this.DOM.appendChild(_("text",text));
 		};
+		this.__defineSetter__("visible", function(f){
+			this.DOM.style.visible = f ? "visible" : "hidden";
+		});
+		this.__defineGetter__("visible", function(f){
+			return this.DOM.style.visible === "hidden" ? false : true;
+		});
 		this.__defineSetter__("alpha", function(f){
 			this.setAlpha(f);
 		});
@@ -518,6 +524,12 @@ var CCLScripting = function(workerUrl){
 		this.DOM.appendChild(defaultEffects);
 		this.DOM.appendChild(defaultGroupWithEffects);
 		/** PROPS **/
+		this.__defineSetter__("visible", function(f){
+			this.DOM.style.visible = f ? "visible" : "hidden";
+		});
+		this.__defineGetter__("visible", function(f){
+			return this.DOM.style.visible === "hidden" ? false : true;
+		});
 		this.__defineSetter__("x", function(f){
 			this.setX(f);
 		});
@@ -949,6 +961,12 @@ var CCLScripting = function(workerUrl){
 		data.scaleX = 1;
 		data.scaleY = 1; 
 		data.children = [];
+		this.__defineSetter__("visible", function(f){
+			this.DOM.style.visible = f ? "visible" : "hidden";
+		});
+		this.__defineGetter__("visible", function(f){
+			return this.DOM.style.visible === "hidden" ? false : true;
+		});
 		this.__defineSetter__("alpha", function(f){
 			this.DOM.style.opacity = f;
 		});
@@ -1077,6 +1095,12 @@ var CCLScripting = function(workerUrl){
 		
 		data.scaleX = 1;
 		data.scaleY = 1; 
+		this.__defineSetter__("visible", function(f){
+			this.DOM.style.visible = f ? "visible" : "hidden";
+		});
+		this.__defineGetter__("visible", function(f){
+			return this.DOM.style.visible === "hidden" ? false : true;
+		});
 		this.__defineGetter__("transform", function(f){
 			return {};
 		});

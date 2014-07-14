@@ -6,19 +6,25 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d872933e-151d-45f2-bea4-5399a376f23e" name="Default" comment="Added more precise abstraction of interfaces">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/tests/scripting/JComp.biliscript" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/tests/scripting/partical-drift.biliscript" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/tests/scripting/sheet3d.biliscript" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripting/build/api/Display.js" afterPath="$PROJECT_DIR$/src/scripting/build/api/Display.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripting/src/api/Display/DisplayObject.ts" afterPath="$PROJECT_DIR$/src/scripting/src/api/Display/DisplayObject.ts" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripting/build/api/Function.js" afterPath="$PROJECT_DIR$/src/scripting/build/api/Function.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripting/src/api/Function.js" afterPath="$PROJECT_DIR$/src/scripting/src/api/Function.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripting/build/Host.js" afterPath="$PROJECT_DIR$/src/scripting/build/Host.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripting/src/Host.js" afterPath="$PROJECT_DIR$/src/scripting/src/Host.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripting/src/api/Display/Matrix.ts" afterPath="$PROJECT_DIR$/src/scripting/src/api/Display/Matrix.ts" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripting/src/api/Display/MotionManager.ts" afterPath="$PROJECT_DIR$/src/scripting/src/api/Display/MotionManager.ts" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/scripting/Runtime/Readme.md" afterPath="$PROJECT_DIR$/docs/scripting/Runtime/Readme.md" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/scripting/Tween/Readme.md" afterPath="$PROJECT_DIR$/docs/scripting/Tween/Readme.md" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripting/src/api/Runtime/Runtime.ts" afterPath="$PROJECT_DIR$/src/scripting/src/api/Runtime/Runtime.ts" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripting/src/api/Display/TextField.ts" afterPath="$PROJECT_DIR$/src/scripting/src/api/Display/TextField.ts" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripting/build/api/Tween.js" afterPath="$PROJECT_DIR$/src/scripting/build/api/Tween.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripting/src/api/Tween/Tween.ts" afterPath="$PROJECT_DIR$/src/scripting/src/api/Tween/Tween.ts" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripting/src/Unpacker.js" afterPath="$PROJECT_DIR$/src/scripting/src/Unpacker.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripting/build/api/Utils.js" afterPath="$PROJECT_DIR$/src/scripting/build/api/Utils.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripting/src/api/Utils/Utils.ts" afterPath="$PROJECT_DIR$/src/scripting/src/api/Utils/Utils.ts" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripting/build/Worker.js" afterPath="$PROJECT_DIR$/src/scripting/build/Worker.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scripting/src/Worker.js" afterPath="$PROJECT_DIR$/src/scripting/src/Worker.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/demo/scripting/ccl.htm" afterPath="$PROJECT_DIR$/demo/scripting/ccl.htm" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tests/scripting/crazy-night.xml" afterPath="$PROJECT_DIR$/tests/scripting/crazy-night.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/demo/scripting/index.htm" afterPath="$PROJECT_DIR$/demo/scripting/index.htm" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tests/scripting/round-and-round.xml" afterPath="$PROJECT_DIR$/tests/scripting/round-and-round.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="CommentCoreLibrary.iws" />
@@ -47,21 +53,21 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="MotionManager.ts" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="MotionManager.ts" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Display/MotionManager.ts">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.6983842" vertical-offset="2068" max-vertical-offset="3129">
+            <state vertical-scroll-proportion="0.0" vertical-offset="2131" max-vertical-offset="3129">
               <caret line="117" column="16" selection-start-line="117" selection-start-column="16" selection-end-line="117" selection-end-column="16" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="DisplayObject.ts" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="DisplayObject.ts" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Display/DisplayObject.ts">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="880" max-vertical-offset="12810">
-              <caret line="278" column="95" selection-start-line="278" selection-start-column="95" selection-end-line="278" selection-end-column="95" />
+            <state vertical-scroll-proportion="2.0359066" vertical-offset="0" max-vertical-offset="12810">
+              <caret line="54" column="13" selection-start-line="54" selection-start-column="13" selection-end-line="54" selection-end-column="13" />
               <folding />
             </state>
           </provider>
@@ -70,18 +76,8 @@
       <file leaf-file-name="Matrix.ts" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Display/Matrix.ts">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="2194" max-vertical-offset="7287">
-              <caret line="182" column="15" selection-start-line="182" selection-start-column="15" selection-end-line="182" selection-end-column="15" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Filter.ts" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Display/Filter.ts">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="2751" max-vertical-offset="2898">
-              <caret line="131" column="5" selection-start-line="131" selection-start-column="5" selection-end-line="131" selection-end-column="5" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="5317" max-vertical-offset="7287">
+              <caret line="260" column="33" selection-start-line="260" selection-start-column="33" selection-end-line="260" selection-end-column="33" />
               <folding />
             </state>
           </provider>
@@ -90,38 +86,18 @@
       <file leaf-file-name="Tween.ts" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Tween/Tween.ts">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="4408" max-vertical-offset="5586">
-              <caret line="232" column="85" selection-start-line="232" selection-start-column="85" selection-end-line="232" selection-end-column="85" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="2699" max-vertical-offset="5754">
+              <caret line="166" column="43" selection-start-line="166" selection-start-column="43" selection-end-line="166" selection-end-column="43" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="CommentField.ts" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Display/CommentField.ts">
+      <file leaf-file-name="Player.ts" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Player/Player.ts">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="213" max-vertical-offset="2247">
-              <caret line="18" column="0" selection-start-line="18" selection-start-column="0" selection-end-line="18" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="TextField.ts" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Display/TextField.ts">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="2109" max-vertical-offset="2772">
-              <caret line="107" column="59" selection-start-line="107" selection-start-column="59" selection-end-line="107" selection-end-column="59" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Timer.ts" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Runtime/Timer.ts">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="1287" max-vertical-offset="5166">
-              <caret line="207" column="42" selection-start-line="207" selection-start-column="42" selection-end-line="207" selection-end-column="42" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="3759">
+              <caret line="168" column="33" selection-start-line="168" selection-start-column="16" selection-end-line="168" selection-end-column="33" />
               <folding />
             </state>
           </provider>
@@ -130,18 +106,48 @@
       <file leaf-file-name="Utils.ts" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Utils/Utils.ts">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="2404" max-vertical-offset="2961">
-              <caret line="2" column="19" selection-start-line="2" selection-start-column="19" selection-end-line="2" selection-end-column="19" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="2698" max-vertical-offset="3318">
+              <caret line="152" column="33" selection-start-line="152" selection-start-column="33" selection-end-line="152" selection-end-column="33" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Runtime.ts" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Runtime/Runtime.ts">
+      <file leaf-file-name="Host.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/scripting/src/Host.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="2133" max-vertical-offset="4620">
-              <caret line="48" column="0" selection-start-line="48" selection-start-column="0" selection-end-line="48" selection-end-column="0" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="105" max-vertical-offset="6426">
+              <caret line="6" column="0" selection-start-line="6" selection-start-column="0" selection-end-line="6" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Worker.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/scripting/src/Worker.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="63" max-vertical-offset="798">
+              <caret line="22" column="44" selection-start-line="22" selection-start-column="44" selection-end-line="22" selection-end-column="44" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Function.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Function.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="357" max-vertical-offset="1302">
+              <caret line="41" column="15" selection-start-line="41" selection-start-column="15" selection-end-line="41" selection-end-column="15" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="OOAPI.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/scripting/src/OOAPI.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="2307" max-vertical-offset="2877">
+              <caret line="120" column="8" selection-start-line="120" selection-start-column="8" selection-end-line="120" selection-end-column="8" />
               <folding />
             </state>
           </provider>
@@ -160,7 +166,6 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/src/scripting/src/api-ts/CommentBitmap.ts" />
         <option value="$PROJECT_DIR$/src/scripting/src/api-ts/Bitmap.ts" />
         <option value="$PROJECT_DIR$/src/scripting/src/api-ts/Filter.ts" />
         <option value="$PROJECT_DIR$/src/scripting/src/api-ts/Graphics.ts" />
@@ -173,7 +178,6 @@
         <option value="$PROJECT_DIR$/src/scripting/src/api/Display/Shape.ts" />
         <option value="$PROJECT_DIR$/src/scripting/src/api/OOAPI.d.ts" />
         <option value="$PROJECT_DIR$/src/scripting/src/OOAPI.js" />
-        <option value="$PROJECT_DIR$/src/scripting/src/Worker.js" />
         <option value="$PROJECT_DIR$/src/scripting/src/api/external/WindowCanvas.ts" />
         <option value="$PROJECT_DIR$/src/scripting/src/api/Runtime/Permissions.ts" />
         <option value="$PROJECT_DIR$/src/scripting/src/api/Runtime/Runtime.js" />
@@ -184,7 +188,6 @@
         <option value="$PROJECT_DIR$/src/scripting/src/api/Display/Filter.ts" />
         <option value="$PROJECT_DIR$/src/scripting/src/api/Scripting.d.ts" />
         <option value="$PROJECT_DIR$/src/scripting/build/api/Display.js" />
-        <option value="$PROJECT_DIR$/src/scripting/src/api/Utils/Utils.ts" />
         <option value="$PROJECT_DIR$/src/scripting/src/Host/Host.ts" />
         <option value="$PROJECT_DIR$/src/scripting/src/Host/Unpacker/Shape.ts" />
         <option value="$PROJECT_DIR$/src/scripting/src/Host/Unpacker/Sprite.ts" />
@@ -204,13 +207,16 @@
         <option value="$PROJECT_DIR$/src/scripting/src/api/Display/IDisplayObjectContainer.ts" />
         <option value="$PROJECT_DIR$/src/scripting/src/api/Display/Sprite.ts" />
         <option value="$PROJECT_DIR$/src/scripting/src/api/Display/Bitmap.ts" />
-        <option value="$PROJECT_DIR$/src/scripting/src/api/Tween/Tween.ts" />
         <option value="$PROJECT_DIR$/src/scripting/src/api/Display/CommentField.ts" />
         <option value="$PROJECT_DIR$/src/scripting/src/api/Display/TextField.ts" />
         <option value="$PROJECT_DIR$/src/scripting/src/api/Runtime/Runtime.ts" />
-        <option value="$PROJECT_DIR$/src/scripting/src/api/Display/Matrix.ts" />
-        <option value="$PROJECT_DIR$/src/scripting/src/api/Display/DisplayObject.ts" />
         <option value="$PROJECT_DIR$/src/scripting/src/api/Display/MotionManager.ts" />
+        <option value="$PROJECT_DIR$/src/scripting/src/api/Display/Matrix.ts" />
+        <option value="$PROJECT_DIR$/src/scripting/src/api/Utils/Utils.ts" />
+        <option value="$PROJECT_DIR$/src/scripting/src/Worker.js" />
+        <option value="$PROJECT_DIR$/src/scripting/src/api/Function.js" />
+        <option value="$PROJECT_DIR$/src/scripting/src/api/Display/DisplayObject.ts" />
+        <option value="$PROJECT_DIR$/src/scripting/src/api/Tween/Tween.ts" />
       </list>
     </option>
   </component>
@@ -866,7 +872,7 @@
       <workItem from="1404616229718" duration="22215000" />
       <workItem from="1404880676303" duration="3979000" />
       <workItem from="1404920850080" duration="10015000" />
-      <workItem from="1405101246966" duration="11603000" />
+      <workItem from="1405101246966" duration="20691000" />
     </task>
     <task id="LOCAL-00001" summary="Added more precise abstraction of interfaces">
       <created>1400532615329</created>
@@ -876,7 +882,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="162837000" />
+    <option name="totallyTimeSpent" value="171925000" />
   </component>
   <component name="TodoView" selected-index="0">
     <todo-panel id="selected-file">
@@ -988,21 +994,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Display/Graphics.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="3528" max-vertical-offset="4557">
-          <caret line="168" column="46" selection-start-line="168" selection-start-column="46" selection-end-line="168" selection-end-column="46" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Runtime/Permissions.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1722">
-          <caret line="75" column="5" selection-start-line="75" selection-start-column="5" selection-end-line="75" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Runtime/Supports.ts">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.40669015" vertical-offset="0" max-vertical-offset="609">
@@ -1095,24 +1086,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/scripting/src/OOAPI.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="1799" max-vertical-offset="2877">
-          <caret line="5" column="0" selection-start-line="5" selection-start-column="0" selection-end-line="5" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/scripting/src/Host/Host.ts">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="248" max-vertical-offset="840">
           <caret line="23" column="30" selection-start-line="23" selection-start-column="30" selection-end-line="23" selection-end-column="30" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/scripting/src/Host.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="1827" max-vertical-offset="15666">
-          <caret line="6" column="0" selection-start-line="6" selection-start-column="0" selection-end-line="6" selection-end-column="0" />
         </state>
       </provider>
     </entry>
@@ -1176,6 +1153,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="967" max-vertical-offset="4746">
           <caret line="150" column="8" selection-start-line="150" selection-start-column="8" selection-end-line="150" selection-end-column="49" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -1280,14 +1258,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Player/Player.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="3189" max-vertical-offset="3759">
-          <caret line="168" column="33" selection-start-line="168" selection-start-column="16" selection-end-line="168" selection-end-column="33" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Display/Filter.ts">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="906" max-vertical-offset="2898">
@@ -1328,42 +1298,82 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Utils/Utils.ts">
+    <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Display/MotionManager.ts">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="2404" max-vertical-offset="2961">
-          <caret line="2" column="19" selection-start-line="2" selection-start-column="19" selection-end-line="2" selection-end-column="19" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="2131" max-vertical-offset="3129">
+          <caret line="117" column="16" selection-start-line="117" selection-start-column="16" selection-end-line="117" selection-end-column="16" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Tween/Tween.ts">
+    <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Utils/Utils.ts">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="4408" max-vertical-offset="5586">
-          <caret line="232" column="85" selection-start-line="232" selection-start-column="85" selection-end-line="232" selection-end-column="85" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="2698" max-vertical-offset="3318">
+          <caret line="152" column="33" selection-start-line="152" selection-start-column="33" selection-end-line="152" selection-end-column="33" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/scripting/src/Host.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="105" max-vertical-offset="6426">
+          <caret line="6" column="0" selection-start-line="6" selection-start-column="0" selection-end-line="6" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/scripting/src/Worker.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="63" max-vertical-offset="798">
+          <caret line="22" column="44" selection-start-line="22" selection-start-column="44" selection-end-line="22" selection-end-column="44" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/scripting/src/OOAPI.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="2307" max-vertical-offset="2877">
+          <caret line="120" column="8" selection-start-line="120" selection-start-column="8" selection-end-line="120" selection-end-column="8" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Function.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="357" max-vertical-offset="1302">
+          <caret line="41" column="15" selection-start-line="41" selection-start-column="15" selection-end-line="41" selection-end-column="15" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Display/Matrix.ts">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="2194" max-vertical-offset="7287">
-          <caret line="182" column="15" selection-start-line="182" selection-start-column="15" selection-end-line="182" selection-end-column="15" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="5317" max-vertical-offset="7287">
+          <caret line="260" column="33" selection-start-line="260" selection-start-column="33" selection-end-line="260" selection-end-column="33" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Player/Player.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="3759">
+          <caret line="168" column="33" selection-start-line="168" selection-start-column="16" selection-end-line="168" selection-end-column="33" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Tween/Tween.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="2699" max-vertical-offset="5754">
+          <caret line="166" column="43" selection-start-line="166" selection-start-column="43" selection-end-line="166" selection-end-column="43" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Display/DisplayObject.ts">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="880" max-vertical-offset="12810">
-          <caret line="278" column="95" selection-start-line="278" selection-start-column="95" selection-end-line="278" selection-end-column="95" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/scripting/src/api/Display/MotionManager.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.6983842" vertical-offset="2068" max-vertical-offset="3129">
-          <caret line="117" column="16" selection-start-line="117" selection-start-column="16" selection-end-line="117" selection-end-column="16" />
+        <state vertical-scroll-proportion="2.0359066" vertical-offset="0" max-vertical-offset="12810">
+          <caret line="54" column="13" selection-start-line="54" selection-start-column="13" selection-end-line="54" selection-end-column="13" />
           <folding />
         </state>
       </provider>

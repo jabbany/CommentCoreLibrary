@@ -130,7 +130,20 @@ cm.init();
 
 var tmr=0;
 var start=0;
-var playhead = 0;
+var playhead = 0, lasthead = 0;
+
+function timeupdate(){
+	playhead = new Date().getTime() - start;
+	cm.time(playhead);
+	if(cm.scripting && playhead - lasthead > 300 ){;
+		cm.scripting.send("Update:TimeUpdate",{
+			"state":"playing",
+			"time":playhead
+		});
+		lasthead = playhead;
+	}
+}
+
 function load(dmf,dmfmd){
 	if(dmfmd == null)
 		dmfmd = 'bilibili';
@@ -142,10 +155,8 @@ function load(dmf,dmfmd){
 	CommentLoader(dmf,cm,dmfmd);
 	cm.startTimer();
 	start = new Date().getTime();
-	tmr = setInterval(function(){
-		playhead = new Date().getTime() - start;
-		cm.time(playhead);
-	},10);
+	lasthead = playhead;
+	tmr = setInterval(timeupdate,42);
 }
 function stop(){
 	cm.stopTimer();
@@ -160,18 +171,8 @@ function stop(){
 function resume(){
 	cm.startTimer();
 	start = new Date().getTime() - playhead;
-	var lasthead = playhead;
-	tmr = setInterval(function(){
-		playhead = new Date().getTime() - start;
-		cm.time(playhead);
-		if(cm.scripting && playhead - lasthead > 300 ){
-			cm.scripting.send("Update:TimeUpdate",{
-				"state":"pause",
-				"time":playhead
-			});
-			lasthead = playhead;
-		}
-	},10);
+	lasthead = playhead;
+	tmr = setInterval(timeupdate,42);
 }
 </script>
 </body>

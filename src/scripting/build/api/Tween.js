@@ -341,7 +341,7 @@ var Tween;
             if (currentTime <= delay * 1000) {
                 return;
             }
-            src.step(target, currentTime - delay * 1000, totalTime);
+            src.step(target, currentTime - delay * 1000, totalTime - delay * 1000);
         };
         return newTween;
     }

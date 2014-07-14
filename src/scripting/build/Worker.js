@@ -19,6 +19,8 @@ __schannel("::eval", function(msg){
 	if(Tween && Tween.extendWithEasingFunctions){
 		Tween.extendWithEasingFunctions(this);
 	}
+	var clearTimeout = Utils.clearTimeout;
+	var clearInterval = Utils.clearInterval;
 	eval(msg);
 });
 __schannel("::debug", function(msg){
