@@ -169,7 +169,6 @@ CommentManager.prototype.preload = function(){
 		this.pdiv[i] = document.createElement("div");
 		this.pdiv[i].show = false;
 		this.pdiv[i].id = "pdiv_"+i;
-		this.pdiv[i].className = "preload";
 		this.pdiv[i].pnum = i;
 	}
 	for(i = 0; i < this.timeline.length; i++){
