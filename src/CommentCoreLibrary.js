@@ -49,7 +49,7 @@ function CommentManager(stageObject){
 	this.runline = [];
 	/////
 	this.pdiv = [];
-	this.pdivbreak = 1 * this.def.globalScale ; 
+	this.pdivbreak = 0.1 * this.def.globalScale ; 
 	this.eachDivTime = 4000 * this.pdivbreak ; 
 	this.pdivshow = [];
 	this.pdivpool = [0];
