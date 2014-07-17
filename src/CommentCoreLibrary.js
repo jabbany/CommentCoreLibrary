@@ -169,6 +169,7 @@ CommentManager.prototype.preload = function(){
 		this.pdiv[i] = document.createElement("div");
 		this.pdiv[i].show = false;
 		this.pdiv[i].id = "pdiv_"+i;
+		this.pdiv[i].className = "preload";
 		this.pdiv[i].pnum = i;
 	}
 	for(i = 0; i < this.timeline.length; i++){
@@ -180,7 +181,7 @@ CommentManager.prototype.preload = function(){
 			}
 			cmt = document.createElement('div');
 			cmt = this.initCmt(cmt,this.timeline[i]);
-			cmt.width = Math.floor(cmt.data.text.length*cmt.data.size)+1;
+			cmt.width = Math.floor(cmt.data.text.length*cmt.data.size*1.1)+1;
 			if(isNaN(cmt.width))cmt.width=0;
 			cmt.height = Math.floor(cmt.data.size*1.15)+1;
 			j = 0;
