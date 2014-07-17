@@ -1,0 +1,2618 @@
+<?xml version="1.0" encoding="UTF-8"?><i><chatserver>chat.bilibili.com</chatserver><chatid>602517</chatid><mission>0</mission><source>e-r</source><ds>149911212</ds><de>155180719</de><max_count>0</max_count><d p="0.217,8,25,16777215,1353147172,2,92de3cf6,149911212">/*红幕*/
+function redCurtain()
+{var colors = [0xFC0808,0xBF0D0D ];
+ 	var alphas = [0.2, 1];
+	 var ratios = [10,225];
+ 	var matr = $.createMatrix();
+ 	matr.createGradientBox(10, 10,0,0,0);
+ 	
+	var cbx=-10;
+	var moveKey=7;
+	var moveKey2=3;	
+	for(var i=1;i&lt;=7;i++)
+	{
+		
+	if(i&lt;=4)
+	{	
+		moveKey2=moveKey2-0.5;
+		
+	}
+	else
+	{
+		
+		moveKey2=moveKey2+0.5;
+	}	
+	
+	var g=$.createShape({x:0,y:0,lifeTime:11,motionGroup:[  
+   {y:{fromValue:342,toValue:342,lifeTime:moveKey}},
+   {y:{fromValue:342,toValue:0,lifeTime:moveKey2},alpha:{fromValue:0.8,toValue:0,lifeTime:moveKey2}}]});
+    g.graphics.beginGradientFill("linear", colors, alphas, ratios, matr, "reflect","linearRGB",0);
+	g.graphics.drawRoundRect(cbx,-342,80,342,5,5);		
+	cbx=cbx+80;
+
+	}
+}
+redCurtain();</d>
+<d p="1,8,25,16777215,1353148022,2,92de3cf6,149916135">
+  function textPxjy(t,x,y1,wz,lt)
+{
+var x1=270-wz/1.8*t.length;    /*置中，指定则换x*/
+var key=(lt-1-0.2)/(2*t.length);
+var gf1=$.createGlowFilter(0xF7D4D4/*光晕颜色*/,0.8/*Alpha*/,0/*水平模糊量*/,0/*垂直模糊量*/,28/*印记或跨页的强度*/,1/*应用滤镜的次数*/,false/*是否为内侧发光*/,false/*是否具有挖空效果*/);	
+ for(var i=0;i&lt;t.length;i++)
+ {var w=$.createComment(t[i],{x:x1-wz/1.8,y:y1,lifeTime:lt,alpha:1,motionGroup:[ 
+ { alpha: {fromValue:0,toValue:0,lifeTime:key*(i+1)}}, 
+   {x:{fromValue:x1-wz/1.8,toValue:x1+i*(wz+15)/1.8,lifeTime:0.2},alpha: {fromValue:0,toValue:1,lifeTime:0.2}},
+   { alpha: {fromValue:1,toValue:1,lifeTime:1}},
+   {x:{fromValue:x1+i*(wz+15)/1.8,toValue:x1+i*wz/1.8-4,lifeTime:key*(i+1)},alpha: {fromValue:1,toValue:0,lifeTime:key*(i+1)}}    
+ ]});
+w.fontsize=wz;
+w.font="宋体";
+w.filters=[gf1];
+ }
+
+}
+t1=["響","く","カ","ー","テ","ン","コ","ー","ル","　","止","ま","な","い","喝","采"];
+t11=[" "," ","謝","幕","過","後","　"," "," ","　","　","喝","彩","不","絕"];
+t2=["も","っ","と","　","も","っ","と","響","か","せ","て","？"];
+t22=["繼","續","　","繼","續","　","讓","掌","聲","回","蕩","吧"];
+t3=["開","演","ブ","ザ","ー","　","幕","が","上","が","っ","た"];
+t33=["　","開","演","鈴","響","　","　","帷","幕","漸","開"];
+t44=["數","著","1","、","2","、","3","　","開","演","嘍"];
+
+
+timer(function(){textPxjy(t1,0,345,14,3.154);},860);
+timer(function(){textPxjy(t11,0,365,14,3.154);},860);
+timer(function(){textPxjy(t2,0,345,14,2.276);},4005);
+timer(function(){textPxjy(t22,0,365,14,2.276);},4005);
+timer(function(){textPxjy(t3,0,345,14,2.541);},6281);
+timer(function(){textPxjy(t33,0,365,14,2.541);},6281);
+timer(function(){textPxjy(t44,0,345,14,2.098);},8822);
+
+</d>
+<d p="3,8,25,16777215,1353161912,2,92de3cf6,150054755">function numberOut(t,x,y,i)
+{
+	
+	var key=0;
+var gf1=$.createGlowFilter(0xF70505/*光晕颜色*/,0.7/*Alpha*/,12/*水平模糊量*/,12/*垂直模糊量*/,2/*印记或跨页的强度*/,10/*应用滤镜的次数*/,true/*是否为内侧发光*/,false/*是否具有挖空效果*/);	
+	interval(function(){key=key+1;var n=$.createComment(key,{x:x,y:y,lifeTime:t/i,color:0xFFFFFF,alpha:1});
+           n.fontsize=100;n.filters=[gf1];	},t*1000/i,i);
+
+timer(function(){w=$.createComment("で",{x:x-25,y:y+5,lifeTime:t,alpha:1});w.font="宋体";w.fontsize=100;w.filters=[gf1];},t*1000+t*1000/i);
+
+	
+
+
+	
+}
+
+function textPx(t,x1,y1,wz,lt)
+{
+var key1=lt/0.04;
+var key2=360/key1;
+var gf1=$.createGlowFilter(0xFFFFFF/*光晕颜色*/,0.7/*Alpha*/,12/*水平模糊量*/,12/*垂直模糊量*/,2/*印记或跨页的强度*/,10/*应用滤镜的次数*/,true/*是否为内侧发光*/,false/*是否具有挖空效果*/);
+
+ var i=0;
+ 	interval(function(){ var w=$.createComment(t,{x:x1,y:y1,lifeTime:3,alpha:1});
+w.font="宋体";
+w.filters=[gf1];i++;w.rotationZ=i*key2;},40,key1);
+ 
+w.fontsize=wz;
+}
+
+timer(function(){numberOut(0.9,238,128,3);textPx("\n \n は\n じ\n ま\n る\n よ",270,185,20,1);},6622);</d>
+<d p="12,8,25,16777215,1353247144,2,92de3cf6,150612825">function flower(x,y)
+{
+var gf1=$.createGlowFilter(0x000000/*光晕颜色*/,0.7/*Alpha*/,40/*水平模糊量*/,3/*垂直模糊量*/,2/*印记或跨页的强度*/,2/*应用滤镜的次数*/,true/*是否为内侧发
+
+光*/,false/*是否具有挖空效果*/);
+t="*｡ﾟ❀｡**❈**｡ﾟ❀｡**❈**｡ﾟ❀｡**❈**｡*｡ﾟ❀｡**❈**｡ﾟ❀｡**❈**｡ﾟ❀｡**❈**｡";
+var w=$.createComment(t,{x:x,y:y,lifeTime:18,motionGroup:[{alpha: {fromValue:0,toValue:1,lifeTime:0.5}}]}); 
+w.fontsize=18;
+w.filters=[gf1];
+w.font="宋体";
+
+} 
+
+
+
+function crazyLogo()
+{ 
+var gf1=$.createGlowFilter(0xF50742/*光晕颜色*/,1/*Alpha*/,10/*水平模糊量*/,10/*垂直模糊量*/,2/*印记或跨页的强度*/,2/*应用滤镜的次数*/,true/*是否为内侧发
+
+光*/,false/*是否具有挖空效果*/);
+var gf2=$.createGlowFilter(0x7CEEFD/*光晕颜色*/,1/*Alpha*/,10/*水平模糊量*/,10/*垂直模糊量*/,2/*印记或跨页的强度*/,2/*应用滤镜的次数*/,true/*是否为内侧发
+
+光*/,false/*是否具有挖空效果*/);
+
+var c = $.createCanvas({x:260,y:167,lifeTime:3,motionGroup:[{rotationY:{ fromValue: 0, toValue: 360, lifeTime:1}},{rotationY:{ fromValue: 0, toValue: 360, lifeTime: 1}},{rotationY:{ fromValue: 0, toValue: 360, lifeTime: 1}}]});	
+var w1="razy";
+var w2="∞";
+var w3="nigh";
+var thec=$.createComment("C",{x:190,y:97,lifeTime:3,motionGroup:[{alpha: {fromValue:0,toValue:1,lifeTime:0.5}}]});
+thec.fontsize=70;
+thec.rotationZ=15;
+thec.filters=[gf1];
+var thew1=$.createComment(w1,{x:235,y:112,lifeTime:3,motionGroup:[{alpha: {fromValue:0,toValue:1,lifeTime:0.5}}]});
+thew1.fontsize=50;
+var thew2=$.createComment(w2,{x:-25,y:0,lifeTime:3,parent:c,motionGroup:[{alpha: {fromValue:0,toValue:1,lifeTime:0.5}}]});
+thew2.fontsize=50;
+thew2.filters=[gf1];
+var thew3=$.createComment(w3,{x:190,y:210,lifeTime:3,motionGroup:[{alpha: {fromValue:0,toValue:1,lifeTime:0.5}}]});
+thew3.fontsize=50;
+var thet=$.createComment("T",{x:315,y:205,lifeTime:3,motionGroup:[{alpha: {fromValue:0,toValue:1,lifeTime:0.5}}]});
+thet.fontsize=70;
+thet.filters=[gf1];
+thet.rotationZ=-15;
+thew1.color=thew2.color=thew3.color=0x700882;
+thew1.filters=thew3.filters=[gf2];
+thew1.font=thew3.font="宋体";
+thec.color=thet.color=0xeed240;
+var r=0;
+interval(function(){thec.rotationZ=15+Utils.rand(-2,2);thet.rotationZ=15+Utils.rand(-2,2);},40,225);
+
+w4="The Lost Libretto";
+var j=-1;
+for(var i=1;i&lt;=w4.length;i++)
+{getw4=w4.substring(i-1,i);
+j=j*(-1);
+moveY=275+j*2;
+moveX=155+i*20/1.85;
+thew4=$.createComment(getw4,{x:moveX,y:moveY,lifeTime:3,motionGroup:[{alpha: {fromValue:0,toValue:1,lifeTime:0.5}}]});
+thew4.fontsize=20;
+thew4.font="宋体";
+}
+
+}
+
+timer(function(){crazyLogo();flower(0,40);
+flower(0,322);},990);</d>
+<d p="15,8,25,16777215,1353247668,2,92de3cf6,150615879"> function arrow(t,x1,y1,x2,lt)
+{
+var gf1=$.createGlowFilter(0xffffff/*光晕颜色*/,0.8/*Alpha*/,0/*水平模糊量*/,0/*垂直模糊量*/,5/*印记或跨页的强度*/,10/*应用滤镜的次数*/,true/*是否为内侧发光*/,false/*是否具有挖空效果*/);		
+var c = $.createCanvas({x:x1,y:y1,lifeTime:lt,motionGroup:[{rotationX:{ fromValue: 0, toValue: 360, lifeTime: 0.5}},{rotationX:{ fromValue: 0, toValue: 360, lifeTime: 0.5}},{rotationX:{ fromValue: 0, toValue: 360, lifeTime: 1}},{rotationX:{ fromValue: 0, toValue: 360, lifeTime: 1}},{rotationX:{ fromValue: 0, toVaclue: 360, lifeTime: 1}},{rotationX:{ fromValue: 0, toValue: 360, lifeTime: 1}},{rotationX:{ fromValue: 0, toValue: 360, lifeTime: 1}},{rotationX:{ fromValue: 0, toValue: 360, lifeTime: 1}}]});
+var w=$.createComment(t,{x:0,y:-10,lifeTime:lt,alpha:1,parent:c,motionGroup:[
+   {x:{fromValue:0,toValue:x2,lifeTime:0.5,easing:exponential}}   ]});
+w.fontsize=18;
+w.color=0x000000;
+w.font="宋体";
+w.filters=[gf1];
+}
+var t1="────▶";
+var t2="◀────";
+
+function textOut(t,x1,y1,wz,lt,cs)
+{
+var gf1=$.createGlowFilter(0xffffff/*光晕颜色*/,0.8/*Alpha*/,0/*水平模糊量*/,0/*垂直模糊量*/,5/*印记或跨页的强度*/,10/*应用滤镜的次数*/,true/*是否为内侧发光*/,false/*是否具有挖空效果*/);	
+ var w=$.createComment(t,{x:x1,y:y1,lifeTime:lt,alpha:1,motion:{alpha:{ fromValue: 0, toValue: 1, lifeTime:0.5}}});
+ w.fontsize=wz;
+w.font="华文楷体";
+w.color=cs;
+w.filters=[gf1];
+
+
+
+}
+colorSet1=0x000000;
+timer(function(){textOut("Music&amp;Lylics",175,90,35,3.5,colorSet1);
+textOut(" Hitoshizuku\n          x\n     Yama△",195,165,25,3.5,colorSet1);
+arrow(t1,0,135,100,3.5);
+arrow(t2,450,135,-100,3.5);},990);
+
+timer(function(){textOut("翻譯",235,90,35,3.5,colorSet1);
+textOut("四海漂泊怪叔叔",180,165,25,3.5,colorSet1);
+textOut("出自",235,210,35,3.5,colorSet1);
+textOut("vocaloid中文歌词wiki",155,265,25,3.5,colorSet1);
+arrow(t1,0,135,100,3.5);
+arrow(t2,450,135,-100,3.5);},4490);
+
+timer(function(){textOut("歌",255,90,35,3.5,colorSet1);
+textOut("初音ミク",235,140,20,3.5, 0x13d3be);
+textOut("鏡音リン",235,160,20,3.5,0xf1f40b);
+textOut("鏡音レン",235,180,20,3.5,0xf5c60a);
+textOut("巡音ルカ",235,200,20,3.5,0xFF1C60);
+textOut("KAITO",240,220,20,3.5,0x0c62af);
+textOut("MEIKO",240,240,20,3.5,0xf70b10);
+textOut("GUMI",245,260,20,3.5,0x39f55c);
+textOut("神威がくぽ",225,280,20,3.5,0x990af3);
+arrow(t1,0,135,100,3.5);
+arrow(t2,450,135,-100,3.5);},7990);
+timer(function(){textOut("弹幕",235,90,35,3.5,colorSet1);
+textOut("Yringsing",220,165,25,3.5,colorSet1);
+arrow(t1,0,135,100,3.5);
+arrow(t2,450,135,-100,3.5);},11490);</d>
+<d p="30,8,25,16777215,1353328443,2,92de3cf6,150860412">function openLight()
+{
+	
+	
+	
+	var x=key*50;		
+	for(var i=0;i&lt;8;i++)
+	{var c=$.createCanvas({x:0,y:384,lifeTime:7,motionGroup:[
+	{x:{fromValue:0,toValue:641,lifeTime:4.2},y:{fromValue:384,toValue:-71,lifeTime:4.2}	}]	});
+	var g = $.createShape({x:0,y:0,lifeTime:4.2,parent:c});
+ 	g.graphics.beginFill(0xFFFFFF,0.2);	
+	 g.graphics.drawCircle(0,0,100);}
+	
+	 
+ }
+	
+
+
+
+
+
+
+
+function textRoad(t,x1,y1,wz,lt,cs,rz)
+{
+var gf1=$.createGlowFilter(0x000000/*光晕颜色*/,0.8/*Alpha*/,0/*水平模糊量*/,0/*垂直模糊量*/,0/*印记或跨页的强度*/,0/*应用滤镜的次数*/,true/*是否为内侧发光*/,false/*是否具有挖空效果*/);	
+ var w=$.createComment(t,{x:x1,y:y1,lifeTime:lt,alpha:1});
+w.rotationZ=rz;
+ w.fontsize=wz;
+w.font="宋体";
+w.color=cs;
+w.filters=[gf1];
+
+
+
+}
+t1="スポットライト照らす道 進んだら";
+t2="向著被聚光燈照亮的小道 繼續前行";
+
+function whiteScreen()
+{
+	var g = $.createShape({x:0,y:42,lifeTime:80});
+        g.graphics.beginFill(0xFFFFFF,1);	
+	g.graphics.drawRect(0,0,542,300);
+	
+}
+function blackScreen()
+{
+	var g = $.createShape({x:0,y:41,lifeTime:5});
+        g.graphics.beginFill(0x000000,1);	
+	g.graphics.drawRect(0,0,541,302);
+	
+}
+function openDoor()
+{
+	
+	var g1 = $.createShape({x:-1,y:42,lifeTime:4.5,motionGroup:[{rotationY:{fromValue:0,toValue:100,lifeTime:4.5}}]});
+        g1.graphics.beginFill(0x000000,1);	
+	    g1.graphics.drawRect(0,0,271,300);
+	var g2= $.createShape({x:544,y:42,lifeTime:4.5,motionGroup:[{rotationY:{fromValue:0,toValue:-100,lifeTime:4.5}}]});
+		g2.graphics.beginFill(0x000000,1);
+        g2.graphics.drawRect(0,0,-274,300);
+	
+
+	
+}
+
+
+timer(function(){blackScreen();},100);
+timer(function(){timer(function(){whiteScreen();
+openDoor();},4350);openLight();textRoad(t1,20,300,30,4,0x000000,-35);textRoad(t2,50,340,30,4.3,0x000000,-35);},650);</d>
+<d p="35,8,25,16777215,1353335146,2,92de3cf6,150899547">/*35.000*/
+
+
+function textOut1(t,x1,y1,wz,lt,gfc)
+{
+
+var key=lt/t.length;
+
+var gf1=$.createGlowFilter(gfc/*光晕颜色*/,1/*Alpha*/,2/*水平模糊量*/,2/*垂直模糊量*/,5/*印记或跨页的强度*/,5/*应用滤镜的次数*/,true/*是否为内侧发光*/,false/*是否具有挖空效果*/);
+
+var i=0;
+interval(function(){i++;var getw=t.substring(i-1,i);	
+ var w=$.createComment(getw,{x:x1,y:y1+1.1*wz*(i-1),lifeTime:lt,alpha:1,motionGroup:[{alpha:{ fromValue: 0, toValue: 1, lifeTime:1.5}},{x:{fromValue:x1,toValue:15,lifeTime:1.5},rotationZ:{fromValue:0, toValue:-25, lifeTime:1.5}},{alpha:{ fromValue: 1, toValue: 0, lifeTime:1}}]});
+ w.fontsize=wz;
+w.font="宋体";
+w.color=0xffffff;
+w.filters=[gf1];},0,t.length);
+
+}
+
+function textOut2(t,x1,y1,wz,lt,gfc)
+{
+
+var key=lt/t.length;
+
+var gf1=$.createGlowFilter(gfc/*光晕颜色*/,1/*Alpha*/,2/*水平模糊量*/,2/*垂直模糊量*/,5/*印记或跨页的强度*/,5/*应用滤镜的次数*/,true/*是否为内侧发光*/,false/*是否具有挖空效果*/);
+
+var i=0;
+interval(function(){i++;var getw=t.substring(i-1,i);	
+ var w=$.createComment(getw,{x:x1,y:y1+wz*(i-1),lifeTime:lt,alpha:1,motionGroup:[{alpha:{ fromValue: 0, toValue: 1, lifeTime:1}},{x:{fromValue:x1,toValue:515,lifeTime:1.5},rotationZ:{fromValue:0, toValue:25, lifeTime:1.5}},{alpha:{ fromValue: 1, toValue: 0, lifeTime:0.1}}]});
+ w.fontsize=wz;
+w.font="宋体";
+w.color=0xffffff;
+w.filters=[gf1];},0,t.length);
+
+}
+var t1="︵執事︶﹁不思議の館﹂";
+var t2="︵メイド︶﹁漏れなくご招待♪﹂";
+
+
+timer(function(){textOut1(t1,260,45,20,4,0x990af3);},150);
+
+timer(function(){textOut2(t2,260,45,20,2.6,0x39f55c);},2200);</d>
+<d p="35,8,25,16777215,1353336439,2,92de3cf6,150905453">
+t1="(管家)「請在這不可思議的宅邸";
+t2="(女僕)「接受我們萬全的招待♪」";
+
+ function textP(t,x,y1,wz,lt,ws)
+{	
+var x1=270-wz/1.8*t.length;
+var gf1=$.createGlowFilter(0xffffff/*光晕颜色*/,1/*Alpha*/,0/*水平模糊量*/,0/*垂直模糊量*/,0/*印记或跨页的强度*/,0/*应用滤镜的次数*/,true/*是否为内侧发光*/,false/*是否具有挖空效果*/);
+ var w=$.createComment(t,{x:x1,y:y1,lifeTime:lt,alpha:1,motionGroup:[
+{alpha: {fromValue:0,toValue:1,lifeTime:1}}
+ ]});
+w.fontsize=wz;
+w.filters=[gf1];
+w.font="宋体";
+w.color=ws;
+}
+
+
+
+
+
+timer(function(){textP(t1,0,345,15,4.5,0x990af3);},150);
+
+timer(function(){textP(t2,0,365,15,2.7,0x39f55c);},2200);</d>
+<d p="40,8,25,16777215,1353396388,2,92de3cf6,151370259"> function textM(t,x1,y1,x2,y2,wz,gfc,lt,rz)
+{	
+
+var gf1=$.createGlowFilter(gfc/*光晕颜色*/,1/*Alpha*/,2/*水平模糊量*/,2/*垂直模糊量*/,5/*印记或跨页的强度*/,5/*应用滤镜的次数*/,true/*是否为内侧发光*/,false/*是否具有挖空效果*/);
+ var w=$.createComment(t,{x:x1,y:y1,lifeTime:lt,alpha:1,motionGroup:[
+{alpha: {fromValue:0,toValue:1,lifeTime:0.5}},
+{x:{fromValue:x1,toValue:x2,easing:bounce,lifeTime:0.8},y:{fromValue:y1,toValue:y2,easing:bounce,lifeTime:0.8}}
+ ]});
+w.fontsize=wz;
+w.filters=[gf1];
+w.font="宋体";
+w.rotationZ=rz;
+w.color=0xffffff;
+}
+
+t1="(主人)「迷ったようだね」";
+t2="「外はもう」(奥方)";
+t11="(主人)「一臉困惑啊」";
+t22="「外面已經」(夫人)";
+t3="暗い から";
+t33="「「天黑了吧」」";
+
+textM(t1,-310,160,20,130,25,0x0c62af,2.7,-15);
+textM(t11,-160,180,80,90,15,0x0c62af,2.7,-15);
+timer(function(){
+textM(t2,641,140,320,70,25,0xf70b10,1.5,25);
+textM(t22,641,190,380,60,15,0xf70b10,1.5,25);},1100);
+
+function textOut1(t,x1,y1,x2,wz,lt,gfc)
+{
+
+var key=lt/t.length;
+
+var gf1=$.createGlowFilter(gfc/*光晕颜色*/,1/*Alpha*/,2/*水平模糊量*/,2/*垂直模糊量*/,5/*印记或跨页的强度*/,5/*应用滤镜的次数*/,true/*是否为内侧发光*/,false/*是否具有挖空效果*/);
+
+var i=0;
+interval(function(){i++;var getw=t.substring(i-1,i);	
+ var w=$.createComment(getw,{x:x1,y:y1+1.1*wz*(i-1),lifeTime:lt,alpha:1,motionGroup:[{alpha:{ fromValue: 0, toValue: 1, lifeTime:0.5}},{x:{fromValue:x1,toValue:x2,lifeTime:1}},{alpha:{ fromValue: 1, toValue: 0, lifeTime:0.7}}]});
+ w.fontsize=wz;
+w.font="宋体";
+w.color=0xffffff;
+w.filters=[gf1];},0,t.length);
+
+}
+
+timer(function(){textOut1(t3,70,80,250,40,2.2,0x0c62af);
+textOut1(t3,480,80,250,40,2.2,0xf70b10);},2710);
+</d>
+<d p="40,8,25,16777215,1353397413,2,92de3cf6,151373032">/*字幕补充*/
+
+t33="「「天黑了吧」」";
+
+ function textP(t,x1,y1,wz)
+{
+ var w=$.createComment(t,{x:x1,y:y1,lifeTime:2.2,alpha:1,motionGroup:[
+{alpha: {fromValue:0,toValue:1,lifeTime:1.2}},   
+ {alpha: {fromValue:1,toValue:0,lifeTime:1}
+   }
+ ]});
+w.fontsize=wz;
+w.font="宋体";
+w.filters=none;
+w.color=0x000000;
+}
+
+
+
+timer(function(){textP(t33,210,320,15);},2710);</d>
+<d p="47,8,25,16777215,1353411756,2,92de3cf6,151446498">t1="もてなしましょぅ";
+t11="就由我們好生款待吧";
+
+ function textP(t,x1,y1,wz)
+{
+ var w=$.createComment(t,{x:x1,y:y1,lifeTime:2.3,alpha:1,motionGroup:[
+{alpha: {fromValue:0,toValue:1,lifeTime:0.9}},
+   {alpha: {fromValue:1,toValue:1,lifeTime:0.5}},
+ {alpha: {fromValue:1,toValue:0,lifeTime:0.9}
+   }
+ ]});
+w.fontsize=wz;
+w.font="宋体";
+w.filters=none;
+w.color=0x000000;
+}
+
+function helpYourself(t)
+{
+var gfc=["0x990af3","0x0c62af","0xf70b10","0xFF1C60","0xf5c60a","0xf1f40b","0x39f55c"];
+
+	
+var i=0;
+
+interval(function(){
+i++;
+x1=Utils.rand(0,541);
+y1=Utils.rand(42,300);
+var tw= t.substring(i-1,i);
+
+getgfc=Utils.rand(0,6);
+var gf1=$.createGlowFilter(gfc[getgfc]/*光晕颜色*/,0.5/*Alpha*/,5/*水平模糊量*/,5/*垂直模糊量*/,5/*印记或跨页的强度*/,2/*应用滤镜的次数*/,true/*是否为内侧发光*/,false/*是否具有挖空效果*/);
+
+var w=$.createComment(tw,{x:x1,y:y1,lifeTime:0.7,alpha:0.5});
+
+w.fontsize=Utils.rand(15,35);
+w.font="宋体";
+w.filters=[gf1];
+
+},1,8);}
+
+timer(function(){
+textP(t1,25,150,60);
+textP(t11,115,240,30);
+interval(function(){helpYourself(t1);},0,50);},100);</d>
+<d p="49,8,25,16777215,1353416669,2,92de3cf6,151502664">function textUp(t,x1,y1,y2,wz,gfc,lt)
+{
+
+
+var gf1=$.createGlowFilter(gfc/*光晕颜色*/,1/*Alpha*/,2/*水平模糊量*/,2/*垂直模糊量*/,5/*印记或跨页的强度*/,5/*应用滤镜的次数*/,true/*是否为内侧发光*/,false/*是否具有挖空效果*/);
+
+var i=0;
+interval(function(){i++;var getw=t.substring(i-1,i);	
+ var w=$.createComment(getw,{x:x1+(i-1)*wz*1.15,y:y1,lifeTime:lt,alpha:1,motionGroup:[{alpha:{ fromValue: 0, toValue: 1, lifeTime:0.5}},{y:{fromValue:y1,toValue:y2,lifeTime:0.5}}]});
+ w.fontsize=wz;
+w.font="宋体";
+w.color=0xffffff;
+w.filters=[gf1];},17,t.length);
+
+}
+t1="(お嬢様)「今宵の見せ場を...」";
+t11="(大小姐)「今宵的重頭戲...」";
+
+
+
+function Up()
+{
+t2="●";
+
+var gf1=$.createGlowFilter(0xFF1C60/*光晕颜色*/,1/*Alpha*/,2/*水平模糊量*/,2/*垂直模糊量*/,5/*印记或跨页的强度*/,5/*应用滤镜的次数*/,true/*是否为内侧发光*/,false/*是否具有挖空效果*/);
+
+
+interval(function(){
+var getx=Utils.rand(0,541);	
+ var w=$.createComment(t2,{x:getx,y:320,lifeTime:2.1,alpha:0.9,motionGroup:[{alpha:{ fromValue: 0, toValue: 1, lifeTime:1.2},y:{fromValue:340,toValue:100,lifeTime:1.2}},{alpha:{ fromValue: 1, toValue: 0, lifeTime:0.9},y:{fromValue:150,toValue:30,lifeTime:0.9}}]});
+ w.fontsize=Utils.rand(5,41);
+w.font="宋体";
+w.color=0xFF1C60;
+w.filters=[gf1];},4,50);
+
+}
+timer(function(){Up();textUp(t1,20,250,90,25,0xFF1C60,2.3);
+textUp(t11,150,300,120,15,0xFF1C60,2.3);},450);</d>
+<d p="51,8,25,16777215,1353419944,2,92de3cf6,151517525">
+function huluhulu(t,x1,y1,wz,gfc,lt)
+{
+
+
+var gf1=$.createGlowFilter(gfc/*光晕颜色*/,1/*Alpha*/,0/*水平模糊量*/,0/*垂直模糊量*/,0/*印记或跨页的强度*/,0/*应用滤镜的次数*/,true/*是否为内侧发光*/,false/*是否具有挖空效果*/);
+var c = $.createCanvas({x:270,y:192,lifeTime:5,motionGroup:[{rotationZ:{ fromValue:0, toValue:-360, lifeTime:2}} ]});
+var i=0;
+interval(function(){i++;var getw=t.substring(i-1,i);	
+ var w=$.createComment(getw,{x:x1+(i-1)*wz*5,y:y1,lifeTime:lt,alpha:1,parent:c,motionGroup:[{alpha:{ fromValue: 0, toValue: 1, lifeTime:0.3}},{fontsize:{fromValue:0,toValue:5*wz,lifeTime:1.6}}]});
+ w.fontsize=0;
+w.font="宋体";
+w.color=0x000000;
+w.filters=[gf1];},0,t.length);
+
+}
+t1="始めよう";
+t11="就此開始嘍";
+
+timer(function(){
+huluhulu(t1,-140,-50,15,0x000000,2.39);
+huluhulu(t11,-50,50,4,0x000000,2.39);
+},800);</d>
+<d p="54,8,25,16777215,1353424947,2,92de3cf6,151540307">t1="︵\n 執\n 事\n ︶\n ﹁\n さ\n あ\n 、\n ア\n イ\n ツ\n も\n ﹂";
+t11="︵\n 管\n 家\n ︶\n ﹁\n 瞧\n ，\n 他\n 也\n 好\n │\n  ﹂";
+t2="︵\n 村\n 娘\n ︶\n ﹁\n コ\n イ\n ツ\n も\n ！\n ﹂";
+t22="︵\n 村\n 娘\n ︶\n ﹁\n 她\n 也\n 好\n ！\n﹂ ";
+t3="︵\n メ\n イ\n ド\n ︶\n ﹁\n ソ\n イ\n ツ\n も\n ？\n ♪\n ﹂";
+t33="︵\n 女\n 仆\n ︶\n ﹁\n 他\n 也\n 好\n ？\n ♪\n ﹂" ;
+
+ function textPxjy(t,x1,y1,x2,wz,lt,cs,gls)
+{
+
+var gf1=$.createGlowFilter(gls/*光晕颜色*/,1/*Alpha*/,2/*水平模糊量*/,2/*垂直模糊量*/,5/*印记或跨页的强度*/,2/*应用滤镜的次数*/,true/*是否为内侧发光*/,false/*是否具有挖空效果*/);
+
+
+
+	var w=$.createComment(t,{x:x1,y:y1,lifeTime:lt,alpha:1,motionGroup:[ 
+   {x:{fromValue:x1,toValue:(x2+x1)/2,lifeTime:0.8}},
+   {x:{fromValue:(x2+x1)/2,toValue:x2,lifeTime:0.2},alpha: {fromValue:1,toValue:0,lifeTime:0.2}}
+      
+ ]});
+w.font="宋体";	
+ w.filters=[gf1];
+w.color=cs;
+w.fontsize=wz;
+
+
+}
+
+textPxjy(t1,520,30,0,25,1,0x000000,0x990af3);
+textPxjy(t11,580,80,0,20,1,0x000000,0x990af3);
+timer(function(){textPxjy(t2,520,30,0,25,1,0x000000,0x13d3be);
+textPxjy(t22,580,80,0,20,1,0x000000,0x13d3be);},500);
+timer(function(){textPxjy(t3,520,30,0,25,1,0x000000,0x39f55c);
+textPxjy(t33,580,80,0,20,1,0x000000,0x39f55c);},1100);</d>
+<d p="56,8,25,16777215,1353478796,2,92de3cf6,151626142">function text7()
+{
+var key=300/7;
+var m4y1=key*4+42;
+var m4x1=541;
+var m4x2=0;
+var gfc=["0x0c62af","0x990af3","0xf70b10","0xFF1C60","0xf5c60a","0xf1f40b","0x39f55c","0x13d3be"];
+
+var t;
+for(var i=0;i&lt;7;i++)
+{
+if(i&lt;=3)
+{
+var y1=m4y1-i*key;
+var x1=m4x1+80*i;/*设定*/
+var my2=42;
+var wx1=541;
+var wx2=30+(i-1)*150;
+
+}
+if(i&gt;3)
+{
+var y1=m4y1+(i-3)*40;
+var x1=m4x1+40*(i-3);
+var my2=300;
+var wx2=30+(i-4)*150;
+}
+switch (i) {
+  case 0:{t="みんなで大騒ぎ";var gf1=$.createGlowFilter(gfc[i]/*光晕颜色*/,0.8/*Alpha*/,5/*水平模糊量*/,5/*垂直模糊量*/,5/*印记或跨页的强度*/,5/*应用滤镜的次数*/,true/*是否为内侧发光*/,false/*是否具有挖空效果*/);
+var g = $.createShape({x:x1,y:y1,lifeTime:2.4,motionGroup:[  
+   {x:{fromValue:x1,toValue:0,lifeTime:1.2}   },{x:{fromValue:0,toValue:-540,lifeTime:1.2}}]});
+g.graphics.lineStyle(2/*粗细*/, gfc[i]/*颜色*/, 0.5/*透明度*/, false/*完整像素true或false*/, "vertical"/*缩放normal,none等*/,"none"/*端点类型none、round 和 square*/, "miter"/*拐角bevel、miter 和 round*/, 10/*切断尖角数*/);
+	g.graphics.lineTo(541,0);
+
+var w=$.createComment(t,{x:x1+200,y:y1-40,lifeTime:2.4,alpha:1,motionGroup:[ 
+   {x:{fromValue:x1+200,toValue:50,lifeTime:1.2}},
+ {x:{fromValue:50,toValue:-540,lifeTime:1.2},alpha:{fromValue:1,toValue:0,lifeTime:1.2}}
+      
+ ]});
+w.font="宋体";	
+ w.filters=[gf1];
+w.color=0xffffff;
+w.fontsize=20;}
+    break;
+  default:{t="全員大轟動";var gf1=$.createGlowFilter(gfc[i]/*光晕颜色*/,0.8/*Alpha*/,2/*水平模糊量*/,2/*垂直模糊量*/,5/*印记或跨页的强度*/,5/*应用滤镜的次数*/,true/*是否为内侧发光*/,false/*是否具有挖空效果*/);
+var g = $.createShape({x:x1,y:y1,lifeTime:2.4,motionGroup:[  
+   {x:{fromValue:x1,toValue:0,lifeTime:1.2}   },{y:{fromValue:y1,toValue:my2,lifeTime:1.2}}]});
+g.graphics.lineStyle(2/*粗细*/, gfc[i]/*颜色*/, 0.5/*透明度*/, false/*完整像素true或false*/, "vertical"/*缩放normal,none等*/,"none"/*端点类型none、round 和 square*/, "miter"/*拐角bevel、miter 和 round*/, 10/*切断尖角数*/);
+	g.graphics.lineTo(541,0);
+
+var w=$.createComment(t,{x:x1+200,y:y1-40,lifeTime:2.4,alpha:1,motionGroup:[ 
+   {x:{fromValue:x1,toValue:wx2,lifeTime:1.2}},
+ {y:{fromValue:y1-40,toValue:my2,lifeTime:1.2},alpha:{fromValue:1,toValue:0,lifeTime:1.2}}
+      
+ ]});
+w.font="宋体";	
+ w.filters=[gf1];
+w.color=0x000000;
+w.fontsize=20;}
+}
+
+
+}
+}
+timer(function(){text7();},200);
+</d>
+<d p="27,8,25,16777215,1353501629,2,92de3cf6,151736157">
+/*27.000yangshi*/
+
+function blackBlood()
+{
+	var g = $.createShape({x:0,y:0,lifeTime:2});
+        
+	var r,cx,cy;
+	for(i=0;i&lt;100;i++)
+	{g.graphics.beginFill(0x000000,0.8);	
+		r=Utils.rand(1,30);
+		cx=Utils.rand(0,541);
+		cy=Utils.rand(0,384);
+		g.graphics.drawCircle(cx,cy,r);	}
+	
+	
+}
+function blackScreen()
+{
+	var g = $.createShape({x:0,y:42,lifeTime:4});
+        g.graphics.beginFill(0x000000,1);	
+	g.graphics.drawRect(0,0,541,300);
+	
+}
+
+
+timer(function(){interval(function(){blackBlood();},40,20);
+timer(function(){blackScreen();},800);},1000);
+</d>
+<d p="58,8,25,16777215,1353507807,2,92de3cf6,151784153"> function textsin(t,x1,y1,wz,lt,cs,gls)
+{
+
+var gf1=$.createGlowFilter(gls/*光晕颜色*/,1/*Alpha*/,0/*水平模糊量*/,0/*垂直模糊量*/,0/*印记或跨页的强度*/,0/*应用滤镜的次数*/,true/*是否为内侧发光*/,false/*是否具有挖空效果*/);
+
+var key=150;
+for(var i=1;i&lt;=t.length;i++)
+{
+var c = $.createCanvas({x:0,y:y1,lifeTime:lt});
+var getw=t.substring(i-1,i);
+var gety=key*(Math.sin(30*(i-1)*Math.PI/180));
+var gety2=key*(Math.sin((180+30*(i-1))*Math.PI/180));
+	var w=$.createComment(getw,{x:x1+i*0.9*wz,y:gety,lifeTime:lt,alpha:1,parent:c,motionGroup:[ 
+   {y:{fromValue:gety,toValue:gety2,lifeTime:0.5,easing:elastic},alpha: {fromValue:0,toValue:1,lifeTime:0.5}},
+    {y:{fromValue:gety2,toValue:gety,lifeTime:0.5,easing:elastic}},
+   {y:{fromValue:gety,toValue:gety2,lifeTime:0.5,easing:elastic}},
+  {y:{fromValue:gety2,toValue:0,lifeTime:0.5,easing:elastic}}
+     
+ ]});
+w.font="宋体";	
+ w.filters=[gf1];
+if(i&gt;=5&amp;&amp;i&lt;=16)
+{
+w.color=0xF80707;
+
+}
+else
+{
+w.color=cs;
+}
+
+
+
+w.fontsize=wz;
+
+}
+}
+
+
+t1="すすめ！ Crazy nighT　幕は上がった";
+
+t11="前進吧！ Crazy nighT　帷幕已開啟";
+
+ function textOut(t,x1,y1,wz,lt,cs,gls)
+{
+
+var gf1=$.createGlowFilter(gls/*光晕颜色*/,1/*Alpha*/,0/*水平模糊量*/,0/*垂直模糊量*/,0/*印记或跨页的强度*/,0/*应用滤镜的次数*/,true/*是否为内侧发光*/,false/*是否具有挖空效果*/);
+
+
+for(var i=1;i&lt;=t.length;i++)
+{
+var getw=t.substring(i-1,i);
+	var w=$.createComment(getw,{x:x1+i*0.9*wz,y:y1,lifeTime:lt,alpha:1,motionGroup:[ 
+   {alpha:{fromValue:0,toValue:1,lifeTime:0.2}}
+      
+ ]});
+w.font="宋体";	
+ w.filters=[gf1];
+if(i&gt;=6&amp;&amp;i&lt;=16)
+{
+w.color=0xF80707;
+
+}
+else
+{
+w.color=cs;
+}
+
+
+w.fontsize=wz;
+
+}
+}
+timer(function(){textsin(t1,10,170,23,2.8,0x000000,0x000000);},650);
+timer(function(){textOut(t11,100,210,15,0.8,0x000000,0x000000);},2650);</d>
+<d p="61,8,25,16777215,1353511441,2,92de3cf6,151797533">t1a="もっと";
+t11a="更加";
+t1="盛り上がれ";
+
+t11="興致高昂吧";
+
+
+ function textfontsize(t,x1,y1,wz)
+{
+var gf1=$.createGlowFilter(gls/*光晕颜色*/,1/*Alpha*/,0/*水平模糊量*/,0/*垂直模糊量*/,0/*印记或跨页的强度*/,0/*应用滤镜的次数*/,true/*是否为内侧发光*/,false/*是否具有挖空效果*/);	
+ var w=$.createComment(t,{x:x1,y:y1,lifeTime:2.3,alpha:0.7});
+ w.fontsize=wz;
+w.font="宋体";
+ w.filters=[gf1];
+w.color=0x000000;
+ interval(function(){w.fontsize=wz+Utils.rand(0,30);},50,100);
+
+}
+
+
+
+function textUp(t,x1,y1,y2,wz,gfc,lt)
+{
+
+
+var gf1=$.createGlowFilter(gfc/*光晕颜色*/,1/*Alpha*/,2/*水平模糊量*/,2/*垂直模糊量*/,5/*印记或跨页的强度*/,5/*应用滤镜的次数*/,true/*是否为内侧发光*/,false/*是否具有挖空效果*/);
+
+var i=0;
+interval(function(){i++;var getw=t.substring(i-1,i);	
+ var w=$.createComment(getw,{x:x1+(i-1)*wz*1.15,y:y1,lifeTime:lt,alpha:1,motionGroup:[{alpha:{ fromValue: 0, toValue: 1, lifeTime:0.5},y:{fromValue:y1,toValue:y2,lifeTime:0.5}}]});
+ w.fontsize=wz;
+w.font="宋体";
+w.color=0xffffff;
+w.filters=[gf1];},17,t.length);
+
+}
+timer(function(){
+textfontsize(t1a,0,50,10);textfontsize(t11a,0,100,10);
+textfontsize(t1a,0,280,10);textfontsize(t11a,300,340,10);
+textfontsize(t1a,150,100,10);textfontsize(t11a,150,200,10);
+textfontsize(t1a,200,200,10);textfontsize(t11a,300,260,10);
+textfontsize(t1a,300,110,10);textfontsize(t11a,300,160,10);
+textfontsize(t1a,450,100,10);textfontsize(t11a,450,200,10);
+textfontsize(t1a,300,50,10);textfontsize(t11a,300,110,10);
+textfontsize(t1a,500,280,10);textfontsize(t11a,300,340,10);},
+559);
+timer(function(){textUp(t1,20,200,90,90,0x000000,1.4);
+textUp(t11,160,280,180,30,0x000000,1.4);},1559);</d>
+<d p="58,8,25,16777215,1353578507,2,92de3cf6,151951959">function black1Screen()
+{
+	var g = $.createShape({x:0,y:0,lifeTime:2});
+        g.graphics.beginFill(0x000000,1);	
+	g.graphics.drawRect(0,0,541,42);
+	
+}
+function black2Screen()
+{
+	var g = $.createShape({x:0,y:342,lifeTime:2});
+        g.graphics.beginFill(0x000000,1);	
+	g.graphics.drawRect(0,0,541,42);
+	
+}
+ function runCircle(x1,y1)
+{
+	
+	
+	var gf=$.createGlowFilter(0xffffff,0.8,1,1,1,1,true,false);			
+	var c=$.createCanvas({x:x1,y:y1,lifeTime:2});  /*x:270,y:197中点坐标*/
+	var i=0;
+	 interval(function(){ i++;	var g = $.createShape({x:0,y:0,lifeTime:0.04,parent:c});
+ 	g.graphics.lineStyle(3/*粗细*/, 0x000000/*颜色*/, 1/*透明度*/, false/*完整像素true或false*/, "vertical"/*缩放normal,none等*/,"none"/*端点类型none、round 和 square*/, "miter"/*拐角bevel、miter 和 round*/, 10/*切断尖角的数字*/);	
+	 g.graphics.drawCircle(0,0,25*i);
+        g.filters=[gf];},40,25);
+	 
+ }
+timer(function(){
+runCircle(0,0);
+runCircle(541,384);
+black2Screen();
+ black1Screen();},2400);</d>
+<d p="64,8,25,16777215,1353582847,2,92de3cf6,151971138">t1="台本どおり演(や)ればいいのさ";
+
+t11="按劇本來演就好嘛";
+
+ function textUD(t,x1,y1,wz,lt,cs,gls)
+{
+
+var gf1=$.createGlowFilter(gls/*光晕颜色*/,1/*Alpha*/,0/*水平模糊量*/,0/*垂直模糊量*/,0/*印记或跨页的强度*/,0/*应用滤镜的次数*/,true/*是否为内侧发光*/,false/*是否具有挖空效果*/);
+
+var key=-1;
+for(var i=1;i&lt;=t.length;i++)
+{
+var c=$.createCanvas({x:0,y:y1,lifeTime:lt,motionGroup:[ 
+ {rotationZ:{fromValue:0,toValue:0,lifeTime:1.9}},
+   {x:{fromValue:0,toValue:541,lifeTime:0.5}}
+ 
+ ]});
+var getw=t.substring(i-1,i);
+key=(Math.sin(i*90*Math.PI/180));
+var gety=key*wz*1;
+
+	var w=$.createComment(getw,{x:x1+i*0.9*wz,y:gety,lifeTime:lt,alpha:1,parent:c,motionGroup:[ 
+   {alpha: {fromValue:0,toValue:1,lifeTime:0.1}},{y:{fromValue:gety,toValue:0,lifeTime:0.5}},
+{rotationZ:{fromValue:0,toValue:360,lifeTime:1},rotationX:{fromValue:0,toValue:360,lifeTime:1}}
+ 
+ ]});
+w.font="宋体";	
+ w.filters=[gf1];
+w.color=0xF80707;
+w.color=cs;
+w.fontsize=wz;
+
+}
+}
+
+textUD("███████████████",50,100,30,2.4,0x000000,0xffffff);
+textUD(t1,50,100,30,2.4,0xffffff,0xffffff);
+textUD("████████",150,200,30,2.4,0x000000,0xffffff);
+textUD(t11,150,200,30,2.4,0xffffff,0xffffff);
+</d>
+<d p="65,8,25,16777215,1353589555,2,92de3cf6,151999864">/*65.00000000000000*/
+
+/*红色线*/
+ function redLine(){
+	var c2=$.createCanvas({x:-541,y:197,lifeTime:2.36,motionGroup:[{x:{fromValue:-541,toValue:541/2,lifeTime:0.5}},
+{x:{fromValue:541/2,toValue:700,lifeTime:0.5},alpha:{fromValue:1,toValue:0,lifeTime:0.5}}]});  /*x:270,y:197中点坐标*/
+	var g2 = $.createShape({x:-310,y:0,lifeTime:2.36,parent:c2});
+	g2.graphics.lineStyle(10/*粗细*/, 0xF90606/*颜色*/, 1/*透明度*/, false/*完整像素true或false*/, "vertical"/*缩放normal,none等*/,"none"/*端点类型none、round 和 square*/, "miter"/*拐角bevel、miter 和 round*/, 10/*切断尖角的数字*/);
+	g2.graphics.lineTo(1000,0);
+        g2.filters=null;
+}
+
+/*下面字幕段*/
+
+	t1="考えないで馬鹿になろう";
+	t2="拋開一切不要多想了嘛";
+function noThink(t,key)
+{
+var gf1=$.createGlowFilter(0x000000/*光晕颜色*/,1/*Alpha*/,0/*水平模糊量*/,0/*垂直模糊量*/,0/*印记或跨页的强度*/,0/*应用滤镜的次数*/,true/*是否为内侧发光*/,false/*是否具有挖空效果*/);
+var c3=$.createCanvas({x:250,y:180,lifeTime:2.36,motionGroup:[
+{rotationX:{fromValue:0,toValue:360,lifeTime:0.8}}]});
+
+for(var i=1;i&lt;=t.length;i++)
+{
+
+var getw=t.substring(i-1,i);
+getx=-Math.sin(30*i*Math.PI/180)*key;
+gety=Math.cos(30*i*Math.PI/180)*key;
+var w=$.createComment(getw,{x:getx,y:gety,lifeTime:2.36,alpha:1,parent:c3});
+w.font="宋体";	
+ w.filters=[gf1];
+w.color=0xF80707;
+w.color=0x000000;
+w.fontsize=30;
+
+
+}
+
+
+}
+timer(function(){redLine();},1500);
+timer(function(){noThink(t1,140);},700);
+timer(function(){noThink(t2,100);},700);
+
+/*聚能环*/
+
+ function runCircle(x1,y1,cs)
+{
+	
+	
+	var gf=$.createGlowFilter(0x000000,0.8,1,1,1,1,true,false);			
+	var c=$.createCanvas({x:x1,y:y1,lifeTime:2});  /*x:270,y:197中点坐标*/
+	var i=0;
+	 interval(function(){ i++;	var g = $.createShape({x:0,y:0,lifeTime:0.04,parent:c});
+ 	g.graphics.lineStyle(3/*粗细*/, cs/*颜色*/, 1/*透明度*/, false/*完整像素true或false*/, "vertical"/*缩放normal,none等*/,"none"/*端点类型none、round 和 square*/, "miter"/*拐角bevel、miter 和 round*/, 10/*切断尖角的数字*/);	
+	 g.graphics.drawCircle(0,0,25*i);
+        g.filters=[gf];},40,25);
+	 
+ }
+	
+ timer(function(){runCircle(270,194,0x000000);},3000);</d>
+<d p="68,8,25,16777215,1353596115,2,92de3cf6,152059801">t1="ぐるぐる　1、2、3 で　酔わせて酔って";
+t11="轉啊轉啊　數著1、2、3　讓我醉你也醉吧";
+
+function huluhu(x1,y1,t)
+{
+var gf1=$.createGlowFilter(0x000000/*光晕颜色*/,1/*Alpha*/,0/*水平模糊量*/,0/*垂直模糊量*/,0/*印记或跨页的强度*/,0/*应用滤镜的次数*/,true/*是否为内侧发光*/,false/*是否具有挖空效果*/);
+wz=30;
+
+ var i=0;
+
+interval(function(){
+i++;
+var c3=$.createCanvas({x:x1,y:y1,lifeTime:1.5,motionGroup:[
+{rotationZ:{fromValue:0,toValue:720,lifeTime:1.6},x:{fromValue:x1,toValue:560,lifeTime:1},y:{fromValue:y1,toValue:60,lifeTime:1.6}}]});
+var getw=t.substring(i-1,i);
+var w=$.createComment(getw,{x:0,y:0,lifeTime:1.5,alpha:1,parent:c3});
+w.font="宋体";	
+ w.filters=[gf1];
+w.color=0x000000;
+w.fontsize=30;
+
+
+},50,t.length);
+}
+
+huluhu(0,200,t1);
+
+huluhu(20,400,t11);
+</d>
+<d p="70,8,25,16777215,1353674562,2,92de3cf6,152244881">/*70.00*/
+function black1Screen()
+{
+	var g = $.createShape({x:0,y:0,lifeTime:3});
+        g.graphics.beginFill(0x000000,1);	
+	g.graphics.drawRect(0,0,541,42);
+	
+}
+function black2Screen()
+{
+	var g = $.createShape({x:0,y:342,lifeTime:2});
+        g.graphics.beginFill(0x000000,1);	
+	g.graphics.drawRect(0,0,541,42);
+	
+}
+function textCircle(t,x1,x2,y2,cs,glc,lt,lr)
+{
+
+/*左右手*/
+var getlt=lt;
+if(lr==-1)
+{
+var y1=264.218-x1;
+}
+else
+{
+var y1=583-x1;
+}	 
+
+/*蛋饼*/
+
+
+
+
+	var gf1=$.createGlowFilter(glc,0.8,1,1,1,1,true,false);			
+	var c=$.createCanvas({x:x1,y:y1,lifeTime:lt,motion:{rotationZ:{fromValue:0,toValue:360*lt,lifeTime:lt}}});  /*x:270,y:197中点坐标*/
+	var i=0;
+	 interval(function(){ i++;	var g = $.createShape({x:0,y:0,lifeTime:0.035,parent:c});
+ 	g.graphics.lineStyle(1/*粗细*/, cs/*颜色*/, 0.5/*透明度*/, false/*完整像素true或false*/, "vertical"/*缩放normal,none等*/,"none"/*端点类型none、round 和 square*/, "miter"/*拐角bevel、miter 和 round*/, 10/*切断尖角的数字*/);	
+	 g.graphics.drawCircle(0,0,10*i);
+        g.filters=[gf1];},40,25);			
+	var j=0;
+	 interval(function(){ 
+if(j&lt;24)
+{
+lt=0.01;
+}
+if(j==24)
+{
+lt=getlt-0.01*24;
+}
+j++;	
+	var g2= $.createShape({x:0,y:0,lifeTime:lt,parent:c});
+	g2.graphics.beginFill(cs,0.6);
+	 g2.graphics.drawCircle(0,0,2.2*j);
+        g2.filters=null;
+/*字幕*/
+if(j==25)
+{
+var w=$.createComment(t,{x:x2,y:y2,lifeTime:lt,alpha:1,parent:c,motion:{alpha:{fromValue:0,toValue:1,lifeTime:0.1}}});w.color=0xffffff; /*这里这里*/
+w.fontsize=100;
+w.font="宋体";
+w.filters=[gf1];
+}	
+	
+},10,25);
+	
+
+
+
+	 
+ }
+/*x间距77.782 or 80  左基为0，右为241*/
+/*　もっと　騒ごうぜ/更加　更加　沸騰起來吧*/
+timer(function(){textCircle("も",40,-50,-60,0x0c62af,0x0c62af,2.3,-1);black1Screen();black2Screen();},900);
+timer(function(){textCircle("っ",120,-50,-60,0x39f55c,0x39f55c,2.1,-1);black1Screen();black2Screen();},1100);
+timer(function(){textCircle("と",200,-50,-60,0xf1f40b,0xf1f40b,1.9,-1);black1Screen();black2Screen();},1300);
+timer(function(){textCircle("も",281,-50,-60,0xf5c60a,0xf5c60a,1.7,1);black1Screen();black2Screen();},1400);
+timer(function(){textCircle("っ",361,-50,-60,0x990af3,0x990af3,1.5,1);black1Screen();black2Screen();},1600);
+timer(function(){textCircle("と",441,-50,-60,0xf70b10,0xf70b10,1.3,1);black1Screen();black2Screen();},1800);
+
+
+
+
+
+
+
+/*中间*/
+
+
+
+t1="騒ごうぜ";
+t11="沸騰起來吧";
+
+function textP(t,x1,y1,wz,rz)
+{
+var c=$.createCanvas({x:x1,y:y1,lifeTime:1.25}); 
+var gf1=$.createGlowFilter(0xffffff,0.8,1,1,1,1,true,false);	
+var w=$.createComment(t,{x:0,y:0,lifeTime:1.25,alpha:1,parent:c,motionGroup:[{alpha:{fromValue:0,toValue:1,lifeTime:0.5}}]});w.color=0x000000; /*这里这里*/
+w.fontsize=wz;
+w.font="宋体";
+w.filters=null;
+w.rotationZ=rz;
+
+}
+timer(function(){textP(t1,110,250,40,-50);},1800);
+timer(function(){textP(t11,250,160,25,-45);},1800);</d>
+<d p="73,8,25,16777215,1353757877,2,92de3cf6,152676885">/*73.00*/
+function blackline(){
+	var gf=$.createGlowFilter(0x000000,0.8,0,0,0,0,true,false);			
+	var c1=$.createCanvas({x:541/2,y:192,lifeTime:2.1,motionGroup:[{rotationZ:{fromValue:0,toValue:29,lifeTime:0.7}}]});  /*x:270,y:197中点坐标*/
+	var g1 = $.createShape({x:-541/2,y:150,lifeTime:2.1,parent:c1});
+	g1.graphics.lineStyle(3/*粗细*/, 0x000000/*颜色*/, 1/*透明度*/, false/*完整像素true或false*/, "vertical"/*缩放normal,none等*/,"none"/*端点类型none、round 和 square*/, "miter"/*拐角bevel、miter 和 round*/, 10/*切断尖角的数字*/);
+	g1.graphics.lineTo(541,-300);
+        g1.filters=[gf];
+	
+			
+	var c2=$.createCanvas({x:541/2,y:192,lifeTime:2.1,motionGroup:[
+{rotationZ:{fromValue:0,toValue:119+90,lifeTime:0.7}}]});  /*x:270,y:197中点坐标*/
+	var g2 = $.createShape({x:-541/2,y:150,lifeTime:2.1,parent:c2});
+	g2.graphics.lineStyle(3/*粗细*/, 0x000000/*颜色*/, 1/*透明度*/, false/*完整像素true或false*/, "vertical"/*缩放normal,none等*/,"none"/*端点类型none、round 和 square*/, "miter"/*拐角bevel、miter 和 round*/, 10/*切断尖角的数字*/);
+	g2.graphics.lineTo(541,-300);
+        g2.filters=[gf];
+}
+
+
+/*单纯*/
+t1="単 純";
+function textP1(t,x1,y1,wz,rz)
+{
+var c=$.createCanvas({x:x1,y:y1,lifeTime:0.8}); 
+var gf1=$.createGlowFilter(0xffffff,0.8,1,1,1,1,true,false);	
+var w=$.createComment(t,{x:-68,y:-28,lifeTime:0.8,alpha:1,parent:c,motionGroup:[{alpha:{fromValue:0,toValue:1,lifeTime:0.1}}]});w.color=0x000000; /*这里这里*/
+w.fontsize=wz;
+w.font="宋体";
+w.filters=null;
+w.rotationZ=rz;
+
+}
+
+t2="なのはつまらない";
+t22="未免太過無聊";
+
+
+function textP(t,x1,y1,wz,rz)
+{
+var c=$.createCanvas({x:-500,y:y1,lifeTime:1.37,motionGroup:[{x:{fromValue:-500,toValue:x1,lifeTime:0.27}}]}); 
+var gf1=$.createGlowFilter(0xffffff,0.8,1,1,1,1,true,false);	
+var w=$.createComment(t,{x:0,y:0,lifeTime:1.37,alpha:1,parent:c});w.color=0x000000; /*这里这里*/
+w.fontsize=wz;
+w.font="宋体";
+w.filters=null;
+w.rotationZ=rz;
+
+}
+timer(function(){blackline();
+textP1(t1,270,192,50,0);},250);
+
+timer(function(){textP(t2,110,145,40,0);
+textP(t22,180,200,30,0);},1050);
+
+
+
+</d>
+<d p="75,8,25,16777215,1353767688,2,92de3cf6,152752690">/*75.00*/  
+
+function blackNight()
+{
+var c=$.createCanvas({x:0,y:192,lifeTime:12});
+var gf1=$.createGlowFilter(0x000000,0.8,0,0,0,0,true,false);
+
+
+/*75.00字幕*/
+var j=0;
+interval(function(){ 
+if(j&lt;24)
+{
+lt=0.01;
+}
+if(j==24)
+{
+lt=3;
+}
+j++;	
+	var g= $.createShape({x:0,y:-(1.5+j*2),lifeTime:lt,parent:c});
+	g.graphics.beginFill(0x000000,1);
+	 g.graphics.drawRect(0,0,541,j*4);
+        g.filters=null;
+
+if(j==25)
+{
+var t1="なら、もっと狂わせて";
+var t2="更加、瘋狂不就好了";
+var w=$.createComment(t1,{x:70,y:-45,lifeTime:2.499,alpha:1,parent:c,motionGroup:[{y:{fromValue:-45,toValue:-45,lifeTime:2}},{y:{fromValue:-45,toValue:0,lifeTime:0.499}}]});
+var w2=$.createComment(t2,{x:90,y:0,lifeTime:2.499,alpha:1,parent:c,motionGroup:[{y:{fromValue:0,toValue:0,lifeTime:2}},{y:{fromValue:0,toValue:-45,lifeTime:0.499}}]});
+w2.color=w.color=0xffffff; 
+w.fontsize=w2.fontsize=40;
+w.font=w2.font="宋体";
+w.filters=w2.filters=[gf1];
+}
+},0,25);
+
+
+/*总共是8.545，7.848 底层黑幕 */
+
+var gf=$.createGlowFilter(0x000000,0.8,2,2,2,2,true,false);
+var i=0;
+timer(function(){
+interval(function(){ 
+if(i&lt;24)
+{
+lt=0.01;
+	var g= $.createShape({x:0,y:-i*6,lifeTime:lt,parent:c});
+	g.graphics.beginFill(0x000000,1);
+	 g.graphics.drawRect(0,0,541,i*12);
+        g.filters=[gf];
+}
+if(i==24)
+{
+lt=8.545;
+}
+i++;	
+
+if(i==25)
+{
+	var g= $.createShape({x:0,y:-150,lifeTime:lt,parent:c,motionGroup:[{rotationZ:{fromValue:0,toValue:0,lifeTime:7.5}},{rotationY:{fromValue:0,toValue:90,lifeTime:1}}]});
+	g.graphics.beginFill(0x000000,1);
+	 g.graphics.drawRect(0,0,151,300);
+	g.filters=[gf];
+	var g2= $.createShape({x:151,y:-150,lifeTime:lt,parent:c,motionGroup:[{rotationZ:{fromValue:0,toValue:0,lifeTime:7.5}},{rotationZ:{fromValue:0,toValue:-35,lifeTime:1},y:{fromValue:-150,toValue:-320,lifeTime:1},x:{fromValue:151,toValue:450,lifeTime:1}}]});
+	g2.graphics.beginFill(0x000000,1);
+	 g2.graphics.drawRect(0,0,400,300);
+g2.filters=[gf];
+}
+
+},0,25);
+},2490);
+
+}
+
+timer(function(){blackNight();},450);</d>
+<d p="78,8,25,16777215,1353830381,2,92de3cf6,153039093">/*78.00*/
+function moon()
+{
+	
+	
+	var gf=$.createGlowFilter(0xFFFFFF,0.8,5,5,1,10,true,false);		
+	var c=$.createCanvas({x:270,y:197,lifeTime:10});
+	 var i=0;
+	 interval(function(){
+	if(i&lt;24)
+	{lt=0.02;}
+	if(i==24)
+	{lt=9;}
+	c.y=192-i*2;c.x=270-i*4;var g = $.createShape({x:0,y:0,lifeTime:lt,parent:c});
+ 	g.graphics.beginFill(0xFFFFFF,1);	
+	 g.graphics.drawCircle(0,0,120-0.8*i);
+	 g.filters=[gf];	i++;},20,25);
+	
+
+
+ interval(function(){
+	var cl=["0x990af3","0x0c62af","0xf70b10","0xFF1C60","0xf5c60a","0xf1f40b","0x39f55c","0x13d3be"];
+	var fontsizeKey=Utils.rand(2,10);
+	var speedKey=Utils.rand(1,4);
+	var xKey=Utils.rand(0,541);
+	var cKey=Utils.rand(0,7);
+	var pKey=$.createCanvas({x:xKey,y:342,lifeTime:9});
+	pKey.rotationZ=Utils.rand(5,45);
+	var gf2=$.createGlowFilter(cl[cKey],1,15,15,2,8,true,false);
+	var g2= $.createShape({x:0,y:80,lifeTime:lt,parent:pKey,motionGroup:[{alpha:{fromValue:0,toValue:1,lifeTime:0.5}},{y:{fromValue:80,toValue:-500,lifeTime:speedKey-0.5}}]});
+ 	g2.graphics.beginFill(cl[cKey],0.9);	
+	 g2.graphics.drawCircle(0,0,fontsizeKey);
+g2.filters=[gf2];
+
+	/*  var w=$.createComment("●",{x:0,y:0,lifeTime:speedKey,alpha:0.9,parent:pKey,motionGroup:[{alpha:{fromValue:0,toValue:1,lifeTime:0.5}},{y:{fromValue:0,toValue:-340,lifeTime:speedKey-0.5}}]});	
+	w.color=0xffffff;
+	w.fontsize=fontsizeKey;
+	w.filters=[gf2];*/
+},50,80);
+	
+ }
+ timer(function(){moon();},300);</d>
+<d p="87,8,25,16777215,1353842272,2,92de3cf6,153116646">/*87.00*/
+/*表*/
+function showClock(cx,cy,H,M)              /*cx,cy钟表位置参数*/
+{ var c = $.createCanvas({x:cx,y:cy,lifeTime:7});
+	var R=100;
+	var gf1=$.createGlowFilter(0xFFD700/*光晕颜色*/,0.8/*Alpha*/,2/*水平模糊量*/,2/*垂直模糊量*/,25/*印记或跨页的强度*/,10/*应用滤镜的次数*/,true/*是否为内侧发光
+
+*/,false/*是否具有挖空效果*/);
+    var clockNbm=["Ⅻ","Ⅰ","Ⅱ","Ⅲ","Ⅳ","Ⅴ","Ⅵ","Ⅶ","Ⅷ","Ⅸ","Ⅹ","Ⅺ"];
+	for(var n=0;n&lt;12;n++)
+	{
+	var getx=R*Math.sin(n*30*Math.PI/180)-15;
+	var gety=-R*Math.cos(n*30*Math.PI/180)-10;
+	var ct=$.createComment(clockNbm[n],{x:getx,y:gety,lifeTime:5,parent:c});
+	ct.filters=[gf1];
+	ct.fontsize=20;
+}
+R=R-45;
+var gethx=R*Math.sin((M*0.5+H*30)*Math.PI/180);
+var gethy=-R*Math.cos((M*0.5+H*30)*Math.PI/180);
+R=R+20;
+var getmx=R*Math.sin(M*6*Math.PI/180);
+var getmy=-R*Math.cos(M*6*Math.PI/180);
+var d= $.createShape({lifeTime:5,x:0,y:0,parent:c});
+d.graphics.lineStyle(10, 0x030303, 1, false, "vertical","round", "round", 10);
+d.graphics.lineTo(gethx,gethy);
+d.graphics.moveTo(0,0);
+d.graphics.lineStyle(5, 0x030303, 1, false, "vertical","none", "round", 10);
+d.graphics.lineTo(getmx,getmy);
+
+}
+
+
+/*字幕*/
+
+ ta="(/ﾟДﾟ)/";
+t1="(執事) 「ああ、どうしましょう」";
+t11="(管家)「啊啊，如何是好」";
+tb="(o゜ー゜o)??";
+t2="「どうしたんでしょう？♪」(メイド)";
+t22="「怎麼了嗎？♪」(女僕)";
+tc1="((((；゜Д゜))) ";
+ tc2="((((´ﾟA゜；))) ";
+
+t3a="(執事)";
+t3b="(メイド)";
+t3="「「一大 事！！」」";
+t33="「「大事不妙了！！」」";
+td="(⊙_⊙)?";
+t4="(主人)「時間がどうやら???」";
+t44="(主人)「時間似乎???」";
+te="Σ(oﾟдﾟo) ?";
+t5="(奧方)「止まってしまったね???」";
+t55="(夫人)「停下來了啊???」";
+
+
+function dialogue(t,x1,y1,x2,wz,lt,cln)
+{
+var cl=["0x990af3","0x0c62af","0xf70b10","0xFF1C60","0xf5c60a","0xf1f40b","0x39f55c","0x13d3be","0x000000"];
+	var w=$.createComment(t,{x:x1,y:y1,lifeTime:lt,alpha:1,motionGroup:[{alpha:{fromValue:0,toValue:1,lifeTime:0.3},x:{fromValue:x1,toValue:x2,lifeTime:0.3}}]});	
+	w.color=cl[cln];
+	w.fontsize=wz;
+	w.font="黑体";
+	w.filters=null;
+}
+
+/*4.27 执事女仆对话 2.892  /2 =1.4  1.5 1.3*/
+ /*87.00*/
+dialogue(ta,0,45,20,20,4.2,8);
+dialogue(t1,0,70,10,20,4.2,0);
+dialogue(t11,0,95,50,15,4.2,0);
+
+timer(function(){dialogue(tb,541,95,380,20,2.7,8);
+dialogue(t2,541,115,170,20,2.7,6);
+dialogue(t22,541,140,270,15,2.7,6);},1500);
+
+timer(function(){
+dialogue(tc1,0,190,20,20,1.4,8);
+dialogue(tc2,541,190,365,20,1.4,8);
+dialogue(t3a,0,215,60,20,1.4,0);
+dialogue(t3b,541,215,395,20,1.4,6);
+dialogue(t3,165,215,165,20,1.4,8);
+dialogue(t33,175,240,175,15,1.4,8);},2800);
+
+timer(function(){
+showClock(420,192,11,58);
+dialogue(td,0,45,20,20,5,8);
+dialogue(t4,0,70,10,20,5,1);
+dialogue(t44,0,95,50,15,5,1);
+
+timer(function(){
+dialogue(te,0,245,20,20,2.7,8);
+dialogue(t5,0,270,10,20,2.7,2);
+dialogue(t55,0,295,50,15,2.7,2);},2300);
+},4200);
+
+
+
+
+
+</d>
+<d p="96,8,25,16777215,1353851267,2,92de3cf6,153173340">/*96.00*/
+function girlWhere()
+{
+
+t1="(少年人形)「アノ子ハ」";
+t11="(人偶少年)「那女孩呢」";
+t2="(少女人形)「アノ子ハ～」";
+t22="(人偶少女)「那女孩呢～」";
+t3="(お嬢様)「どこへいった」";
+t33="(大小姐)「上哪兒去了」";
+
+
+
+var lt=5;
+
+var c1 = $.createCanvas({x:541/2,y:192,lifeTime:5});
+
+/*圆形*/
+	var g= $.createShape({x:0,y:0,lifeTime:lt,parent:c1});
+	g.graphics.beginFill(0x000000,1);
+	 g.graphics.drawCircle(0,0,50);
+        g.filters=null;
+
+/*转动的？*/
+var c2= $.createCanvas({x:541/2,y:192,lifeTime:5,motionGroup:[{rotationZ:{fromValue:0,toValue:360*lt,lifeTime:lt}}]});
+var w=$.createComment("?",{x:-20,y:-30,lifeTime:lt,fontsize:70,alpha:1,parent:c2});
+w.font="黑体";
+w.filters=null;
+
+/*字幕*/
+function textP(t,x1,y1,rz,lt,cln)
+{
+var c= $.createCanvas({x:x1,y:y1,lifeTime:5});
+c.rotationZ=rz;
+var cl=["0x990af3","0x0c62af","0xf70b10","0xFF1C60","0xf5c60a","0xf1f40b","0x39f55c","0x13d3be","0x000000"];
+var w=$.createComment(t,{x:-t.length*20/2*0.5,y:0,lifeTime:lt,fontsize:20,alpha:1,parent:c,motion:{alpha:{fromValue:0,toValue:1,lifeTime:0.4}}});
+
+w.font="黑体";
+w.filters=null;
+w.color=cl[cln];
+}
+textP(t1,60,80,0,lt,4);
+textP(t11,60,130,0,lt,4);
+
+timer(function(){textP(t2,360,80,0,5-0.97,5);
+textP(t22,360,130,0,5-0.97,5);},970);
+
+timer(function(){textP(t3,200,250,0,5-2.3,3);
+textP(t33,200,300,0,5-2.3,3);},2300);
+
+}
+timer(function(){girlWhere();},580);</d>
+<d p="101,8,25,16777215,1353903906,2,92de3cf6,153282410">
+/*101.00*/
+timer(function(){
+t1="(主人)「それでも」";
+t11="(主人)「即便如此」";
+t2="(奥方)「舞台は」";
+t22="(夫人)「演出依舊」";
+
+t3="つづけなくちゃ...";
+t33="得繼續進行啊…";
+/*双线*/
+function towline(y1)
+{
+
+for(var i=0;i&lt;2;i++)
+{
+	var g= $.createShape({x:-541,y:y1+50*i,lifeTime:4.5,motion:{x:{fromValue:-541,toValue:0,lifeTime:0.4}}});
+g.graphics.lineStyle(2, 0x000000, 1, false, "vertical","round", "round", 10);	
+	 g.graphics.lineTo(541,0);
+        g.filters=null;
+}
+}
+towline(82);
+towline(252);
+
+function textP(t,x1,y1,rz,lt,cln,wz)
+{
+var c= $.createCanvas({x:x1,y:y1,lifeTime:7});
+c.rotationZ=rz;
+var cl=["0x990af3","0x0c62af","0xf70b10","0xFF1C60","0xf5c60a","0xf1f40b","0x39f55c","0x13d3be","0x000000"];
+var w=$.createComment(t,{x:-t.length*20/2*0.5,y:0,lifeTime:lt,fontsize:wz,alpha:1,parent:c,motion:{alpha:{fromValue:0,toValue:1,lifeTime:0.4}}});
+
+w.font="黑体";
+w.filters=null;
+w.color=cl[cln];
+}
+function textP2(t,x1,y1,rz,lt,cln,wz)
+{
+var c= $.createCanvas({x:0,y:y1,lifeTime:7,motion:{x:{fromValue:0,toValue:x1,lifeTime:0.4}}});
+c.rotationZ=rz;
+var cl=["0x990af3","0x0c62af","0xf70b10","0xFF1C60","0xf5c60a","0xf1f40b","0x39f55c","0x13d3be","0x000000"];
+var w=$.createComment(t,{x:0,y:0,lifeTime:lt,fontsize:wz,alpha:1,parent:c,motion:{alpha:{fromValue:0,toValue:1,lifeTime:0.4}}});
+
+w.font="黑体";
+w.filters=null;
+w.color=cl[cln];
+}
+
+textP(t1,100,95,0,4.5,1,20);
+textP(t11,100,265,0,4.5,1,20);
+
+timer(function(){textP(t2,350,95,0,3.5,2,20);
+textP(t22,350,265,0,3.5,2,20);},1000);
+
+timer(function(){
+textP2(t3,150,160,0,2.2,8,30);
+textP2(t33,150,200,0,2.2,8,25);},2300);
+},300);</d>
+<d p="104,8,25,16777215,1353904336,2,92de3cf6,153283909">
+
+/*104*/
+function towline()
+{
+
+
+	var g= $.createShape({x:0,y:197,lifeTime:1.5});
+	g.graphics.lineStyle(2, 0x000000, 1, false, "vertical","round", "round", 10);
+	var j=-1;	
+    	var i=1;
+	interval(function(){ g.graphics.lineTo(85*i,85*j);j=j*-1;i++;
+        g.filters=null;},50,7);
+timer(function(){
+	var g2= $.createShape({x:-541,y:197,lifeTime:0.9,motion:{x:{fromValue:-541,toValue:541,lifeTime:0.8}}});
+	g2.graphics.lineStyle(2, 0x000000, 1, false, "vertical","round", "round", 10);
+	g2.graphics.lineTo(541,0);
+	 g2.filters=null;},700);
+}
+towline();</d>
+<d p="110,8,25,16777215,1353916540,2,92de3cf6,153334601">/*110.00*/
+timer(function(){
+var t1="(執事)「おや、アッチも？」";
+var t2="(お嬢様)「コッチも...」";
+var t3="(メイド)「ソッチも！♪」";
+var t11="(管家)「哎呀，那兒也好—」";
+var t22="(大小姐)「這兒也好...」";
+var t33="(女僕)「那兒也好—！♪」";
+var t4a="(主人)「ドコ にも」";
+var t4b="(奥方)「ドコ にも」"; 
+var t5="見つからない...！";
+var t44a="(主人)「「到處都」」";
+var t44b="(夫人)「「到處都」」";
+var t55="找不到啊…！";
+/*重写白屏*/
+function rewhiteScreen()
+{
+	var g = $.createShape({x:0,y:42,lifeTime:96});
+        g.graphics.beginFill(0xFFFFFF,1);	
+	g.graphics.drawRect(0,0,541,300);
+	
+}
+rewhiteScreen();
+
+
+function kuankuan(t,x1,y1,wz,lt,cln)
+{
+var cl=["0x990af3","0x0c62af","0xf70b10","0xFF1C60","0xf5c60a","0xf1f40b","0x39f55c","0x13d3be","0x000000","0xF7CA00"];
+for(var i=1;i&lt;=t.length;i++){
+var getw=t.substring(i-1,i);
+var getx1=x1+(i-1)*wz*0.9;
+var w2x1=Utils.rand(-50,590);
+var w2y1=Utils.rand(50,320);
+var w2=$.createComment("█",{x:w2x1,y:w2y1,lifeTime:lt,alpha:1,motionGroup:[{alpha:{fromValue:0,toValue:1,lifeTime:0.1},y:{fromValue:w2y1,toValue:y1,lifeTime:0.4},x:{fromValue:w2x1,toValue:getx1,lifeTime:0.2}}]});
+	w2.color=cl[cln];
+	w2.fontsize=wz;
+	w2.font="宋体";
+	w2.filters=null;	
+var w=$.createComment(getw,{x:getx1,y:y1,lifeTime:lt,alpha:1});	
+	w.color=0xffffff;
+	w.fontsize=wz;
+	w.font="宋体";
+	w.filters=null;
+}
+}
+
+function kuankuan2(t,x1,y1,wz,lt,cln)
+{
+var cl=["0x990af3","0x0c62af","0xf70b10","0xFF1C60","0xf5c60a","0xf1f40b","0x39f55c","0x13d3be","0x000000","0xF7CA00"];
+for(var i=1;i&lt;=t.length;i++){
+var getw=t.substring(i-1,i);
+var getx1=x1+(i-1)*wz*0.9;
+var w2x1=Utils.rand(-50,590);
+var w2y1=Utils.rand(50,320);
+var w2=$.createComment("█",{x:w2x1,y:w2y1,lifeTime:lt,alpha:1,motionGroup:[{alpha:{fromValue:0,toValue:1,lifeTime:0.1},y:{fromValue:w2y1,toValue:y1,lifeTime:0.7},x:{fromValue:w2x1,toValue:getx1,lifeTime:0.7}}]});
+	w2.color=cl[cln];
+	w2.fontsize=wz;
+	w2.font="宋体";
+	w2.filters=null;	
+var w=$.createComment(getw,{x:getx1,y:y1,lifeTime:lt,alpha:1});	
+	w.color=0xffffff;
+	w.fontsize=wz;
+	w.font="宋体";
+	w.filters=null;
+}
+}
+/*50.937*/
+
+/*1.734  1 0.5 0.61 */
+/*2.567 主人0.65 2.18合唱*/
+
+kuankuan(t1,10,60,20,2.3,0);
+kuankuan(t11,40,85,15,2.3,0);
+
+timer(function(){kuankuan(t2,280,60,20,2.3-0.57,3);
+kuankuan(t22,320,85,15,2.3-0.57,3);},570);
+
+timer(function(){
+kuankuan(t3,150,165,20,2.3-1.14,6);
+kuankuan(t33,180,190,15,2.3-1.14,6);},1140);
+
+timer(function(){
+kuankuan(t4a,330,280,20,2.3-1.734,1);
+kuankuan(t44a,350,305,15,2.3-1.734,1);
+
+kuankuan(t4b,0,280,20,2.3-1.734,2);
+kuankuan(t44b,0,305,15,2.3-1.734,2);},1734);
+
+timer(function(){
+kuankuan2(t5,50,135,50,2.5-0.65,8);
+kuankuan2(t55,205,190,25,2.5-0.65,8);},1734+650);},930);</d>
+<d p="115,8,25,16777215,1353939999,2,92de3cf6,153431364">/*115*/
+timer(function(){
+t1="さがせ！　Crazy nighT　狂った【原因】";
+t11="快找吧！ Crazy nighT 狂亂的【原因】";
+t2="此処から先は進めない！";
+t22="不能讓你繼續深入！";
+
+ function textPxjy(t,x,y1,wz,lt,cln,vcc)
+{
+var cl=["0x990af3","0x0c62af","0xf70b10","0xFF1C60","0xf5c60a","0xf1f40b","0x39f55c","0x13d3be","0x000000","0xF7CA00"];
+	var i=0;
+var x1=270-wz/1.8*t.length;    /*置中，指定则换x*/
+var key=(lt-1-0.2)/(2*t.length);
+var gf1=$.createGlowFilter(0xF7D4D4/*光晕颜色*/,0.8/*Alpha*/,0/*水平模糊量*/,0/*垂直模糊量*/,0/*印记或跨页的强度*/,0/*应用滤镜的次数*/,true/*是否为内侧发光*/,false/*是否具有挖空效果*/);	
+interval(function() {
+	i++;
+	var tw= t.substring(i-1,i);
+var w=$.createComment(tw,{x:x1-wz*0.9,y:y1,lifeTime:lt,alpha:1,motionGroup:[ 
+   {x:{fromValue:x1-wz*0.9,toValue:x1+i*wz*0.95,lifeTime:0.2},alpha: {fromValue:0,toValue:1,lifeTime:0.2}},
+   { alpha: {fromValue:1,toValue:1,lifeTime:1}},
+   {x:{fromValue:x1+i*wz*0.95,toValue:x1+i*wz/1.8-4,lifeTime:key*(i+1)},alpha: {fromValue:1,toValue:0,lifeTime:key*(i+1)}}    
+ ]});
+if(vcc==1&amp;&amp;i&gt;=6&amp;&amp;i&lt;=16)
+{w.color=cl[2];}
+else
+{w.color=cl[cln];}
+
+w.fontsize=wz;
+w.font="宋体";
+w.filters=[gf1];},key,t.length);
+
+}
+textPxjy(t1,250,150,20,2.7,8,1);
+textPxjy(t11,250,180,15,2.7,8,1);
+timer(function(){
+textPxjy(t2,250,150,25,2.2,8,0);
+textPxjy(t22,250,180,15,2.2,8,0);
+},2700);},230);
+</d>
+<d p="122,8,25,16777215,1354005885,2,92de3cf6,153582938">function openMoon()
+{
+/*字幕*/
+t1="一体「ダレ」が、「ナンノタメ」に?";
+t11="究竟是「誰」、為了「什麼」？";
+ function textPxjy(t,x,y1,wz,lt,cln,vcc)
+{
+var cl=["0x990af3","0x0c62af","0xf70b10","0xFF1C60","0xf5c60a","0xf1f40b","0x39f55c","0x13d3be","0x000000","0xF7CA00"];
+	var i=0;
+var x1=270-wz/1.8*t.length;    /*置中，指定则换x*/
+
+var gf2=$.createGlowFilter(cl[2]/*光晕颜色*/,0.8/*Alpha*/,2/*水平模糊量*/,2/*垂直模糊量*/,2/*印记或跨页的强度*/,2/*应用滤镜的次数*/,true/*是否为内侧发光*/,false/*是否具有挖空效果*/);		
+interval(function() {
+	i++;
+	var tw= t.substring(i-1,i);
+var w=$.createComment(tw,{x:x1+20+i*wz*0.9,y:y1,lifeTime:lt,alpha:1});
+
+if((vcc==1&amp;&amp;i&gt;=3&amp;&amp;i&lt;=6)||(vcc==1&amp;&amp;i&gt;=9&amp;&amp;i&lt;=15))
+{w.color=cl[2];}
+else if((vcc==11&amp;&amp;i&gt;=4&amp;&amp;i&lt;=6)||(vcc==11&amp;&amp;i&gt;=10&amp;&amp;i&lt;=13))
+{w.color=cl[2];}
+else
+{w.color=0xffffff;}
+
+w.fontsize=wz;
+w.font="宋体";
+w.filters=[gf2];},10,t.length);
+
+}
+	
+	var lt=0.04;			
+	var c=$.createCanvas({x:270,y:197,lifeTime:34});
+	var i=0;
+	 interval(function(){ i++;
+	if(i&lt;25)
+	{lt=0.01;
+	var g = $.createShape({x:0,y:0,lifeTime:lt,parent:c});
+ 	g.graphics.beginFill(0x000000,1);	
+	 g.graphics.drawCircle(0,0,14*i);
+	 g.filters=null;}
+	else
+	{
+	var g2 = $.createShape({x:0,y:0,lifeTime:34}); /*使用调试*/
+	g2.graphics.beginFill(0x000000,1);
+	g2.graphics.drawRect(0,0,542,385);
+	textPxjy(t1,250,150,20,1.9,8,1);
+textPxjy(t11,250,175,20,1.9,8,11); }},10,25);
+}
+
+
+
+
+
+
+timer(function(){
+
+openMoon();},300);</d>
+<d p="11,8,25,16777215,1354019967,2,92de3cf6,153644194">/*重写开始的白色屏幕*/
+ function openMoon()
+{
+	
+	var lt=0.04;
+	var gf=$.createGlowFilter(0xFFFFFF,0.8,18,18,1,10,true,false);			
+	var c=$.createCanvas({x:270,y:197,lifeTime:19});
+	var i=0;
+	 interval(function(){ i++;
+	if(i&lt;25)
+	{lt=0.03;
+	var g = $.createShape({x:0,y:0,lifeTime:lt,parent:c});
+ 	g.graphics.beginFill(0xFFFFFF,1);	
+	 g.graphics.drawCircle(0,0,14*i);
+	 g.filters=[gf];}
+	else
+	{var g2 = $.createShape({x:0,y:0,lifeTime:18.8}); 
+	g2.graphics.beginFill(0xFFFFFF,1);
+	g2.graphics.drawRect(0,43,542,298); }},10,25);
+}
+	 
+
+
+
+function black1Screen()
+{
+	var g = $.createShape({x:0,y:0,lifeTime:19});
+        g.graphics.beginFill(0x000000,1);	
+	g.graphics.drawRect(0,0,541,42);
+	
+}
+function black2Screen()
+{
+	var g = $.createShape({x:0,y:342,lifeTime:19});
+        g.graphics.beginFill(0x000000,1);	
+	g.graphics.drawRect(0,0,541,44);
+	
+}
+
+
+timer(function(){openMoon();
+black2Screen();
+black1Screen();},800);</d>
+<d p="124,8,25,16777215,1354112302,2,92de3cf6,153972349">t1="3、2、1 で　戻って検証";
+t11="數著3、2、1　翻回頭查證";
+t2="もっと　もっと　困れば良い";
+t22="更加　更加　苦惱不堪吧";
+
+
+/*背景*/
+function theBg()
+{
+gf1=$.createGlowFilter(0xFFFFFF,0.5,60,60,3,6,false,false);
+var g=$.createShape({x:541/2,y:192,lifeTime:2.2});
+g.graphics.beginFill(0xffffff);
+g.graphics.drawCircle(0,0,180);
+g.filters=[gf1];
+var w=$.createComment("------",{x:-8,y:43,lifeTime:2.2,motionGroup:[{alpha:{fromValue:0,toValue:0.4,lifeTime:0.5}}]});
+w.textColor=0x480707;
+w.fontsize=20;
+w.filters=null;
+w.font="宋体";
+w.mask=g;
+w.htmlText="もっと もっと もっと もっと もっと もっと\n
+もっと もっと もっと もっと もっと もっと\n
+もっと もっと もっと もっと もっと もっと\n
+もっと もっと もっと もっと もっと もっと\n
+もっと もっと もっと もっと もっと もっと\n
+もっと もっと もっと もっと もっと もっと\n";
+}
+/*探照灯*/
+function theLight(t,y1,wz,lt)
+{
+var cl=["0x990af3","0x0c62af","0xf70b10","0xFF1C60","0xf5c60a","0xf1f40b","0x39f55c","0x13d3be","0x000000","0xF7CA00"];
+
+gf1=$.createGlowFilter(0xFFFFFF,0.5,60,60,3,6,false,false);
+gf2=$.createGlowFilter(cl[2],1,2,2,2,6,true,false);
+var g=$.createShape({x:541/2,y:192,lifeTime:lt});
+g.graphics.beginFill(0xffffff);
+g.graphics.drawCircle(0,0,100);
+g.filters=[gf1];
+
+var w=$.createComment(t,{x:541,y:y1,lifeTime:lt,motionGroup:[{x:{fromValue:380,toValue:-300,lifeTime:lt}}]});
+w.color=0x000000;
+w.mask=g;
+w.fontsize=wz;
+w.filters=[gf2];
+w.font="宋体";
+
+}
+/*闪关灯*/
+function camera()
+{
+	var g = $.createShape({x:0,y:42,lifeTime:2.7,motionGroup:[
+{alpha:{fromValue:0,toValue:0.1,lifeTime:0.1}},{alpha:{fromValue:0.1,toValue:0,lifeTime:0.1,startDelay:100}},
+{alpha:{fromValue:0,toValue:0.1,lifeTime:0.1}},{alpha:{fromValue:0.1,toValue:0,lifeTime:0.1,startDelay:200}},
+{alpha:{fromValue:0,toValue:0.1,lifeTime:0.1}},{alpha:{fromValue:0.1,toValue:0,lifeTime:0.1,startDelay:300}},
+{alpha:{fromValue:0,toValue:0.1,lifeTime:0.1}},{alpha:{fromValue:0.1,toValue:0,lifeTime:0.1,startDelay:400}},
+{alpha:{fromValue:0,toValue:0.1,lifeTime:0.1}},{alpha:{fromValue:0.1,toValue:0,lifeTime:0.1,startDelay:500}},
+{alpha:{fromValue:0,toValue:0.1,lifeTime:0.1}},{alpha:{fromValue:0.1,toValue:0,lifeTime:0.1,startDelay:600}},
+
+
+]});
+        g.graphics.beginFill(0xFFFFFF,1);	
+	g.graphics.drawRect(0,0,541,300);
+	
+}
+
+timer(function(){
+theLight(t1,150,40,2.7);
+theLight(t11,195,35,2.7);
+timer(function(){camera();},1300);
+timer(function(){
+theBg();
+theLight(t2,150,40,2.3);
+theLight(t22,195,35,2.3);},2700);},680);</d>
+<d p="129,8,25,16777215,1354189761,2,92de3cf6,154191685">/*129.00*/
+/*破碎的*/
+function theTruth()
+{
+	var g = $.createShape({x:0,y:42,lifeTime:30});
+        g.graphics.beginFill(0xFFFFFF,1);	
+	g.graphics.drawRect(0,0,541,300);
+for(var i=0;i&lt;=15;i++)
+{
+	var getx1=-10+i*40*0.9;
+	
+	for(var j=0;j&lt;=10;j++)
+	{
+	var gety1=-10+j*40*0.9;
+
+	var getx2=Utils.rand(-200,560);
+	var gety2=Utils.rand(-200,560);
+	
+	var w=$.createComment("█",{x:getx1,y:gety1,lifeTime:25,motionGroup:[{x:{fromValue:getx1,toValue:getx2,lifeTime:2,startDelay:19.8*1000},y:{fromValue:gety1,toValue:gety2,lifeTime:2,startDelay:19.8*1000},alpha:{fromValue:1,toValue:0,lifeTime:2,startDelay:19.8*1000}}]});
+	w.color=0x000000;
+	w.fontsize=40;
+	w.filters=null;
+	
+	
+
+	}
+}
+}
+
+
+
+function daoying(t,x1,y1,wz,gfn,lt,r1,r2)
+{
+var x1=(541-wz*0.9*t.length)/2;
+var cl=["0x990af3","0x0c62af","0xf70b10","0xFF1C60","0xf5c60a","0xf1f40b","0x39f55c","0x13d3be","0x000000","0xF7CA00"];
+var gf1=$.createGlowFilter(cl[gfn],1,2,2,2,6,true,false);
+for(i=1;i&lt;=t.length;i++)
+{
+
+	var tw= t.substring(i-1,i);
+	getx1=x1+(i-1)*wz*0.9;
+	var w=$.createComment(tw,{x:getx1,y:y1,lifeTime:lt,alpha:1,motionGroup:[{alpha:{fromValue:0,toValue:1,lifeTime:0.3}},{alpha:{fromValue:1,toValue:0,lifeTime:0.2,startDelay:(lt-0.5)*1000}}]});
+
+
+	
+/*倒影*/
+	var w2=$.createComment(tw,{x:getx1,y:y1+2.5*wz,lifeTime:lt,motionGroup:[{alpha:{fromValue:0,toValue:0.3,lifeTime:0.3}},{alpha:{fromValue:0.3,toValue:0,lifeTime:0.2,startDelay:(lt-0.5)*1000}}]});
+if(i&gt;=r1&amp;&amp;i&lt;=r2)
+{	w.color=w2.color=cl[2];w.filters=null;w2.filters=null;
+
+}
+else
+{	w.color=0xffffff;
+	w.filters=[gf1];
+	w2.color=0xffffff;
+	w2.filters=[gf1];
+
+}	w.fontsize=wz;	
+	w.font="宋体";
+	w2.rotationX=180;	
+	w2.fontsize=wz;
+	w2.alpha=0.3;
+	w2.font="宋体";
+
+
+
+}
+}
+/*字幕补充*/
+function daoyingp(t,x1,y1,wz,gfn,lt,r1,r2,cln)
+{
+var x1=(541-wz*0.9*t.length)/2;
+var cl=["0x990af3","0x0c62af","0xf70b10","0xFF1C60","0xf5c60a","0xf1f40b","0x39f55c","0x13d3be","0x000000","0xffffff"];
+var gf1=$.createGlowFilter(cl[gfn],1,2,2,2,6,true,false);
+for(i=1;i&lt;=t.length;i++)
+{
+
+	var tw= t.substring(i-1,i);
+	getx1=x1+(i-1)*wz*0.9;
+	var w=$.createComment(tw,{x:getx1,y:y1,lifeTime:lt,alpha:1,motionGroup:[{alpha:{fromValue:0,toValue:1,lifeTime:0.3}},{alpha:{fromValue:1,toValue:0,lifeTime:0.2,startDelay:(lt-0.5)*1000}}]});
+
+	
+if(i&gt;=r1&amp;&amp;i&lt;=r2)
+{	w.color=cl[2];w.filters=null;
+
+}
+else
+{	w.color=cl[cln];
+	w.filters=[gf1];
+
+}	w.fontsize=wz;	
+	w.font="宋体";
+
+
+}
+}
+t3="考えたって分カラナイ";
+t33="反正想也想不明白";
+t4="また今日が【つづく】だけ？";
+t44="莫非今天又要【繼續】？";
+t5="(メイド)「盗まれたのは」";
+t55="(女僕)「被盜走的是」";
+t6="(執事)「望まぬ【場面】？」";
+t66="(管家)「不需要的【一幕】？";
+t7="(少女人形)「【次の PagE 】デ...」";
+t77="(人偶少女)「那麼在【下一頁】...」";
+t8="(少年人形)「犯人ガ分カル...？」";
+t88="(人偶少年)「就能得知犯人了???？」";
+t9="(奥方)「未来の 【PagE】 」";
+t99="(夫人)「未來的【那一頁】」";
+t10="(主人)「【ドウ】やって知った？」";
+t1010="(主人)「【從何】得知？」";
+t11="(お嬢様)「【ソレ】ができるのは...」";
+t1111="(大小姐)「能做到【此事】的...」";
+t12="犯人は貴方でしょう？";
+t1212="犯人就是你吧？";
+t13="「みーっつっけた」";
+t1313="「找到了」";
+
+timer(function(){
+daoyingp(t3,50,145,30,10,2.1,20,30,9);
+daoyingp(t33,50,180,25,10,2.1,20,30,9);
+
+timer(function(){daoyingp(t4,50,145,30,10,2.1,6,10,9);
+daoyingp(t44,50,180,25,10,2.1,7,10,9);},2100);
+timer(function(){theTruth();},4500);
+
+timer(function(){
+daoying(t5,50,160,25,6,2.6,40,17);
+daoyingp(t55,50,355,15,6,2.6,30,40,9);},5400);
+
+
+timer(function(){
+daoying(t6,50,160,25,0,2.4,9,12);
+daoyingp(t66,50,355,15,0,2.4,10,13,9);},8000);
+
+timer(function(){
+daoying(t7,50,160,25,5,2,8,17);
+daoyingp(t77,50,355,15,5,2,11,15,9);},10400);
+
+timer(function(){
+daoying(t8,50,160,25,4,2.5,40,50);
+daoyingp(t88,50,355,15,4,2.5,40,50,9);},12400);
+
+timer(function(){
+daoying(t9,50,160,25,2,1.9,10,15);
+daoyingp(t99,50,355,15,2,1.9,10,9,13);},14900);
+
+timer(function(){
+daoying(t10,50,160,25,1,2.5,6,9);
+daoyingp(t1010,50,355,15,1,2.5,6,9,9);},16800);
+
+timer(function(){
+daoying(t11,50,160,25,3,1.7,7,10);
+daoyingp(t1111,50,355,15,3,1.7,10,13,9);},19300);
+
+timer(function(){
+daoying(t11,50,160,25,3,1.7,7,10);
+daoyingp(t1111,50,355,15,3,1.7,10,13,9);},19300);
+
+timer(function(){
+daoyingp(t12,50,145,30,10,1.9,20,30,2);
+daoyingp(t1212,50,180,25,10,1.9,20,30,2);},21000);
+
+timer(function(){
+daoyingp(t13,50,145,30,7,1.1,20,30,9);
+daoyingp(t1313,50,180,25,7,1.1,20,30,9);},22900);},680);</d>
+<d p="154,8,25,16777215,1354277207,2,92de3cf6,154463288">/*154.00*/
+
+function textBlood(t,x1,y1,wz,lt,cln,r1,r2)
+{
+var x1=(541-wz*0.9*t.length)/2;
+var cl=["0x990af3","0x0c62af","0xf70b10","0xFF1C60","0xf5c60a","0xf1f40b","0x39f55c","0x13d3be","0x000000","0xF7CA00"];
+for(var i=1;i&lt;=t.length;i++){
+var getw=t.substring(i-1,i);
+var getx1=x1+(i-1)*wz*0.9;
+var w2x1=Utils.rand(-50,590);
+var w2y1=Utils.rand(50,320);
+/*跟随，血！*/
+
+	cx=Utils.rand(0,541);
+	cy=Utils.rand(42,342);
+var g = $.createShape({x:cx,y:cy,lifeTime:lt,motionGroup:[{y:{fromValue:cx,toValue:y1+Utils.rand(-80,80),lifeTime:0.1},x:{fromValue:cy,toValue:getx1+Utils.rand(-80,80),lifeTime:0.1}}]});        
+	g.graphics.beginFill(cl[2],0.7);	
+	r=Utils.rand(4,25);
+	g.graphics.drawCircle(0,0,r);
+/*字幕*/
+var w2=$.createComment(getw,{x:w2x1,y:w2y1,lifeTime:lt,alpha:1,motionGroup:[{y:{fromValue:w2y1,toValue:y1,lifeTime:0.5},x:{fromValue:w2x1,toValue:getx1,lifeTime:0.5}}]});
+
+if(i&gt;=r1&amp;&amp;i&lt;=r2)
+{
+w2.color=cl[2];
+}
+else
+{
+	w2.color=cl[cln];}
+
+	w2.fontsize=wz;
+	w2.font="宋体";
+	w2.filters=null;
+
+
+
+
+	
+
+}
+}
+
+t1="Crazy nighT　【鍵】を使って";
+t11="Crazy nighT　使用【鑰匙】";
+
+t2="もっと　もっと　盛り上がれ";
+t22="更加　更加　興致高昂吧";
+
+t3="考えないで馬鹿になろう？";
+t33="拋開一切不要多想了嘛？";
+
+timer(function(){
+textBlood(t1,190,160,27,2.5,8,1,11);
+textBlood(t11,190,200,20,2.5,8,1,11);
+
+timer(function(){
+textBlood(t2,190,160,27,2.3,8,50,51);
+textBlood(t22,190,200,20,2.3,8,50,41);},2500);
+
+timer(function(){
+textBlood(t3,190,160,27,1.6,8,30,41);
+textBlood(t33,190,200,20,1.6,8,30,41);},4800);},100);</d>
+<d p="163,8,25,16777215,1354277562,2,92de3cf6,154465483">/*163.00*/
+
+function kuankuan(t,x1,y1,wz,lt,cln,n1,n2,n3,y2)
+{
+var x1=(541-wz*0.9*t.length)/2;
+var cl=["0x990af3","0x0c62af","0xf70b10","0xFF1C60","0xf5c60a","0xf1f40b","0x39f55c","0x13d3be","0x000000","0xffffff"];
+var i=1;
+interval(function(){
+var getw=t.substring(i-1,i);
+var getx1=x1+(i-1)*wz*0.9;
+var w2x1=Utils.rand(-50,590);
+var w2y1=Utils.rand(50,320);
+if(i==n1||i==n2||i==n3)
+{var w2=$.createComment("█",{x:w2x1,y:w2y1,lifeTime:lt+(t.length-i)*0.05,alpha:1,motionGroup:[{alpha:{fromValue:0,toValue:1,lifeTime:0.1},y:{fromValue:w2y1,toValue:y1,lifeTime:0.2},x:{fromValue:w2x1,toValue:getx1,lifeTime:0.2}},{rotationZ:{fromValue:0,toValue:-90+i*5,lifeTime:0.2,startDelay:2900},y:{fromValue:y1,toValue:y2,lifeTime:0.2,startDelay:2900}}]});
+	w2.color=cl[8];
+	w2.fontsize=wz;
+	w2.font="宋体";
+	w2.filters=null;
+
+var w=$.createComment(getw,{x:w2x1,y:w2y1,lifeTime:lt+(t.length-i)*0.05,alpha:1,motionGroup:[{alpha:{fromValue:0,toValue:1,lifeTime:0.1},y:{fromValue:w2y1,toValue:y1,lifeTime:0.2},x:{fromValue:w2x1,toValue:getx1,lifeTime:0.2}},{rotationZ:{fromValue:0,toValue:-90+i*5,lifeTime:0.2,startDelay:2900},y:{fromValue:y1,toValue:y2,lifeTime:0.2,startDelay:2900}}]});
+	w.color=cl[9];
+	w.fontsize=wz;
+	w.font="宋体";
+	w.filters=null;
+
+
+}
+else{	
+var w=$.createComment(getw,{x:w2x1,y:w2y1,lifeTime:lt+(t.length-i)*0.05,alpha:1,motionGroup:[{alpha:{fromValue:0,toValue:1,lifeTime:0.1},y:{fromValue:w2y1,toValue:y1,lifeTime:0.2},x:{fromValue:w2x1,toValue:getx1,lifeTime:0.2}},{rotationZ:{fromValue:0,toValue:-90+i*5,lifeTime:0.2,startDelay:2900},y:{fromValue:y1,toValue:y2,lifeTime:0.2,startDelay:2900}}]});
+	w.color=cl[8];
+	w.fontsize=wz;
+	w.font="宋体";
+	w.filters=null;}
+i++;
+},50,t.length);
+}
+
+timer(function(){
+kuankuan("ソレなら！　1、2、3 で　刻んで、ページ！",50,180,25,3.5,9,7,9,11,-50);
+
+kuankuan("那麼！　寫著1、2、3　的書頁！！",50,210,20,3.8,9,7,9,11,390);},220);</d>
+<d p="166,8,25,16777215,1354281615,2,92de3cf6,154491036">/*166.00*/
+
+function kuankuan(t,x1,y1,wz,lt,cln,n1,n2,y2)
+{
+var x1=(541-wz*0.9*t.length)/2;
+var cl=["0x990af3","0x0c62af","0xf70b10","0xFF1C60","0xf5c60a","0xf1f40b","0x39f55c","0x13d3be","0x000000","0xffffff"];
+var i=1;
+interval(function(){
+var getw=t.substring(i-1,i);
+var getx1=x1+(i-1)*wz*0.9;
+var w2x1=Utils.rand(-50,590);
+var w2y1=Utils.rand(50,320);
+if(i&gt;=n1&amp;&amp;i&lt;=n2)
+{
+
+var w=$.createComment(getw,{x:w2x1,y:w2y1,lifeTime:lt+(t.length-i)*0.05,alpha:1,motionGroup:[{alpha:{fromValue:0,toValue:1,lifeTime:0.2},y:{fromValue:w2y1,toValue:y1,lifeTime:0.2},x:{fromValue:w2x1,toValue:getx1,lifeTime:0.2}},{rotationZ:{fromValue:0,toValue:-90+i*5,lifeTime:0.2,startDelay:1900},y:{fromValue:y1,toValue:y2,lifeTime:0.2,startDelay:1900}}]});
+	w.color=cl[2];
+	w.fontsize=wz;
+	w.font="宋体";
+	w.filters=null;
+
+
+}
+else{	
+var w=$.createComment(getw,{x:w2x1,y:w2y1,lifeTime:lt+(t.length-i)*0.05,alpha:1,motionGroup:[{alpha:{fromValue:0,toValue:1,lifeTime:0.2},y:{fromValue:w2y1,toValue:y1,lifeTime:0.2},x:{fromValue:w2x1,toValue:getx1,lifeTime:0.2}},{rotationZ:{fromValue:0,toValue:-90+i*5,lifeTime:0.2,startDelay:1900},y:{fromValue:y1,toValue:y2,lifeTime:0.2,startDelay:1900}}]});
+	w.color=cl[8];
+	w.fontsize=wz;
+	w.font="宋体";
+	w.filters=null;}
+i++;
+},50,t.length);
+}
+timer(function(){
+kuankuan("もっと　もっと...壊そうぜ",50,180,25,2.4,0,1,10,-50);
+kuankuan(" 繼續　 繼續...統統毀掉吧",50,210,20,2.4,0,1,10,410);},240);
+
+</d>
+<d p="168,8,25,16777215,1354286368,2,92de3cf6,154521234">/*168.00*/
+
+var lt=1.9;
+var x=10;
+for(var i=0;i&lt;54;i++)	
+{	
+	timer(function(){
+	var c= $.createCanvas({x:0,y:192,lifeTime:lt+0.05*(54-i),motionGroup:[{rotationX:{ fromValue: 0, toValue: 360*(lt-0.2),lifeTime:(lt-0.2)}},{y:{ fromValue: 192, toValue:Utils.rand(-2,2)*400,lifeTime:0.2},startDelay:(lt-0.2)*1000}]});
+	var y1=Utils.rand(20,150);
+	var g= $.createShape({lifeTime:lt,x:x,y:-150,parent:c});
+	g.graphics.beginFill(0x000000,0.7);
+ 	g.graphics.lineTo(-arrow_height,-w);
+ 	g.graphics.lineTo(-arrow_height,w);
+ 	g.graphics.lineTo(0,0);
+ 	g.graphics.drawRect(0,0,10,150);
+	x=x+10;
+	},50*i);
+
+}
+
+timer(function(){
+var w=$.createComment("ほんとの　EnD　見たいなら\n真正的　EnD　想看见的话",{x:100,y:182,lifeTime:2.1,alpha:1,motionGroup:[{alpha:{ fromValue: 0, toValue: 1,lifeTime:0.2}},{alpha:{ fromValue:1, toValue:0,lifeTime:0.2,startDelay:1700}}]});
+	w.color=0x000000;
+	w.fontsize=30;
+	w.font="宋体";
+	w.filters=null;
+
+timer(function(){
+var w=$.createComment("もももっと狂わせて\n更更更加瘋狂就好了",{x:100,y:182,lifeTime:1.9,alpha:1,motionGroup:[{alpha:{ fromValue: 0, toValue: 1,lifeTime:0.2}},{alpha:{ fromValue:1, toValue:0,lifeTime:0.2,startDelay:1500}}]});
+	w.color=0x000000;
+	w.fontsize=30;
+	w.font="宋体";
+	w.filters=null;},2100);},600);
+</d>
+<d p="172,8,25,16777215,1354346240,2,92de3cf6,154733434">t1="(村娘)「ほんとの Crazy nighT　返して頂戴！";
+t11="(少女)「快把真正的Crazy nighT　還給我！」";
+t2="(村娘)きっと　きっと　【コレ】じゃない...」";
+t22="(少女)「一定　一定　不會是【它】...」";
+
+function kuankuan(t,x1,y1,wz,lt,cln,n1,n2)
+{
+var x1=(541-wz*0.9*t.length)/2;
+var cl=["0x990af3","0x0c62af","0xf70b10","0xFF1C60","0xf5c60a","0xf1f40b","0x39f55c","0x13d3be","0x000000","0xffffff"];
+for(var i=1;i&lt;=t.length;i++){
+var getw=t.substring(i-1,i);
+var getx1=x1+(i-1)*wz*0.9;
+var w2x1=Utils.rand(-50,590);
+var w2y1=Utils.rand(-150,320);
+if(i&gt;=n1&amp;&amp;i&lt;=n2)
+{
+
+var w=$.createComment(getw,{x:w2x1,y:w2y1,lifeTime:lt,alpha:1,motionGroup:[{fontsize:{fromValue:7*wz,toValue:wz,lifeTime:0.6},y:{fromValue:w2y1,toValue:y1,lifeTime:0.6},x:{fromValue:w2x1,toValue:getx1,lifeTime:0.6}}]});
+	w.color=cl[2]; 
+	w.fontsize=wz;
+	w.font="宋体";
+	w.filters=null;
+
+
+}
+else{	
+var w=$.createComment(getw,{x:w2x1,y:w2y1,lifeTime:lt,alpha:1,motionGroup:[{alpha:{fromValue:0,toValue:1,lifeTime:0.2},y:{fromValue:w2y1,toValue:y1,lifeTime:0.2},x:{fromValue:w2x1,toValue:getx1,lifeTime:0.2}}]});
+	w.color=cl[7];
+	w.fontsize=wz;
+	w.font="宋体";
+	w.filters=null;}
+
+}
+}
+timer(function(){
+timer(function(){
+kuankuan(t1,50,160,20,2.9,0,11,21);
+kuankuan(t11,50,190,20,2.9,0,11,21);},240);
+timer(function(){
+kuankuan(t2,50,160,20,2.2,0,13,16);
+kuankuan(t22,50,190,20,2.2,0,15,17);},2900);
+
+
+/*横*/
+
+timer(function(){
+var lt=3.6;
+var rw=5;
+var key1=(20+rw/2);
+var gety1=32+rw/2;
+var getx1=541;
+for(var i=0;i&lt;13;i++)
+{	
+	if(i&lt;8)
+	{gety2=192-5*(7-i);}
+	else{gety2=192+(i-7)*5;}	
+	gety1=gety1+key1;
+	getx1=getx1*(-1);	
+	var c= $.createCanvas({x:getx1,y:gety1,lifeTime:lt,motionGroup:[{x:{ fromValue:getx1, toValue:0,lifeTime:0.2,startDelay:50*i}},{y:{ fromValue:gety1, toValue:gety2,lifeTime:0.5,startDelay:900}}]});
+	var g=$.createShape({x:0,y:-rw/2,lifeTime:lt,parent:c});
+	g.graphics.beginFill(0x000000,1);
+	g.graphics.drawRect(0,0,541,rw);
+	
+}},1500);},770);</d>
+<d p="178,8,25,16777215,1354355108,2,92de3cf6,154778078">t1="【台本どおり演（や）った】ことだけが";
+t11="只會【照著劇本來演】呀";
+t2="真実だとは限らない...？";
+t22="可未必就是真相喲...？";
+
+function thex(t1,t2,lt,wz,k,sd1,sd2)
+{
+	
+	if(k==1)
+	{   var c=$.createCanvas({x:0,y:42,lifeTime:lt,motionGroup:[{rotationX:{fromValue:0,toValue:90,lifeTime:0.2,startDelay:sd1*1000}}]});c.rotationZ=29;y2=(501-t2.length*wz)/2;}
+	else
+	{ var c=$.createCanvas({x:0,y:442,lifeTime:lt,motionGroup:[{rotationX:{fromValue:0,toValue:90,lifeTime:0.2,startDelay:sd1*1000}}]});c.rotationZ=-55;y2=(700-t2.length*wz)/2; }
+	var g1=$.createShape({x:0,y:-25,lifeTime:lt,parent:c});
+	    g1.graphics.beginFill(0x000000,1);
+	    g1.graphics.drawRect(0,0,690,60);
+var w=$.createComment(t1,{x:-200,y:-19,lifeTime:lt,alpha:1,parent:c,motionGroup:[{x:{fromValue:-400,toValue:y2,lifeTime:0.5}},{alpha:{fromValue:1,toValue:0.5,lifeTime:0.5,startDelay:sd2*1000}}]});
+	w.color=0xffffff;
+	w.fontsize=wz;
+	w.font="宋体";
+	w.filters=null;
+var w=$.createComment(t2,{x:-400,y:7,lifeTime:lt,alpha:1,parent:c,motionGroup:[{x:{fromValue:-400,toValue:y2,lifeTime:0.5}},{alpha:{fromValue:1,toValue:0.5,lifeTime:0.5,startDelay:sd2*1000}}]});
+	w.color=0xffffff;
+	w.fontsize=wz;
+	w.font="宋体";
+	w.filters=null;
+	
+}
+
+thex(t1,t11,4.4,20,1,3.5,2.1); //2.3
+timer(function(){
+thex(t2,t22,2.1,20,2,1.9,1.9);},2300);</d>
+<d p="196,8,25,16777215,1354377599,2,92de3cf6,154932206"> timer(function(){
+
+function textP(t,x1,y1,wz,lt)
+{
+ var w=$.createComment(t,{x:x1,y:y1,lifeTime:lt,alpha:1,motionGroup:[
+{alpha: {fromValue:0,toValue:1,lifeTime:0.5}}  ]});
+w.fontsize=wz;
+w.font="宋体";
+w.filters=null;
+w.color=0x000000;
+}
+
+
+            var lt=2.8;
+		var lt2=12;
+
+	    var g1=$.createShape({x:0,y:-192,lifeTime:lt2,motionGroup:[{y:{fromValue:-192,toValue:-42,lifeTime:0.45}},{y:{fromValue:-42,toValue:0,lifeTime:lt-2.45,startDelay:2000}}]});
+	    g1.graphics.beginFill(0x000000,1);
+	    g1.graphics.drawRect(0,0,541,192);
+
+	    var g2=$.createShape({x:0,y:384,lifeTime:lt2,motionGroup:[{y:{fromValue:384,toValue:234,lifeTime:0.45}},{y:{fromValue:234,toValue:192,lifeTime:lt-2.45,startDelay:2000}}]});
+	    g2.graphics.beginFill(0x000000,1);
+	    g2.graphics.drawRect(0,0,541,192);
+
+
+t1="そのエンドロールが";
+t11="待到那謝幕掌聲";
+t2="褪せるまで";
+t22="徹底褪去的一刻";
+
+textP(t1,120,160,30,1.45);
+textP(t11,200,195,20,1.45);
+timer(function(){
+textP(t1,140,160,30,1.8);
+textP(t11,200,195,20,1.8);},1450);},460);</d>
+<d p="182,8,25,16777215,1354377807,2,92de3cf6,154933350">/*背景*/
+function manyRect()
+{
+lt=13;
+sq=50;
+var j=1;
+var rz=1;
+for(var i=1;i&lt;8;i++)
+{
+timer(function(){
+	sq=180+j*50;j++;
+	rz=-1*rz;
+ var c=$.createCanvas({x:541/2,y:192,lifeTime:lt,motionGroup:[{rotationZ:{fromValue:0,toValue:rz*90*lt,lifeTime:lt/*,startDelay:sd1*1000*/}}]});
+	var g1=$.createShape({x:-sq/2,y:-sq/2,lifeTime:lt,parent:c});
+	    /*g1.graphics.beginFill(0x000000,1);*/
+	g1.graphics.lineStyle(2, 0x000000, 1, false, "vertical","round", "round", 10);
+	    g1.graphics.drawRect(0,0,sq,sq);
+		},580*i);
+}
+}
+/*右*/
+function rBack(t,y1,wz,lt,cln)
+{
+var cl=["0x990af3","0x0c62af","0xf70b10","0xFF1C60","0xf5c60a","0xf1f40b","0x39f55c","0x13d3be","0x000000","0xffffff"];
+var getwz=wz*80;
+var getx1=541;
+var j=1;
+for(var i=1;i&lt;=t.length;i++)
+{
+
+timer(function(){
+var getw=t.substring(j-1,j);
+var w=$.createComment(getw,{x:getx1,y:y1,lifeTime:lt,alpha:1,motionGroup:[{fontsize:{fromValue:getwz,toValue:wz,lifeTime:lt}}]});
+	w.color=cl[cln]; 
+	w.fontsize=wz;
+	w.font="宋体";
+	w.filters=null;
+ (Tween.bezier(
+ 	w, 
+ 	{x:270, y: 192}, 
+ 	null, 
+ 	{
+ 		x: [541,405,270,115,270], 
+ 		y: [84,50,120,150,192]
+ 	}
+ )).play();
+j++;
+getx1=getx1+j*2;
+},40*i);
+}
+}
+
+
+
+
+
+
+
+
+/*正面*/
+function fBack(t,y1,wz,lt,cln,r1,r2)
+{
+var cl=["0x990af3","0x0c62af","0xf70b10","0xFF1C60","0xf5c60a","0xf1f40b","0x39f55c","0x13d3be","0x000000","0xffffff"];
+var getwz=wz*25;
+var getx1=(541-getwz*t.length*0.9)/2;
+
+var getx2=(541-wz*t.length*0.9)/2;
+gety2=y1+wz*11;
+for(var i=1;i&lt;=t.length;i++)
+{
+
+
+var getw=t.substring(i-1,i);
+var w=$.createComment(getw,{x:getx1,y:y1,lifeTime:lt,alpha:1,motionGroup:[{fontsize:{fromValue:getwz,toValue:wz,lifeTime:lt},y:{fromValue:y1,toValue:gety2,lifeTime:lt},x:{fromValue:getx1,toValue:getx2,lifeTime:lt}}]});
+if(i&gt;=r1&amp;&amp;i&lt;=r2)
+{
+w.color=cl[2];
+}	
+else
+{w.color=cl[cln];} 
+	w.fontsize=wz;
+	w.font="宋体";
+	w.filters=null;
+getx1=getx1+getwz*0.9;
+getx2=getx2+wz*0.9;
+}
+}
+
+/*字幕补充*/
+
+
+
+ function textP(t,x1,y1,wz,lt)
+{
+ var w=$.createComment(t,{x:x1,y:y1,lifeTime:lt,alpha:1,motionGroup:[
+{alpha: {fromValue:0,toValue:1,lifeTime:0.5}}  ]});
+w.fontsize=wz;
+w.font="宋体";
+w.filters=null;
+w.color=0xffffff;
+}
+
+
+
+
+/*字幕*/
+t1="おしまい？Crazy nighT　幕は下がった";
+t11="結束了？ Crazy nighT　帷幕落下";
+t2="(村娘)「待って、待って、止めないで」";
+t22="(村娘) 「慢著　慢著　先別停止」";
+t3="残念だけど... 時間切れー！";
+t33="真遺憾啊...時間到嘍—！";
+t4="(執事/メイド)「また... 今夜会いましょう」";
+t44="(管家/女僕) 「「讓我們...今夜重逢吧」」";
+t5="(双子人形)「マタ！？... 今夜狂イマショウ？」";
+t55="(人偶雙子)「「還演！？...今夜再度瘋狂吧？」」";
+t6="(主人/奥方/お嬢様)「また今夜 、 さがせば いい」";
+t66="(主人/夫人/大小姐)「「「直到今夜、再找就好嘍」」」";
+timer(function(){
+manyRect();
+fBack(t1,150,3,2.5,8,6,17);
+fBack(t11,190,2,2.5,8,6,17);
+
+timer(function(){
+fBack(t2,150,3,2.47,7,26,27);
+fBack(t22,190,2,2.47,7,26,27);
+},2500);
+
+timer(function(){
+fBack(t3,150,3,2.2,8,1,2);
+fBack(t33,190,2,2.2,8,2,3);},4970);
+
+timer(function(){
+fBack(t4,150,3,2.4,8,71,72);
+fBack(t44,190,2,2.4,8,72,73);},7170);
+
+timer(function(){
+fBack(t5,150,3,2.1,8,71,72);
+fBack(t55,190,2,2.1,8,72,73);},9570);
+
+timer(function(){
+textP(t66,70,350,15,2.1);
+rBack(t6,84,2,1,8);
+
+},11670);},400);</d>
+<d p="198,8,25,16777215,1354378587,2,92de3cf6,154937137">function redCurtain()
+{var colors = [0xFC0808,0xBF0D0D ];
+ 	var alphas = [0.2, 1];
+	 var ratios = [10,225];
+ 	var matr = $.createMatrix();
+ 	matr.createGradientBox(10, 10,0,0,0); 	
+	var cbx=-10;
+for(var i=1;i&lt;=7;i++)
+	{	
+	var g=$.createShape({x:0,y:0,lifeTime:8,motionGroup:[  
+   {y:{fromValue:-342,toValue:0,lifeTime:2},alpha:{fromValue:0,toValue:0.8,lifeTime:2}}]});
+    g.graphics.beginGradientFill("linear", colors, alphas, ratios, matr, "reflect","linearRGB",0);
+	g.graphics.drawRoundRect(cbx,0,80,342,5,5);		
+	cbx=cbx+80;
+
+	}
+}
+timer(function(){
+redCurtain();},200);</d>
+<d p="106,8,25,16777215,1354434443,2,92de3cf6,155143340">/*re106.00*/
+function openBook()
+{
+var key=4;
+ var c = $.createCanvas({x:440,y:120,lifeTime:4.9});
+	c.rotationZ=45;
+		{var g2 = $.createShape({x:0,y:0,lifeTime:4.9,parent:c});
+        g2.graphics.beginFill(0x898383,1);
+g2.graphics.lineStyle(2, 0x000000, 1, false, "vertical","round", "round", 10);	    
+g2.graphics.drawRect(0,0,150,200);
+            
+
+	}
+
+	for(var i=1;i&lt;15;i++)
+		{
+var g = $.createShape({x:0,y:0,lifeTime:4.9,parent:c});
+g.graphics.lineStyle(3, 0x000000, 1, false, "vertical","round", "round", 10);
+g.graphics.lineTo(0,200);
+		if(i&lt;14)
+		{var g1 = $.createShape({x:0,y:0,lifeTime:4.9,parent:c,motionGroup:[{rotationY:{fromValue:0,toValue:180,lifeTime:i*0.35}}]});
+        g1.graphics.beginFill(0x898383,1);         /*偷懒，渐变色...*/
+g1.graphics.lineStyle(2, 0x000000, 1, false, "vertical","round", "round", 10);	
+	    g1.graphics.drawRect(0,0,150,200);
+	    key=key-1;}
+
+
+		}
+
+		
+}
+openBook();
+
+t1="(双子人形)\n   ネエ、\n \n ガ、ナイラシイ...！\n ";
+t1a="\n \n 【つ.ぎの PagE 】";
+t11="(人偶雙子)\n   吶 、\n \n 似乎、沒有了呢...！\n ";
+t1b="\n \n 【下一頁】";
+function dialogue(t,x1,y1,x2,wz,lt,cln,v)
+{
+var gf1=$.createGlowFilter(0x000000/*光晕颜色*/,1/*Alpha*/,2/*水平模糊量*/,2/*垂直模糊量*/,15/*印记或跨页的强度*/,10/*应用滤镜的次数*/,true/*是否为内侧发光*/,false/*是否具有挖空效果*/);	
+var cl=["0x990af3","0x0c62af","0xf70b10","0xFF1C60","0xf5c60a","0xf1f40b","0x39f55c","0x13d3be","0x000000","0xF7CA00"];
+var w=$.createComment(t,{x:x1,y:y1,lifeTime:lt,alpha:1,motionGroup:[{alpha:{fromValue:0,toValue:1,lifeTime:0.3},x:{fromValue:x1,toValue:x2,lifeTime:2.5}}]});	
+	w.color=cl[cln];
+	w.fontsize=wz;
+	w.font="宋体";
+if(v==1)
+	{w.filters=[gf1];}
+else
+{w.filters=null;}
+}
+
+dialogue(t1,0,80,80,20,4.9,9,1);
+dialogue(t1a,0,80,80,20,4.9,2,1);
+dialogue(t11,0,220,80,20,4.9,9,1);
+dialogue(t1b,0,220,80,20,4.9,2,1);
+
+</d>
+<d p="119,8,25,16777215,1354435676,2,92de3cf6,155151185">/*re119.00*/
+
+function funlogo(x1,y1,lt)
+{
+
+
+/*第一个*/
+var c1= $.createCanvas({x:x1,y:y1,lifeTime:lt,motionGroup:[{rotationY:{fromValue:0,toValue:360*lt,lifeTime:lt}}]});
+
+	var g1= $.createShape({x:0,y:0,lifeTime:lt,parent:c1});
+	g1.graphics.lineStyle(10/*粗细*/, 0x000000/*颜色*/, 1/*透明度*/, false/*完整像素true或false*/, "vertical"/*缩放normal,none等*/,"none"/*端点类型none、round 和 square*/, "miter"/*拐角bevel、miter 和 round*/, 10/*切断尖角的数字*/);
+	g1.graphics.drawCircle(0,0,100);
+	
+        g1.filters=null;
+
+/*第二个*/
+var c2= $.createCanvas({x:x1,y:y1,lifeTime:lt,motionGroup:[{rotationX:{fromValue:0,toValue:360*lt,lifeTime:lt}}]});
+
+	var g2= $.createShape({x:0,y:0,lifeTime:lt,parent:c2});
+	g2.graphics.lineStyle(10/*粗细*/, 0x000000/*颜色*/, 1/*透明度*/, false/*完整像素true或false*/, "vertical"/*缩放normal,none等*/,"none"/*端点类型none、round 和 square*/, "miter"/*拐角bevel、miter 和 round*/, 10/*切断尖角的数字*/);
+	g2.graphics.drawCircle(0,0,100);
+	
+        g2.filters=null;
+
+
+/*字符*/
+var logo="☂✄☠✖";
+var i=0;
+Utils.interval(function(){
+	i++;
+	var tw= logo.substring(i-1,i);
+	var c= $.createCanvas({x:x1,y:y1,lifeTime:0.5});
+	var w=$.createComment(tw,{x:-60,y:-75,lifeTime:0.5,fontsize:150,alpha:1,parent:c});
+	w.font="黑体";
+	w.color=0x000000;
+	w.filters=null;
+
+},500,4);
+}
+
+
+
+/*对话*/
+t1="︵少女人形︶￢隠蔽？﹂";
+t2="︵少年人形︶￢破壊？﹂";
+t3="︵お嬢様︶￢バグ？﹁";
+t4="︵執事︶￢ストライキ！？﹂";
+t11="︵人偶少女︶￢隱藏？﹂";
+t22="︵人偶少年︶￢破壞？﹂";
+t33="︵大小姐︶﹁BUG？﹂";
+t44="︵管家︶￢罷工！？﹂";
+
+function kuanshu(t,x1,y1,wz,lt,cln)
+{
+var cl=["0x990af3","0x0c62af","0xf70b10","0xFF1C60","0xf5c60a","0xf1f40b","0x39f55c","0x13d3be","0x000000","0xF7CA00"];
+for(var i=1;i&lt;=t.length;i++){
+var getw=t.substring(i-1,i);
+var gety1=y1+(i-1)*wz*0.9;
+var w2x1=Utils.rand(-500,600);
+var w2y1=Utils.rand(50,320);
+var w2=$.createComment("█",{x:w2x1,y:w2y1,lifeTime:lt,alpha:1,motionGroup:[{alpha:{fromValue:0,toValue:1,lifeTime:0.1},y:{fromValue:w2y1,toValue:gety1,lifeTime:0.1},x:{fromValue:w2x1,toValue:x1,lifeTime:0.1}}]});
+	w2.color=cl[8];
+	w2.fontsize=wz;
+	w2.font="宋体";
+	w2.filters=null;	
+var w=$.createComment(getw,{x:x1,y:gety1,lifeTime:lt,alpha:1});	
+	w.color=cl[cln];
+	w.fontsize=wz;
+	w.font="宋体";
+	w.filters=null;
+}
+}
+
+timer(function(){
+funlogo(541/2,192,2.3);
+
+timer(function(){kuanshu(t1,50,50,27,0.5,5);
+kuanshu(t11,85,90,20,0.5,5);},500);
+
+timer(function(){
+kuanshu(t2,450,50,27,0.5,4);
+kuanshu(t22,485,90,20,0.5,4);},1000);
+
+timer(function(){
+kuanshu(t3,50,50,27,0.5,2);
+kuanshu(t33,85,90,20,0.5,2);},1500);
+
+timer(function(){
+kuanshu(t4,450,40,26,0.5,0);
+kuanshu(t44,485,90,20,0.5,0);},2000);},750);</d>
+<d p="161,8,25,16777215,1354436252,2,92de3cf6,155156555">/*161.00*/
+
+timer(function(){
+t1="考えないで馬鹿になろう？";
+t11="考えないで馬鹿になろう？\n拋開一切不要多想了嘛？";
+	var wz=25;
+	var cl=["0x990af3","0x0c62af","0xf70b10","0xFF1C60","0xf5c60a","0xf1f40b","0x39f55c","0x13d3be","0x000000","0xF7CA00"];
+	var arrow_height=wz*4;
+	var width=wz*4.5;
+	var height=t1.length*wz;
+	var w=width/2;	
+	var c= $.createCanvas({x:0,y:195,lifeTime:2,motionGroup:[{x:{ fromValue: 0, toValue:50+arrow_height+height,lifeTime:0.2}},{rotationX:{fromValue:0, toValue:360,lifeTime:0.2,startDelay:1600},x:{ fromValue:50+arrow_height+height, toValue:560+arrow_height+height,lifeTime:0.2,startDelay:1600}}]});
+	var g= $.createShape({lifeTime:2,x:0,y:0,parent:c});
+	g.graphics.beginFill(cl[2],0.8);
+ 	g.graphics.lineTo(-arrow_height,-w);
+ 	g.graphics.lineTo(-arrow_height,w);
+ 	g.graphics.lineTo(0,0);
+ 	g.graphics.drawRect(-arrow_height,w/2,-height,-w);
+var w=$.createComment(t11,{x:-(arrow_height+height),y:-wz,lifeTime:2,parent:c});	
+w.fontsize=wz;
+w.filters=null;
+w.color=0xffffff;
+w.font="宋体";},40);</d>
+<d p="45,8,25,16777215,1354439904,2,92de3cf6,155180719">
+/*re45.000*/
+
+t1="(少年人形)「アカリガ」";
+t11="(人偶少年)「在那燈火」";
+t2="(少女人形)「ツクマデ...」";
+t22="(人偶少女)「點亮之前...」";
+function fBack(t,y1,wz,lt,cln,r1,r2)
+{
+var gf1=$.createGlowFilter(0x000000/*光晕颜色*/,1/*Alpha*/,2/*水平模糊量*/,2/*垂直模糊量*/,8/*印记或跨页的强度*/,5/*应用滤镜的次数*/,true/*是否为内侧发光*/,false/*是否具有挖空效果*/);
+var cl=["0x990af3","0x0c62af","0xf70b10","0xFF1C60","0xf5c60a","0xf1f40b","0x39f55c","0x13d3be","0x000000","0xffffff"];
+var getwz=wz*10;
+var getx1=(541-getwz*t.length*0.9)/2;
+
+var getx2=(541-wz*t.length*0.9)/2;
+gety2=y1+wz*11;
+for(var i=1;i&lt;=t.length;i++)
+{
+
+
+var getw=t.substring(i-1,i);
+var w=$.createComment(getw,{x:getx2,y:gety2,lifeTime:lt,alpha:1,motionGroup:[{fontsize:{fromValue:wz,toValue:getwz,lifeTime:lt*0.6},y:{fromValue:gety2,toValue:y1,lifeTime:lt*0.6},x:{fromValue:getx2,toValue:getx1,lifeTime:lt*0.6}}]});
+if(i&gt;=r1&amp;&amp;i&lt;=r2)
+{
+w.color=cl[2];
+}	
+else
+{w.color=cl[cln];} 
+	w.fontsize=wz;
+	w.font="宋体";
+	w.filters=[gf1];
+getx1=getx1+getwz*0.9;
+getx2=getx2+wz*0.9;
+}
+}
+
+
+
+timer(function(){
+fBack(t1,100,3,2.1,4,26,27);
+fBack(t11,140,2,2.1,4,26,27);},50);
+
+timer(function(){
+fBack(t2,200,3,1.1,5,26,27);
+fBack(t22,240,2,1.1,5,26,27);},1000);
+
+</d>
+</i>

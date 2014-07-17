@@ -6,7 +6,7 @@ body{
 	background-color:#111;
 }
 
-h2{
+h1, h2, h3{
 	padding:0;
 	margin:0 0 5px 0;
 }
@@ -73,6 +73,7 @@ a:hover{
 	width:20%;
 	padding:10px;
 	overflow:hidden;
+	min-width:270px;
 }
 
 .sidebar a.button{

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" value="IE=9">
+<link rel="stylesheet" href="../../demo/default.css" />
+<link rel="stylesheet" href="../../build/style.css" />
+<!-- Run 'make' to build the file -->
+<script src="../../build/CommentCoreLibrary.js"></script>
+
+<!-- A few helpers to do some decoding/fetching below-->
+<script src="../../demo/libxml.js"></script>
+<style>
+pre{margin:0;}
+pre.error{color:#f00;}
+pre.warning{color:#FFC500;}
+.s-button, .abp .button{
+	display:block; border:1px solid #f88; padding:8px 6px 8px 6px; 
+	background:#000; color:#f88; float:left;
+	-moz-user-select: none;
+	-khtml-user-select: none; 
+	-webkit-user-select: none; 
+	-o-user-select: none; 
+	user-select: none; 
+	cursor:default;
+}
+.s-button:hover,.abp .button:hover{background:#f88; color:#000;}
+</style>
+<!-- Scripting Extensions -->
+<script src="../../src/scripting/build/Host.js"></script>
+
+<title>Testrun Sandbox For CCL /w Scripting Enabled</title>
+</head>
+<body>
+<div style="position:absolute;right:0; top:0; width: 45%; overflow:auto; height:384px; padding:3px;" id="debug-console"></div>
+<div id="player-unit" style="width:540px;clear:both;">
+	<div class="m20 abp" id="player" style="height:384px;">
+		<div id="commentCanvas" class="container"></div>
+		<video id="abpVideo" autobuffer="true" data-setup="{}" width="100%" height="100%" style="z-index:-1;width:100%;height:100%;top:0;left:0;right:0;bottom:0;" preload="auto">
+		</video>
+	</div>
+	<div class="controls">
+		<a class="button" onclick="stop();" href="javascript:;">Stop</a>
+		<a class="button" onclick="resume();" href="javascript:;">Resume</a>
+		<div style="clear:both;"></div>
+	</div>
+	<div style="clear:both;"></div>
+</div>
+<div style="margin-top:450px;">
+	<h2>Tests</h2>
+	<div class="controls">
+		<a class="button" onclick="load('../../tests/scripting/kanpai.xml');" href="javascript:;">Run Scripting 1 (Pure) [Kanpai]</a>
+		<a class="button" onclick="load('../../tests/scripting/tsubasa.xml');" href="javascript:;">Run Scripting 2 (Mixed) [Tusbasa]</a>
+		<a class="button" onclick="load('../../tests/scripting/comment-festival-v3.xml');" href="javascript:;">Run Scripting 3 (Large) [Comment Festival v3]</a>
+		<a class="button" onclick="load('../../tests/scripting/jinzou-enemy.xml');" href="javascript:;">Run Scripting 4 (drawPath) [Jinzou Enemy]</a>
+		<a class="button" onclick="load('../../tests/scripting/crazy-night.xml');" href="javascript:;">Run Scripting 5 (textures &amp; 3d) [Crazy Night]</a>
+		<a class="button" onclick="load('../../tests/scripting/round-and-round.xml');" href="javascript:;">Run Scripting 6 (Akari engine) [Round and Round]</a>
+		<div style="clear:both;"></div>
+	</div>
+</div>	
+<p>Scripting: <a href="../../demo/">&larr; Back to main test</a> </p>
+<script>
+var isWindowedFullscreen = false;
+function launchFullScreen(element) {
+	cm.setBounds();
+	if(element.requestFullscreen) {
+		element.requestFullscreen();
+	} else if(element.mozRequestFullscreen) {
+		element.mozRequestFullscreen();
+	} else if(element.webkitRequestFullscreen) {
+		element.webkitRequestFullscreen();
+	}
+}
+
+function launchWindowFull(element){
+	if(!isWindowedFullscreen){
+		element.style.position = "fixed";
+		element.style.top = "0";
+		element.style.bottom = "0";
+		element.style.left = "0";
+		element.style.right = "0";
+		element.style.width = "auto";
+		element.style.height = "auto";
+	}else{
+		element.style.position = "";
+		element.style.top = "";
+		element.style.bottom = "";
+		element.style.left = "";
+		element.style.right = "";
+	}
+	cm.getBounds();
+	isWindowedFullscreen = !isWindowedFullscreen;
+}
+
+var cm = new CommentManager($('commentCanvas'));
+var bscripter = new CCLScripting("../../src/scripting/build/Worker.js");
+bscripter.logger = new function(){
+	this.log = function(t){
+		var pre = document.createElement("pre");
+		pre.textContent = "[" + (window.playhead / 1000) + "] " + t.toString();
+		$("debug-console").appendChild(pre);
+		while($("debug-console").children.length > 200){
+			$("debug-console").removeChild($("debug-console").children[0]);
+		}
+		$("debug-console").scrollTop = 100000;
+	};
+	this.error = function(t){
+		var pre = document.createElement("pre");
+		pre.textContent = "[" + (window.playhead / 1000) + "] " + t.toString();
+		pre.className = "error";
+		$("debug-console").appendChild(pre);
+		while($("debug-console").children.length > 200){
+			$("debug-console").removeChild($("debug-console").children[0]);
+		}
+		$("debug-console").scrollTop = 100000;
+	};
+	this.warn = function(t){
+		var pre = document.createElement("pre");
+		pre.textContent = "[" + (window.playhead / 1000) + "] " + t.toString();
+		pre.className = "warning";
+		$("debug-console").appendChild(pre);
+		while($("debug-console").children.length > 200){
+			$("debug-console").removeChild($("debug-console").children[0]);
+		}
+		$("debug-console").scrollTop = 100000;
+	};
+};
+cm.scripting = bscripter.getSandbox($("commentCanvas"));
+cm.init();
+
+var tmr=0;
+var start=0;
+var playhead = 0;
+function load(dmf,dmfmd){
+	if(dmfmd == null)
+		dmfmd = 'bilibili';
+	cm.clear();
+	start = 0;
+	try{
+		clearTimeout(tmr);
+	}catch(e){}
+	CommentLoader(dmf,cm,dmfmd);
+	cm.startTimer();
+	start = new Date().getTime();
+	tmr = setInterval(function(){
+		playhead = new Date().getTime() - start;
+		cm.time(playhead);
+	},10);
+}
+function stop(){
+	cm.stopTimer();
+	if(cm.scripting){
+		cm.scripting.send("Update:TimeUpdate",{
+			"state":"pause",
+			"time":playhead
+		});
+	}
+	clearTimeout(tmr);
+}
+function resume(){
+	cm.startTimer();
+	start = new Date().getTime() - playhead;
+	var lasthead = playhead;
+	tmr = setInterval(function(){
+		playhead = new Date().getTime() - start;
+		cm.time(playhead);
+		if(cm.scripting && playhead - lasthead > 300 ){
+			cm.scripting.send("Update:TimeUpdate",{
+				"state":"pause",
+				"time":playhead
+			});
+			lasthead = playhead;
+		}
+	},10);
+}
+</script>
+</body>
+</html>

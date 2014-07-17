@@ -359,7 +359,6 @@ CommentManager.prototype.sendComment = function(data){
 		cmt.style.height = (cmt.h - 3) + "px";
 		cmt.style.left = this.stage.width + "px";
 	}
-
 	if(this.filter != null && !this.filter.beforeSend(cmt)){
 		this.stage.removeChild(cmt);
 		cmt = null;
