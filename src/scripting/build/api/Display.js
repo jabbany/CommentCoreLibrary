@@ -6,8 +6,69 @@
 var Display;
 (function (Display) {
     var Point = (function () {
-        function Point() {
+        function Point(x, y) {
+            if (typeof x === "undefined") { x = 0; }
+            if (typeof y === "undefined") { y = 0; }
+            this.x = x;
+            this.y = y;
         }
+
+        Object.defineProperty(Point.prototype, "length", {
+            get: function () {
+                return Math.sqrt(this.x * this.x + this.y * this.y);
+            },
+            set: function (l) {
+                __trace("Point.length is read-only", "err");
+            },
+            enumerable: true,
+            configurable: true
+        });
+
+        Point.prototype.add = function (p) {
+            return new Point(p.x + this.x, p.y + this.y);
+        };
+
+        Point.prototype.subtract = function (p) {
+            return new Point(this.x - p.x, this.y - p.y);
+        };
+
+        Point.interpolate = function (a, b, f) {
+            return new Point((b.x - a.x) * f + a.x, (b.y - a.y) * f + a.y);
+        };
+
+        Point.prototype.offset = function (dx, dy) {
+            this.x += dx;
+            this.y += dy;
+        };
+
+        Point.prototype.normalize = function (thickness) {
+            var ratio = thickness / this.length;
+            this.x *= ratio;
+            this.y *= ratio;
+        };
+
+        Point.polar = function (r, theta) {
+            return new Point(r * Math.cos(theta), r * Math.sin(theta));
+        };
+
+        Point.prototype.setTo = function (x, y) {
+            this.x = x;
+            this.y = y;
+        };
+
+        Point.prototype.equals = function (p) {
+            if (p.x === this.x && p.y === this.y)
+                return true;
+            return false;
+        };
+
+        Point.prototype.toString = function () {
+            return "(x=" + this.x + ", y=" + this.y + ")";
+        };
+
+        Point.prototype.clone = function () {
+            return new Point(this.x, this.y);
+        };
         return Point;
     })();
     Display.Point = Point;
@@ -97,8 +158,10 @@ var Display;
     var Matrix3D = (function () {
         function Matrix3D(iv) {
             if (typeof iv === "undefined") { iv = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]; }
-            if (iv.length == 16) {
+            if (iv.length === 16) {
                 this._data = iv;
+            } else if (iv.length === 0) {
+                this.identity();
             } else {
                 __trace("Matrix3D initialization vector invalid", "warn");
                 this.identity();
@@ -270,8 +333,8 @@ var Display;
     })();
     Display.Vector3D = Vector3D;
 
-    function createMatrix() {
-        return new Matrix();
+    function createMatrix(a, b, c, d, tx, ty) {
+        return new Matrix(a, b, c, d, tx, ty);
     }
     Display.createMatrix = createMatrix;
 
@@ -285,8 +348,10 @@ var Display;
     }
     Display.createColorTransform = createColorTransform;
 
-    function createGradientBox() {
-        return null;
+    function createGradientBox(width, height, rotation, tX, tY) {
+        var m = new Matrix();
+        m.createGradientBox(width, height, rotation, tX, tY);
+        return m;
     }
     Display.createGradientBox = createGradientBox;
 
@@ -300,7 +365,7 @@ var Display;
     Display.createVector3D = createVector3D;
 
     function projectVector(matrix, vector) {
-        return [];
+        return matrix.transformVector(vector);
     }
     Display.projectVector = projectVector;
 
@@ -324,7 +389,7 @@ var Display;
     function createPoint(x, y) {
         if (typeof x === "undefined") { x = 0; }
         if (typeof y === "undefined") { y = 0; }
-        return new Point();
+        return new Point(x, y);
     }
     Display.createPoint = createPoint;
 
@@ -576,6 +641,7 @@ var Display;
             set: function (m) {
                 this._matrix = null;
                 this._matrix3d = m;
+                this.update();
             },
             enumerable: true,
             configurable: true
@@ -588,6 +654,7 @@ var Display;
             set: function (m) {
                 this._matrix3d = null;
                 this._matrix = m;
+                this.update();
             },
             enumerable: true,
             configurable: true
@@ -629,6 +696,8 @@ var Display;
         };
 
         Transform.prototype.update = function () {
+            if (this._parent === null)
+                return;
             this._parent.transform = this;
         };
 
@@ -654,12 +723,14 @@ var Display;
 
         /**
         * Clones the current transform object
-        * The new transform still binds to the old DisplayObject
-        * unless the parent is modifed
+        * The new transform does not bind to any object until it
+        * is bound to an object. Before that, updates don't
+        * take effect.
+        *
         * @returns {Transform} - Clone of transform object
         */
         Transform.prototype.clone = function () {
-            var t = new Transform(this._parent);
+            var t = new Transform(null);
             t._matrix = this._matrix;
             t._matrix3d = this._matrix3d;
             return t;
@@ -1507,6 +1578,23 @@ var Display;
         return Sprite;
     })(Display.DisplayObject);
     Display.Sprite = Sprite;
+
+    var RootSprite = (function (_super) {
+        __extends(RootSprite, _super);
+        function RootSprite() {
+            _super.call(this, "__root");
+        }
+        Object.defineProperty(RootSprite.prototype, "parent", {
+            get: function () {
+                __trace("SecurityError: No access above root sprite.", "err");
+                return null;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        return RootSprite;
+    })(Sprite);
+    Display.RootSprite = RootSprite;
 })(Display || (Display = {}));
 /**
 * MotionManager Polyfill for AS3.
@@ -2157,6 +2245,11 @@ var Display;
         return new CommentField(text, params);
     }
     Display.createComment = createComment;
+
+    function createTextField() {
+        return new CommentField("", {});
+    }
+    Display.createTextField = createTextField;
 })(Display || (Display = {}));
 /**
 * Display Adapter
@@ -2182,7 +2275,7 @@ var Display;
     Display.fullScreenHeight;
     Display.frameRate;
 
-    var _root = new Display.Sprite("__root");
+    var _root = new Display.RootSprite();
     var _width = 0;
     var _height = 0;
     var _fullScreenWidth = 0;

@@ -323,8 +323,8 @@ var Tween;
     }
     Tween.to = to;
 
-    function beizer() {
-        return null;
+    function beizer(object, dest, src, control) {
+        return Tween.tween(object, dest, src);
     }
     Tween.beizer = beizer;
 
@@ -357,13 +357,21 @@ var Tween;
     Tween.reverse = reverse;
 
     function repeat(src, times) {
-        var clone = src.clone();
-        clone.repeat = times;
-        return clone;
+        var newTween = new ITween(src.target, src.duration * times);
+        newTween.step = function (target, currentTime, totalTime) {
+            src.step(target, currentTime % src.duration, src.duration);
+        };
+        return newTween;
     }
     Tween.repeat = repeat;
 
     function slice(src, from, to) {
+        if (to === null) {
+            to = src.duration;
+        }
+        if (to < from) {
+            to = from;
+        }
         from *= 1000;
         to *= 1000;
         var newTween = new ITween(src.target, to - from);

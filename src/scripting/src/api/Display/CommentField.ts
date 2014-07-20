@@ -99,4 +99,8 @@ module Display {
 		return new CommentField(text, params);
 	}
 
+	export function createTextField():any {
+		return new CommentField("",{});
+	}
+
 }

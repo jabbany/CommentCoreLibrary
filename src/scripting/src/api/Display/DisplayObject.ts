@@ -33,11 +33,13 @@ module Display {
 		set matrix3D(m:Display.Matrix3D) {
 			this._matrix = null;
 			this._matrix3d = m;
+			this.update();
 		}
 
 		set matrix(m:Display.Matrix) {
 			this._matrix3d = null;
 			this._matrix = m;
+			this.update();
 		}
 
 		get matrix3D():Display.Matrix3D {
@@ -70,6 +72,8 @@ module Display {
 		}
 
 		private update():void {
+			if(this._parent === null)
+				return;
 			this._parent.transform = this;
 		}
 
@@ -95,12 +99,14 @@ module Display {
 
 		/**
 		 * Clones the current transform object
-		 * The new transform still binds to the old DisplayObject
-		 * unless the parent is modifed
+		 * The new transform does not bind to any object until it
+		 * is bound to an object. Before that, updates don't
+		 * take effect.
+		 *
 		 * @returns {Transform} - Clone of transform object
 		 */
 		public clone():Transform {
-			var t:Transform = new Transform(this._parent);
+			var t:Transform = new Transform(null);
 			t._matrix = this._matrix;
 			t._matrix3d = this._matrix3d;
 			return t;

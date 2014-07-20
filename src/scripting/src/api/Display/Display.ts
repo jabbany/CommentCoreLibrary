@@ -23,7 +23,7 @@ module Display {
 	export var fullScreenHeight:number;
 	export var frameRate:number;
 
-	var _root:DisplayObject = new Sprite("__root");
+	var _root:DisplayObject = new RootSprite();
 	var _width:number = 0;
 	var _height:number = 0;
 	var _fullScreenWidth:number = 0;

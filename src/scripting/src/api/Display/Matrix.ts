@@ -6,8 +6,65 @@
 
 module Display {
 	export class Point {
-		constructor() {
+		public x:number;
+		public y:number;
+		constructor(x:number = 0, y:number = 0) {
+			this.x = x;
+			this.y = y;
+		}
 
+		set length(l:number){
+			__trace("Point.length is read-only","err");
+		}
+
+		get length():number{
+			return Math.sqrt(this.x * this.x + this.y * this.y)
+		}
+
+		public add(p:Point):Point{
+			return new Point(p.x + this.x, p.y + this.y);
+		}
+
+		public subtract(p:Point):Point{
+			return new Point(this.x - p.x, this.y - p.y);
+		}
+
+		public static interpolate(a:Point, b:Point, f:number):Point{
+			return new Point((b.x - a.x) * f + a.x, (b.y - a.y) * f + a.y);
+		}
+
+		public offset(dx:number, dy:number):void{
+			this.x+= dx;
+			this.y+= dy;
+		}
+
+		public normalize(thickness:number):void{
+			var ratio:number = thickness/this.length;
+			this.x *= ratio;
+			this.y *= ratio;
+		}
+
+		public static polar(r:number, theta:number):Point{
+			return new Point(r * Math.cos(theta), r * Math.sin(theta));
+		}
+
+		public setTo(x:number, y:number):void{
+			this.x = x;
+			this.y = y;
+		}
+
+		public equals(p:Point):boolean{
+			if(p.x === this.x && p.y === this.y)
+				return true;
+			return false;
+		}
+
+		public toString():string{
+			return "(x=" + this.x + ", y=" + this.y + ")";
+		}
+
+		public clone():Point{
+			return new Point(this.x, this.y);
 		}
 	}
 	export class Matrix implements Display.ISerializable {
@@ -91,9 +148,11 @@ module Display {
 		private _data:Array<number>;
 
 		constructor(iv:Array<number> = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]) {
-			if (iv.length == 16) {
+			if (iv.length === 16) {
 				this._data = iv;
-			} else {
+			} else if (iv.length === 0){
+				this.identity();
+			}else {
 				__trace("Matrix3D initialization vector invalid", "warn");
 				this.identity();
 			}
@@ -258,8 +317,8 @@ module Display {
 		}
 	}
 
-	export function createMatrix():any {
-		return new Matrix();
+	export function createMatrix(a:number,b:number,c:number,d:number,tx:number,ty:number):any {
+		return new Matrix(a,b,c,d,tx,ty);
 	}
 
 	export function createMatrix3D(iv:Array<number>):any {
@@ -270,16 +329,18 @@ module Display {
 		return null;
 	}
 
-	export function createGradientBox():any {
-		return null;
+	export function createGradientBox(width:number, height:number, rotation:number, tX:number, tY:number):any {
+		var m:Matrix = new Matrix();
+		m.createGradientBox(width, height, rotation, tX, tY);
+		return m;
 	}
 
 	export function createVector3D(x:number = 0, y:number = 0, z:number = 0, w:number = 0):any {
 		return new Vector3D(x, y, z, w);
 	}
 
-	export function projectVector(matrix:Matrix3D, vector:Array<number>):any {
-		return [];
+	export function projectVector(matrix:Matrix3D, vector:Vector3D):any {
+		return matrix.transformVector(vector);
 	}
 
 	export function projectVectors(matrix:Matrix3D, verts:Array<number>, projectedVerts:Array<number>, uvts:Array<number>):void {
@@ -300,7 +361,7 @@ module Display {
 	}
 
 	export function createPoint(x:number = 0, y:number = 0):any {
-		return new Point();
+		return new Point(x,y);
 	}
 
 	/**
