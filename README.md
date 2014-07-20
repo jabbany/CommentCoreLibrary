@@ -55,6 +55,7 @@ implementation of a video player with CommentCoreLibrary.
 - 有关本项目的文档可以在 `docs/` 文件夹里面找到。
 - 一些功能性扩展模块会出现在 `extend/` 中。
 - 一些实验性模块在 `experimental/` 里。
+- 测试数据在 `tests/` 里。
 
 ## 做出贡献
 非常欢迎提交问题报告和意见建议，同时你也可以在GitHub上Fork本工程，并发送Pull请求来提交
