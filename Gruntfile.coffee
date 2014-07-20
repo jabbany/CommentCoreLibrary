@@ -21,16 +21,25 @@ module.exports = (grunt) ->
     'src/parsers/AcfunFormat.js'
     'src/parsers/BilibiliFormat.js'
   ]
-
-  SRC_CORELIB = SRC_PARSER.concat(SRC_CORE)
+  
+  # Core concatenated with libraries
+  # Actual concat ordering does not/should not matter
+  SRC_CORELIB = SRC_CORE.concat(SRC_PARSER)
 
   grunt.initConfig(
+    clean:
+      build: ['build']
     # Concat CSS and JS files
+    # core_only : builds CCL without parsers
+    # all       : builds CCL with everything
     concat:
-      basic_and_extras:
+      core_only:
         files:
           'build/style.css': ['src/base.css', 'src/fontalias.css']
           'build/CommentCore.js':        SRC_CORE
+      all:
+        files:
+          'build/style.css': ['src/base.css', 'src/fontalias.css']
           'build/CommentCoreLibrary.js': SRC_CORELIB
 
     # Auto-prefix CSS properties using Can I Use?
@@ -50,16 +59,16 @@ module.exports = (grunt) ->
 
     uglify:
       options: banner: License
-      comment_core:
+      core_only:
         files:
           'build/CommentCore.min.js': SRC_CORE
-      comment_core_lib:
+      all:
         files:
           'build/CommentCoreLibrary.min.js': SRC_CORELIB
 
     # Watch files for changes
     watch:
-      css:
+      all:
         files: ['src/**/*', '!node_modules']
 
         # Run concat, autoprefixer, cssmin and uglify
@@ -67,6 +76,7 @@ module.exports = (grunt) ->
   )
 
   # Register our tasks
-  grunt.registerTask 'build', ['concat', 'autoprefixer', 'cssmin', 'uglify']
-  grunt.registerTask 'default', ['build', 'watch']
+  grunt.registerTask 'build-core', ['concat:core_only', 'autoprefixer', 'cssmin', 'uglify:core_only']
+  grunt.registerTask 'build', ['concat:all', 'autoprefixer', 'cssmin', 'uglify:all']
+  grunt.registerTask 'default', ['clean', 'build', 'watch']
 
