@@ -43,7 +43,7 @@ div.abp{
   text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white !important;
 }
 
-/** Here because some UP-ers use chinese font names, and some of us are on Linux **/
+/** Aliases for Chinese named fonts because they don't work on *nix **/
 @font-face{
   font-family: "\9ED1\4F53";
   src:local('SimHei');
@@ -55,6 +55,16 @@ div.abp{
 }
 
 @font-face{
+  font-family: "\534E\6587\6977\4F53";
+  src:local('SimKai');
+}
+
+@font-face{
   font-family: "\5E7C\5706";
   src:local('YouYuan');
+}
+
+@font-face{
+  font-family: "\5FAE\8F6F\96C5\9ED1";
+  src:local('Microsoft YaHei');
 }

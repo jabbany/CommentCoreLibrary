@@ -1,0 +1,25 @@
+/** Aliases for Chinese named fonts because they don't work on *nix **/
+@font-face{
+  font-family: "\9ED1\4F53";
+  src:local('SimHei');
+}
+
+@font-face{
+  font-family: "\5B8B\4F53";
+  src:local('SimSun');
+}
+
+@font-face{
+  font-family: "\534E\6587\6977\4F53";
+  src:local('SimKai');
+}
+
+@font-face{
+  font-family: "\5E7C\5706";
+  src:local('YouYuan');
+}
+
+@font-face{
+  font-family: "\5FAE\8F6F\96C5\9ED1";
+  src:local('Microsoft YaHei');
+}

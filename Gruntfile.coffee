@@ -4,6 +4,11 @@ module.exports = (grunt) ->
 
   License = '/*!Copyright(c) CommentCoreLibrary (//github.com/jabbany/CommentCoreLibrary) - Licensed under the MIT License */'
 
+  CSS = [
+    'src/css/base.css',
+    'src/css/fontalias.css'
+  ]
+
   SRC_CORE = [
     'src/CommentFilter.js'
     'src/CommentSpaceAllocator.js'
@@ -29,17 +34,18 @@ module.exports = (grunt) ->
   grunt.initConfig(
     clean:
       build: ['build']
+    
     # Concat CSS and JS files
     # core_only : builds CCL without parsers
     # all       : builds CCL with everything
     concat:
       core_only:
         files:
-          'build/style.css': ['src/base.css', 'src/fontalias.css']
-          'build/CommentCore.js':        SRC_CORE
+          'build/style.css':       CSS
+          'build/CommentCore.js':  SRC_CORE
       all:
         files:
-          'build/style.css': ['src/base.css', 'src/fontalias.css']
+          'build/style.css':             CSS
           'build/CommentCoreLibrary.js': SRC_CORELIB
 
     # Auto-prefix CSS properties using Can I Use?
