@@ -1,6 +1,3 @@
-/**
-* AS3 Like Timer Control for Runtime
-*/
 var Runtime;
 (function (Runtime) {
     var RuntimeTimer = (function () {
@@ -69,7 +66,6 @@ var Runtime;
                                 timer.ttl += timer.dur;
                             }
                         } else {
-                            // Do nothing
                         }
                     }
                     _self._lastToken = Date.now();
@@ -120,9 +116,6 @@ var Runtime;
         return TimerRuntime;
     })();
 
-    /**
-    * Timers interface similar to AS3
-    */
     var Timer = (function () {
         function Timer(delay, repeatCount) {
             if (typeof repeatCount === "undefined") { repeatCount = 0; }
@@ -205,7 +198,6 @@ var Runtime;
     })();
     Runtime.Timer = Timer;
 
-    /** Timer Related **/
     var masterTimer = new TimerRuntime();
     var internalTimer = new Timer(50);
     var enterFrameDispatcher = function () {
@@ -220,19 +212,11 @@ var Runtime;
     internalTimer.start();
     internalTimer.addEventListener("timer", enterFrameDispatcher);
 
-    /**
-    *  Get the master timer instance
-    */
     function getTimer() {
         return masterTimer;
     }
     Runtime.getTimer = getTimer;
 
-    /**
-    * Update the rate in which the enterFrame event is broadcasted
-    * This synchronizes the frameRate value of the Display object.
-    * By default, the frame rate is 24fps.
-    */
     function updateFrameRate(frameRate) {
         if (frameRate > 60) {
             return;
@@ -243,9 +227,6 @@ var Runtime;
     }
     Runtime.updateFrameRate = updateFrameRate;
 })(Runtime || (Runtime = {}));
-/**
-* Runtime permissions
-*/
 var Runtime;
 (function (Runtime) {
     var permissions = {};
@@ -279,7 +260,6 @@ var Runtime;
             "method": "openWindow",
             "params": [url, params]
         }, function (windowId) {
-            // Create a small compact window object
             var WND = {
                 "moveTo": function (x, y) {
                     __pchannel("Runtime:PrivilegedAPI", {
@@ -326,13 +306,6 @@ var Runtime;
     }
     Runtime.privilegedCode = privilegedCode;
 })(Runtime || (Runtime = {}));
-/**
-* Runtime Internal Module
-* Author: Jim Chen
-*/
-/// <reference path="../OOAPI.d.ts" />
-/// <reference path="Timer.ts" />
-/// <reference path="Permissions.ts" />
 var Runtime;
 (function (Runtime) {
     var MetaObject = (function () {
@@ -360,7 +333,6 @@ var Runtime;
         return MetaObject;
     })();
 
-    /** Variables **/
     var objCount = 0;
     var _registeredObjects = {
         "__self": new MetaObject("__self"),
@@ -378,13 +350,6 @@ var Runtime;
         }
     });
 
-    /**
-    * Dispatches an event to the corresponding object
-    * @param objectId - object to dispatch to
-    * @param event - event id
-    * @param payload - event object
-    * @private
-    */
     function _dispatchEvent(objectId, event, payload) {
         var obj = _registeredObjects[objectId];
         if (typeof obj === "object") {
@@ -393,31 +358,16 @@ var Runtime;
         }
     }
 
-    /**
-    * Checks to see if an object is registered under the id given
-    * @param objectId - Id to check
-    * @returns {boolean} - whether the objectid is registered
-    */
     function hasObject(objectId) {
         return _registeredObjects.hasOwnProperty(objectId) && _registeredObjects[objectId] !== null;
     }
     Runtime.hasObject = hasObject;
 
-    /**
-    * Gets the object registered by id
-    * @param objectId - objectid of object
-    * @returns {any} - object or undefined if not found
-    */
     function getObject(objectId) {
         return _registeredObjects[objectId];
     }
     Runtime.getObject = getObject;
 
-    /**
-    * Registers an object to allow two way communication between the API
-    * and the host.
-    * @param object - object to be registered. Must have getId method.
-    */
     function registerObject(object) {
         if (!object.getId) {
             __trace("Attempted to register unnamed object", "warn");
@@ -443,13 +393,6 @@ var Runtime;
     }
     Runtime.registerObject = registerObject;
 
-    /**
-    * De-Registers an object from the runtime. This not only removes the object
-    * from the stage if it is onstage, but also prevents the element from
-    * receiving any more events.
-    *
-    * @param objectId - objectid to remove
-    */
     function deregisterObject(objectId) {
         if (Runtime.hasObject(objectId)) {
             if (objectId.substr(0, 2) === "__") {
@@ -461,7 +404,6 @@ var Runtime;
             });
             if (_registeredObjects[objectId].unload != null) {
                 if (typeof _registeredObjects[objectId].unload === "function") {
-                    // Gracefully unload first
                     _registeredObjects[objectId].unload();
                 }
             }
@@ -472,11 +414,6 @@ var Runtime;
     }
     Runtime.deregisterObject = deregisterObject;
 
-    /**
-    * Generates an objectid that isn't registered
-    * @param type - object type
-    * @returns {string} - objectid that has not been registered
-    */
     function generateId(type) {
         if (typeof type === "undefined") { type = "obj"; }
         var id = type + ":" + (new Date()).getTime() + "|" + Math.round(Math.random() * 4096) + ":" + objCount;
@@ -488,10 +425,6 @@ var Runtime;
     Runtime.generateId = generateId;
     ;
 
-    /**
-    * De-registers all objects. This also unloads them. Objects
-    * will not receive any more events
-    */
     function reset() {
         for (var i in _registeredObjects) {
             if (i.substr(0, 2) !== "__") {
@@ -501,10 +434,6 @@ var Runtime;
     }
     Runtime.reset = reset;
 
-    /**
-    * Unloads all objects. Does not deregister them, so they may
-    * still receive events.
-    */
     function clear() {
         for (var i in _registeredObjects) {
             if (i.substr(0, 2) === "__")
@@ -516,27 +445,16 @@ var Runtime;
     }
     Runtime.clear = clear;
 
-    /**
-    * Invoke termination of script
-    */
     function crash() {
         __trace("Runtime.crash() : Manual crash", "fatal");
     }
     Runtime.crash = crash;
 
-    /**
-    * Invoke exit of script engine
-    */
     function exit() {
         self.close();
     }
     Runtime.exit = exit;
 
-    /**
-    * Attempts to invoke an alert dialog.
-    * Note that this may not work if the Host policy does not allow it
-    * @param msg - message for alert
-    */
     function alert(msg) {
         __achannel("Runtime::alert", "::Runtime", msg);
     }

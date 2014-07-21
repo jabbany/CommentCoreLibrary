@@ -31,14 +31,24 @@ module Display {
 		}
 
 		set matrix3D(m:Display.Matrix3D) {
-			this._matrix = null;
-			this._matrix3d = m;
+			if(m === null){
+				this._matrix3d = null;
+				this._matrix = new Matrix();
+			} else {
+				this._matrix = null;
+				this._matrix3d = m;
+			}
 			this.update();
 		}
 
 		set matrix(m:Display.Matrix) {
-			this._matrix3d = null;
-			this._matrix = m;
+			if(m === null){
+				this._matrix = null;
+				this._matrix3d = new Matrix3D();
+			} else {
+				this._matrix3d = null;
+				this._matrix = m;
+			}
 			this.update();
 		}
 

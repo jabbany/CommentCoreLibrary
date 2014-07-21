@@ -31,9 +31,10 @@ CommentCoreLibrary在库外提供了很多可扩展的空间，你可以相对�
 
 即可按照默认模板编译。除此之外，你还可以改变编译目标：
 
-- build ： 只编译项目，不会clean掉 build文件夹下的产物
+- build ： 只编译项目，不会clean掉build文件夹下的产物
 - build-core ： 只编译弹幕核心，不包括Acfun和Bilibili的解析器。这个更加适用各种二次开发不需要
     已有的弹幕格式的
+- build-scripting ： 只编译代码弹幕支持
 
 默认模式会自动看管 `src` 源码文件夹，并且在产生变化的时候自动生成新版。
 
@@ -43,8 +44,9 @@ CommentCoreLibrary在库外提供了很多可扩展的空间，你可以相对�
 
 ### 代码弹幕（Scripting Engine）
 默认的代码弹幕支持需要使用 TypeScript 编译。这需要你安装 TypeScript 支持，通过 
-`npm install -g typescript` 即可安装。代码弹幕部分临时还在使用旧的 `make` 系统，未来也会
-逐渐过渡到使用 Grunt。目前编译项目不会引入代码弹幕支持（考虑到架设难度的增高和潜在受众面相对于
-弹幕支持要少一些），相关库需要手动引入。
+`npm install -g typescript` 即可安装。目前编译项目不会引入代码弹幕支持（考虑到架设难度的增高
+，编译速度降低和潜在受众面相对于弹幕支持要少一些），相关库需要手动引入。
+
+如果希望直接 Grunt 编译现在也已经支持。
 
 参考 `docs/scripting` 了解代码弹幕系统和它的编译方法。

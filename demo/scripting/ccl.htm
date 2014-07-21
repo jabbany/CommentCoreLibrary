@@ -27,7 +27,7 @@ pre.warning{color:#FFC500;}
 .s-button:hover,.abp .button:hover{background:#f88; color:#000;}
 </style>
 <!-- Scripting Extensions -->
-<script src="../../src/scripting/build/Host.js"></script>
+<script src="../../build/scripting/Host.js"></script>
 
 <title>Testrun Sandbox For CCL /w Scripting Enabled</title>
 </head>
@@ -93,7 +93,7 @@ function launchWindowFull(element){
 }
 
 var cm = new CommentManager($('commentCanvas'));
-var bscripter = new CCLScripting("../../src/scripting/build/Worker.js");
+var bscripter = new CCLScripting("../../build/scripting/Worker.js");
 bscripter.logger = new function(){
 	this.log = function(t){
 		var pre = document.createElement("pre");

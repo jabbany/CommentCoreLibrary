@@ -298,6 +298,7 @@ var CCLScripting = function(workerUrl){
 		self.getContext().registerObject("__root", {"class":"SpriteRoot"});
 	};
 })();
+
 /** Define some Unpackers **/
 (function(){
 	/** This is the DOM Manipulation Library **/

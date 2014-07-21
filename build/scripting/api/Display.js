@@ -1,8 +1,3 @@
-/**
-* Matrix Polyfill for AS3.
-* Author: Jim Chen
-* Part of the CCLScripter
-*/
 var Display;
 (function (Display) {
     var Point = (function () {
@@ -273,11 +268,6 @@ var Display;
             return new Vector3D(rx, ry, rz, rw);
         };
 
-        /**
-        * Given an array of numbers representing vectors, postMultiply them to the current matrix.
-        * @param vin - input (x,y,z)
-        * @param vout - output (x,y,z)
-        */
         Matrix3D.prototype.transformVectors = function (vin, vout) {
             if (vin.length % 3 !== 0) {
                 __trace("Matrix3D.transformVectors expects input size to be multiple of 3.", "err");
@@ -393,13 +383,6 @@ var Display;
     }
     Display.createPoint = createPoint;
 
-    /**
-    * Transforms a JS Array into an AS3 Vector<int>.
-    *   Nothing is actually done since the methods are very
-    *   similar across both.
-    * @param array - Array
-    * @returns {Array<number>} - AS3 Integer Vector
-    */
     function toIntVector(array) {
         Object.defineProperty(array, 'as3Type', {
             get: function () {
@@ -412,13 +395,6 @@ var Display;
     }
     Display.toIntVector = toIntVector;
 
-    /**
-    * Transforms a JS Array into an AS3 Vector<number>.
-    *   Nothing is actually done since the methods are very
-    *   similar across both.
-    * @param array - Array
-    * @returns {Array<number>} - AS3 Number Vector
-    */
     function toNumberVector(array) {
         Object.defineProperty(array, 'as3Type', {
             get: function () {
@@ -431,18 +407,12 @@ var Display;
     }
     Display.toNumberVector = toNumberVector;
 })(Display || (Display = {}));
-/**
-* Filter Polyfill for AS3.
-* Author: Jim Chen
-* Part of the CCLScripter
-*/
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-/// <reference path="ISerializable.ts" />
 var Display;
 (function (Display) {
     var Filter = (function () {
@@ -536,7 +506,6 @@ var Display;
             this._strength = strength;
             this._quality = quality;
 
-            /* TODO: Update to support inner & knockout */
             this._inner = false;
             this._knockout = false;
             this._distance = distance;
@@ -595,14 +564,6 @@ var Display;
     }
     Display.createBlurFilter = createBlurFilter;
 })(Display || (Display = {}));
-/**
-* Shape Polyfill for AS3.
-* Author: Jim Chen
-* Part of the CCLScripter
-*/
-/// <reference path="../Runtime.d.ts" />
-/// <reference path="ISerializable.ts" />
-/// <reference path="Filter.ts" />
 var Display;
 (function (Display) {
     var ColorTransform = (function () {
@@ -639,8 +600,13 @@ var Display;
                 return this._matrix3d;
             },
             set: function (m) {
-                this._matrix = null;
-                this._matrix3d = m;
+                if (m === null) {
+                    this._matrix3d = null;
+                    this._matrix = new Display.Matrix();
+                } else {
+                    this._matrix = null;
+                    this._matrix3d = m;
+                }
                 this.update();
             },
             enumerable: true,
@@ -652,8 +618,13 @@ var Display;
                 return this._matrix;
             },
             set: function (m) {
-                this._matrix3d = null;
-                this._matrix = m;
+                if (m === null) {
+                    this._matrix = null;
+                    this._matrix3d = new Display.Matrix3D();
+                } else {
+                    this._matrix3d = null;
+                    this._matrix = m;
+                }
                 this.update();
             },
             enumerable: true,
@@ -701,10 +672,6 @@ var Display;
             this._parent.transform = this;
         };
 
-        /**
-        * Returns the working matrix as a serializable object
-        * @returns {*} Serializable Matrix
-        */
         Transform.prototype.getMatrix = function () {
             if (this._matrix) {
                 return this._matrix;
@@ -713,22 +680,10 @@ var Display;
             }
         };
 
-        /**
-        * Returns matrix type in use
-        * @returns {string} - "2d" or "3d"
-        */
         Transform.prototype.getMatrixType = function () {
             return this._matrix ? "2d" : "3d";
         };
 
-        /**
-        * Clones the current transform object
-        * The new transform does not bind to any object until it
-        * is bound to an object. Before that, updates don't
-        * take effect.
-        *
-        * @returns {Transform} - Clone of transform object
-        */
         Transform.prototype.clone = function () {
             var t = new Transform(null);
             t._matrix = this._matrix;
@@ -776,7 +731,6 @@ var Display;
             }
             this._hasSetDefaults = true;
             try  {
-                /** Try reading the defaults from motion fields **/
                 if (defaults.hasOwnProperty("motion")) {
                     var motion = defaults["motion"];
                     if (motion.hasOwnProperty("alpha")) {
@@ -813,15 +767,10 @@ var Display;
             }
         };
 
-        /**
-        * These are meant to be internal public methods, so they
-        * are named noun-verb instead of verb-noun
-        */
         DisplayObject.prototype.eventToggle = function (eventName, mode) {
             if (typeof mode === "undefined") { mode = "enable"; }
             if (DisplayObject.SANDBOX_EVENTS.indexOf(eventName) > -1) {
                 return;
-                /* No need to notify */
             }
             __pchannel("Runtime:ManageEvent", {
                 "id": this._id,
@@ -851,7 +800,6 @@ var Display;
             get: function () {
                 return this._alpha;
             },
-            /** Properties **/
             set: function (value) {
                 this._alpha = value;
                 this.propertyUpdate("alpha", value);
@@ -916,7 +864,6 @@ var Display;
         });
 
 
-        /** Start Transform Area **/
         DisplayObject.prototype._updateBox = function (mode) {
             if (typeof mode === "undefined") { mode = this._transform.getMatrixType(); }
             if (mode === "3d") {
@@ -1062,7 +1009,6 @@ var Display;
             get: function () {
                 return this._width;
             },
-            /** End Transform Area **/
             set: function (w) {
                 this._width = w;
                 this.propertyUpdate("width", w);
@@ -1163,7 +1109,6 @@ var Display;
             configurable: true
         });
 
-        /** AS3 Stuff **/
         DisplayObject.prototype.dispatchEvent = function (event, data) {
             if (this._listeners.hasOwnProperty(event)) {
                 if (this._listeners[event] !== null) {
@@ -1206,7 +1151,6 @@ var Display;
         };
 
         Object.defineProperty(DisplayObject.prototype, "numChildren", {
-            /** DisplayObjectContainer **/
             get: function () {
                 return this._children.length;
             },
@@ -1256,11 +1200,7 @@ var Display;
             this.methodCall("removeChildren", ids);
         };
 
-        /**
-        * Removes the object from a parent if exists.
-        */
         DisplayObject.prototype.remove = function () {
-            // Remove itself
             if (this._parent !== null) {
                 this._parent.removeChild(this);
             } else {
@@ -1272,9 +1212,6 @@ var Display;
             return "[" + (this._name.length > 0 ? this._name : "displayObject") + " DisplayObject]@" + this._id;
         };
 
-        /**
-        * Clones the current display object
-        */
         DisplayObject.prototype.clone = function () {
             var alternate = new DisplayObject();
             alternate._transform = this._transform;
@@ -1292,7 +1229,6 @@ var Display;
             }
         };
 
-        /** Common Functions **/
         DisplayObject.prototype.serialize = function () {
             this._hasSetDefaults = true;
             var filters = [];
@@ -1326,12 +1262,6 @@ var Display;
     })();
     Display.DisplayObject = DisplayObject;
 })(Display || (Display = {}));
-/**
-* Graphics Polyfill for AS3
-* Author: Jim Chen
-* Part of the CCLScripter
-*/
-/// <reference path="DisplayObject.ts" />
 var Display;
 (function (Display) {
     var Graphics = (function () {
@@ -1347,59 +1277,22 @@ var Display;
             });
         };
 
-        /**
-        * Line to point
-        * @param x - x coordinate
-        * @param y - y coordinate
-        */
         Graphics.prototype.lineTo = function (x, y) {
             this._callDrawMethod("lineTo", [x, y]);
         };
 
-        /**
-        * Move to point
-        * @param x - x coordinate
-        * @param y - y coordinate
-        */
         Graphics.prototype.moveTo = function (x, y) {
             this._callDrawMethod("moveTo", [x, y]);
         };
 
-        /**
-        * Quadratic Beizer Curve
-        * @param cx - Control point x
-        * @param cy - Control point y
-        * @param ax - Anchor x
-        * @param ay - Anchor y
-        */
         Graphics.prototype.curveTo = function (cx, cy, ax, ay) {
             this._callDrawMethod("curveTo", [cx, cy, ax, ay]);
         };
 
-        /**
-        * Cubic Beizer Curve
-        * @param cax - Control point A x
-        * @param cay - Control point A y
-        * @param cbx - Control point B x
-        * @param cby - Control point B y
-        * @param ax - Anchor x
-        * @param ay - Anchor y
-        */
         Graphics.prototype.cubicCurveTo = function (cax, cay, cbx, cby, ax, ay) {
             this._callDrawMethod("cubicCurveTo", [cax, cay, cbx, cby, ax, ay]);
         };
 
-        /**
-        * Set line style
-        * @param thickness - line thickness
-        * @param color - line color (default 0)
-        * @param alpha - alpha (default 1)
-        * @param hinting - pixel hinting (default false)
-        * @param scale - scale mode (default "normal")
-        * @param caps - line cap mode (default "none")
-        * @param joints - line joint mode (default "round")
-        * @param miterlim - miter limit (default 3)
-        */
         Graphics.prototype.lineStyle = function (thickness, color, alpha, hinting, scale, caps, joints, miter) {
             if (typeof color === "undefined") { color = 0; }
             if (typeof alpha === "undefined") { alpha = 1.0; }
@@ -1411,100 +1304,44 @@ var Display;
             this._callDrawMethod("lineStyle", [thickness, color, alpha, caps, joints, miter]);
         };
 
-        /**
-        * Draw a rectangle
-        * @param x - x coordinate
-        * @param y - y coordinate
-        * @param w - width
-        * @param h - height
-        */
         Graphics.prototype.drawRect = function (x, y, w, h) {
             this._callDrawMethod("drawRect", [x, y, w, h]);
         };
 
-        /**
-        * Draws a circle
-        * @param x - center x
-        * @param y - center y
-        * @param r - radius
-        */
         Graphics.prototype.drawCircle = function (x, y, r) {
             this._callDrawMethod("drawCircle", [x, y, r]);
         };
 
-        /**
-        * Draws an ellipse
-        * @param cx - center x
-        * @param cy - center y
-        * @param w - width
-        * @param h - height
-        */
         Graphics.prototype.drawEllipse = function (cx, cy, w, h) {
             this._callDrawMethod("drawEllipse", [cx + w / 2, cy + h / 2, w / 2, h / 2]);
         };
 
-        /**
-        * Draws a rounded rectangle
-        * @param x - x coordinate
-        * @param y - y coordinate
-        * @param w - width
-        * @param h - height
-        * @param elw - ellipse corner width
-        * @param elh - ellipse corner height
-        */
         Graphics.prototype.drawRoundRect = function (x, y, w, h, elw, elh) {
             this._callDrawMethod("drawRoundRect", [x, y, w, h, elw, elh]);
         };
 
-        /**
-        * Executes a list of drawing commands with their data given in the data array
-        * @param commands - Commands by index
-        * @param data - List of data
-        * @param winding - evenOdd or nonZero
-        */
         Graphics.prototype.drawPath = function (commands, data, winding) {
             if (typeof winding === "undefined") { winding = "evenOdd"; }
             this._callDrawMethod("drawPath", [commands, data, winding]);
         };
 
-        /**
-        * Fill next shape with solid color
-        * @param color
-        * @param alpha
-        */
         Graphics.prototype.beginFill = function (color, alpha) {
             if (typeof alpha === "undefined") { alpha = 1.0; }
             this._callDrawMethod("beginFill", [color, alpha]);
         };
 
-        /**
-        * Gradient Fill Not Supported yet
-        */
         Graphics.prototype.beginGradientFill = function () {
             __trace("Graphics: Gradients not supported yet.", 'warn');
         };
 
-        /**
-        * Shader Fill Not Supported yet
-        */
         Graphics.prototype.beginShaderFill = function () {
             __trace("Graphics: Shaders not supported yet.", 'warn');
         };
 
-        /**
-        * Stop and finalize fill
-        */
         Graphics.prototype.endFill = function () {
             this._callDrawMethod("endFill", []);
         };
 
-        /**
-        * Given a list of vertices (and optionally indices). Draws triangles to the screen
-        * @param verts - Vertices (x,y) as a list
-        * @param indices - Indices for positions in verts[2 * i], verts[2 * i + 1]
-        * @param uvtData - Texture mapping stuff. Not supported any time soon.
-        * @param culling - "none" shows all triangles, "positive"/"negative" will cull triangles by normal along z-axis
-        */
         Graphics.prototype.drawTriangles = function (verts, indices, uvtData, culling) {
             if (typeof indices === "undefined") { indices = null; }
             if (typeof uvtData === "undefined") { uvtData = null; }
@@ -1522,13 +1359,11 @@ var Display;
                 return;
             }
 
-            /** Do culling of triangles here to lessen work later **/
             if (culling !== "none") {
                 for (var i = 0; i < indices.length / 3; i++) {
                     var ux = verts[2 * indices[i * 3 + 1]] - verts[2 * indices[i * 3]], uy = verts[2 * indices[i * 3 + 1] + 1] - verts[2 * indices[i * 3] + 1], vx = verts[2 * indices[i * 3 + 2]] - verts[2 * indices[i * 3 + 1]], vy = verts[2 * indices[i * 3 + 2] + 1] - verts[2 * indices[i * 3 + 1] + 1];
                     var zcomp = ux * vy - vx * uy;
                     if (zcomp < 0 && culling === "positive" || zcomp > 0 && culling === "negative") {
-                        /** Remove the indices. Leave the vertices. **/
                         indices.splice(i * 3, 3);
                         i--;
                     }
@@ -1537,9 +1372,6 @@ var Display;
             this._callDrawMethod("drawTriangles", [verts, indices, culling]);
         };
 
-        /**
-        * Clears everything the current graphics context has drawn
-        */
         Graphics.prototype.clear = function () {
             this._callDrawMethod("clear", []);
         };
@@ -1547,13 +1379,6 @@ var Display;
     })();
     Display.Graphics = Graphics;
 })(Display || (Display = {}));
-/**
-* Sprite Polyfill for AS3.
-* Author: Jim Chen
-* Part of the CCLScripter
-*/
-/// <reference path="DisplayObject.ts" />
-/// <reference path="Graphics.ts" />
 var Display;
 (function (Display) {
     var Sprite = (function (_super) {
@@ -1596,14 +1421,6 @@ var Display;
     })(Sprite);
     Display.RootSprite = RootSprite;
 })(Display || (Display = {}));
-/**
-* MotionManager Polyfill for AS3.
-* Author: Jim Chen
-* Part of the CCLScripter
-*/
-/// <reference path="../Runtime.d.ts" />
-/// <reference path="../Tween.d.ts" />
-/// <reference path="DisplayObject.ts" />
 var Display;
 (function (Display) {
     var MotionManager = (function () {
@@ -1744,14 +1561,6 @@ var Display;
     })();
     Display.MotionManager = MotionManager;
 })(Display || (Display = {}));
-/// <reference path="DisplayObject.ts" />
-/// <reference path="MotionManager.ts" />
-/**
-* Compliant CommentButton Polyfill For BiliScriptEngine
-*/
-/// <reference path="Sprite.ts" />
-/// <reference path="IComment.ts" />
-/// <reference path="MotionManager.ts" />
 var Display;
 (function (Display) {
     var CommentButton = (function (_super) {
@@ -1766,11 +1575,6 @@ var Display;
             this.bindParent(params);
             this._mM.play();
         }
-        /**
-        * Set the style for the UIComponent which this is
-        * @param styleProp - style to set
-        * @param value - value to set the style to
-        */
         CommentButton.prototype.setStyle = function (styleProp, value) {
             __trace("UIComponent.setStyle not implemented", "warn");
         };
@@ -1821,12 +1625,6 @@ var Display;
     }
     Display.createButton = createButton;
 })(Display || (Display = {}));
-/**
-* Compliant CommentCanvas Polyfill For BiliScriptEngine
-*/
-/// <reference path="Sprite.ts" />
-/// <reference path="IComment.ts" />
-/// <reference path="MotionManager.ts" />
 var Display;
 (function (Display) {
     var CommentCanvas = (function (_super) {
@@ -1876,13 +1674,6 @@ var Display;
     }
     Display.createCanvas = createCanvas;
 })(Display || (Display = {}));
-/**
-* Shape Polyfill for AS3.
-* Author: Jim Chen
-* Part of the CCLScripter
-*/
-/// <reference path="DisplayObject.ts" />
-/// <reference path="Graphics.ts" />
 var Display;
 (function (Display) {
     var Shape = (function (_super) {
@@ -1908,12 +1699,6 @@ var Display;
     })(Display.DisplayObject);
     Display.Shape = Shape;
 })(Display || (Display = {}));
-/**
-* Compliant CommentShape Polyfill For BiliScriptEngine
-*/
-/// <reference path="Shape.ts" />
-/// <reference path="IComment.ts" />
-/// <reference path="MotionManager.ts" />
 var Display;
 (function (Display) {
     var CommentShape = (function (_super) {
@@ -1963,12 +1748,6 @@ var Display;
     }
     Display.createShape = createShape;
 })(Display || (Display = {}));
-/**
-* TextField Polyfill for AS3.
-* Author: Jim Chen
-* Part of the CCLScripter
-*/
-/// <reference path="DisplayObject.ts" />
 var Display;
 (function (Display) {
     var TextFormat = (function () {
@@ -2059,7 +1838,6 @@ var Display;
 
         Object.defineProperty(TextField.prototype, "textWidth", {
             get: function () {
-                /** TODO: Fix this to actually calculate the width **/
                 return this._text.length * this._textFormat.size;
             },
             set: function (w) {
@@ -2071,7 +1849,6 @@ var Display;
 
         Object.defineProperty(TextField.prototype, "textHeight", {
             get: function () {
-                /** TODO: Fix this to actually calculate the height **/
                 return this._textFormat.size;
             },
             set: function (h) {
@@ -2123,12 +1900,6 @@ var Display;
     }
     Display.createTextFormat = createTextFormat;
 })(Display || (Display = {}));
-/**
-* Compliant CommentField Polyfill For BiliScriptEngine
-*/
-/// <reference path="TextField.ts" />
-/// <reference path="IComment.ts" />
-/// <reference path="MotionManager.ts" />
 var Display;
 (function (Display) {
     var CommentField = (function (_super) {
@@ -2251,18 +2022,6 @@ var Display;
     }
     Display.createTextField = createTextField;
 })(Display || (Display = {}));
-/**
-* Display Adapter
-* Author: Jim Chen
-*/
-/// <reference path="../OOAPI.d.ts" />
-/// <reference path="Matrix.ts" />
-/// <reference path="Sprite.ts" />
-/// <reference path="DisplayObject.ts" />
-/// <reference path="CommentButton.ts" />
-/// <reference path="CommentCanvas.ts" />
-/// <reference path="CommentShape.ts" />
-/// <reference path="CommentField.ts" />
 var Display;
 (function (Display) {
     Display.root;
@@ -2361,7 +2120,6 @@ var Display;
     }
     Display.toString = toString;
 
-    /** Update Listeners **/
     __schannel("Update:DimensionUpdate", function (payload) {
         _width = payload["stageWidth"];
         _height = payload["stageHeight"];

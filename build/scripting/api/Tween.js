@@ -1,17 +1,5 @@
-/**
-* Easing functions for the Tween Library
-* Adapted from Flash ActionScript
-* http://www.robertpenner.com/easing/penner_chapter7_tweening.pdf
-*/
 var Tween;
 (function (Tween) {
-    /**
-    * Standard linear tween.
-    * @param t - time *dynamic
-    * @param b - begin value *static
-    * @param c - change from b *static
-    * @param d - duration of tween *static
-    */
     function linear(t, b, c, d) {
         return t * c / d + b;
     }
@@ -76,12 +64,7 @@ var Tween;
     }
     Tween.exponential = exponential;
 
-    /**
-    * Extends the input object with easing functions
-    * @param runtime - Runtime to extend the easing function to
-    */
     function extendWithEasingFunctions(runtime) {
-        /** TODO: Remove when BSE no longer requires this **/
         var load = {
             linear: Tween.linear,
             back: null,
@@ -126,14 +109,7 @@ var Tween;
     Tween.getEasingFuncByName = getEasingFuncByName;
 })(Tween || (Tween = {}));
 
-/** Remove when unnecessary **/
 Tween.extendWithEasingFunctions(self);
-/**
-* Tween Library
-* Author: Jim Chen
-*/
-/// <reference path="../Runtime.d.ts" />
-/// <reference path="Easing.ts" />
 var Tween;
 (function (Tween) {
     var ITween = (function () {
@@ -148,7 +124,6 @@ var Tween;
             this._target = target;
             this._duration = duration;
 
-            /** Set timer **/
             var timer = this._timer;
             var tween = this;
             this._timer.addEventListener("timer", function () {

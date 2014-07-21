@@ -1,6 +1,3 @@
-/**
-* Player sound
-*/
 var Player;
 (function (Player) {
     var Sound = (function () {
@@ -30,12 +27,6 @@ var Player;
         return Sound;
     })();
 })(Player || (Player = {}));
-/**
-* Player Library
-* Author: Jim Chen
-*/
-/// <reference path="../OOAPI.d.ts" />
-/// <reference path="Sound.ts" />
 var Player;
 (function (Player) {
     var _state = "";
@@ -133,9 +124,6 @@ var Player;
         }
     });
 
-    /**
-    * Requests the player to start playing.
-    */
     function play() {
         __pchannel("Player::action", {
             "action": "play"
@@ -143,9 +131,6 @@ var Player;
     }
     Player.play = play;
 
-    /**
-    * Requests the player to pause
-    */
     function pause() {
         __pchannel("Player::action", {
             "action": "pause"
@@ -153,10 +138,6 @@ var Player;
     }
     Player.pause = pause;
 
-    /**
-    * Seeks to a position (in milliseconds from start)
-    * @param offset - milliseconds offset
-    */
     function seek(offset) {
         __pchannel("Player::action", {
             "action": "seek",
@@ -165,14 +146,6 @@ var Player;
     }
     Player.seek = seek;
 
-    /**
-    * Jump to another video
-    * Note that this may not work if the Host policy does not allow it
-    *
-    * @param video - video id
-    * @param page - video page (defaults to 1)
-    * @param newWindow - open the video in a new window or not
-    */
     function jump(video, page, newWindow) {
         if (typeof page === "undefined") { page = 1; }
         if (typeof newWindow === "undefined") { newWindow = false; }
@@ -205,7 +178,6 @@ var Player;
     }
     Player.toString = toString;
 
-    /** Update Listeners **/
     __schannel("Update:DimensionUpdate", function (payload) {
         _width = payload["stageWidth"];
         _height = payload["stageHeight"];
