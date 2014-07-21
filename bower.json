@@ -1,0 +1,11 @@
+{
+  "name":    "CommentCoreLibrary",
+  "version": "0.9.0",
+  "ignore":  [
+  	"tests/**/*",
+  	"experimental/**/*",
+  	"demo/**/*"
+  ],
+  "dependencies": {
+  }
+}
