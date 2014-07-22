@@ -601,6 +601,8 @@ var Display;
             },
             set: function (m) {
                 if (m === null) {
+                    if (this._matrix3d === null)
+                        return;
                     this._matrix3d = null;
                     this._matrix = new Display.Matrix();
                 } else {
@@ -619,6 +621,8 @@ var Display;
             },
             set: function (m) {
                 if (m === null) {
+                    if (this._matrix === null)
+                        return;
                     this._matrix = null;
                     this._matrix3d = new Display.Matrix3D();
                 } else {
@@ -699,12 +703,234 @@ var Display;
         };
         return Transform;
     })();
+
+    var Rectangle = (function () {
+        function Rectangle(x, y, width, height) {
+            if (typeof x === "undefined") { x = 0; }
+            if (typeof y === "undefined") { y = 0; }
+            if (typeof width === "undefined") { width = 0; }
+            if (typeof height === "undefined") { height = 0; }
+            this._x = x;
+            this._y = y;
+            this._width = width;
+            this._height = height;
+        }
+
+
+
+
+        Object.defineProperty(Rectangle.prototype, "x", {
+            get: function () {
+                return this._x;
+            },
+            set: function (v) {
+                if (v !== null) {
+                    this._x = v;
+                }
+            },
+            enumerable: true,
+            configurable: true
+        });
+
+        Object.defineProperty(Rectangle.prototype, "y", {
+            get: function () {
+                return this._y;
+            },
+            set: function (v) {
+                if (v !== null) {
+                    this._y = v;
+                }
+            },
+            enumerable: true,
+            configurable: true
+        });
+
+        Object.defineProperty(Rectangle.prototype, "width", {
+            get: function () {
+                return this._width;
+            },
+            set: function (v) {
+                if (v !== null) {
+                    this._width = v;
+                }
+            },
+            enumerable: true,
+            configurable: true
+        });
+
+        Object.defineProperty(Rectangle.prototype, "height", {
+            get: function () {
+                return this._height;
+            },
+            set: function (v) {
+                if (v !== null) {
+                    this._height = v;
+                }
+            },
+            enumerable: true,
+            configurable: true
+        });
+
+        Object.defineProperty(Rectangle.prototype, "left", {
+            get: function () {
+                return this._x;
+            },
+            enumerable: true,
+            configurable: true
+        });
+
+        Object.defineProperty(Rectangle.prototype, "right", {
+            get: function () {
+                return this._x + this._width;
+            },
+            enumerable: true,
+            configurable: true
+        });
+
+        Object.defineProperty(Rectangle.prototype, "top", {
+            get: function () {
+                return this._y;
+            },
+            enumerable: true,
+            configurable: true
+        });
+
+        Object.defineProperty(Rectangle.prototype, "bottom", {
+            get: function () {
+                return this._y + this._height;
+            },
+            enumerable: true,
+            configurable: true
+        });
+
+        Object.defineProperty(Rectangle.prototype, "size", {
+            get: function () {
+                return Display.createPoint(this._width, this._height);
+            },
+            enumerable: true,
+            configurable: true
+        });
+
+        Rectangle.prototype.contains = function (x, y) {
+            return x >= this.left && y >= this.top && x <= this.right && y <= this.bottom;
+        };
+
+        Rectangle.prototype.containsPoint = function (p) {
+            return this.contains(p.x, p.y);
+        };
+
+        Rectangle.prototype.containsRect = function (r) {
+            return this.contains(r.left, r.top) && this.contains(r.right, r.bottom);
+        };
+
+        Rectangle.prototype.copyFrom = function (source) {
+            this._x = source._x;
+            this._y = source._y;
+            this._width = source._width;
+            this._height = source._height;
+        };
+
+        Rectangle.prototype.equals = function (other) {
+            return this._x === other._x && this._y === other._y && this._width === other._width && this._height === other._height;
+        };
+
+        Rectangle.prototype.inflate = function (dx, dy) {
+            if (typeof dx === "undefined") { dx = 0; }
+            if (typeof dy === "undefined") { dy = 0; }
+            this._x -= dx;
+            this._width += 2 * dx;
+            this._y -= dy;
+            this._height += 2 * dy;
+        };
+
+        Rectangle.prototype.inflatePoint = function (p) {
+            this.inflate(p.x, p.y);
+        };
+
+        Rectangle.prototype.isEmpty = function () {
+            return this._width <= 0 || this.height <= 0;
+        };
+
+        Rectangle.prototype.setTo = function (x, y, width, height) {
+            if (typeof x === "undefined") { x = 0; }
+            if (typeof y === "undefined") { y = 0; }
+            if (typeof width === "undefined") { width = 0; }
+            if (typeof height === "undefined") { height = 0; }
+            this._x = x;
+            this._y = y;
+            this._width = width;
+            this._height = height;
+        };
+
+        Rectangle.prototype.offset = function (x, y) {
+            if (typeof x === "undefined") { x = 0; }
+            if (typeof y === "undefined") { y = 0; }
+            this._x += x;
+            this._y += y;
+        };
+
+        Rectangle.prototype.offsetPoint = function (p) {
+            this.offset(p.x, p.y);
+        };
+
+        Rectangle.prototype.setEmpty = function () {
+            this.setTo(0, 0, 0, 0);
+        };
+
+        Rectangle.prototype.unionCoord = function (x, y) {
+            var dx = x - this._x;
+            var dy = y - this._y;
+            if (dx >= 0) {
+                this._width = Math.max(this._width, dx);
+            } else {
+                this._x += dx;
+                this._width -= dx;
+            }
+            if (dy >= 0) {
+                this._height = Math.max(this._height, dy);
+            } else {
+                this._y += dy;
+                this._height -= dy;
+            }
+        };
+
+        Rectangle.prototype.unionPoint = function (p) {
+            this.unionCoord(p.x, p.y);
+        };
+
+        Rectangle.prototype.union = function (r) {
+            var n = this.clone();
+            n.unionCoord(r.left, r.top);
+            n.unionCoord(r.right, r.bottom);
+            return n;
+        };
+
+        Rectangle.prototype.toString = function () {
+            return "(x=" + this._x + ", y=" + this._y + ", width=" + this._width + ", height=" + this._height + ")";
+        };
+
+        Rectangle.prototype.clone = function () {
+            return new Rectangle(this._x, this._y, this._width, this._height);
+        };
+
+        Rectangle.prototype.serialize = function () {
+            return {
+                x: this._x,
+                y: this._y,
+                width: this._width,
+                height: this._height
+            };
+        };
+        return Rectangle;
+    })();
+    Display.Rectangle = Rectangle;
+
     var DisplayObject = (function () {
         function DisplayObject(id) {
             if (typeof id === "undefined") { id = Runtime.generateId(); }
             this._alpha = 1;
-            this._x = 0;
-            this._y = 0;
+            this._anchor = new Display.Point();
+            this._boundingBox = new Rectangle();
             this._z = 0;
             this._scaleX = 1;
             this._scaleY = 1;
@@ -737,10 +963,10 @@ var Display;
                         this._alpha = motion["alpha"]["fromValue"];
                     }
                     if (motion.hasOwnProperty("x")) {
-                        this._x = motion["x"]["fromValue"];
+                        this._anchor.x = motion["x"]["fromValue"];
                     }
                     if (motion.hasOwnProperty("y")) {
-                        this._y = motion["y"]["fromValue"];
+                        this._anchor.y = motion["y"]["fromValue"];
                     }
                 } else if (defaults.hasOwnProperty("motionGroup") && defaults["motionGroup"] && defaults["motionGroup"].length > 0) {
                     var motion = defaults["motionGroup"][0];
@@ -748,10 +974,10 @@ var Display;
                         this._alpha = motion["alpha"]["fromValue"];
                     }
                     if (motion.hasOwnProperty("x")) {
-                        this._x = motion["x"]["fromValue"];
+                        this._anchor.x = motion["x"]["fromValue"];
                     }
                     if (motion.hasOwnProperty("y")) {
-                        this._y = motion["y"]["fromValue"];
+                        this._anchor.y = motion["y"]["fromValue"];
                     }
                 }
             } catch (e) {
@@ -760,10 +986,10 @@ var Display;
                 this._alpha = defaults["alpha"];
             }
             if (defaults.hasOwnProperty("x")) {
-                this._x = defaults["x"];
+                this._anchor.x = defaults["x"];
             }
             if (defaults.hasOwnProperty("y")) {
-                this._y = defaults["y"];
+                this._anchor.y = defaults["y"];
             }
         };
 
@@ -803,6 +1029,33 @@ var Display;
             set: function (value) {
                 this._alpha = value;
                 this.propertyUpdate("alpha", value);
+            },
+            enumerable: true,
+            configurable: true
+        });
+
+
+        Object.defineProperty(DisplayObject.prototype, "anchor", {
+            get: function () {
+                return this._anchor;
+            },
+            set: function (p) {
+                this._anchor = p;
+                this.propertyUpdate("x", p.x);
+                this.propertyUpdate("y", p.y);
+            },
+            enumerable: true,
+            configurable: true
+        });
+
+
+        Object.defineProperty(DisplayObject.prototype, "boundingBox", {
+            get: function () {
+                return this._boundingBox;
+            },
+            set: function (r) {
+                this._boundingBox = r;
+                this.propertyUpdate("boundingBox", r.serialize());
             },
             enumerable: true,
             configurable: true
@@ -970,10 +1223,10 @@ var Display;
 
         Object.defineProperty(DisplayObject.prototype, "x", {
             get: function () {
-                return this._x;
+                return this._anchor.x;
             },
             set: function (val) {
-                this._x = val;
+                this._anchor.x = val;
                 this.propertyUpdate("x", val);
             },
             enumerable: true,
@@ -982,10 +1235,10 @@ var Display;
 
         Object.defineProperty(DisplayObject.prototype, "y", {
             get: function () {
-                return this._y;
+                return this._anchor.y;
             },
             set: function (val) {
-                this._y = val;
+                this._anchor.y = val;
                 this.propertyUpdate("y", val);
             },
             enumerable: true,
@@ -1007,10 +1260,10 @@ var Display;
 
         Object.defineProperty(DisplayObject.prototype, "width", {
             get: function () {
-                return this._width;
+                return this._boundingBox.width;
             },
             set: function (w) {
-                this._width = w;
+                this._boundingBox.width = w;
                 this.propertyUpdate("width", w);
             },
             enumerable: true,
@@ -1020,10 +1273,10 @@ var Display;
 
         Object.defineProperty(DisplayObject.prototype, "height", {
             get: function () {
-                return this._height;
+                return this._boundingBox.height;
             },
             set: function (h) {
-                this._height = h;
+                this._boundingBox.height = h;
                 this.propertyUpdate("height", h);
             },
             enumerable: true,
@@ -1160,6 +1413,8 @@ var Display;
 
         DisplayObject.prototype.addChild = function (o) {
             this._children.push(o);
+            this._boundingBox.unionCoord(o._anchor.x + o._boundingBox.left, o._anchor.y + o._boundingBox.top);
+            this._boundingBox.unionCoord(o._anchor.x + o._boundingBox.right, o._anchor.y + o._boundingBox.bottom);
             o._parent = this;
             this.methodCall("addChild", o._id);
         };
@@ -1214,10 +1469,11 @@ var Display;
 
         DisplayObject.prototype.clone = function () {
             var alternate = new DisplayObject();
-            alternate._transform = this._transform;
-            alternate._x = this._x;
-            alternate._y = this._y;
-            alternate.alpha = this._alpha;
+            alternate._transform = this._transform.clone();
+            alternate._transform.parent = alternate;
+            alternate._boundingBox = this._boundingBox.clone();
+            alternate._anchor = this._anchor.clone();
+            alternate._alpha = this._alpha;
             return alternate;
         };
 
@@ -1237,8 +1493,8 @@ var Display;
             }
             return {
                 "class": "DisplayObject",
-                "x": this._x,
-                "y": this._y,
+                "x": this._anchor.x,
+                "y": this._anchor.y,
                 "alpha": this._alpha,
                 "filters": filters
             };
@@ -1266,11 +1522,16 @@ var Display;
 (function (Display) {
     var Graphics = (function () {
         function Graphics(parent) {
-            this._id = parent.getId();
+            this._lineWidth = 1;
+            this._parent = parent;
         }
+        Graphics.prototype._evaluateBoundingBox = function (x, y) {
+            this._parent.boundingBox.unionCoord(x + this._lineWidth / 2, y + this._lineWidth / 2);
+        };
+
         Graphics.prototype._callDrawMethod = function (method, params) {
             __pchannel("Runtime:CallMethod", {
-                "id": this._id,
+                "id": this._parent.getId(),
                 "context": "graphics",
                 "method": method,
                 "params": params
@@ -1278,18 +1539,25 @@ var Display;
         };
 
         Graphics.prototype.lineTo = function (x, y) {
+            this._evaluateBoundingBox(x, y);
             this._callDrawMethod("lineTo", [x, y]);
         };
 
         Graphics.prototype.moveTo = function (x, y) {
+            this._evaluateBoundingBox(x, y);
             this._callDrawMethod("moveTo", [x, y]);
         };
 
         Graphics.prototype.curveTo = function (cx, cy, ax, ay) {
+            this._evaluateBoundingBox(ax, ay);
+            this._evaluateBoundingBox(cx, cy);
             this._callDrawMethod("curveTo", [cx, cy, ax, ay]);
         };
 
         Graphics.prototype.cubicCurveTo = function (cax, cay, cbx, cby, ax, ay) {
+            this._evaluateBoundingBox(cax, cay);
+            this._evaluateBoundingBox(cbx, cby);
+            this._evaluateBoundingBox(ax, ay);
             this._callDrawMethod("cubicCurveTo", [cax, cay, cbx, cby, ax, ay]);
         };
 
@@ -1301,22 +1569,31 @@ var Display;
             if (typeof caps === "undefined") { caps = "none"; }
             if (typeof joints === "undefined") { joints = "round"; }
             if (typeof miter === "undefined") { miter = 3; }
+            this._lineWidth = thickness;
             this._callDrawMethod("lineStyle", [thickness, color, alpha, caps, joints, miter]);
         };
 
         Graphics.prototype.drawRect = function (x, y, w, h) {
+            this._evaluateBoundingBox(x, y);
+            this._evaluateBoundingBox(x + w, y + h);
             this._callDrawMethod("drawRect", [x, y, w, h]);
         };
 
         Graphics.prototype.drawCircle = function (x, y, r) {
+            this._evaluateBoundingBox(x - r, y - r);
+            this._evaluateBoundingBox(x + r, y + r);
             this._callDrawMethod("drawCircle", [x, y, r]);
         };
 
         Graphics.prototype.drawEllipse = function (cx, cy, w, h) {
+            this._evaluateBoundingBox(cx - w / 2, cy - h / 2);
+            this._evaluateBoundingBox(cx + w / 2, cy + h / 2);
             this._callDrawMethod("drawEllipse", [cx + w / 2, cy + h / 2, w / 2, h / 2]);
         };
 
         Graphics.prototype.drawRoundRect = function (x, y, w, h, elw, elh) {
+            this._evaluateBoundingBox(x, y);
+            this._evaluateBoundingBox(x + w, y + h);
             this._callDrawMethod("drawRoundRect", [x, y, w, h, elw, elh]);
         };
 
@@ -1369,10 +1646,15 @@ var Display;
                     }
                 }
             }
+
+            for (var i = 0; i < indices.length; i++) {
+                this._evaluateBoundingBox(verts[2 * indices[i]], verts[2 * indices[i] + 1]);
+            }
             this._callDrawMethod("drawTriangles", [verts, indices, culling]);
         };
 
         Graphics.prototype.clear = function () {
+            this._parent.boundingBox.setEmpty();
             this._callDrawMethod("clear", []);
         };
         return Graphics;
@@ -1795,6 +2077,8 @@ var Display;
             this._text = text;
             this._textFormat = new TextFormat();
             this._textFormat.color = color;
+            this.boundingBox.width = this.textWidth;
+            this.boundingBox.height = this.textHeight;
         }
         Object.defineProperty(TextField.prototype, "text", {
             get: function () {
@@ -1802,6 +2086,8 @@ var Display;
             },
             set: function (t) {
                 this._text = t;
+                this.boundingBox.width = this.textWidth;
+                this.boundingBox.height = this.textHeight;
                 this.propertyUpdate("text", this._text);
             },
             enumerable: true,

@@ -6,15 +6,20 @@
 /// <reference path="DisplayObject.ts" />
 module Display {
 	export class Graphics {
-		private _id:String;
+		private _parent:DisplayObject;
+		private _lineWidth:number = 1;
 
 		constructor(parent:DisplayObject) {
-			this._id = parent.getId();
+			this._parent = parent;
+		}
+
+		private _evaluateBoundingBox(x:number, y:number):void{
+			this._parent.boundingBox.unionCoord(x + this._lineWidth / 2,y + this._lineWidth / 2);
 		}
 
 		private _callDrawMethod(method:string, params):void {
 			__pchannel("Runtime:CallMethod", {
-				"id": this._id,
+				"id": this._parent.getId(),
 				"context": "graphics",
 				"method": method,
 				"params": params
@@ -27,6 +32,7 @@ module Display {
 		 * @param y - y coordinate
 		 */
 		public lineTo(x:number, y:number):void {
+			this._evaluateBoundingBox(x,y);
 			this._callDrawMethod("lineTo", [x, y]);
 		}
 
@@ -36,6 +42,7 @@ module Display {
 		 * @param y - y coordinate
 		 */
 		public moveTo(x:number, y:number):void {
+			this._evaluateBoundingBox(x,y);
 			this._callDrawMethod("moveTo", [x, y]);
 		}
 
@@ -47,6 +54,8 @@ module Display {
 		 * @param ay - Anchor y
 		 */
 		public curveTo(cx:number, cy:number, ax:number, ay:number):void {
+			this._evaluateBoundingBox(ax,ay);
+			this._evaluateBoundingBox(cx,cy);
 			this._callDrawMethod("curveTo", [cx, cy, ax, ay]);
 		}
 
@@ -60,6 +69,9 @@ module Display {
 		 * @param ay - Anchor y
 		 */
 		public cubicCurveTo(cax:number, cay:number, cbx:number, cby:number, ax:number, ay:number):void {
+			this._evaluateBoundingBox(cax,cay);
+			this._evaluateBoundingBox(cbx,cby);
+			this._evaluateBoundingBox(ax,ay);
 			this._callDrawMethod("cubicCurveTo", [cax, cay, cbx, cby, ax, ay]);
 		}
 
@@ -75,6 +87,7 @@ module Display {
 		 * @param miterlim - miter limit (default 3)
 		 */
 		public lineStyle(thickness:number, color:number = 0, alpha:number = 1.0, hinting:boolean = false, scale:string = "normal", caps:string = "none", joints:string = "round", miter:number = 3):void {
+			this._lineWidth = thickness;
 			this._callDrawMethod("lineStyle", [thickness, color, alpha, caps, joints, miter]);
 		}
 
@@ -86,6 +99,8 @@ module Display {
 		 * @param h - height
 		 */
 		public drawRect(x:number, y:number, w:number, h:number):void {
+			this._evaluateBoundingBox(x,y);
+			this._evaluateBoundingBox(x + w,y + h);
 			this._callDrawMethod("drawRect", [x, y, w, h]);
 		}
 
@@ -96,6 +111,8 @@ module Display {
 		 * @param r - radius
 		 */
 		public drawCircle(x:number, y:number, r:number):void {
+			this._evaluateBoundingBox(x - r,y - r);
+			this._evaluateBoundingBox(x + r,y + r);
 			this._callDrawMethod("drawCircle", [x, y , r]);
 		}
 
@@ -107,6 +124,8 @@ module Display {
 		 * @param h - height
 		 */
 		public drawEllipse(cx:number, cy:number, w:number, h:number):void {
+			this._evaluateBoundingBox(cx - w/2,cy - h/2);
+			this._evaluateBoundingBox(cx + w/2,cy + h/2);
 			this._callDrawMethod("drawEllipse", [cx + w / 2, cy + h / 2, w / 2, h / 2]);
 		}
 
@@ -120,6 +139,8 @@ module Display {
 		 * @param elh - ellipse corner height
 		 */
 		public drawRoundRect(x:number, y:number, w:number, h:number, elw:number, elh:number):void {
+			this._evaluateBoundingBox(x,y);
+			this._evaluateBoundingBox(x+w,y+h);
 			this._callDrawMethod("drawRoundRect", [x, y, w, h, elw, elh]);
 		}
 
@@ -130,6 +151,7 @@ module Display {
 		 * @param winding - evenOdd or nonZero
 		 */
 		public drawPath(commands:Array<number>, data:Array<number>, winding:string = "evenOdd"):void {
+			/** TODO: Evaluate bounding box **/
 			this._callDrawMethod("drawPath", [commands, data, winding]);
 		}
 
@@ -199,6 +221,10 @@ module Display {
 					}
 				}
 			}
+			/** Update the bounding box **/
+			for(var i = 0; i < indices.length; i++){
+				this._evaluateBoundingBox(verts[2 * indices[i]], verts[2 * indices[i] + 1]);
+			}
 			this._callDrawMethod("drawTriangles", [verts, indices, culling]);
 		}
 
@@ -206,6 +232,7 @@ module Display {
 		 * Clears everything the current graphics context has drawn
 		 */
 		public clear():void {
+			this._parent.boundingBox.setEmpty();
 			this._callDrawMethod("clear", []);
 		}
 	}

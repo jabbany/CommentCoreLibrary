@@ -32,6 +32,8 @@ module Display {
 
 		set matrix3D(m:Display.Matrix3D) {
 			if(m === null){
+				if(this._matrix3d === null)
+					return;
 				this._matrix3d = null;
 				this._matrix = new Matrix();
 			} else {
@@ -43,6 +45,8 @@ module Display {
 
 		set matrix(m:Display.Matrix) {
 			if(m === null){
+				if(this._matrix === null)
+					return;
 				this._matrix = null;
 				this._matrix3d = new Matrix3D();
 			} else {
@@ -130,16 +134,196 @@ module Display {
 		}
 
 	}
+
+	export class Rectangle implements ISerializable{
+		private _x:number;
+		private _y:number;
+		private _width:number;
+		private _height:number;
+		constructor(x:number = 0, y:number = 0, width:number = 0, height:number = 0){
+			this._x = x;
+			this._y = y;
+			this._width = width;
+			this._height= height;
+		}
+
+		set x(v:number){
+			if(v !== null){
+				this._x = v;
+			}
+		}
+
+		set y(v:number){
+			if(v !== null){
+				this._y = v;
+			}
+		}
+
+		set width(v:number){
+			if(v !== null){
+				this._width = v;
+			}
+		}
+
+		set height(v:number){
+			if(v !== null){
+				this._height = v;
+			}
+		}
+
+		get x():number{
+			return this._x;
+		}
+
+		get y():number{
+			return this._y;
+		}
+
+		get width():number{
+			return this._width;
+		}
+
+		get height():number{
+			return this._height;
+		}
+
+		get left():number{
+			return this._x;
+		}
+
+		get right():number{
+			return this._x + this._width;
+		}
+
+		get top():number{
+			return this._y;
+		}
+
+		get bottom():number{
+			return this._y + this._height;
+		}
+
+		get size():any{
+			return Display.createPoint(this._width, this._height);
+		}
+
+		public contains(x:number, y:number):boolean{
+			return x >= this.left && y >= this.top && x <= this.right && y <= this.bottom;
+		}
+
+		public containsPoint(p:Display.Point):boolean{
+			return this.contains(p.x, p.y);
+		}
+
+		public containsRect(r:Rectangle):boolean{
+			return this.contains(r.left, r.top) && this.contains(r.right, r.bottom);
+		}
+
+		public copyFrom(source:Rectangle):void{
+			this._x = source._x;
+			this._y = source._y;
+			this._width = source._width;
+			this._height = source._height;
+		}
+
+		public equals(other:Rectangle):boolean{
+			return this._x === other._x && this._y === other._y && this._width === other._width && this._height === other._height;
+		}
+
+		public inflate(dx:number = 0, dy:number = 0):void{
+			this._x -= dx;
+			this._width += 2 * dx;
+			this._y -= dy;
+			this._height += 2 * dy;
+		}
+
+		public inflatePoint(p:Display.Point):void{
+			this.inflate(p.x, p.y);
+		}
+
+		public isEmpty():boolean{
+			return this._width <= 0 || this.height <= 0;
+		}
+
+		public setTo(x:number = 0, y:number = 0, width:number = 0, height:number = 0):void{
+			this._x = x;
+			this._y = y;
+			this._width = width;
+			this._height = height;
+		}
+
+		public offset(x:number = 0, y:number = 0):void{
+			this._x += x;
+			this._y += y;
+		}
+
+		public offsetPoint(p:Point):void{
+			this.offset(p.x, p.y);
+		}
+
+		public setEmpty():void{
+			this.setTo(0,0,0,0);
+		}
+
+		/**
+		 * Unions the rectangle with a point coordinate
+		 * @param x - x coordinate
+		 * @param y - y coordinate
+		 */
+		public unionCoord(x:number, y:number):void{
+			var dx:number = x - this._x;
+			var dy:number = y - this._y;
+			if(dx >= 0) {
+				this._width = Math.max(this._width, dx);
+			}else{
+				this._x += dx;
+				this._width -= dx;
+			}
+			if(dy >= 0) {
+				this._height = Math.max(this._height, dy);
+			}else{
+				this._y += dy;
+				this._height -= dy;
+			}
+		}
+
+		public unionPoint(p:Display.Point):void{
+			this.unionCoord(p.x,p.y);
+		}
+
+		public union(r:Rectangle):Rectangle{
+			var n = this.clone();
+			n.unionCoord(r.left, r.top);
+			n.unionCoord(r.right, r.bottom);
+			return n;
+		}
+
+		public toString():string{
+			return "(x=" + this._x + ", y=" + this._y + ", width=" + this._width + ", height=" + this._height + ")";
+		}
+
+		public clone():Rectangle{
+			return new Rectangle(this._x, this._y, this._width, this._height);
+		}
+
+		public serialize():Object{
+			return {
+				x: this._x,
+				y: this._y,
+				width: this._width,
+				height: this._height
+			}
+		}
+	}
+
 	export class DisplayObject implements ISerializable, Runtime.RegisterableObject {
 		private static SANDBOX_EVENTS:Array<string> = ["enterFrame"];
 		/** This represents an element in the HTML rendering **/
 		private _id:string;
 		private _alpha:number = 1;
-		private _x:number = 0;
-		private _y:number = 0;
+		private _anchor:Display.Point = new Point();
+		private _boundingBox:Rectangle = new Rectangle();
 		private _z:number = 0;
-		private _width:number;
-		private _height:number;
 		private _scaleX:number = 1;
 		private _scaleY:number = 1;
 		private _scaleZ:number = 1;
@@ -174,10 +358,10 @@ module Display {
 						this._alpha = motion["alpha"]["fromValue"];
 					}
 					if (motion.hasOwnProperty("x")) {
-						this._x = motion["x"]["fromValue"];
+						this._anchor.x = motion["x"]["fromValue"];
 					}
 					if (motion.hasOwnProperty("y")) {
-						this._y = motion["y"]["fromValue"];
+						this._anchor.y = motion["y"]["fromValue"];
 					}
 				} else if (defaults.hasOwnProperty("motionGroup") &&
 					defaults["motionGroup"] && defaults["motionGroup"].length > 0) {
@@ -186,10 +370,10 @@ module Display {
 						this._alpha = motion["alpha"]["fromValue"];
 					}
 					if (motion.hasOwnProperty("x")) {
-						this._x = motion["x"]["fromValue"];
+						this._anchor.x = motion["x"]["fromValue"];
 					}
 					if (motion.hasOwnProperty("y")) {
-						this._y = motion["y"]["fromValue"];
+						this._anchor.y = motion["y"]["fromValue"];
 					}
 				}
 			} catch (e) {
@@ -199,10 +383,10 @@ module Display {
 				this._alpha = defaults["alpha"];
 			}
 			if (defaults.hasOwnProperty("x")) {
-				this._x = defaults["x"];
+				this._anchor.x = defaults["x"];
 			}
 			if (defaults.hasOwnProperty("y")) {
-				this._y = defaults["y"];
+				this._anchor.y = defaults["y"];
 			}
 		}
 
@@ -247,6 +431,25 @@ module Display {
 
 		get alpha():number {
 			return this._alpha;
+		}
+
+		set anchor(p:Point){
+			this._anchor = p;
+			this.propertyUpdate("x", p.x);
+			this.propertyUpdate("y", p.y);
+		}
+
+		get anchor():Point{
+			return this._anchor;
+		}
+
+		set boundingBox(r:Rectangle){
+			this._boundingBox = r;
+			this.propertyUpdate("boundingBox", r.serialize());
+		}
+
+		get boundingBox():Rectangle{
+			return this._boundingBox;
 		}
 
 		set cacheAsBitmap(value:boolean) {
@@ -335,12 +538,12 @@ module Display {
 		}
 
 		set x(val:number) {
-			this._x = val;
+			this._anchor.x = val;
 			this.propertyUpdate("x", val);
 		}
 
 		set y(val:number) {
-			this._y = val;
+			this._anchor.y = val;
 			this.propertyUpdate("y", val);
 		}
 
@@ -378,11 +581,11 @@ module Display {
 		}
 
 		get x():number {
-			return this._x;
+			return this._anchor.x;
 		}
 
 		get y():number {
-			return this._y;
+			return this._anchor.y;
 		}
 
 		get z():number {
@@ -391,21 +594,21 @@ module Display {
 		/** End Transform Area **/
 
 		set width(w:number) {
-			this._width = w;
+			this._boundingBox.width = w;
 			this.propertyUpdate("width", w);
 		}
 
 		get width():number {
-			return this._width;
+			return this._boundingBox.width;
 		}
 
 		set height(h:number) {
-			this._height = h;
+			this._boundingBox.height = h;
 			this.propertyUpdate("height", h);
 		}
 
 		get height():number {
-			return this._height;
+			return this._boundingBox.height;
 		}
 
 		set visible(visible:boolean) {
@@ -513,6 +716,8 @@ module Display {
 
 		public addChild(o:DisplayObject):void {
 			this._children.push(o);
+			this._boundingBox.unionCoord(o._anchor.x + o._boundingBox.left, o._anchor.y + o._boundingBox.top);
+			this._boundingBox.unionCoord(o._anchor.x + o._boundingBox.right, o._anchor.y + o._boundingBox.bottom);
 			o._parent = this;
 			this.methodCall("addChild", o._id);
 		}
@@ -573,10 +778,11 @@ module Display {
 		 */
 		public clone():DisplayObject {
 			var alternate:DisplayObject = new DisplayObject();
-			alternate._transform = this._transform;
-			alternate._x = this._x;
-			alternate._y = this._y;
-			alternate.alpha = this._alpha;
+			alternate._transform = this._transform.clone();
+			alternate._transform.parent = alternate;
+			alternate._boundingBox = this._boundingBox.clone();
+			alternate._anchor = this._anchor.clone();
+			alternate._alpha = this._alpha;
 			return alternate;
 		}
 
@@ -597,8 +803,8 @@ module Display {
 			}
 			return {
 				"class": "DisplayObject",
-				"x": this._x,
-				"y": this._y,
+				"x": this._anchor.x,
+				"y": this._anchor.y,
 				"alpha": this._alpha,
 				"filters": filters
 			};

@@ -1,0 +1,43 @@
+/*
+* Show the bounding boxes for all the elements drawn
+* -- Author: Jabbany
+*/
+var back = $.createShape({x:0, y:0, lifeTime:1000});
+var registeredObjects = [];
+
+function drawBBox(displayObj){
+  back.graphics.lineStyle(1, 0x00ffff);
+  back.graphics.drawRect(displayObj.x + displayObj.boundingBox.x, displayObj.y + displayObj.boundingBox.y, displayObj.boundingBox.width, displayObj.boundingBox.height);
+}
+
+function drawAnchor(displayObj){
+  back.graphics.lineStyle(0, 0x000000);
+  back.graphics.beginFill(0xff00ff);
+  back.graphics.drawCircle(displayObj.anchor.x,displayObj.anchor.y,2);
+  back.graphics.endFill();
+}
+
+function registerObject(dobj){
+  registeredObjects.push(dobj);
+}
+
+back.addEventListener("enterFrame", function(){
+   back.graphics.clear();
+   $.root.addChild(back);
+   for(var i = 0; i < registeredObjects.length; i++){
+     drawBBox(registeredObjects[i]);
+     drawAnchor(registeredObjects[i]);
+   }
+});
+
+var text = $.createComment("测试弹幕",{x:100,y:20,lifeTime:20, motion:{x:{fromValue:100, toValue:200, lifeTime:5}, y:{fromValue:20, toValue:100, lifeTime:4}}});
+
+var shape = $.createShape({x:50, y:50, lifeTime:20});
+shape.graphics.beginFill(0xffff00);
+shape.graphics.drawRect(-40,-40,40,35);
+shape.graphics.beginFill(0xff0000);
+shape.graphics.lineStyle(5, 0xffffff);
+shape.graphics.drawCircle(0,0,25);
+
+registerObject(text);
+registerObject(shape);

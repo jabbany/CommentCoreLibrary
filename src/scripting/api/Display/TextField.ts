@@ -44,6 +44,8 @@ module Display {
 			this._text = text;
 			this._textFormat = new TextFormat();
 			this._textFormat.color = color;
+			this.boundingBox.width = this.textWidth;
+			this.boundingBox.height = this.textHeight;
 		}
 
 		get text():string {
@@ -52,6 +54,8 @@ module Display {
 
 		set text(t:string) {
 			this._text = t;
+			this.boundingBox.width = this.textWidth;
+			this.boundingBox.height = this.textHeight;
 			this.propertyUpdate("text", this._text);
 		}
 

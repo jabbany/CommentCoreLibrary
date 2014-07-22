@@ -98,10 +98,10 @@
 			this.DOM.appendChild(_("text",text));
 		};
 		this.__defineSetter__("visible", function(f){
-			this.DOM.style.visible = f ? "visible" : "hidden";
+			this.DOM.style.visibility = f ? "visible" : "hidden";
 		});
 		this.__defineGetter__("visible", function(f){
-			return this.DOM.style.visible === "hidden" ? false : true;
+			return this.DOM.style.visibility === "hidden" ? false : true;
 		});
 		this.__defineSetter__("alpha", function(f){
 			this.setAlpha(f);
@@ -225,10 +225,10 @@
 		this.DOM.appendChild(defaultGroupWithEffects);
 		/** PROPS **/
 		this.__defineSetter__("visible", function(f){
-			this.DOM.style.visible = f ? "visible" : "hidden";
+			this.DOM.style.visibility = f ? "visible" : "hidden";
 		});
 		this.__defineGetter__("visible", function(f){
-			return this.DOM.style.visible === "hidden" ? false : true;
+			return this.DOM.style.visibility === "hidden" ? false : true;
 		});
 		this.__defineSetter__("x", function(f){
 			this.setX(f);
@@ -368,6 +368,7 @@
 				});
 				applyFill(state.lastPath, this);
 				applyStroke(state.lastPath, this);
+				defaultGroup.appendChild(state.lastPath);
 			}
 			__(state.lastPath,{
 				"d": state.lastPath.getAttribute("d") + " L" + params.join(" ")
@@ -380,6 +381,7 @@
 				});
 				applyFill(state.lastPath, this);
 				applyStroke(state.lastPath, this);
+				defaultGroup.appendChild(state.lastPath);
 			}
 			__(state.lastPath,{
 				"d": state.lastPath.getAttribute("d") + " Q" + params.join(" ")
@@ -662,10 +664,10 @@
 		data.scaleY = 1; 
 		data.children = [];
 		this.__defineSetter__("visible", function(f){
-			this.DOM.style.visible = f ? "visible" : "hidden";
+			this.DOM.style.visibility = f ? "visible" : "hidden";
 		});
 		this.__defineGetter__("visible", function(f){
-			return this.DOM.style.visible === "hidden" ? false : true;
+			return this.DOM.style.visibility === "hidden" ? false : true;
 		});
 		this.__defineSetter__("alpha", function(f){
 			this.DOM.style.opacity = f;
@@ -796,10 +798,10 @@
 		data.scaleX = 1;
 		data.scaleY = 1; 
 		this.__defineSetter__("visible", function(f){
-			this.DOM.style.visible = f ? "visible" : "hidden";
+			this.DOM.style.visibility = f ? "visible" : "hidden";
 		});
 		this.__defineGetter__("visible", function(f){
-			return this.DOM.style.visible === "hidden" ? false : true;
+			return this.DOM.style.visibility === "hidden" ? false : true;
 		});
 		this.__defineGetter__("transform", function(f){
 			return {};
