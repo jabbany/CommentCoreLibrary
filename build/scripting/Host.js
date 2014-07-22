@@ -489,7 +489,8 @@ var CCLScripting = function(workerUrl){
 				"top":"0px",
 				"left":"0px",
 				"width":(stage.offsetWidth * 2) + "px",
-				"height":(stage.offsetWidth * 2) + "px"
+				"height":(stage.offsetWidth * 2) + "px",
+				"transform":"matrix3d(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1)"
 			}
 		});
 		this._x = data.x ? data.x : 0;
