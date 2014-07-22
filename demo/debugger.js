@@ -217,10 +217,10 @@ function bind(){
 			var sec = Math.floor(playhead / 1000);
 			var millis = playhead % 1000;
 			var millisText = (millis > 99 ? millis : ("0" + (millis > 9 ? millis : "0" + millis)));
-			$("control-status").innerHTML = Math.floor(sec/60) + ":" +
+			$("control-status").textContent = Math.floor(sec/60) + ":" +
 				((sec % 60) > 9 ? (sec % 60) : "0" + (sec % 60)) + ":" + millisText;
 		}else{
-				$("control-status").innerHTML = playhead;
+			$("control-status").textContent = playhead;
 		}
 	};
 	
@@ -265,7 +265,7 @@ function bind(){
 			playhead = new Date().getTime() - start;
 			displayTime(playhead);
 			cm.time(playhead);
-		},10);
+		},42);
 	}
 	
 	/** Load **/
@@ -290,9 +290,9 @@ function bind(){
 		start = new Date().getTime();
 		tmr = setInterval(function(){
 			playhead = new Date().getTime() - start;
-			displayTime(playhead);
 			cm.time(playhead);
-		},10);
+			displayTime(playhead);
+		},42);
 	};
 	
 	var isWindowedFullscreen = false;

@@ -1,39 +1,41 @@
-div.abp{
+.abp{
   position:relative;
 }
 .abp .container{
-  overflow:      hidden;
-  display:       block;
-  z-index:       9999;
-  position:      absolute;
-  top:           0;
-  left:          0;
-  bottom:        0;
-  right:         0;
-  border:        0;
+  transform: matrix3d(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
+  position: absolute;
+  display: block;
+  overflow: hidden;
+  margin: 0;
+  border: 0;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  z-index: 9999;
   touch-callout: none;
-  user-select:   none;
+  user-select: none;
 }
 .abp .container .cmt{
-  padding:          3px 0 0 0;
-  margin:           0;
-  line-height:      100%;
-  font-family:      Simhei,Simsun,Heiti,"MS Mincho","Meiryo","Microsoft Yahei",monospace;
-  text-decoration:  none;
-  text-shadow:      -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
-  color:            #fff;
-  letter-spacing:   0;
-  font-size:        25px;
-  position:         absolute;
-  word-break:       none;
-  text-wrap:        none;
+  transform: matrix3d(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
+  position: absolute;
+  padding: 3px 0 0 0;
+  margin: 0;
+  color: #fff;
+  font-family: SimHei, SimSun, Heiti, "MS Mincho", "Meiryo", "Microsoft YaHei", monospace;
+  font-size: 25px;
+  text-decoration: none;
+  text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
   text-size-adjust: none;
-  white-space:      pre;
+  line-height: 100%;
+  letter-spacing: 0;
+  word-break: keep-all;
+  white-space: pre;
+
 }
-.cmt.noshadow{
-  text-shadow: none !important;
-  text-stroke: none !important;
+.abp .container .cmt.noshadow{
+  text-shadow: none;
 }
-.cmt.rshadow{
-  text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white !important;
+.abp .container .cmt.rshadow{
+  text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
 }

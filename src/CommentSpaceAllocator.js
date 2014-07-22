@@ -75,7 +75,7 @@ function CommentSpaceAllocator(w,h){
 				return cmt.y;
 			}
 		}
-		this.setY(cmt,index+1);
+		return this.setY(cmt,index+1);
 	};
 	this.vCheck = function(y,cmt){
 		var bottom = y + cmt.height;

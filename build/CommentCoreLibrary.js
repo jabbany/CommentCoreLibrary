@@ -193,7 +193,7 @@ function CommentSpaceAllocator(w,h){
 				return cmt.y;
 			}
 		}
-		this.setY(cmt,index+1);
+		return this.setY(cmt,index+1);
 	};
 	this.vCheck = function(y,cmt){
 		var bottom = y + cmt.height;
@@ -529,11 +529,16 @@ CommentManager.prototype.time = function(time){
 		this.lastPos = time;
 		if(this.timeline.length <= this.position)
 			return;
-	}else this.lastPos = time;
+	}else{
+		this.lastPos = time;
+	}
 	for(;this.position < this.timeline.length;this.position++){
 		if(this.limiter > 0 && this.runline.length > this.limiter) break;
-		if(this.validate(this.timeline[this.position]) && this.timeline[this.position]['stime']<=time) this.sendComment(this.timeline[this.position]);
-		else break;
+		if(this.validate(this.timeline[this.position]) && this.timeline[this.position]['stime']<=time){
+			this.sendComment(this.timeline[this.position]);
+		}else{
+			break;
+		}
 	}
 };
 CommentManager.prototype.rescale = function(){
@@ -556,11 +561,12 @@ CommentManager.prototype.sendComment = function(data){
 		if(data == null) return;
 	}
 	cmt = this.initCmt(cmt,data);
+	
 	this.stage.appendChild(cmt);
 	cmt.width = cmt.offsetWidth;
 	cmt.height = cmt.offsetHeight;
-	cmt.style.width = (cmt.width + 1) + "px";
-	cmt.style.height = (cmt.height - 3) + "px";
+	//cmt.style.width = (cmt.width + 1) + "px";
+	//cmt.style.height = (cmt.height - 3) + "px";
 	cmt.style.left = this.stage.width + "px";
 	
 	if(this.filter != null && !this.filter.beforeSend(cmt)){
