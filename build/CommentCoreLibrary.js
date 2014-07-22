@@ -403,6 +403,9 @@ function CommentManager(stageObject){
 	};
 	this.timeline = [];
 	this.runline = [];
+	this.allowBuffer = true;
+	this.buffered = null;
+	this.render = false;
 	this.position = 0;
 	this.limiter = 0;
 	this.filter = null;
@@ -461,7 +464,7 @@ function CommentManager(stageObject){
 		__timer = window.setInterval(function(){
 			var elapsed = new Date().getTime() - lastTPos;
 			lastTPos = new Date().getTime();
-			cmMgr.onTimerEvent(elapsed,cmMgr);
+			cmMgr.onTimerEvent(elapsed, cmMgr, this.buffered ? true : false);
 		},10);
 	};
 	this.stopTimer = function(){
@@ -532,14 +535,39 @@ CommentManager.prototype.time = function(time){
 	}else{
 		this.lastPos = time;
 	}
+	var doFlush = this.buffered ? false : true;
 	for(;this.position < this.timeline.length;this.position++){
 		if(this.limiter > 0 && this.runline.length > this.limiter) break;
 		if(this.validate(this.timeline[this.position]) && this.timeline[this.position]['stime']<=time){
+			this.buffer();
 			this.sendComment(this.timeline[this.position]);
 		}else{
 			break;
 		}
 	}
+	if(doFlush)
+		this.flush();
+};
+CommentManager.prototype.buffer = function(){
+	if(!this.buffered)
+		this.buffered = [];
+};
+CommentManager.prototype.flush = function(){
+	if(!this.buffered)
+		return;
+	var fragment = document.createDocumentFragment();
+	for(var i = 0; i < this.buffered.length; i++){
+		this.buffered[i].style.visibility = "hidden";
+		fragment.appendChild(this.buffered[i]);
+	}
+	this.stage.appendChild(fragment);
+	for(var i = 0; i < this.buffered.length; i++){
+		this.buffered[i].width = this.buffered[i].offsetWidth;
+		this.buffered[i].height = this.buffered[i].offsetWidth;
+		this.allocate(this.buffered[i]);
+		this.buffered[i].style.visibility = "visible";
+	}
+	this.buffered = null;
 };
 CommentManager.prototype.rescale = function(){
 	for(var i = 0; i < this.runline.length; i++){
@@ -547,33 +575,8 @@ CommentManager.prototype.rescale = function(){
 		this.runline[i].ttl = Math.round(this.runline[i].ttl * this.def.globalScale);
 	}
 };
-CommentManager.prototype.sendComment = function(data){
-	if(data.mode === 8){
-		console.log(data);
-		if(this.scripting){
-			console.log(this.scripting.eval(data.code));
-		}
-		return;
-	}
-	var cmt = document.createElement('div');
-	if(this.filter != null){
-		data = this.filter.doModify(data);
-		if(data == null) return;
-	}
-	cmt = this.initCmt(cmt,data);
-	
-	this.stage.appendChild(cmt);
-	cmt.width = cmt.offsetWidth;
-	cmt.height = cmt.offsetHeight;
-	//cmt.style.width = (cmt.width + 1) + "px";
-	//cmt.style.height = (cmt.height - 3) + "px";
-	cmt.style.left = this.stage.width + "px";
-	
-	if(this.filter != null && !this.filter.beforeSend(cmt)){
-		this.stage.removeChild(cmt);
-		cmt = null;
-		return;
-	}
+CommentManager.prototype.allocate = function(cmt){
+	var data = cmt.data;
 	switch(cmt.mode){
 		default:
 		case 1:{this.csa.scroll.add(cmt);}break;
@@ -628,7 +631,42 @@ CommentManager.prototype.sendComment = function(data){
 			}
 		}break;
 	}
+};
+
+CommentManager.prototype.sendComment = function(data){
+	if(data.mode === 8){
+		console.log(data);
+		if(this.scripting){
+			console.log(this.scripting.eval(data.code));
+		}
+		return;
+	}
+	var cmt = document.createElement('div');
+	if(this.filter != null){
+		data = this.filter.doModify(data);
+		if(data == null) return;
+	}
+	cmt = this.initCmt(cmt,data);
+	cmt.style.left = this.stage.width + "px";
+	
 	this.runline.push(cmt);
+	if(this.buffered && this.allowBuffer){
+		this.buffered.push(cmt);
+		return;
+	}else{
+		this.stage.appendChild(cmt);
+		//cmt.style.width = (cmt.width + 1) + "px";
+		//cmt.style.height = (cmt.height - 3) + "px";
+		cmt.width = cmt.offsetWidth;
+		cmt.height = cmt.offsetHeight;
+		if(this.filter != null && !this.filter.beforeSend(cmt)){
+			this.stage.removeChild(cmt);
+			cmt = null;
+			return;
+		}
+		this.allocate(cmt);
+	}
+	
 };
 CommentManager.prototype.finish = function(cmt){
 	switch(cmt.mode){
@@ -642,13 +680,15 @@ CommentManager.prototype.finish = function(cmt){
 	}
 };
 /** Static Functions **/
-CommentManager.prototype.onTimerEvent = function(timePassed,cmObj){
+CommentManager.prototype.onTimerEvent = function(timePassed,cmObj,norender){
 	for(var i= 0;i < cmObj.runline.length; i++){
 		var cmt = cmObj.runline[i];
 		if(cmt.hold){
 			continue;
 		}
 		cmt.ttl -= timePassed;
+		if(norender)
+			continue;
 		if(cmt.mode == 1 || cmt.mode == 2) {
 			cmt.style.left = (cmt.ttl / cmt.dur) * (cmObj.stage.width + cmt.width) - cmt.width + "px";
 		}else if(cmt.mode == 6) {
