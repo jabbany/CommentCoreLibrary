@@ -1,16 +1,16 @@
 # CommentCoreLibrary 弹幕核心通用构件
 The CommentCoreLibrary is a set of Javascript modules that make up the
-core controller for comments streaming on top of timed media (video or audio). 
-It is intended as a catalyst for the development of timed "danmaku" comments 
+core controller for comments streaming on top of timed media (video or audio).
+It is intended as a catalyst for the development of timed "danmaku" comments
 in HTML5.
 
-Developers willing to incorporate similar comment streaming functionalities 
-inside their own projects (whether web based or not) are encouraged to learn 
+Developers willing to incorporate similar comment streaming functionalities
+inside their own projects (whether web based or not) are encouraged to learn
 from and extend from the CommentCoreLibrary.
 
 ## Testing
-We have a live demo [here](http://jabbany.github.com/CommentCoreLibrary/demo). 
-Feel free to [open tickets](CONTRIBUTING.md) if this demo test has bugs. 
+We have a live demo [here](http://jabbany.github.com/CommentCoreLibrary/demo).
+Feel free to [open tickets](CONTRIBUTING.md) if this demo test has bugs.
 
 ## License
 The CommentCoreLibrary is licensed under the permissive MIT License. If you wish
@@ -18,18 +18,34 @@ to use this in any project, you can simply include the following line:
 
     CommentCoreLibrary (//github.com/jabbany/CommentCoreLibrary) - Licensed under the MIT license
 
+## Installing
+With [bower](http://bower.io/)
+`bower install comment_core_library`
+
+With [npm](https://www.npmjs.org/)
+`npm install commet_core_library`
+
+For Rails, installing with [rails-assets](https://rails-assets.org/) is recommended
+In Gemfile:
+```ruby
+# Add https://rails-assets.org as the new gem source
+source 'https://rails-assets.org'
+
+gem 'rails-assets-comment_core_library'
+```
+
 ## Examples and Documentation
-- Documentation can be found inside the `docs/` folder. 
+- Documentation can be found inside the `docs/` folder.
 - Some sample extension modules may be found in `extend/`.
 - Experimental modules are in `experimental/`.
 - You may test using test data found in `tests/`.
 
 ## Contributing
-We encourage any contributions to this project, please read 
+We encourage any contributions to this project, please read
 [CONTRIBUTING](CONTRIBUTING.md) for details on how to contribute to the project.
 
-Also, feel free to have a look at our sister project 
-[ABPlayerHTML5](https://github.com/jabbany/ABPlayerHTML5) for a reference 
+Also, feel free to have a look at our sister project
+[ABPlayerHTML5](https://github.com/jabbany/ABPlayerHTML5) for a reference
 implementation of a video player with CommentCoreLibrary.
 
 # 弹幕核心通用构件
@@ -38,7 +54,7 @@ implementation of a video player with CommentCoreLibrary.
 自己的流媒体注释播放模式。
 
 不管你在开发基于Javascript的Web服务，还是其他的需要弹幕播放功能服务，都可以参考弹幕核心
-的实现代码。我们以简单的方法构建了 (1) 时间轴管理 (2) 基础空间规划 (3) 弹幕过滤 (4) 
+的实现代码。我们以简单的方法构建了 (1) 时间轴管理 (2) 基础空间规划 (3) 弹幕过滤 (4)
 高级弹幕效果 (5) 基础格式解析 (6) 代码弹幕支持
 
 ## 测试
