@@ -1,8 +1,8 @@
-/******
-* Comment Core For HTML5 VideoPlayers
-* Author : Jim Chen
-* Licensing : MIT License
-******/
+/*!
+ * Comment Core For HTML5 VideoPlayers
+ * Copyright (c) 2014 Jim Chen
+ * License: MIT
+ */
 Array.prototype.remove = function(obj){
 	for(var a = 0; a < this.length;a++)
 		if(this[a] == obj){
@@ -67,7 +67,7 @@ function CommentManager(stageObject){
 		cmt.mode = data.mode;
 		cmt.data = data;
 		if(cmt.mode === 17){
-			
+
 		}else{
 			cmt.appendChild(document.createTextNode(data.text));
 			cmt.innerText = data.text;
@@ -113,7 +113,7 @@ function CommentManager(stageObject){
 		__timer = 0;
 	};
 }
-	
+
 /** Public **/
 CommentManager.prototype.seek = function(time){
 	this.position = this.timeline.bsearch(time,function(a,b){
@@ -212,7 +212,7 @@ CommentManager.prototype.sendComment = function(data){
 	//cmt.style.width = (cmt.width + 1) + "px";
 	//cmt.style.height = (cmt.height - 3) + "px";
 	cmt.style.left = this.stage.width + "px";
-	
+
 	if(this.filter != null && !this.filter.beforeSend(cmt)){
 		this.stage.removeChild(cmt);
 		cmt = null;
@@ -246,8 +246,8 @@ CommentManager.prototype.sendComment = function(data){
 					var COS = Math.cos;
 					var SIN = Math.sin;
 					var matrix = [
-						COS(yr) * COS(zr)    , COS(yr) * SIN(zr)     , SIN(yr)  , 0, 
-						(-SIN(zr))           , COS(zr)               , 0        , 0, 
+						COS(yr) * COS(zr)    , COS(yr) * SIN(zr)     , SIN(yr)  , 0,
+						(-SIN(zr))           , COS(zr)               , 0        , 0,
 						(-SIN(yr) * COS(zr)) , (-SIN(yr) * SIN(zr))  , COS(yr)  , 0,
 						0                    , 0                     , 0        , 1
 					];
@@ -301,7 +301,7 @@ CommentManager.prototype.onTimerEvent = function(timePassed,cmObj){
 			if(cmt.dur == null)
 				cmt.dur = 4000;
 			if(cmt.data.alphaFrom != null && cmt.data.alphaTo != null){
-				cmt.style.opacity = (cmt.data.alphaFrom - cmt.data.alphaTo) * 
+				cmt.style.opacity = (cmt.data.alphaFrom - cmt.data.alphaTo) *
 					(cmt.ttl/cmt.dur) + cmt.data.alphaTo;
 			}
 			if(cmt.mode == 7 && cmt.data.movable){
