@@ -20,10 +20,10 @@ to use this in any project, you can simply include the following line:
 
 ## Installing
 With [bower](http://bower.io/)
-`bower install comment_core_library`
+`bower install comment-core-library`
 
 With [npm](https://www.npmjs.org/)
-`npm install commet_core_library`
+`npm install comment-core-library`
 
 For Rails, installing with [rails-assets](https://rails-assets.org/) is recommended
 In Gemfile:
@@ -31,7 +31,7 @@ In Gemfile:
 # Add https://rails-assets.org as the new gem source
 source 'https://rails-assets.org'
 
-gem 'rails-assets-comment_core_library'
+gem 'rails-assets-comment-core-library'
 ```
 
 ## Examples and Documentation

@@ -1,5 +1,5 @@
 {
-  "name": "comment_core_library",
+  "name": "comment-core-library",
   "description": "Extendable library for displaying danmaku comments.",
   "bugs": {
     "url": "https://github.com/jabbany/CommentCoreLibrary/issues",

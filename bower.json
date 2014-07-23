@@ -1,5 +1,5 @@
 {
-  "name":    "CommentCoreLibrary",
+  "name":    "comment-core-library",
   "version": "0.9.0",
   "ignore":  [
   	"tests/**/*",
