@@ -1,14 +1,14 @@
 /******
-* Comment Core For HTML5 VideoPlayers
-* Author : Jim Chen
-* Licensing : MIT License
-******/
+ * Comment Core For HTML5 VideoPlayers
+ * Author : Jim Chen
+ * Licensing : MIT License
+ ******/
 Array.prototype.remove = function(obj){
 	for(var a = 0; a < this.length;a++)
-		if(this[a] == obj){
-			this.splice(a,1);
-			break;
-		}
+	  if(this[a] == obj){
+		  this.splice(a,1);
+		  break;
+	  }
 };
 Array.prototype.bsearch = function(what,how){
 	if(this.length == 0) return 0;
@@ -28,7 +28,7 @@ Array.prototype.bsearch = function(what,how){
 		}else if(how(what,this[i])>=0){
 			low = i;
 		}else
-			console.error('Program Error');
+		  console.error('Program Error');
 		if(count > 1500) console.error('Too many run cycles.');
 	}
 	return -1;
@@ -60,6 +60,16 @@ function CommentManager(stageObject){
 	/** Precompute the offset width **/
 	this.stage.width = this.stage.offsetWidth;
 	this.stage.height= this.stage.offsetHeight;
+	//Canvas
+	this.canvas = document.createElement("canvas");
+	this.canvas.width = this.stage.width;
+	this.stage.height = this.stage.height;
+	this.stage.appendChild(this.canvas);
+	this.ctx = this.canvas.getContext('2d');
+	this.ctx.textBaseline="top";
+	//this.defaultFont = "25px SimHei";
+	this.pdivpool = [0];
+	this.pdivheight = 29;
 	/** Private **/
 	this.initCmt = function(cmt,data){
 		cmt.className = 'cmt';
@@ -67,28 +77,28 @@ function CommentManager(stageObject){
 		cmt.mode = data.mode;
 		cmt.data = data;
 		if(cmt.mode === 17){
-			
+
 		}else{
 			cmt.appendChild(document.createTextNode(data.text));
 			cmt.innerText = data.text;
 			cmt.style.fontSize = data.size + "px";
 		}
 		if(data.font != null && data.font != '')
-			cmt.style.fontFamily = data.font;
+		  cmt.style.fontFamily = data.font;
 		if(data.shadow === false)
-			cmt.className = 'cmt noshadow';
+		  cmt.className = 'cmt noshadow';
 		if(data.color == "#000000" && (data.shadow || data.shadow == null))
-			cmt.className += ' rshadow';
+		  cmt.className += ' rshadow';
 		if(data.margin != null)
-			cmt.style.margin = data.margin;
+		  cmt.style.margin = data.margin;
 		if(data.color != null)
-			cmt.style.color = data.color;
+		  cmt.style.color = data.color;
 		if(this.def.opacity != 1 && data.mode == 1)
-			cmt.style.opacity = this.def.opacity;
+		  cmt.style.opacity = this.def.opacity;
 		if(data.alphaFrom != null)
-			cmt.style.opacity = data.alphaFrom;
+		  cmt.style.opacity = data.alphaFrom;
 		if(data.border)
-			cmt.style.border = "1px solid #00ffff";
+		  cmt.style.border = "1px solid #00ffff";
 		cmt.ttl = Math.round(4000 * this.def.globalScale);
 		cmt.dur = cmt.ttl;
 		if(cmt.mode === 1 || cmt.mode === 6 || cmt.mode === 2){
@@ -99,7 +109,7 @@ function CommentManager(stageObject){
 	};
 	this.startTimer = function(){
 		if(__timer > 0)
-			return;
+		  return;
 		var lastTPos = new Date().getTime();
 		var cmMgr = this;
 		__timer = window.setInterval(function(){
@@ -113,7 +123,7 @@ function CommentManager(stageObject){
 		__timer = 0;
 	};
 }
-	
+
 /** Public **/
 CommentManager.prototype.seek = function(time){
 	this.position = this.timeline.bsearch(time,function(a,b){
@@ -124,7 +134,7 @@ CommentManager.prototype.seek = function(time){
 };
 CommentManager.prototype.validate = function(cmt){
 	if(cmt == null)
-		return false;
+	  return false;
 	return this.filter.doValidate(cmt);
 };
 CommentManager.prototype.load = function(a){
@@ -140,14 +150,86 @@ CommentManager.prototype.load = function(a){
 				else if(a.dbid < b.dbid) return -1;
 				return 0;
 			}else
-				return 0;
+		return 0;
 		}
 	});
+	//////
+	this.preload();
+	//////
 };
+
+CommentManager.prototype.preload = function ()
+{
+	this.pdivpool = [-10000000];
+	for(var i = 0; i < this.timeline.length; i++){
+		if(this.timeline[i].mode !== 1)
+		  continue;
+		cmt=this.timeline[i];
+		cmt.ctxfont = cmt.size + "px " + "SimHei";
+		if(cmt.font != null && cmt.font != '')
+			cmt.ctxfont = cmt.size + "px " + cmt.font;
+		//caculate width and height
+		this.ctx.font=cmt.ctxfont;
+		text = cmt.text.split("\n");
+		cmt.height = Math.floor(text.length * cmt.size * 1.15) + 1;
+		cmt.textlength = 0;
+		for(var p = 0; p < text.length; p++ ){
+			if(this.ctx.measureText(text[p]).width > cmt.textlength){
+				cmt.textlength = this.ctx.measureText(text[p]).width;
+			}
+		}
+		cmt.width = cmt.textlength;
+		cmt.ttl = Math.round(4000 * this.def.globalScale);
+		cmt.dur = cmt.ttl;
+		if(cmt.mode === 1 || cmt.mode === 6 || cmt.mode === 2){
+			cmt.ttl *= this.def.scrollScale;
+			cmt.dur = cmt.ttl;
+		}
+		cmt.hold = 0;
+		var j = 0;
+		while(j <= this.pdivpool.length){
+			if(j == this.pdivpool.length)
+			  this.pdivpool[j] = -10000000;
+			if(cmt.stime-(cmt.width/this.stage.width*4000*this.def.globalScale)/3>= this.pdivpool[j]){
+				cmt.totop = j* this.pdivheight;
+				while(cmt.totop + cmt.height > this.stage.height)
+				  cmt.totop-=this.stage.height;
+				if(cmt.totop<0)
+				  cmt.totop=0;
+				cmt.totop=Math.round(cmt.totop/this.pdivheight)*this.pdivheight;
+				endtime = cmt.stime+cmt.width/this.stage.width*4000*this.def.globalScale;
+				k=0;
+				while(k*this.pdivheight<cmt.height){
+					this.pdivpool[j+k]=endtime;
+					k++
+				}
+				break;
+			}else
+			  j++;
+		}
+	}
+}
+
+CommentManager.prototype.onDraw = function(){
+	this.ctx.clearRect(0,0,this.canvas.offsetWidth,this.canvas.offsetHeight);
+	for(i=0;i<this.runline.length;i++){
+		cmt=this.runline[i];
+		this.ctx.textBaseline = "top";
+		this.ctx.font=cmt.ctxfont;
+		this.ctx.fillStyle=cmt.color;
+		this.ctx.fillText(cmt.text,cmt.left,cmt.totop);
+		if(cmt.border){
+			this.ctx.strokeStyle("#00ffff");
+			this.ctx.strokeText(cmt.text,cmt.left,cmt.totop);
+		}
+	}
+}
+
 CommentManager.prototype.clear = function(){
 	for(var i=0;i<this.runline.length;i++){
 		this.finish(this.runline[i]);
-		this.stage.removeChild(this.runline[i]);
+		if(this.runline[i].mode !==1 )
+		  this.stage.removeChild(this.runline[i]);
 	}
 	this.runline = [];
 };
@@ -160,11 +242,13 @@ CommentManager.prototype.setBounds = function(){
 	// Update 3d perspective
 	this.stage.style.perspective = this.stage.width * Math.tan(40 * Math.PI/180) / 2 + "px";
 	this.stage.style.webkitPerspective = this.stage.width * Math.tan(40 * Math.PI/180) / 2 + "px";
+	this.canvas.width = this.stage.offsetWidth;
+	this.canvas.height = this.stage.offsetHeight;
 };
 CommentManager.prototype.init = function(){
 	this.setBounds();
 	if(this.filter == null)
-		this.filter = new CommentFilter(); //Only create a filter if none exist
+	  this.filter = new CommentFilter(); //Only create a filter if none exist
 };
 CommentManager.prototype.time = function(time){
 	time = time - 1;
@@ -172,7 +256,7 @@ CommentManager.prototype.time = function(time){
 		this.seek(time);
 		this.lastPos = time;
 		if(this.timeline.length <= this.position)
-			return;
+		  return;
 	}else{
 		this.lastPos = time;
 	}
@@ -199,20 +283,24 @@ CommentManager.prototype.sendComment = function(data){
 		}
 		return;
 	}
+	if(data.mode === 1){
+		this.runline.push(data);
+		return;
+	}
 	var cmt = document.createElement('div');
 	if(this.filter != null){
 		data = this.filter.doModify(data);
 		if(data == null) return;
 	}
 	cmt = this.initCmt(cmt,data);
-	
+
 	this.stage.appendChild(cmt);
 	cmt.width = cmt.offsetWidth;
 	cmt.height = cmt.offsetHeight;
 	//cmt.style.width = (cmt.width + 1) + "px";
 	//cmt.style.height = (cmt.height - 3) + "px";
 	cmt.style.left = this.stage.width + "px";
-	
+
 	if(this.filter != null && !this.filter.beforeSend(cmt)){
 		this.stage.removeChild(cmt);
 		cmt = null;
@@ -220,7 +308,7 @@ CommentManager.prototype.sendComment = function(data){
 	}
 	switch(cmt.mode){
 		default:
-		case 1:{this.csa.scroll.add(cmt);}break;
+		case 1: break;//{this.csa.scroll.add(cmt);}break;
 		case 2:{this.csa.scrollbtm.add(cmt);}break;
 		case 4:{this.csa.bottom.add(cmt);}break;
 		case 5:{this.csa.top.add(cmt);}break;
@@ -250,7 +338,7 @@ CommentManager.prototype.sendComment = function(data){
 						(-SIN(zr))           , COS(zr)               , 0        , 0, 
 						(-SIN(yr) * COS(zr)) , (-SIN(yr) * SIN(zr))  , COS(yr)  , 0,
 						0                    , 0                     , 0        , 1
-					];
+							];
 					// CSS does not recognize scientific notation (e.g. 1e-6), truncating it.
 					for(var i = 0; i < matrix.length;i++){
 						if(Math.abs(matrix[i]) < 0.000001){
@@ -277,7 +365,7 @@ CommentManager.prototype.sendComment = function(data){
 CommentManager.prototype.finish = function(cmt){
 	switch(cmt.mode){
 		default:
-		case 1:{this.csa.scroll.remove(cmt);}break;
+		case 1: break;//{this.csa.scroll.remove(cmt);}break;
 		case 2:{this.csa.scrollbtm.remove(cmt);}break;
 		case 4:{this.csa.bottom.remove(cmt);}break;
 		case 5:{this.csa.top.remove(cmt);}break;
@@ -287,6 +375,7 @@ CommentManager.prototype.finish = function(cmt){
 };
 /** Static Functions **/
 CommentManager.prototype.onTimerEvent = function(timePassed,cmObj){
+	this.onDraw();
 	for(var i= 0;i < cmObj.runline.length; i++){
 		var cmt = cmObj.runline[i];
 		if(cmt.hold){
@@ -294,19 +383,20 @@ CommentManager.prototype.onTimerEvent = function(timePassed,cmObj){
 		}
 		cmt.ttl -= timePassed;
 		if(cmt.mode == 1 || cmt.mode == 2) {
-			cmt.style.left = (cmt.ttl / cmt.dur) * (cmObj.stage.width + cmt.width) - cmt.width + "px";
+			//cmt.style.left = (cmt.ttl / cmt.dur) * (cmObj.stage.width + cmt.width) - cmt.width + "px";
+			cmt.left = (cmt.ttl / cmt.dur) * (cmObj.stage.width + cmt.width) - cmt.width ;
 		}else if(cmt.mode == 6) {
 			cmt.style.left = (1 - cmt.ttl / cmt.dur) * (cmObj.stage.width + cmt.width) - cmt.width + "px";
 		}else if(cmt.mode == 4 || cmt.mode == 5 || cmt.mode >= 7){
 			if(cmt.dur == null)
-				cmt.dur = 4000;
+			  cmt.dur = 4000;
 			if(cmt.data.alphaFrom != null && cmt.data.alphaTo != null){
 				cmt.style.opacity = (cmt.data.alphaFrom - cmt.data.alphaTo) * 
 					(cmt.ttl/cmt.dur) + cmt.data.alphaTo;
 			}
 			if(cmt.mode == 7 && cmt.data.movable){
 				var posT = Math.min(Math.max(cmt.dur - cmt.data.moveDelay - cmt.ttl,0),
-					cmt.data.moveDuration) / cmt.data.moveDuration;
+							cmt.data.moveDuration) / cmt.data.moveDuration;
 				if(cmt.data.position !== "relative"){
 					cmt.style.top = ((cmt.data.toY - cmt.data.y) * posT + cmt.data.y) + "px";
 					cmt.style.left= ((cmt.data.toX - cmt.data.x) * posT + cmt.data.x) + "px";
@@ -320,7 +410,8 @@ CommentManager.prototype.onTimerEvent = function(timePassed,cmObj){
 			cmt = cmObj.filter.runtimeFilter(cmt);
 		}
 		if(cmt.ttl <= 0){
-			cmObj.stage.removeChild(cmt);
+			if(cmt.mode !==1 )
+			  cmObj.stage.removeChild(cmt);
 			cmObj.runline.splice(i,1);//remove the comment
 			cmObj.finish(cmt);
 		}
