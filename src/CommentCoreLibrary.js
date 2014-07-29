@@ -164,6 +164,8 @@ function CommentManager(stageObject){
 
 /** Public **/
 CommentManager.prototype.seek = function(time){
+	for(k=0;k<this.pdivpool.lenght;k++)
+	  this.pdivpool[k]=-10000000;
 	this.position = this.timeline.bsearch(time,function(a,b){
 		if(a < b.stime) return -1
 		else if(a > b.stime) return 1;
@@ -237,7 +239,7 @@ CommentManager.prototype.clear = function(){
 		if(this.runline[i].mode !==1 )
 		  this.stage.removeChild(this.runline[i]);
 		else
-			this.bctx[this.runline[i].bufferid].onuse=false;
+		  this.bctx[this.runline[i].bufferid].onuse=false;
 	}
 	this.runline = [];
 };
