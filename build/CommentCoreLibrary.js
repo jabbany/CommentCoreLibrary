@@ -508,8 +508,8 @@ function CommentManager(stageObject){
 			for(i=0;i<_CMthis.runline.length;i++){
 				cmt=_CMthis.runline[i];
 				_CMthis.pctx.textBaseline = "top";
-				this.ctx.shadowBlur=2;
-				this.ctx.shadowColor="black";
+				_CMthis.pctx.shadowBlur=2;
+				_CMthis.pctx.shadowColor="black";
 				_CMthis.pctx.font=cmt.ctxfont;
 				_CMthis.pctx.fillStyle=cmt.color;
 				if(cmt.border){//||true){
