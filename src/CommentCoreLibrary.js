@@ -152,11 +152,11 @@ function CommentManager(stageObject){
 			for(i=0;i<_CMthis.runline.length;i++){
 				cmt=_CMthis.runline[i];
 				_CMthis.pctx.textBaseline = "top";
-				//this.ctx.shadowBlur=4;
-				//this.ctx.shadowColor="black";
+				this.ctx.shadowBlur=2;
+				this.ctx.shadowColor="black";
 				_CMthis.pctx.font=cmt.ctxfont;
 				_CMthis.pctx.fillStyle=cmt.color;
-				if(cmt.border||true){
+				if(cmt.border){//||true){
 					_CMthis.pctx.lineWidth = 2;
 					_CMthis.pctx.strokeStyle="#000000";
 					_CMthis.pctx.strokeText(cmt.text,Math.floor(cmt.left),cmt.totop);
