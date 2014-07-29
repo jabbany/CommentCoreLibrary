@@ -515,9 +515,9 @@ function CommentManager(stageObject){
 				if(cmt.border||true){
 					_CMthis.pctx.lineWidth = 2;
 					_CMthis.pctx.strokeStyle="#000000";
-					_CMthis.pctx.strokeText(cmt.text,(cmt.left+0.5)<<0,cmt.totop);
+					_CMthis.pctx.strokeText(cmt.text,Math.floor(cmt.left),cmt.totop);
 				}
-				_CMthis.pctx.fillText(cmt.text,(cmt.left+0.5)<<0,cmt.totop);
+				_CMthis.pctx.fillText(cmt.text,Math.floor(cmt.left),cmt.totop);
 			}
 			//_CMthis.pctx.closePath();
 			_CMthis.ctx.drawImage(_CMthis.pcanvas,0,0);
