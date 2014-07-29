@@ -429,6 +429,7 @@ function CommentManager(stageObject){
 	this.pdivpool = [0];
 	this.pdivheight = 29;
 	this.onplay=false;
+	this.requestfresh=false;
 	requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
 	//ctxbuffer
 	this.bctx=[];
@@ -502,7 +503,7 @@ function CommentManager(stageObject){
 		__timer = 0;
 	};
 	this.onDraw = function(){
-		if(_CMthis.onplay){
+		if(_CMthis.onplay||_CMthis.requestfresh){
 			_CMthis.ctx.clearRect(0,0,_CMthis.canvas.offsetWidth,_CMthis.canvas.offsetHeight);
 			for(i=0;i<_CMthis.runline.length;i++){
 				cmt=_CMthis.runline[i];
@@ -510,6 +511,7 @@ function CommentManager(stageObject){
 					_CMthis.ctx.drawImage(_CMthis.bctx[cmt.bufferid].can,cmt.left,cmt.totop);
 				}
 			}
+			_CMthis.requestfresh=false;
 		}
 		requestAnimationFrame(_CMthis.onDraw);
 	}
@@ -635,6 +637,7 @@ CommentManager.prototype.rescale = function(){
 		this.runline[i].dur = Math.round(this.runline[i].dur * this.def.globalScale);
 		this.runline[i].ttl = Math.round(this.runline[i].ttl * this.def.globalScale);
 	}
+	this.requestfresh=true;
 };
 CommentManager.prototype.sendComment = function(data){
 	if(data.mode === 8){
