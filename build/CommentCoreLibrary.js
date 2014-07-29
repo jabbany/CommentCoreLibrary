@@ -428,6 +428,9 @@ function CommentManager(stageObject){
 	this.pctx = this.pcanvas.getContext('2d');
 	this.pdivpool = [0];
 	this.pdivheight = 29;
+	this.onplay=false;
+	requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+	_this=this;
 	/** Private **/
 	this.initCmt = function(cmt,data){
 		cmt.className = 'cmt';
@@ -471,16 +474,17 @@ function CommentManager(stageObject){
 		c.textlength=0;
 		for(var p=0;p<text.length;p++){
 			if(text[p].length>c.textlength){
-			  c.textlength=text[p].length;
+				c.textlength=text[p].length;
 			}
 		}
 		c.width = Math.floor(c.data.size*c.textlength*1.15)+1;
 		if(isNaN(c.width))c.width=0;
 		return c;
-}
+	}
 	this.startTimer = function(){
 		if(__timer > 0)
 		  return;
+		this.onplay=true;
 		var lastTPos = new Date().getTime();
 		var cmMgr = this;
 		__timer = window.setInterval(function(){
@@ -490,9 +494,35 @@ function CommentManager(stageObject){
 		},10);
 	};
 	this.stopTimer = function(){
+		this.onplay=false;
 		window.clearInterval(__timer);
 		__timer = 0;
 	};
+	this.onDraw = function(){
+		if(_this.onplay){
+			_this.pcanvas.width=_this.canvas.width;
+			_this.pcanvas.height=_this.canvas.height;
+			_this.ctx.clearRect(0,0,_this.canvas.offsetWidth,_this.canvas.offsetHeight);
+			_this.pctx.clearRect(0,0,_this.canvas.offsetWidth,_this.canvas.offsetHeight);
+			for(i=0;i<_this.runline.length;i++){
+				cmt=_this.runline[i];
+				_this.pctx.textBaseline = "top";
+				//this.ctx.shadowBlur=4;
+				//this.ctx.shadowColor="black";
+				_this.pctx.font=cmt.ctxfont;
+				_this.pctx.fillStyle=cmt.color;
+				if(cmt.border||true){
+					_this.pctx.lineWidth = 2;
+					_this.pctx.strokeStyle="#000000";
+					_this.pctx.strokeText(cmt.text,cmt.left,cmt.totop);
+				}
+				_this.pctx.fillText(cmt.text,cmt.left,cmt.totop);
+			}
+			_this.ctx.drawImage(_this.pcanvas,0,0);
+		}
+		requestAnimationFrame(_this.onDraw);
+	}
+	requestAnimationFrame(_this.onDraw);
 }
 
 /** Public **/
@@ -538,7 +568,7 @@ CommentManager.prototype.preload = function ()
 		cmt=this.timeline[i];
 		cmt.ctxfont = "bold "+cmt.size + "px " + "SimHei";
 		if(cmt.font != null && cmt.font != '')
-			cmt.ctxfont = "bold "+cmt.size + "px " + cmt.font;
+		  cmt.ctxfont = "bold "+cmt.size + "px " + cmt.font;
 		//caculate width and height
 		this.ctx.font=cmt.ctxfont;
 		text = cmt.text.split("\n");
@@ -558,52 +588,32 @@ CommentManager.prototype.preload = function ()
 		}
 		cmt.hold = 0;
 		/*
-		var j = 0;
-		while(j <= this.pdivpool.length){
-			if(j == this.pdivpool.length)
-			  this.pdivpool[j] = -10000000;
-			if(cmt.stime-(cmt.width/this.stage.width*4000*this.def.globalScale)/3>= this.pdivpool[j]){
-				cmt.totop = j* this.pdivheight;
-				while(cmt.totop + cmt.height > this.stage.height)
-				  cmt.totop-=this.stage.height;
-				if(cmt.totop<0)
-				  cmt.totop=0;
-				cmt.totop=Math.round(cmt.totop/this.pdivheight)*this.pdivheight;
-				endtime = cmt.stime+cmt.width/this.stage.width*4000*this.def.globalScale;
-				k=0;
-				while(k*this.pdivheight<cmt.height){
-					this.pdivpool[j+k]=endtime;
-					k++
-				}
-				break;
-			}else
-			  j++;
-		}
-		*/
+		   var j = 0;
+		   while(j <= this.pdivpool.length){
+		   if(j == this.pdivpool.length)
+		   this.pdivpool[j] = -10000000;
+		   if(cmt.stime-(cmt.width/this.stage.width*4000*this.def.globalScale)/3>= this.pdivpool[j]){
+		   cmt.totop = j* this.pdivheight;
+		   while(cmt.totop + cmt.height > this.stage.height)
+		   cmt.totop-=this.stage.height;
+		   if(cmt.totop<0)
+		   cmt.totop=0;
+		   cmt.totop=Math.round(cmt.totop/this.pdivheight)*this.pdivheight;
+		   endtime = cmt.stime+cmt.width/this.stage.width*4000*this.def.globalScale;
+		   k=0;
+		   while(k*this.pdivheight<cmt.height){
+		   this.pdivpool[j+k]=endtime;
+		   k++
+		   }
+		   break;
+		   }else
+		   j++;
+		   }
+		   */
 	}
 }
 
-CommentManager.prototype.onDraw = function(){
-	this.pcanvas.width=this.canvas.width;
-	this.pcanvas.height=this.canvas.height;
-	this.ctx.clearRect(0,0,this.canvas.offsetWidth,this.canvas.offsetHeight);
-	this.pctx.clearRect(0,0,this.canvas.offsetWidth,this.canvas.offsetHeight);
-	for(i=0;i<this.runline.length;i++){
-		cmt=this.runline[i];
-		this.pctx.textBaseline = "top";
-		//this.ctx.shadowBlur=4;
-		//this.ctx.shadowColor="black";
-		this.pctx.font=cmt.ctxfont;
-		this.pctx.fillStyle=cmt.color;
-		if(cmt.border||true){
-			this.pctx.lineWidth = 2;
-			this.pctx.strokeStyle="#000000";
-			this.pctx.strokeText(cmt.text,cmt.left,cmt.totop);
-		}
-		this.pctx.fillText(cmt.text,cmt.left,cmt.totop);
-	}
-	this.ctx.drawImage(this.pcanvas,0,0);
-}
+
 
 CommentManager.prototype.clear = function(){
 	for(k=0;k<this.pdivpool.lenght;k++)
@@ -778,7 +788,7 @@ CommentManager.prototype.finish = function(cmt){
 };
 /** Static Functions **/
 CommentManager.prototype.onTimerEvent = function(timePassed,cmObj){
-	this.onDraw();
+	//this.onDraw();
 	for(var i= 0;i < cmObj.runline.length; i++){
 		var cmt = cmObj.runline[i];
 		if(cmt.hold){
