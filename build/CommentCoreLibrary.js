@@ -508,7 +508,7 @@ function CommentManager(stageObject){
 			for(i=0;i<_CMthis.runline.length;i++){
 				cmt=_CMthis.runline[i];
 				if(cmt.mode==1){
-					if(_CMthis.bctx[cmt.bufferid].onuse===true)
+					if(_CMthis.bctx[cmt.bufferid].inuse===true)
 					  _CMthis.ctx.drawImage(_CMthis.bctx[cmt.bufferid].can,cmt.left,cmt.totop);
 				}
 			}
@@ -584,7 +584,7 @@ CommentManager.prototype.clear = function(){
 		if(this.runline[i].mode !==1 )
 		  this.stage.removeChild(this.runline[i]);
 		else
-		  this.bctx[this.runline[i].bufferid].onuse=false;
+		  this.bctx[this.runline[i].bufferid].inuse=false;
 	}
 	this.runline = [];
 	for(k=0;k<this.pdivpool.length;k++)
