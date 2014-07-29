@@ -586,6 +586,7 @@ CommentManager.prototype.preload = function ()
 CommentManager.prototype.clear = function(){
 	for(k=0;k<this.pdivpool.lenght;k++)
 	  this.pdivpool[k]=-10000000;
+	this.bctx=[];
 	for(var i=0;i<this.runline.length;i++){
 		this.finish(this.runline[i]);
 		if(this.runline[i].mode !==1 )
