@@ -148,7 +148,7 @@ function CommentManager(stageObject){
 			_CMthis.pcanvas.height=_CMthis.canvas.height;
 			_CMthis.ctx.clearRect(0,0,_CMthis.canvas.offsetWidth,_CMthis.canvas.offsetHeight);
 			_CMthis.pctx.clearRect(0,0,_CMthis.canvas.offsetWidth,_CMthis.canvas.offsetHeight);
-			_CMthis.pctx.beginPath();
+			//_CMthis.pctx.beginPath();
 			for(i=0;i<_CMthis.runline.length;i++){
 				cmt=_CMthis.runline[i];
 				_CMthis.pctx.textBaseline = "top";
@@ -163,7 +163,7 @@ function CommentManager(stageObject){
 				}
 				_CMthis.pctx.fillText(cmt.text,(cmt.left+0.5)<<0,cmt.totop);
 			}
-			_CMthis.pctx.closePath();
+			//_CMthis.pctx.closePath();
 			_CMthis.ctx.drawImage(_CMthis.pcanvas,0,0);
 		}
 		requestAnimationFrame(_CMthis.onDraw);
