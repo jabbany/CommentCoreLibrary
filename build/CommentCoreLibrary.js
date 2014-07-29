@@ -593,7 +593,7 @@ CommentManager.prototype.clear = function(){
 		if(this.runline[i].mode !==1 )
 		  this.stage.removeChild(this.runline[i]);
 		else
-		  this.ctx[this.runline[i].bufferid].onuse=false;
+			this.bctx[this.runline[i].bufferid].onuse=false;
 	}
 	this.runline = [];
 };
