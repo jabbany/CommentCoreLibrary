@@ -74,7 +74,7 @@ function CommentManager(stageObject){
 	this.pdivheight = 29;
 	this.onplay=false;
 	requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
-	_this=this;
+	_CMthis=this;
 	/** Private **/
 	this.initCmt = function(cmt,data){
 		cmt.className = 'cmt';
@@ -143,30 +143,30 @@ function CommentManager(stageObject){
 		__timer = 0;
 	};
 	this.onDraw = function(){
-		if(_this.onplay){
-			_this.pcanvas.width=_this.canvas.width;
-			_this.pcanvas.height=_this.canvas.height;
-			_this.ctx.clearRect(0,0,_this.canvas.offsetWidth,_this.canvas.offsetHeight);
-			_this.pctx.clearRect(0,0,_this.canvas.offsetWidth,_this.canvas.offsetHeight);
-			for(i=0;i<_this.runline.length;i++){
-				cmt=_this.runline[i];
-				_this.pctx.textBaseline = "top";
+		if(_CMthis.onplay){
+			_CMthis.pcanvas.width=_CMthis.canvas.width;
+			_CMthis.pcanvas.height=_CMthis.canvas.height;
+			_CMthis.ctx.clearRect(0,0,_CMthis.canvas.offsetWidth,_CMthis.canvas.offsetHeight);
+			_CMthis.pctx.clearRect(0,0,_CMthis.canvas.offsetWidth,_CMthis.canvas.offsetHeight);
+			for(i=0;i<_CMthis.runline.length;i++){
+				cmt=_CMthis.runline[i];
+				_CMthis.pctx.textBaseline = "top";
 				//this.ctx.shadowBlur=4;
 				//this.ctx.shadowColor="black";
-				_this.pctx.font=cmt.ctxfont;
-				_this.pctx.fillStyle=cmt.color;
+				_CMthis.pctx.font=cmt.ctxfont;
+				_CMthis.pctx.fillStyle=cmt.color;
 				if(cmt.border){
-					_this.pctx.lineWidth = 2;
-					_this.pctx.strokeStyle="#000000";
-					_this.pctx.strokeText(cmt.text,cmt.left,cmt.totop);
+					_CMthis.pctx.lineWidth = 2;
+					_CMthis.pctx.strokeStyle="#000000";
+					_CMthis.pctx.strokeText(cmt.text,cmt.left,cmt.totop);
 				}
-				_this.pctx.fillText(cmt.text,cmt.left,cmt.totop);
+				_CMthis.pctx.fillText(cmt.text,cmt.left,cmt.totop);
 			}
-			_this.ctx.drawImage(_this.pcanvas,0,0);
+			_CMthis.ctx.drawImage(_CMthis.pcanvas,0,0);
 		}
-		requestAnimationFrame(_this.onDraw);
+		requestAnimationFrame(_CMthis.onDraw);
 	}
-	requestAnimationFrame(_this.onDraw);
+	requestAnimationFrame(_CMthis.onDraw);
 }
 
 /** Public **/
