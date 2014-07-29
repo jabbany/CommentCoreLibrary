@@ -164,8 +164,6 @@ function CommentManager(stageObject){
 
 /** Public **/
 CommentManager.prototype.seek = function(time){
-	for(k=0;k<this.pdivpool.lenght;k++)
-	  this.pdivpool[k]=-10000000;
 	this.position = this.timeline.bsearch(time,function(a,b){
 		if(a < b.stime) return -1
 		else if(a > b.stime) return 1;
@@ -229,11 +227,7 @@ CommentManager.prototype.preload = function ()
 	}
 }
 
-
-
 CommentManager.prototype.clear = function(){
-	for(k=0;k<this.pdivpool.lenght;k++)
-	  this.pdivpool[k]=-10000000;
 	for(var i=0;i<this.runline.length;i++){
 		this.finish(this.runline[i]);
 		if(this.runline[i].mode !==1 )
@@ -242,6 +236,9 @@ CommentManager.prototype.clear = function(){
 		  this.bctx[this.runline[i].bufferid].onuse=false;
 	}
 	this.runline = [];
+	for(k=0;k<this.pdivpool.length;k++)
+	  this.pdivpool[k]=-10000000;
+
 };
 CommentManager.prototype.setBounds = function(){
 	for(var comAlloc in this.csa){
