@@ -217,12 +217,6 @@ CommentManager.prototype.preload = function ()
 			}
 		}
 		cmt.width = cmt.textlength;
-		cmt.ttl = Math.round(4000 * this.def.globalScale);
-		cmt.dur = cmt.ttl;
-		if(cmt.mode === 1 || cmt.mode === 6 || cmt.mode === 2){
-			cmt.ttl *= this.def.scrollScale;
-			cmt.dur = cmt.ttl;
-		}
 		cmt.hold = 0;
 	}
 }
@@ -293,6 +287,12 @@ CommentManager.prototype.sendComment = function(data){
 	}
 	if(data.mode === 1){
 		cmt=data;
+		cmt.ttl = Math.round(4000 * this.def.globalScale);
+		cmt.dur = cmt.ttl;
+		if(cmt.mode === 1 || cmt.mode === 6 || cmt.mode === 2){
+			cmt.ttl *= this.def.scrollScale;
+			cmt.dur = cmt.ttl;
+		}
 		var j = 0;
 		while(j <= this.pdivpool.length){
 			if(j == this.pdivpool.length)
