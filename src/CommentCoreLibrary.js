@@ -251,6 +251,7 @@ CommentManager.prototype.setBounds = function(){
 	this.stage.style.webkitPerspective = this.stage.width * Math.tan(40 * Math.PI/180) / 2 + "px";
 	this.canvas.width = this.stage.offsetWidth;
 	this.canvas.height = this.stage.offsetHeight;
+	this.requestfresh=true;
 };
 CommentManager.prototype.init = function(){
 	this.setBounds();
@@ -281,7 +282,6 @@ CommentManager.prototype.rescale = function(){
 		this.runline[i].dur = Math.round(this.runline[i].dur * this.def.globalScale);
 		this.runline[i].ttl = Math.round(this.runline[i].ttl * this.def.globalScale);
 	}
-	this.requestfresh=true;
 };
 CommentManager.prototype.sendComment = function(data){
 	if(data.mode === 8){
