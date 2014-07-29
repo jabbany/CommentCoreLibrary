@@ -112,19 +112,6 @@ function CommentManager(stageObject){
 		}
 		return cmt;
 	};
-	this.caculatecmt = function(c){
-		var text=c.data.text.split("\n");
-		c.height = Math.floor(text.length*c.data.size*1.15)+1;
-		c.textlength=0;
-		for(var p=0;p<text.length;p++){
-			if(text[p].length>c.textlength){
-				c.textlength=text[p].length;
-			}
-		}
-		c.width = Math.floor(c.data.size*c.textlength*1.15)+1;
-		if(isNaN(c.width))c.width=0;
-		return c;
-	}
 	this.startTimer = function(){
 		if(__timer > 0)
 		  return;
@@ -159,9 +146,9 @@ function CommentManager(stageObject){
 				if(cmt.border){//||true){
 					_CMthis.pctx.lineWidth = 2;
 					_CMthis.pctx.strokeStyle="#000000";
-					_CMthis.pctx.strokeText(cmt.text,Math.floor(cmt.left),cmt.totop);
+					_CMthis.pctx.strokeText(cmt.text,cmt.left,cmt.totop);
 				}
-				_CMthis.pctx.fillText(cmt.text,Math.floor(cmt.left),cmt.totop);
+				_CMthis.pctx.fillText(cmt.text,cmt.left,cmt.totop);
 			}
 			//_CMthis.pctx.closePath();
 			_CMthis.ctx.drawImage(_CMthis.pcanvas,0,0);
