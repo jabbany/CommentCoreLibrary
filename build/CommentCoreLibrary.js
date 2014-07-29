@@ -424,6 +424,8 @@ function CommentManager(stageObject){
 	this.ctx = this.canvas.getContext('2d');
 	this.ctx.textBaseline="top";
 	//this.defaultFont = "25px SimHei";
+	this.pcanvas = document.createElement("canvas");
+	this.pctx = this.pcanvas.getContext('2d');
 	this.pdivpool = [0];
 	this.pdivheight = 29;
 	/** Private **/
@@ -582,21 +584,25 @@ CommentManager.prototype.preload = function ()
 }
 
 CommentManager.prototype.onDraw = function(){
+	this.pcanvas.width=this.canvas.width;
+	this.pcanvas.height=this.canvas.height;
 	this.ctx.clearRect(0,0,this.canvas.offsetWidth,this.canvas.offsetHeight);
+	this.pctx.clearRect(0,0,this.canvas.offsetWidth,this.canvas.offsetHeight);
 	for(i=0;i<this.runline.length;i++){
 		cmt=this.runline[i];
-		this.ctx.textBaseline = "top";
+		this.pctx.textBaseline = "top";
 		//this.ctx.shadowBlur=4;
 		//this.ctx.shadowColor="black";
-		this.ctx.font=cmt.ctxfont;
-		this.ctx.fillStyle=cmt.color;
+		this.pctx.font=cmt.ctxfont;
+		this.pctx.fillStyle=cmt.color;
 		if(cmt.border||true){
-			this.ctx.lineWidth = 2;
-			this.ctx.strokeStyle="#000000";
-			this.ctx.strokeText(cmt.text,cmt.left,cmt.totop);
+			this.pctx.lineWidth = 2;
+			this.pctx.strokeStyle="#000000";
+			this.pctx.strokeText(cmt.text,cmt.left,cmt.totop);
 		}
-		this.ctx.fillText(cmt.text,cmt.left,cmt.totop);
+		this.pctx.fillText(cmt.text,cmt.left,cmt.totop);
 	}
+	this.ctx.drawImage(this.pcanvas,0,0);
 }
 
 CommentManager.prototype.clear = function(){
