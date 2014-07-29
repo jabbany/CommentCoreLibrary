@@ -68,6 +68,16 @@ function CommentManager(stageObject){
 	/** Precompute the offset width **/
 	this.stage.width = this.stage.offsetWidth;
 	this.stage.height= this.stage.offsetHeight;
+	//Canvas
+	this.canvas = document.createElement("canvas");
+	this.canvas.width = this.stage.width;
+	this.stage.height = this.stage.height;
+	this.stage.appendChild(this.canvas);
+	this.ctx = this.canvas.getContext('2d');
+	this.ctx.textBaseline="top";
+	//this.defaultFont = "25px SimHei";
+	this.pdivpool = [0];
+	this.pdivheight = 29;
 	/** Private **/
 	this.initCmt = function(cmt,data){
 		cmt.className = 'cmt';
@@ -164,83 +174,51 @@ CommentManager.prototype.load = function(a){
 		return 0;
 		}
 	});
-	/////
+	//////
 	this.preload();
-	/////
+	//////
 };
-/////
-CommentManager.prototype.preload = function(){
-	this.pdiv = [];
-	this.pdivshow = [];
-	this.pdivpool = [0];
-	while(this.stage.children.length > 0){
-		this.stage.removeChild(this.stage.children[0]);
-	}
-	totalDivTime = this.timeline[this.timeline.length-1].stime;
-	totalDivNum = Math.floor(totalDivTime/this.eachDivTime)+1;
-	for(var i = 0; i < totalDivNum; i++){
-		this.pdiv[i] = document.createElement("div");
-		this.pdiv[i].show = false;
-		this.pdiv[i].id = "pdiv_"+i;
-		this.pdiv[i].pnum = i;
-		this.pdiv[i].className = "container";
-	}
-	for(var i = 0; i < this.timeline.length; i++){
-		if(this.timeline[i].mode == 1){
-			if(this.filter != null){
-				data=this.timeline[i];
-				if(this.filter.doModify(data) == null) 
-				  continue;
-			}
-			cmt = document.createElement('div');
-			cmt = this.initCmt(cmt,this.timeline[i]);
-			cmt = this.caculatecmt(cmt);
-			var j = 0;
-			while(j <= this.pdivpool.length){
-				if(j == this.pdivpool.length)
-				  this.pdivpool[j] = 0;
-				if(cmt.stime >= this.pdivpool[j]){
-					cmt.totop = j* this.pdivheight;
-					while(cmt.totop + cmt.height > this.stage.height)
-					  cmt.totop-=this.stage.height;
-					if(cmt.totop<0)
-					  cmt.totop=0;
-					endtime = cmt.stime+cmt.width/this.stage.width*4000*this.def.globalScale;
-					k=0;
-					while(k*this.pdivheight<cmt.height){
-						this.pdivpool[j+k]=endtime;
-						k++
-					}
-					break;
-				}else
-				  j++;
-			}
-			cmt.style.left = -this.stage.width-cmt.width + "px";
-			cmt.style.top = cmt.totop + "px";
-			this.pdiv[Math.floor(this.timeline[i].stime/this.eachDivTime)].appendChild(cmt);
-			this.timeline[i].cmt=cmt;
-		}
-	}
-}
 
-CommentManager.prototype.pdivsety = function(){
-	this.pdivpool=[0];
+CommentManager.prototype.preload = function ()
+{
+	this.pdivpool = [-10000000];
 	for(var i = 0; i < this.timeline.length; i++){
 		if(this.timeline[i].mode !== 1)
 		  continue;
-		if(!this.timeline[i].cmt)
-		  continue;
-		cmt=this.timeline[i].cmt;
+		cmt=this.timeline[i];
+		cmt.ctxfont = "bold "+cmt.size + "px " + "SimHei";
+		if(cmt.font != null && cmt.font != '')
+			cmt.ctxfont = "bold "+cmt.size + "px " + cmt.font;
+		//caculate width and height
+		this.ctx.font=cmt.ctxfont;
+		text = cmt.text.split("\n");
+		cmt.height = Math.floor(text.length * cmt.size * 1.15) + 1;
+		cmt.textlength = 0;
+		for(var p = 0; p < text.length; p++ ){
+			if(this.ctx.measureText(text[p]).width > cmt.textlength){
+				cmt.textlength = this.ctx.measureText(text[p]).width;
+			}
+		}
+		cmt.width = cmt.textlength;
+		cmt.ttl = Math.round(4000 * this.def.globalScale);
+		cmt.dur = cmt.ttl;
+		if(cmt.mode === 1 || cmt.mode === 6 || cmt.mode === 2){
+			cmt.ttl *= this.def.scrollScale;
+			cmt.dur = cmt.ttl;
+		}
+		cmt.hold = 0;
+		/*
 		var j = 0;
 		while(j <= this.pdivpool.length){
 			if(j == this.pdivpool.length)
-			  this.pdivpool[j] = 0;
-			if(cmt.stime >= this.pdivpool[j]){
+			  this.pdivpool[j] = -10000000;
+			if(cmt.stime-(cmt.width/this.stage.width*4000*this.def.globalScale)/3>= this.pdivpool[j]){
 				cmt.totop = j* this.pdivheight;
 				while(cmt.totop + cmt.height > this.stage.height)
 				  cmt.totop-=this.stage.height;
 				if(cmt.totop<0)
 				  cmt.totop=0;
+				cmt.totop=Math.round(cmt.totop/this.pdivheight)*this.pdivheight;
 				endtime = cmt.stime+cmt.width/this.stage.width*4000*this.def.globalScale;
 				k=0;
 				while(k*this.pdivheight<cmt.height){
@@ -251,46 +229,34 @@ CommentManager.prototype.pdivsety = function(){
 			}else
 			  j++;
 		}
-		cmt.style.top = cmt.totop + "px";
+		*/
 	}
 }
-CommentManager.prototype.pdivupdate = function(){
-	time=this.lastPos;
-	nowDivNum = Math.floor(time/this.eachDivTime);
-	if(this.pdiv[nowDivNum]){
-		if(this.pdiv[nowDivNum].show == false){
-			this.pdiv[nowDivNum].show = true;
-			pdiv=this.pdiv[nowDivNum];
-			for(i=0;i<pdiv.children.length;i++)
-			  pdiv.children[i].style.left =  -this.stage.width-pdiv.children[i].width + "px";
-			this.stage.appendChild(this.pdiv[nowDivNum]);
-			this.pdivshow.push(this.pdiv[nowDivNum]);
+
+CommentManager.prototype.onDraw = function(){
+	this.ctx.clearRect(0,0,this.canvas.offsetWidth,this.canvas.offsetHeight);
+	for(i=0;i<this.runline.length;i++){
+		cmt=this.runline[i];
+		this.ctx.textBaseline = "top";
+		//this.ctx.shadowBlur=4;
+		//this.ctx.shadowColor="black";
+		this.ctx.font=cmt.ctxfont;
+		this.ctx.fillStyle=cmt.color;
+		this.ctx.fillText(cmt.text,cmt.left,cmt.totop);
+		if(cmt.border||true){
+			this.ctx.strokeStyle="#000000";
+			this.ctx.strokeText(cmt.text,cmt.left,cmt.totop);
 		}
-		finish=Math.floor(1/this.pdivbreak)+1;
-		if(this.pdivshow[0])
-		  while(this.pdivshow[0].pnum < nowDivNum - finish){
-			  this.stage.removeChild(this.pdivshow[0]);
-			  this.pdivshow[0].show = false;
-			  this.pdivshow.shift();
-		  }
 	}
 }
-CommentManager.prototype.pdivclear = function(){
-	for(var i=0;i<this.pdivshow.length;i++)
-	  this.stage.removeChild(this.pdivshow[i]);
-	this.pdivshow=[];
-	for(var i=0;i<this.pdiv.length;i++)
-	  this.pdiv[i].show=false;
-	for(var i = 0; i < this.timeline.length; i++){
-		if(this.timeline[i].mode==1)
-		  if(this.timeline[i].cmt)
-			this.timeline[i].cmt.ttl=this.timeline[i].cmt.dur;
-	}
-}
+
+>>>>>>> dev-scripting
 CommentManager.prototype.clear = function(){
+	for(k=0;k<this.pdivpool.lenght;k++)
+	  this.pdivpool[k]=-10000000;
 	for(var i=0;i<this.runline.length;i++){
 		this.finish(this.runline[i]);
-		if(this.runline[i].mode!==1)
+		if(this.runline[i].mode !==1 )
 		  this.stage.removeChild(this.runline[i]);
 	}
 	this.runline = [];
@@ -305,9 +271,8 @@ CommentManager.prototype.setBounds = function(){
 	// Update 3d perspective
 	this.stage.style.perspective = this.stage.width * Math.tan(40 * Math.PI/180) / 2 + "px";
 	this.stage.style.webkitPerspective = this.stage.width * Math.tan(40 * Math.PI/180) / 2 + "px";
-	for(i = 0; i < this.pdiv.length; i++)
-	  this.pdiv[i].style.left = this.stage.width + "px";
-	this.pdivsety();
+	this.canvas.width = this.stage.offsetWidth;
+	this.canvas.height = this.stage.offsetHeight;
 };
 CommentManager.prototype.init = function(){
 	this.setBounds();
@@ -321,12 +286,16 @@ CommentManager.prototype.time = function(time){
 		this.lastPos = time;
 		if(this.timeline.length <= this.position)
 		  return;
-	}else this.lastPos = time;
+	}else{
+		this.lastPos = time;
+	}
 	for(;this.position < this.timeline.length;this.position++){
 		if(this.limiter > 0 && this.runline.length > this.limiter) break;
-		if(this.validate(this.timeline[this.position]) && this.timeline[this.position]['stime']<=time) 
-		  this.sendComment(this.timeline[this.position]);
-		else break;
+		if(this.validate(this.timeline[this.position]) && this.timeline[this.position]['stime']<=time){
+			this.sendComment(this.timeline[this.position]);
+		}else{
+			break;
+		}
 	}
 };
 CommentManager.prototype.rescale = function(){
@@ -344,21 +313,44 @@ CommentManager.prototype.sendComment = function(data){
 		return;
 	}
 	if(data.mode === 1){
-		cmt = data.cmt;
-	}else{
-		var cmt = document.createElement('div');
-		if(this.filter != null){
-			data = this.filter.doModify(data);
-			if(data == null) return;
+		cmt=data;
+		var j = 0;
+		while(j <= this.pdivpool.length){
+			if(j == this.pdivpool.length)
+			  this.pdivpool[j] = -10000000;
+			if(cmt.stime-(cmt.width/this.stage.width*4000*this.def.globalScale)/3>= this.pdivpool[j]){
+				cmt.totop = j* this.pdivheight;
+				while(cmt.totop + cmt.height > this.stage.height)
+				  cmt.totop-=this.stage.height;
+				if(cmt.totop<0)
+				  cmt.totop=0;
+				cmt.totop=Math.round(cmt.totop/this.pdivheight)*this.pdivheight;
+				endtime = cmt.stime+cmt.width/this.stage.width*4000*this.def.globalScale;
+				k=0;
+				while(k*this.pdivheight<cmt.height){
+					this.pdivpool[j+k]=endtime;
+					k++
+				}
+				break;
+			}else
+			  j++;
 		}
-		cmt = this.initCmt(cmt,data);
-		this.stage.appendChild(cmt);
-		cmt.width = cmt.offsetWidth;
-		cmt.height = cmt.offsetHeight;
-		cmt.style.width = (cmt.w + 1) + "px";
-		cmt.style.height = (cmt.h - 3) + "px";
-		cmt.style.left = this.stage.width + "px";
+		this.runline.push(data);
+		return;
 	}
+	var cmt = document.createElement('div');
+	if(this.filter != null){
+		data = this.filter.doModify(data);
+		if(data == null) return;
+	}
+	cmt = this.initCmt(cmt,data);
+
+	this.stage.appendChild(cmt);
+	cmt.width = cmt.offsetWidth;
+	cmt.height = cmt.offsetHeight;
+	//cmt.style.width = (cmt.width + 1) + "px";
+	//cmt.style.height = (cmt.height - 3) + "px";
+	cmt.style.left = this.stage.width + "px";
 	if(this.filter != null && !this.filter.beforeSend(cmt)){
 		this.stage.removeChild(cmt);
 		cmt = null;
@@ -366,8 +358,7 @@ CommentManager.prototype.sendComment = function(data){
 	}
 	switch(cmt.mode){
 		default:
-		case 1: break;
-				//case 1:{this.csa.scroll.add(cmt);}break;
+		case 1: break;//{this.csa.scroll.add(cmt);}break;
 		case 2:{this.csa.scrollbtm.add(cmt);}break;
 		case 4:{this.csa.bottom.add(cmt);}break;
 		case 5:{this.csa.top.add(cmt);}break;
@@ -424,8 +415,7 @@ CommentManager.prototype.sendComment = function(data){
 CommentManager.prototype.finish = function(cmt){
 	switch(cmt.mode){
 		default:
-		case 1: break;
-				//case 1:{this.csa.scroll.remove(cmt);}break;
+		case 1: break;//{this.csa.scroll.remove(cmt);}break;
 		case 2:{this.csa.scrollbtm.remove(cmt);}break;
 		case 4:{this.csa.bottom.remove(cmt);}break;
 		case 5:{this.csa.top.remove(cmt);}break;
@@ -435,7 +425,7 @@ CommentManager.prototype.finish = function(cmt){
 };
 /** Static Functions **/
 CommentManager.prototype.onTimerEvent = function(timePassed,cmObj){
-	this.pdivupdate();
+	this.onDraw();
 	for(var i= 0;i < cmObj.runline.length; i++){
 		var cmt = cmObj.runline[i];
 		if(cmt.hold){
@@ -443,7 +433,8 @@ CommentManager.prototype.onTimerEvent = function(timePassed,cmObj){
 		}
 		cmt.ttl -= timePassed;
 		if(cmt.mode == 1 || cmt.mode == 2) {
-			cmt.style.left = (cmt.ttl / cmt.dur) * (cmObj.stage.width + cmt.width) - cmt.width + "px";
+			//cmt.style.left = (cmt.ttl / cmt.dur) * (cmObj.stage.width + cmt.width) - cmt.width + "px";
+			cmt.left = (cmt.ttl / cmt.dur) * (cmObj.stage.width + cmt.width) - cmt.width ;
 		}else if(cmt.mode == 6) {
 			cmt.style.left = (1 - cmt.ttl / cmt.dur) * (cmObj.stage.width + cmt.width) - cmt.width + "px";
 		}else if(cmt.mode == 4 || cmt.mode == 5 || cmt.mode >= 7){
@@ -469,7 +460,7 @@ CommentManager.prototype.onTimerEvent = function(timePassed,cmObj){
 			cmt = cmObj.filter.runtimeFilter(cmt);
 		}
 		if(cmt.ttl <= 0){
-			if(cmt.mode!==1)
+			if(cmt.mode !==1 )
 			  cmObj.stage.removeChild(cmt);
 			cmObj.runline.splice(i,1);//remove the comment
 			cmObj.finish(cmt);
