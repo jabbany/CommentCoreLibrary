@@ -155,7 +155,7 @@ function CommentManager(stageObject){
 				//this.ctx.shadowColor="black";
 				_this.pctx.font=cmt.ctxfont;
 				_this.pctx.fillStyle=cmt.color;
-				if(cmt.border||true){
+				if(cmt.border){
 					_this.pctx.lineWidth = 2;
 					_this.pctx.strokeStyle="#000000";
 					_this.pctx.strokeText(cmt.text,cmt.left,cmt.totop);
