@@ -500,7 +500,7 @@ function CommentManager(stageObject){
 				_CMthis.pctx.font=cmt.ctxfont;
 				_CMthis.pctx.fillStyle=cmt.color;
 				if(cmt.border||true){
-					_CMthis.pctx.lineWidth = 4;
+					_CMthis.pctx.lineWidth = 2;
 					_CMthis.pctx.strokeStyle="#000000";
 					_CMthis.pctx.strokeText(cmt.text,cmt.left,cmt.totop);
 				}
