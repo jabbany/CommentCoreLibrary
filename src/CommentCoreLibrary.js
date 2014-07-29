@@ -47,14 +47,6 @@ function CommentManager(stageObject){
 	};
 	this.timeline = [];
 	this.runline = [];
-	/////
-	this.pdiv = [];
-	this.pdivbreak = 1 * this.def.globalScale ; 
-	this.eachDivTime = 4000 * this.pdivbreak ; 
-	this.pdivshow = [];
-	this.pdivpool = [0];
-	this.pdivheight = 29;
-	/////
 	this.position = 0;
 	this.limiter = 0;
 	this.filter = null;
@@ -250,7 +242,6 @@ CommentManager.prototype.onDraw = function(){
 	}
 }
 
->>>>>>> dev-scripting
 CommentManager.prototype.clear = function(){
 	for(k=0;k<this.pdivpool.lenght;k++)
 	  this.pdivpool[k]=-10000000;
@@ -260,7 +251,6 @@ CommentManager.prototype.clear = function(){
 		  this.stage.removeChild(this.runline[i]);
 	}
 	this.runline = [];
-	this.pdivclear();
 };
 CommentManager.prototype.setBounds = function(){
 	for(var comAlloc in this.csa){
