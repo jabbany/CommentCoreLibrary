@@ -134,7 +134,7 @@ function CommentManager(stageObject){
 			_CMthis.pcanvas.width=_CMthis.canvas.width;
 			_CMthis.pcanvas.height=_CMthis.canvas.height;
 			_CMthis.ctx.clearRect(0,0,_CMthis.canvas.offsetWidth,_CMthis.canvas.offsetHeight);
-			_CMthis.pctx.clearRect(0,0,_CMthis.canvas.offsetWidth,_CMthis.canvas.offsetHeight);
+			//_CMthis.pctx.clearRect(0,0,_CMthis.canvas.offsetWidth,_CMthis.canvas.offsetHeight);
 			//_CMthis.pctx.beginPath();
 			for(i=0;i<_CMthis.runline.length;i++){
 				cmt=_CMthis.runline[i];
