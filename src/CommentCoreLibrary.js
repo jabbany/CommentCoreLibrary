@@ -165,9 +165,9 @@ CommentManager.prototype.preload = function ()
 		if(this.timeline[i].mode !== 1)
 		  continue;
 		cmt=this.timeline[i];
-		cmt.ctxfont = cmt.size + "px " + "SimHei";
+		cmt.ctxfont = "bold "+cmt.size + "px " + "SimHei";
 		if(cmt.font != null && cmt.font != '')
-			cmt.ctxfont = cmt.size + "px " + cmt.font;
+			cmt.ctxfont = "bold "+cmt.size + "px " + cmt.font;
 		//caculate width and height
 		this.ctx.font=cmt.ctxfont;
 		text = cmt.text.split("\n");
@@ -186,6 +186,7 @@ CommentManager.prototype.preload = function ()
 			cmt.dur = cmt.ttl;
 		}
 		cmt.hold = 0;
+		/*
 		var j = 0;
 		while(j <= this.pdivpool.length){
 			if(j == this.pdivpool.length)
@@ -207,6 +208,7 @@ CommentManager.prototype.preload = function ()
 			}else
 			  j++;
 		}
+		*/
 	}
 }
 
@@ -215,17 +217,21 @@ CommentManager.prototype.onDraw = function(){
 	for(i=0;i<this.runline.length;i++){
 		cmt=this.runline[i];
 		this.ctx.textBaseline = "top";
+		//this.ctx.shadowBlur=4;
+		//this.ctx.shadowColor="black";
 		this.ctx.font=cmt.ctxfont;
 		this.ctx.fillStyle=cmt.color;
 		this.ctx.fillText(cmt.text,cmt.left,cmt.totop);
-		if(cmt.border){
-			this.ctx.strokeStyle("#00ffff");
+		if(cmt.border||true){
+			this.ctx.strokeStyle="#000000";
 			this.ctx.strokeText(cmt.text,cmt.left,cmt.totop);
 		}
 	}
 }
 
 CommentManager.prototype.clear = function(){
+	for(k=0;k<this.pdivpool.lenght;k++)
+	  this.pdivpool[k]=-10000000;
 	for(var i=0;i<this.runline.length;i++){
 		this.finish(this.runline[i]);
 		if(this.runline[i].mode !==1 )
@@ -284,6 +290,28 @@ CommentManager.prototype.sendComment = function(data){
 		return;
 	}
 	if(data.mode === 1){
+		cmt=data;
+		var j = 0;
+		while(j <= this.pdivpool.length){
+			if(j == this.pdivpool.length)
+			  this.pdivpool[j] = -10000000;
+			if(cmt.stime-(cmt.width/this.stage.width*4000*this.def.globalScale)/3>= this.pdivpool[j]){
+				cmt.totop = j* this.pdivheight;
+				while(cmt.totop + cmt.height > this.stage.height)
+				  cmt.totop-=this.stage.height;
+				if(cmt.totop<0)
+				  cmt.totop=0;
+				cmt.totop=Math.round(cmt.totop/this.pdivheight)*this.pdivheight;
+				endtime = cmt.stime+cmt.width/this.stage.width*4000*this.def.globalScale;
+				k=0;
+				while(k*this.pdivheight<cmt.height){
+					this.pdivpool[j+k]=endtime;
+					k++
+				}
+				break;
+			}else
+			  j++;
+		}
 		this.runline.push(data);
 		return;
 	}
