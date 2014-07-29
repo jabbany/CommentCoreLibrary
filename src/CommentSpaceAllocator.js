@@ -1,8 +1,8 @@
 /** 
-Comment Space Allocators Classes
-Licensed Under MIT License
-You may create your own.
-**/
+  Comment Space Allocators Classes
+  Licensed Under MIT License
+  You may create your own.
+ **/
 function CommentSpaceAllocator(w,h){
 	this.width = w;
 	this.height = h;
@@ -13,10 +13,10 @@ function CommentSpaceAllocator(w,h){
 	this.add = function(cmt){
 		if(cmt.height >= this.height){
 			cmt.cindex = this.pools.indexOf(this.pool);
-			cmt.style.top = "0px";
+			//cmt.style.top = "0px";
 		}else{
 			cmt.cindex = this.pools.indexOf(this.pool);
-			cmt.style.top = this.setY(cmt) + "px";
+			//cmt.style.top = this.setY(cmt) + "px";
 		}
 	};
 	this.remove = function(cmt){
@@ -38,7 +38,7 @@ function CommentSpaceAllocator(w,h){
 	};
 	this.setY = function(cmt,index){
 		if(!index)
-			var index = 0;
+		  var index = 0;
 		cmt = this.validateCmt(cmt);
 		if(this.pools.length <= index){
 			this.pools.push([]);
@@ -50,12 +50,12 @@ function CommentSpaceAllocator(w,h){
 		}
 		else if(this.vCheck(0,cmt)){
 			this.pool.binsert(cmt,function(a,b){
-					if(a.bottom < b.bottom){
-						return -1;
-					}else if (a.bottom == b.bottom){
-						return 0;
-					}else{return 1;}
-				});
+				if(a.bottom < b.bottom){
+					return -1;
+				}else if (a.bottom == b.bottom){
+					return 0;
+				}else{return 1;}
+			});
 			return cmt.y;
 		}
 		var y=0;
@@ -84,12 +84,12 @@ function CommentSpaceAllocator(w,h){
 		for(var i=0;i<this.pool.length;i++){
 			this.pool[i] = this.validateCmt(this.pool[i]);
 			if(this.pool[i].y > bottom || this.pool[i].bottom < y)
-				continue;
+			  continue;
 			else if(this.pool[i].right < cmt.x || this.pool[i].x > right){
 				if(this.getEnd(this.pool[i]) < this.getMiddle(cmt))
-					continue;
+				  continue;
 				else
-					return false;
+				  return false;
 			}else{
 				return false;}
 		}
@@ -188,12 +188,12 @@ function ReverseCommentSpaceAllocator(w,h){
 		for(var i=0;i<this.pool.length;i++){
 			var c = this.validateCmt(this.pool[i]);
 			if(c.y > bottom || c.bottom < y)
-				continue;
+			  continue;
 			else if(c.x > right || c.right < cmt.x){
 				if(this.getEnd(c) < this.getMiddle(cmt))
-					continue;
+				  continue;
 				else
-					return false;
+				  return false;
 			}else{
 				return false;}
 		}
