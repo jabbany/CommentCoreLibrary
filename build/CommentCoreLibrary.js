@@ -430,6 +430,22 @@ function CommentManager(stageObject){
 	this.pdivheight = 29;
 	this.onplay=false;
 	requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+	//ctxbuffer
+	this.bctx=[];
+	this.getbufferid = function(){
+		for(var i=0 ; i<this.bctx.length ; i++)
+		  if(this.bctx[i].inuse===false)
+			break;
+		if(i===this.bctx.length){
+			can=document.createElement("canvas");
+			ctx=can.getContext('2d');
+			ctx.inuse=true;
+			ctx.can=can;
+			this.bctx.push(ctx);
+		}
+		this.bctx[i].inuse=true;
+		return i;
+	}
 	_CMthis=this;
 	/** Private **/
 	this.initCmt = function(cmt,data){
@@ -487,27 +503,13 @@ function CommentManager(stageObject){
 	};
 	this.onDraw = function(){
 		if(_CMthis.onplay){
-			_CMthis.pcanvas.width=_CMthis.canvas.width;
-			_CMthis.pcanvas.height=_CMthis.canvas.height;
 			_CMthis.ctx.clearRect(0,0,_CMthis.canvas.offsetWidth,_CMthis.canvas.offsetHeight);
-			//_CMthis.pctx.clearRect(0,0,_CMthis.canvas.offsetWidth,_CMthis.canvas.offsetHeight);
-			//_CMthis.pctx.beginPath();
 			for(i=0;i<_CMthis.runline.length;i++){
 				cmt=_CMthis.runline[i];
-				_CMthis.pctx.textBaseline = "top";
-				//_CMthis.pctx.shadowBlur=2;
-				//_CMthis.pctx.shadowColor="black";
-				_CMthis.pctx.font=cmt.ctxfont;
-				_CMthis.pctx.fillStyle=cmt.color;
-				if(cmt.border||true){
-					_CMthis.pctx.lineWidth = 2;
-					_CMthis.pctx.strokeStyle="#000000";
-					_CMthis.pctx.strokeText(cmt.text,cmt.left,cmt.totop);
+				if(cmt.mode==1){
+					_CMthis.ctx.drawImage(_CMthis.bctx[cmt.bufferid].can,cmt.left,cmt.totop);
 				}
-				_CMthis.pctx.fillText(cmt.text,cmt.left,cmt.totop);
 			}
-			//_CMthis.pctx.closePath();
-			_CMthis.ctx.drawImage(_CMthis.pcanvas,0,0);
 		}
 		requestAnimationFrame(_CMthis.onDraw);
 	}
@@ -576,29 +578,6 @@ CommentManager.prototype.preload = function ()
 			cmt.dur = cmt.ttl;
 		}
 		cmt.hold = 0;
-		/*
-		   var j = 0;
-		   while(j <= this.pdivpool.length){
-		   if(j == this.pdivpool.length)
-		   this.pdivpool[j] = -10000000;
-		   if(cmt.stime-(cmt.width/this.stage.width*4000*this.def.globalScale)/3>= this.pdivpool[j]){
-		   cmt.totop = j* this.pdivheight;
-		   while(cmt.totop + cmt.height > this.stage.height)
-		   cmt.totop-=this.stage.height;
-		   if(cmt.totop<0)
-		   cmt.totop=0;
-		   cmt.totop=Math.round(cmt.totop/this.pdivheight)*this.pdivheight;
-		   endtime = cmt.stime+cmt.width/this.stage.width*4000*this.def.globalScale;
-		   k=0;
-		   while(k*this.pdivheight<cmt.height){
-		   this.pdivpool[j+k]=endtime;
-		   k++
-		   }
-		   break;
-		   }else
-		   j++;
-		   }
-		   */
 	}
 }
 
@@ -687,6 +666,21 @@ CommentManager.prototype.sendComment = function(data){
 			}else
 			  j++;
 		}
+		cmt.bufferid=this.getbufferid();
+		i=cmt.bufferid;
+		this.bctx[i].can.width=cmt.width+2;
+		this.bctx[i].can.height=cmt.height+2;
+		this.bctx[i].textBaseline = "top";
+		//_CMthis.pctx.shadowBlur=2;
+		//_CMthis.pctx.shadowColor="black";
+		this.bctx[i].font=cmt.ctxfont;
+		this.bctx[i].fillStyle=cmt.color;
+		if(cmt.border||true){
+			this.bctx[i].lineWidth = 2;
+			this.bctx[i].strokeStyle="#000000";
+			this.bctx[i].strokeText(cmt.text,1,1);
+		}
+		this.bctx[i].fillText(cmt.text,1,1);
 		this.runline.push(data);
 		return;
 	}
@@ -767,7 +761,7 @@ CommentManager.prototype.sendComment = function(data){
 CommentManager.prototype.finish = function(cmt){
 	switch(cmt.mode){
 		default:
-		case 1: break;//{this.csa.scroll.remove(cmt);}break;
+		case 1:{this.bctx[cmt.bufferid].inuse=false;}break;//{this.csa.scroll.remove(cmt);}break;
 		case 2:{this.csa.scrollbtm.remove(cmt);}break;
 		case 4:{this.csa.bottom.remove(cmt);}break;
 		case 5:{this.csa.top.remove(cmt);}break;
