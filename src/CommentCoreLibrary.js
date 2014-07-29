@@ -152,7 +152,8 @@ function CommentManager(stageObject){
 			for(i=0;i<_CMthis.runline.length;i++){
 				cmt=_CMthis.runline[i];
 				if(cmt.mode==1){
-					_CMthis.ctx.drawImage(_CMthis.bctx[cmt.bufferid].can,cmt.left,cmt.totop);
+					if(_CMthis.bctx[cmt.bufferid].onuse===true)
+					  _CMthis.ctx.drawImage(_CMthis.bctx[cmt.bufferid].can,cmt.left,cmt.totop);
 				}
 			}
 			_CMthis.requestfresh=false;
