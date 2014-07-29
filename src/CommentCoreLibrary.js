@@ -138,12 +138,12 @@ function CommentManager(stageObject){
 			//_CMthis.pctx.beginPath();
 			for(i=0;i<_CMthis.runline.length;i++){
 				cmt=_CMthis.runline[i];
-				_CMthis.pctx.textBaseline = "top";
-				_CMthis.pctx.shadowBlur=2;
+				//_CMthis.pctx.textBaseline = "top";
+				//_CMthis.pctx.shadowBlur=2;
 				_CMthis.pctx.shadowColor="black";
 				_CMthis.pctx.font=cmt.ctxfont;
 				_CMthis.pctx.fillStyle=cmt.color;
-				if(cmt.border){//||true){
+				if(cmt.border||true){
 					_CMthis.pctx.lineWidth = 2;
 					_CMthis.pctx.strokeStyle="#000000";
 					_CMthis.pctx.strokeText(cmt.text,cmt.left,cmt.totop);
