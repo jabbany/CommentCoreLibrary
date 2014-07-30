@@ -193,38 +193,33 @@ CommentManager.prototype.load = function(a){
 		return 0;
 		}
 	});
-	this.preload();
 };
 
-CommentManager.prototype.preload = function ()
+CommentManager.prototype.preload = function (cmt)
 {
-	for(var i = 0; i < this.timeline.length; i++){
-		if(this.timeline[i].mode !== 1)
-		  continue;
-		cmt=this.timeline[i];
-		cmt.ctxfont = cmt.size + "px " + "SimHei";
-		if(cmt.font != null && cmt.font != '')
-		  cmt.ctxfont = cmt.size + "px " + cmt.font;
-		//caculate width and height
-		this.ctx.font=cmt.ctxfont;
-		text = cmt.text.split('\n');
-		if(text.length < 3){
-			cmt.height=cmt.size+3;
-			cmt.width=this.ctx.measureText(text[0]).width;
-		}else{
-			cmt.height=(cmt.size+3)*text.length;
-			cmt.multiline=true;
-			cmt.multitext=text;
-			cmt.textlength = 0;
-			for(var p = 0; p < text.length; p++ ){
-				if(this.ctx.measureText(text[p]).width > cmt.textlength){
-					cmt.textlength = this.ctx.measureText(text[p]).width;
-				}
+	if(cmt.mode!==1)return;	
+	cmt.ctxfont = cmt.size + "px " + "SimHei";
+	if(cmt.font != null && cmt.font != '')
+	  cmt.ctxfont = cmt.size + "px " + cmt.font;
+	//caculate width and height
+	this.ctx.font=cmt.ctxfont;
+	text = cmt.text.split('\n');
+	if(text.length < 3){
+		cmt.height=cmt.size+3;
+		cmt.width=this.ctx.measureText(text[0]).width;
+	}else{
+		cmt.height=(cmt.size+3)*text.length;
+		cmt.multiline=true;
+		cmt.multitext=text;
+		cmt.textlength = 0;
+		for(var p = 0; p < text.length; p++ ){
+			if(this.ctx.measureText(text[p]).width > cmt.textlength){
+				cmt.textlength = this.ctx.measureText(text[p]).width;
 			}
-			cmt.width = cmt.textlength;
 		}
-		cmt.hold = 0;
+		cmt.width = cmt.textlength;
 	}
+	cmt.hold = 0;
 }
 
 CommentManager.prototype.clear = function(){
@@ -277,15 +272,15 @@ CommentManager.prototype.time = function(time){
 		}
 	}
 	if(doFlush)
-		this.flush();
+	  this.flush();
 };
 CommentManager.prototype.buffer = function(){
 	if(!this.buffered)
-		this.buffered = [];
+	  this.buffered = [];
 };
 CommentManager.prototype.flush = function(){
 	if(!this.buffered)
-		return;
+	  return;
 	var fragment = document.createDocumentFragment();
 	for(var i = 0; i < this.buffered.length; i++){
 		this.buffered[i].style.visibility = "hidden";
@@ -373,6 +368,7 @@ CommentManager.prototype.sendComment = function(data){
 		return;
 	}
 	if(data.mode === 1){
+		this.preload(data);
 		cmt=data;
 		cmt.ttl = Math.round(4000 * this.def.globalScale);
 		cmt.dur = cmt.ttl;
@@ -394,10 +390,12 @@ CommentManager.prototype.sendComment = function(data){
 			this.bctx[i].strokeText(cmt.text,1,1);
 		}
 		if(cmt.multiline===true){
-			for(var k=0;k<cmt.multitext.length;k++)
-				this.bctx[i].fillText(cmt.multitext[k],1,1+k*cmt.height/cmt.multitext.length)
+			for(var k=0;k<cmt.multitext.length;k++){
+				this.bctx[i].strokeText(cmt.multitext[k],1,1+k*cmt.height/cmt.multitext.length);
+				this.bctx[i].fillText(cmt.multitext[k],1,1+k*cmt.height/cmt.multitext.length);
+			}
 		}else
-		this.bctx[i].fillText(cmt.text,1,1);
+		  this.bctx[i].fillText(cmt.text,1,1);
 		this.csa.scroll.add(cmt);
 		this.runline.push(cmt);
 		return;
