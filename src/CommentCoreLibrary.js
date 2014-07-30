@@ -202,9 +202,9 @@ CommentManager.prototype.preload = function ()
 		if(this.timeline[i].mode !== 1)
 		  continue;
 		cmt=this.timeline[i];
-		cmt.ctxfont = "bold "+cmt.size + "px " + "SimHei";
+		cmt.ctxfont = cmt.size + "px " + "SimHei";
 		if(cmt.font != null && cmt.font != '')
-		  cmt.ctxfont = "bold "+cmt.size + "px " + cmt.font;
+		  cmt.ctxfont = cmt.size + "px " + cmt.font;
 		//caculate width and height
 		this.ctx.font=cmt.ctxfont;
 		text = cmt.text.split("\n");
