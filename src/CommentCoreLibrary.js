@@ -207,16 +207,22 @@ CommentManager.prototype.preload = function ()
 		  cmt.ctxfont = cmt.size + "px " + cmt.font;
 		//caculate width and height
 		this.ctx.font=cmt.ctxfont;
-		text = cmt.text.split("\n");
-		cmt.changeheight="preload";
-		cmt.height = Math.floor(text.length * cmt.size * 1.15) + 1;
-		cmt.textlength = 0;
-		for(var p = 0; p < text.length; p++ ){
-			if(this.ctx.measureText(text[p]).width > cmt.textlength){
-				cmt.textlength = this.ctx.measureText(text[p]).width;
+		text = cmt.text.split('\n');
+		if(text.length < 3){
+			cmt.height=cmt.size+3;
+			cmt.width=this.ctx.measureText(text[0]).width;
+		}else{
+			cmt.height=(cmt.size+3)*text.length;
+			cmt.multiline=true;
+			cmt.multitext=text;
+			cmt.textlength = 0;
+			for(var p = 0; p < text.length; p++ ){
+				if(this.ctx.measureText(text[p]).width > cmt.textlength){
+					cmt.textlength = this.ctx.measureText(text[p]).width;
+				}
 			}
+			cmt.width = cmt.textlength;
 		}
-		cmt.width = cmt.textlength;
 		cmt.hold = 0;
 	}
 }
@@ -387,6 +393,10 @@ CommentManager.prototype.sendComment = function(data){
 			this.bctx[i].strokeStyle="#000000";
 			this.bctx[i].strokeText(cmt.text,1,1);
 		}
+		if(cmt.multiline===true){
+			for(var k=0;k<cmt.multitext.length;k++)
+				this.bctx[i].fillText(cmt.multitext[k],1,1+k*cmt.height/cmt.multitext.length)
+		}else
 		this.bctx[i].fillText(cmt.text,1,1);
 		this.csa.scroll.add(cmt);
 		this.runline.push(cmt);
