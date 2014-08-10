@@ -4,7 +4,7 @@ module.exports = (grunt) ->
   
   # !! Compile configurations
   License = '/*!Copyright(c) CommentCoreLibrary (//github.com/jabbany/CommentCoreLibrary) - Licensed under the MIT License */'
-  FilterType = "Simple" # "Comment" || "Simple"
+  FilterType = "Comment" # "Comment" || "Simple"
   # !! End of config area
 
   CSS = [
