@@ -4,7 +4,7 @@ module.exports = (grunt) ->
   
   # !! Compile configurations
   License = '/*!Copyright(c) CommentCoreLibrary (//github.com/jabbany/CommentCoreLibrary) - Licensed under the MIT License */'
-  FilterType = "Comment" # "Comment" || "Simple"
+  FilterType = "Simple" # "Comment" || "Simple"
   # !! End of config area
 
   CSS = [
@@ -14,9 +14,10 @@ module.exports = (grunt) ->
 
   SRC_CORE = [
     'src/Array.js'
+    'src/core/CommentSpaceAllocator.js'
+    'src/core/Comment.js'
     'src/filter/' + FilterType + 'Filter.js'
-    'src/CommentSpaceAllocator.js'
-    'src/CommentCoreLibrary.js'
+    'src/CommentCoreLibraryX.js'
   ]
 
   SRC_SCRIPTING_KAGEROU =

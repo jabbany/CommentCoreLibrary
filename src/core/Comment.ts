@@ -1,16 +1,16 @@
-export interface CCLOptions {
+interface CCLOptions {
 	globalScale:number;
 	scrollScale:number;
 	opacity:number;
 }
-export interface CommentManager {
+interface CommentManager {
 	width:number;
 	height:number;
 	options:CCLOptions;
 	finish(c:IComment):void;
 }
 
-export interface IMotion {
+interface IMotion {
 	from:number;
 	to:number;
 	delay:number;
@@ -19,7 +19,8 @@ export interface IMotion {
 	easing:Function;
 }
 
-export interface IComment {
+interface IComment {
+	dom:any;
 	stime:number;
 	dur:number;
 	ttl:number;
@@ -31,21 +32,29 @@ export interface IComment {
 	right:number;
 	width:number;
 	height:number;
+	movable:boolean;
+	border:boolean;
+	shadow:boolean;
+	font:string;
+	color:number;
+	alpha:number;
+	size:number;
 	time(t:number):void;
 	update():void;
 	invalidate():void;
 	animate():void;
 }
 
-export class Comment implements IComment {
+class CoreComment implements IComment {
 	public mode:number = 1;
 	public stime:number = 0;
-	public text:String = "";
+	public text:string = "";
 	public ttl:number = 4000;
 	public dur:number = 4000;
 	public cindex:number = -1;
 
 	public motion:Array<Object> = [];
+	public movable:boolean = true;
 	private _curMotion:number;
 	private _motionStart:Array<number>;
 	private _motionEnd:Array<number>;
@@ -61,6 +70,10 @@ export class Comment implements IComment {
 	private _height:number;
 	private _size:number = 25;
 	private _color:number = 0xffffff;
+	private _border:boolean = false;
+	private _alpha:number = 1;
+	private _shadow:boolean = true;
+	private _font:string = "";
 
 	public parent:CommentManager;
 	public dom:HTMLDivElement;
@@ -96,10 +109,43 @@ export class Comment implements IComment {
 			}
 		}
 		if (init.hasOwnProperty("color")) {
-			this.color = init["color"];
+			this._color = init["color"];
 		}
 		if (init.hasOwnProperty("size")) {
-			this.size = init["size"];
+			this._size = init["size"];
+		}
+		if (init.hasOwnProperty("border")) {
+			this._border = init["border"];
+		}
+		if (init.hasOwnProperty("opacity")) {
+			this._alpha = init["opacity"];
+		}
+		if (init.hasOwnProperty("font")) {
+			this._font = init["font"];
+		}
+	}
+
+	/**
+	 * Initializes the DOM element (or canvas) backing the comment
+	 * This method takes the place of 'initCmt' in the old CCL
+	 */
+	public init(recycle:IComment = null):void {
+		if (recycle !== null) {
+			this.dom = <HTMLDivElement> recycle.dom;
+		} else {
+			this.dom = document.createElement("div");
+		}
+		this.dom.className = "cmt";
+		this.dom.appendChild(document.createTextNode(this.text));
+		this.dom.textContent = this.text;
+		this.dom.innerText = this.text;
+		this.size = this._size;
+		if (this._color != 0xffffff) {
+			this.color = this._color;
+		}
+		this.shadow = this._shadow;
+		if (this._font !== "") {
+			this.font = this._font;
 		}
 	}
 
@@ -155,6 +201,22 @@ export class Comment implements IComment {
 		return this._color;
 	}
 
+	get alpha():number {
+		return this._alpha;
+	}
+
+	get border():boolean {
+		return this._border;
+	}
+
+	get shadow():boolean {
+		return this._shadow;
+	}
+
+	get font():string {
+		return this._font;
+	}
+
 	set x(x:number) {
 		this._x = x;
 		if (this.align % 2 === 0) {
@@ -167,9 +229,9 @@ export class Comment implements IComment {
 	set y(y:number) {
 		this._y = y;
 		if (this.align < 2) {
-			this.dom.style.top = this._x + "px";
+			this.dom.style.top = this._y + "px";
 		} else {
-			this.dom.style.bottom = this._x + "px";
+			this.dom.style.bottom = this._y + "px";
 		}
 	}
 
@@ -190,9 +252,42 @@ export class Comment implements IComment {
 
 	set color(c:number) {
 		this._color = c;
-		var color:String = c.toString(16);
+		var color:string = c.toString(16);
 		color = color.length >= 6 ? color : new Array(6 - color.length + 1).join("0") + color;
 		this.dom.style.color = "#" + color;
+		if (this._color === 0) {
+			this.dom.className = "cmt rshadow";
+		}
+	}
+
+	set alpha(a:number) {
+		this._alpha = a;
+		this.dom.style.opacity = Math.min(this._alpha, this.parent.options.opacity) + "";
+	}
+
+	set border(b:boolean) {
+		this._border = b;
+		if (this._border) {
+			this.dom.style.border = "1px solid #00ffff";
+		} else {
+			this.dom.style.border = "none";
+		}
+	}
+
+	set shadow(s:boolean) {
+		this._shadow = s;
+		if (!this._shadow) {
+			this.dom.className = "cmt noshadow";
+		}
+	}
+
+	set font(f:string) {
+		this._font = f;
+		if (this._font.length > 0) {
+			this.dom.style.fontFamily = this._font;
+		} else {
+			this.dom.style.fontFamily = "";
+		}
 	}
 
 	/**
@@ -203,7 +298,9 @@ export class Comment implements IComment {
 	 */
 	public time(time:number):void {
 		this.ttl -= time;
-		this.update();
+		if (this.movable) {
+			this.update();
+		}
 		if (this.ttl <= 0) {
 			this.finish();
 		}
@@ -214,7 +311,7 @@ export class Comment implements IComment {
 	 * the current ttl/dur values.
 	 */
 	public update():void {
-		this.x = (this.ttl / this.dur) * (this.parent.width + this.width) - this.width;
+		this.animate();
 	}
 
 	/**
@@ -230,7 +327,6 @@ export class Comment implements IComment {
 	 * groups.
 	 */
 	public animate():void {
-		this._curMotion;
 		for (var i = 0; i < this.motion.length; i++) {
 
 		}
@@ -245,18 +341,19 @@ export class Comment implements IComment {
 	}
 }
 
-export class ScrollComment extends Comment {
-}
-
-export class ReverseComment extends Comment {
-	public update():void {
-		this.dom.style.left = (1 - this.ttl / this.dur) * (this.parent.width + this.width) - this.width + "px";
+class ScrollComment extends CoreComment {
+	constructor(parent:CommentManager, data:Object) {
+		super(parent, data);
+		this.dur *= this.parent.options.scrollScale;
+		this.ttl *= this.parent.options.scrollScale;
 	}
-}
 
-export class AnchorComment extends Comment {
-}
+	public init(recycle:IComment = null):void {
+		super.init(recycle);
+		this.x = this.parent.width;
+	}
 
-export class PositionComment extends Comment {
-
+	public update():void {
+		this.x = (this.ttl / this.dur) * (this.parent.width + this.width) - this.width;
+	}
 }

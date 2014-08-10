@@ -100,6 +100,7 @@ class CommentSpaceAllocator implements ISpaceAllocator {
 		var pool = this._pools[cindex];
 		if (pool.length === 0) {
 			pool.push(comment);
+			comment.cindex = cindex;
 			return 0;
 		} else if (this.pathCheck(0, comment, pool)) {
 			// Has a path in the current pool
@@ -190,10 +191,14 @@ class TopCommentSpaceAllocator extends CommentSpaceAllocator {
 		comment.x = (this._width - comment.width) / 2;
 	}
 
+	public willCollide(a:IComment, b:IComment):boolean {
+		return true;
+	}
+
 	public pathCheck(y:number, comment:IComment, pool:Array<IComment>):boolean {
 		var bottom = comment.bottom;
 		for (var i = 0; i < pool.length; i++) {
-			if (comment.y > bottom || comment.bottom < y) {
+			if (pool[i].y > bottom || pool[i].bottom < y) {
 				continue;
 			} else {
 				return false;
@@ -220,7 +225,7 @@ class ReverseCommentSpaceAllocator extends CommentSpaceAllocator {
 	}
 }
 
-class BottomScrollCommentAllocator extends CommentSpaceAllocator {
+class BottomScrollCommentSpaceAllocator extends CommentSpaceAllocator {
 	public add(comment:IComment):void {
 		comment.align = 1;
 		comment.invalidate();

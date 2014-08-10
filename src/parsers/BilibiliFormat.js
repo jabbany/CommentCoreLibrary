@@ -3,14 +3,7 @@ Bilibili Format
 Licensed Under MIT License
  Takes in an XMLDoc/LooseXMLDoc and parses that into a Generic Comment List
 **/
-function BilibiliParser(xmlDoc, text, warn){
-	function fillRGB(string){
-		while(string.length < 6){
-			string = "0" + string;
-		}
-		return string;
-	}
-	
+function BilibiliParser(xmlDoc, text, warn){	
 	//Format the bili output to be json-valid
 	function format(string){
 		return string.replace(/\t/,"\\t");	
@@ -45,7 +38,7 @@ function BilibiliParser(xmlDoc, text, warn){
 			var obj = {};
 			obj.stime = Math.round(parseFloat(opt[0]*1000));
 			obj.size = parseInt(opt[2]);
-			obj.color = "#" + fillRGB(parseInt(opt[3]).toString(16));
+			obj.color = parseInt(opt[3]);
 			obj.mode = parseInt(opt[1]);
 			obj.date = parseInt(opt[4]);
 			obj.pool = parseInt(opt[5]);

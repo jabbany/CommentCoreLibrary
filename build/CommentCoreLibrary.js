@@ -31,13 +31,605 @@ Array.prototype.binsert = function(what,how){
 	this.splice(this.bsearch(what,how),0,what);
 };
 
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var CommentSpaceAllocator = (function () {
+    /**
+    * Constructs a space allocator
+    * @param width - allocator width pixels (default 0)
+    * @param height - allocator height pixels (default 0)
+    */
+    function CommentSpaceAllocator(width, height) {
+        if (typeof width === "undefined") { width = 0; }
+        if (typeof height === "undefined") { height = 0; }
+        this._pools = [
+            []
+        ];
+        /**
+        * Number of pixels to avoid from last possible y-offset
+        * @type {number}
+        */
+        this.avoid = 1;
+        this._width = width;
+        this._height = height;
+    }
+    /**
+    * Logic to determine if checked comment collides with existing comment
+    * We say that comments collide if the existing comment finishes later
+    * than the checked comment is halfway through
+    *
+    * @param existing - Existing comment;
+    * @param check - Checked comment
+    * @returns {boolean} checked collides with exisiting
+    */
+    CommentSpaceAllocator.prototype.willCollide = function (existing, check) {
+        return existing.stime + existing.ttl > check.stime + check.ttl / 2;
+    };
+
+    /**
+    * Validates sufficient space for a "bullet path" for the comment.
+    *
+    * @param y - Path starting at y offset (path height is the comment height)
+    * @param comment - Comment instance to test
+    * @param pool - The pool to test in.
+    * @returns {boolean} whether or not a valid path exists in the tested pool.
+    */
+    CommentSpaceAllocator.prototype.pathCheck = function (y, comment, pool) {
+        var bottom = y + comment.height;
+        var right = comment.right;
+        for (var i = 0; i < pool.length; i++) {
+            if (pool[i].y > bottom || pool[i].bottom < y) {
+                continue;
+            } else if (pool[i].x < comment.x || pool[i].x > right) {
+                if (this.willCollide(pool[i], comment)) {
+                    return false;
+                } else {
+                    continue;
+                }
+            } else {
+                return false;
+            }
+        }
+        return true;
+    };
+
+    /**
+    * Finds a good y-coordinate for comment such that minimal collision happens.
+    * This method will also add the comment to the allocated pool and assign a proper cindex
+    *
+    * @param comment - Comment
+    * @param cindex - Pool index
+    * @returns {number} Y offset assigned
+    */
+    CommentSpaceAllocator.prototype.assign = function (comment, cindex) {
+        while (this._pools.length <= cindex) {
+            this._pools.push([]);
+        }
+        var pool = this._pools[cindex];
+        if (pool.length === 0) {
+            pool.push(comment);
+            comment.cindex = cindex;
+            return 0;
+        } else if (this.pathCheck(0, comment, pool)) {
+            // Has a path in the current pool
+            comment.cindex = cindex;
+            pool.binsert(comment, function (a, b) {
+                if (a.bottom < b.bottom) {
+                    return -1;
+                } else if (a.bottom === b.bottom) {
+                    return 0;
+                } else {
+                    return 1;
+                }
+            });
+            return 0;
+        }
+        var y = 0;
+        for (var k = 0; k < pool.length; k++) {
+            y = pool[k].bottom + this.avoid;
+            if (y + comment.height > this._height) {
+                break;
+            }
+            if (this.pathCheck(y, comment, pool)) {
+                // Has a path in the current pool
+                comment.cindex = cindex;
+                pool.binsert(comment, function (a, b) {
+                    if (a.bottom < b.bottom) {
+                        return -1;
+                    } else if (a.bottom === b.bottom) {
+                        return 0;
+                    } else {
+                        return 1;
+                    }
+                });
+                return y;
+            }
+        }
+
+        // Assign one pool deeper
+        return this.assign(comment, cindex + 1);
+    };
+
+    /**
+    * Adds a comment to the space allocator. Will also assign the
+    * comment's y values. Note that added comments may not be actually
+    * recorded, check the cindex value.
+    * @param comment
+    */
+    CommentSpaceAllocator.prototype.add = function (comment) {
+        if (comment.height > this._height) {
+            comment.cindex = -2;
+            comment.y = 0;
+        } else {
+            comment.y = this.assign(comment, 0);
+        }
+    };
+
+    /**
+    * Remove the comment from the space allocator. Will silently fail
+    * if the comment is not found
+    * @param comment
+    */
+    CommentSpaceAllocator.prototype.remove = function (comment) {
+        if (comment.cindex < 0) {
+            return;
+        }
+        var index = this._pools[comment.cindex].indexOf(comment);
+        if (index < 0)
+            return;
+        this._pools[comment.cindex].splice(index, 1);
+    };
+
+    /**
+    * Set the bounds (width, height) of the allocator. Normally this
+    * should be as big as the stage DOM object. But you can manually set
+    * this to another smaller value too.
+    *
+    * @param width
+    * @param height
+    */
+    CommentSpaceAllocator.prototype.setBounds = function (width, height) {
+        this._width = width;
+        this._height = height;
+    };
+    return CommentSpaceAllocator;
+})();
+
+var TopCommentSpaceAllocator = (function (_super) {
+    __extends(TopCommentSpaceAllocator, _super);
+    function TopCommentSpaceAllocator() {
+        _super.apply(this, arguments);
+    }
+    TopCommentSpaceAllocator.prototype.add = function (comment) {
+        _super.prototype.add.call(this, comment);
+        comment.x = (this._width - comment.width) / 2;
+    };
+
+    TopCommentSpaceAllocator.prototype.willCollide = function (a, b) {
+        return true;
+    };
+
+    TopCommentSpaceAllocator.prototype.pathCheck = function (y, comment, pool) {
+        var bottom = comment.bottom;
+        for (var i = 0; i < pool.length; i++) {
+            if (pool[i].y > bottom || pool[i].bottom < y) {
+                continue;
+            } else {
+                return false;
+            }
+        }
+        return true;
+    };
+    return TopCommentSpaceAllocator;
+})(CommentSpaceAllocator);
+
+var BottomCommentSpaceAllocator = (function (_super) {
+    __extends(BottomCommentSpaceAllocator, _super);
+    function BottomCommentSpaceAllocator() {
+        _super.apply(this, arguments);
+    }
+    BottomCommentSpaceAllocator.prototype.add = function (comment) {
+        comment.align = 2;
+        comment.invalidate();
+        _super.prototype.add.call(this, comment);
+        comment.x = (this._width - comment.width) / 2;
+    };
+    return BottomCommentSpaceAllocator;
+})(TopCommentSpaceAllocator);
+
+var ReverseCommentSpaceAllocator = (function (_super) {
+    __extends(ReverseCommentSpaceAllocator, _super);
+    function ReverseCommentSpaceAllocator() {
+        _super.apply(this, arguments);
+    }
+    ReverseCommentSpaceAllocator.prototype.add = function (comment) {
+        comment.align = 1;
+        comment.invalidate();
+        _super.prototype.add.call(this, comment);
+    };
+    return ReverseCommentSpaceAllocator;
+})(CommentSpaceAllocator);
+
+var BottomScrollCommentSpaceAllocator = (function (_super) {
+    __extends(BottomScrollCommentSpaceAllocator, _super);
+    function BottomScrollCommentSpaceAllocator() {
+        _super.apply(this, arguments);
+    }
+    BottomScrollCommentSpaceAllocator.prototype.add = function (comment) {
+        comment.align = 1;
+        comment.invalidate();
+        _super.prototype.add.call(this, comment);
+    };
+    return BottomScrollCommentSpaceAllocator;
+})(CommentSpaceAllocator);
+
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var CoreComment = (function () {
+    function CoreComment(parent, init) {
+        if (typeof init === "undefined") { init = {}; }
+        this.mode = 1;
+        this.stime = 0;
+        this.text = "";
+        this.ttl = 4000;
+        this.dur = 4000;
+        this.cindex = -1;
+        this.motion = [];
+        this.movable = true;
+        /**
+        * Alignment
+        * @type {number} 0=tl, 2=bl, 1=tr, 3=br
+        */
+        this.align = 0;
+        this._size = 25;
+        this._color = 0xffffff;
+        this._border = false;
+        this._alpha = 1;
+        this._shadow = true;
+        this._font = "";
+        if (!parent) {
+            throw new Error("Comment not bound to comment manager.");
+        } else {
+            this.parent = parent;
+        }
+        if (init.hasOwnProperty("mode")) {
+            this.mode = parseInt(init["mode"], 10);
+        } else {
+            this.mode = 1;
+        }
+        if (init.hasOwnProperty("dur")) {
+            this.dur = parseInt(init["dur"], 10);
+            this.ttl = this.dur;
+        }
+        this.dur *= this.parent.options.globalScale;
+        this.ttl *= this.parent.options.globalScale;
+        if (init.hasOwnProperty("text")) {
+            this.text = init["text"];
+        }
+        if (init.hasOwnProperty("motion")) {
+            this._motionStart = [];
+            this._motionEnd = [];
+            for (var i = 0; i < init["motion"].length; i++) {
+                var maxDur = 0;
+                for (var k in init["motion"][i]) {
+                    maxDur = Math.max(init["motion"][i][k].dur, maxDur);
+                }
+            }
+        }
+        if (init.hasOwnProperty("color")) {
+            this._color = init["color"];
+        }
+        if (init.hasOwnProperty("size")) {
+            this._size = init["size"];
+        }
+        if (init.hasOwnProperty("border")) {
+            this._border = init["border"];
+        }
+        if (init.hasOwnProperty("opacity")) {
+            this._alpha = init["opacity"];
+        }
+        if (init.hasOwnProperty("font")) {
+            this._font = init["font"];
+        }
+    }
+    /**
+    * Initializes the DOM element (or canvas) backing the comment
+    * This method takes the place of 'initCmt' in the old CCL
+    */
+    CoreComment.prototype.init = function (recycle) {
+        if (typeof recycle === "undefined") { recycle = null; }
+        if (recycle !== null) {
+            this.dom = recycle.dom;
+        } else {
+            this.dom = document.createElement("div");
+        }
+        this.dom.className = "cmt";
+        this.dom.appendChild(document.createTextNode(this.text));
+        this.dom.textContent = this.text;
+        this.dom.innerText = this.text;
+        this.size = this._size;
+        if (this._color != 0xffffff) {
+            this.color = this._color;
+        }
+        this.shadow = this._shadow;
+        if (this._font !== "") {
+            this.font = this._font;
+        }
+    };
+
+    Object.defineProperty(CoreComment.prototype, "x", {
+        get: function () {
+            if (this._x === null || this._x === undefined) {
+                if (this.align % 2 === 0) {
+                    this._x = this.dom.offsetLeft;
+                } else {
+                    this._x = this.parent.width - this.dom.offsetLeft - this.width;
+                }
+            }
+            return this._x;
+        },
+        set: function (x) {
+            this._x = x;
+            if (this.align % 2 === 0) {
+                this.dom.style.left = this._x + "px";
+            } else {
+                this.dom.style.right = this._x + "px";
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+
+    Object.defineProperty(CoreComment.prototype, "y", {
+        get: function () {
+            if (this._y === null || this._y === undefined) {
+                if (this.align < 2) {
+                    this._y = this.dom.offsetTop;
+                } else {
+                    this._y = this.parent.height - this.dom.offsetTop - this.height;
+                }
+            }
+            return this._y;
+        },
+        set: function (y) {
+            this._y = y;
+            if (this.align < 2) {
+                this.dom.style.top = this._y + "px";
+            } else {
+                this.dom.style.bottom = this._y + "px";
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+
+    Object.defineProperty(CoreComment.prototype, "bottom", {
+        get: function () {
+            return this.y + this.height;
+        },
+        enumerable: true,
+        configurable: true
+    });
+
+    Object.defineProperty(CoreComment.prototype, "right", {
+        get: function () {
+            return this.x + this.width;
+        },
+        enumerable: true,
+        configurable: true
+    });
+
+    Object.defineProperty(CoreComment.prototype, "width", {
+        get: function () {
+            if (this._width === null || this._width === undefined) {
+                this._width = this.dom.offsetWidth;
+            }
+            return this._width;
+        },
+        set: function (w) {
+            this._width = w;
+            this.dom.style.width = this._width + "px";
+        },
+        enumerable: true,
+        configurable: true
+    });
+
+    Object.defineProperty(CoreComment.prototype, "height", {
+        get: function () {
+            if (this._height === null || this._height === undefined) {
+                this._height = this.dom.offsetHeight;
+            }
+            return this._height;
+        },
+        set: function (h) {
+            this._height = h;
+            this.dom.style.height = this._height + "px";
+        },
+        enumerable: true,
+        configurable: true
+    });
+
+    Object.defineProperty(CoreComment.prototype, "size", {
+        get: function () {
+            return this._size;
+        },
+        set: function (s) {
+            this._size = s;
+            this.dom.style.fontSize = this._size + "px";
+        },
+        enumerable: true,
+        configurable: true
+    });
+
+    Object.defineProperty(CoreComment.prototype, "color", {
+        get: function () {
+            return this._color;
+        },
+        set: function (c) {
+            this._color = c;
+            var color = c.toString(16);
+            color = color.length >= 6 ? color : new Array(6 - color.length + 1).join("0") + color;
+            this.dom.style.color = "#" + color;
+            if (this._color === 0) {
+                this.dom.className = "cmt rshadow";
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+
+    Object.defineProperty(CoreComment.prototype, "alpha", {
+        get: function () {
+            return this._alpha;
+        },
+        set: function (a) {
+            this._alpha = a;
+            this.dom.style.opacity = Math.min(this._alpha, this.parent.options.opacity) + "";
+        },
+        enumerable: true,
+        configurable: true
+    });
+
+    Object.defineProperty(CoreComment.prototype, "border", {
+        get: function () {
+            return this._border;
+        },
+        set: function (b) {
+            this._border = b;
+            if (this._border) {
+                this.dom.style.border = "1px solid #00ffff";
+            } else {
+                this.dom.style.border = "none";
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+
+    Object.defineProperty(CoreComment.prototype, "shadow", {
+        get: function () {
+            return this._shadow;
+        },
+        set: function (s) {
+            this._shadow = s;
+            if (!this._shadow) {
+                this.dom.className = "cmt noshadow";
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+
+    Object.defineProperty(CoreComment.prototype, "font", {
+        get: function () {
+            return this._font;
+        },
+        set: function (f) {
+            this._font = f;
+            if (this._font.length > 0) {
+                this.dom.style.fontFamily = this._font;
+            } else {
+                this.dom.style.fontFamily = "";
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+
+
+
+
+
+
+
+
+
+
+
+    /**
+    * Moves the comment by a number of milliseconds. When
+    * the given parameter is greater than 0 the comment moves
+    * forward. Otherwise it moves backwards.
+    * @param time - elapsed time in ms
+    */
+    CoreComment.prototype.time = function (time) {
+        this.ttl -= time;
+        if (this.movable) {
+            this.update();
+        }
+        if (this.ttl <= 0) {
+            this.finish();
+        }
+    };
+
+    /**
+    * Update the comment's position depending on its mode and
+    * the current ttl/dur values.
+    */
+    CoreComment.prototype.update = function () {
+        this.animate();
+    };
+
+    /**
+    * Invalidate the comment position.
+    */
+    CoreComment.prototype.invalidate = function () {
+        this._x = null;
+        this._y = null;
+    };
+
+    /**
+    * Update the comment's position depending on the applied motion
+    * groups.
+    */
+    CoreComment.prototype.animate = function () {
+        for (var i = 0; i < this.motion.length; i++) {
+        }
+    };
+
+    /**
+    * Remove the comment and do some cleanup.
+    */
+    CoreComment.prototype.finish = function () {
+        this.dom.parentElement.removeChild(this.dom);
+        this.parent.finish(this);
+    };
+    return CoreComment;
+})();
+
+var ScrollComment = (function (_super) {
+    __extends(ScrollComment, _super);
+    function ScrollComment(parent, data) {
+        _super.call(this, parent, data);
+        this.dur *= this.parent.options.scrollScale;
+        this.ttl *= this.parent.options.scrollScale;
+    }
+    ScrollComment.prototype.init = function (recycle) {
+        if (typeof recycle === "undefined") { recycle = null; }
+        _super.prototype.init.call(this, recycle);
+        this.x = this.parent.width;
+    };
+
+    ScrollComment.prototype.update = function () {
+        this.x = (this.ttl / this.dur) * (this.parent.width + this.width) - this.width;
+    };
+    return ScrollComment;
+})(CoreComment);
+
 /** 
- * Comment Filters Module
+ * Comment Filters Module Simplified (only supports modifiers & types)
  * @license MIT
  * @author Jim Chen
  */
 function CommentFilter(){
-	this.rulebook = {"all":[]};
 	this.modifiers = [];
 	this.runtime = null;
 	this.allowTypes = {
@@ -55,86 +647,16 @@ function CommentFilter(){
 		}
 		return cmt;
 	};
-	this.isMatchRule = function(cmtData,rule){
-		switch(rule['operator']){
-			case '==':if(cmtData[rule['subject']] == rule['value']){return false;};break;
-			case '>':if(cmtData[rule['subject']] > rule['value']){return false;};break;
-			case '<':if(cmtData[rule['subject']] < rule['value']){return false;};break;
-			case 'range':if(cmtData[rule['subject']] > rule.value.min && cmtData[rule['subject']] < rule.value.max){return false;};break;
-			case '!=':if(cmtData[rule['subject']] != rule.value){return false;}break;
-			case '~':if(new RegExp(rule.value).test(cmtData[rule[subject]])){return false;}break;
-			case '!~':if(!(new RegExp(rule.value).test(cmtData[rule[subject]]))){return false;}break;
-		}
-		return true;
-	};
 	this.beforeSend = function(cmt){
-		//Check with the rules upon size
-		var cmtMode = cmt.data.mode;
-		if(this.rulebook[cmtMode]!=null){
-			for(var i=0;i<this.rulebook[cmtMode].length;i++){
-				if(this.rulebook[cmtMode][i].subject == 'width' || this.rulebook[cmtMode][i].subject == 'height'){
-					if(this.rulebook[cmtMode][i].subject == 'width'){
-						switch(this.rulebook[cmtMode][i].operator){
-							case '>':if(this.rulebook[cmtMode][i].value < cmt.offsetWidth)return false;break;
-							case '<':if(this.rulebook[cmtMode][i].value > cmt.offsetWidth)return false;break;
-							case 'range':if(this.rulebook[cmtMode][i].value.max > cmt.offsetWidth && this.rulebook[cmtMode][i].min < cmt.offsetWidth)return false;break;
-							case '==':if(this.rulebook[cmtMode][i].value == cmt.offsetWidth)return false;break;
-							default:break;
-						}
-					}else{
-						switch(this.rulebook[cmtMode][i].operator){
-							case '>':if(this.rulebook[cmtMode][i].value < cmt.offsetHeight)return false;break;
-							case '<':if(this.rulebook[cmtMode][i].value > cmt.offsetHeight)return false;break;
-							case 'range':if(this.rulebook[cmtMode][i].value.max > cmt.offsetHeight && this.rulebook[cmtMode][i].min < cmt.offsetHeight)return false;break;
-							case '==':if(this.rulebook[cmtMode][i].value == cmt.offsetHeight)return false;break;
-							default:break;
-						}
-					}
-				}
-			}
-			return true;
-		}else{return true;}
+		return cmt;
 	}
 	this.doValidate = function(cmtData){
 		if(!this.allowTypes[cmtData.mode])
 			return false;
-		/** Create abstract cmt data **/
-		var abstCmtData = {
-			text:cmtData.text,
-			mode:cmtData.mode,
-			color:cmtData.color,
-			size:cmtData.size,
-			stime:cmtData.stime,
-			hash:cmtData.hash,
-		}
-		if(this.rulebook[cmtData.mode] != null && this.rulebook[cmtData.mode].length > 0){
-			for(var i=0;i<this.rulebook[cmtData.mode];i++){
-				if(!this.isMatchRule(abstCmtData,this.rulebook[cmtData.mode][i]))
-					return false;
-			}
-		}
-		for(var i=0;i<this.rulebook[cmtData.mode];i++){
-			if(!this.isMatchRule(abstCmtData,this.rulebook[cmtData.mode][i]))
-				return false;
-		}
 		return true;
 	};
 	this.addRule = function(rule){
-		if(this.rulebook[rule.mode + ""] == null)
-			this.rulebook[rule.mode + ""] = [];
-		/** Normalize Operators **/
-		switch(rule.operator){
-			case 'eq':
-			case 'equals':
-			case '=':rule.operator='==';break;
-			case 'ineq':rule.operator='!=';break;
-			case 'regex':
-			case 'matches':rule.operator='~';break;
-			case 'notmatch':
-			case 'iregex':rule.operator='!~';break;
-		}
-		this.rulebook[rule.mode].push(rule);
-		return (this.rulebook[rule.mode].length - 1);
+		
 	};
 	this.addModifier = function(f){
 		this.modifiers.push(f);
@@ -149,246 +671,6 @@ function CommentFilter(){
 	}
 }
 
-/** 
-Comment Space Allocators Classes
-Licensed Under MIT License
-You may create your own.
-**/
-function CommentSpaceAllocator(w,h){
-	this.width = w;
-	this.height = h;
-	this.dur = 4000;
-	this.pools = [[]];
-	this.pool = this.pools[0];
-	this.setBounds = function(w,h){this.width = w;this.height = h;};
-	this.add = function(cmt){
-		if(cmt.height >= this.height){
-			cmt.cindex = this.pools.indexOf(this.pool);
-			cmt.style.top = "0px";
-		}else{
-			cmt.cindex = this.pools.indexOf(this.pool);
-			cmt.style.top = this.setY(cmt) + "px";
-		}
-	};
-	this.remove = function(cmt){
-		var tpool = this.pools[cmt.cindex];
-		var index = tpool.indexOf(cmt);
-		if(index < 0) return;
-		tpool.splice(index, 1);
-	};
-	this.validateCmt = function(cmt){
-		cmt.bottom = cmt.offsetTop + cmt.offsetHeight;
-		cmt.y = cmt.offsetTop;
-		cmt.x = cmt.offsetLeft;
-		cmt.right = cmt.offsetLeft + cmt.offsetWidth;
-		if(!cmt.width || !cmt.height){
-			cmt.height = cmt.offsetHeight;
-			cmt.width = cmt.offsetWidth;
-		}
-		cmt.top = cmt.offsetTop;
-		cmt.left = cmt.offsetLeft;
-		return cmt;
-	};
-	this.setY = function(cmt,index){
-		if(!index)
-			var index = 0;
-		cmt = this.validateCmt(cmt);
-		if(this.pools.length <= index){
-			this.pools.push([]);
-		}
-		this.pool = this.pools[index];
-		if(this.pool.length == 0){
-			this.pool.push(cmt);	
-			return 0;
-		}
-		else if(this.vCheck(0,cmt)){
-			this.pool.binsert(cmt,function(a,b){
-					if(a.bottom < b.bottom){
-						return -1;
-					}else if (a.bottom == b.bottom){
-						return 0;
-					}else{return 1;}
-				});
-			return cmt.y;
-		}
-		var y=0;
-		for(var k=0;k<this.pool.length;k++){
-			y = this.pool[k].bottom + 1;
-			if(y + cmt.offsetHeight > this.height){
-				break;
-			}
-			if(this.vCheck(y,cmt)){
-				this.pool.binsert(cmt,function(a,b){
-					if(a.bottom < b.bottom){
-						return -1;
-					}else if (a.bottom == b.bottom){
-						return 0;
-					}else{return 1;}
-				});
-				return cmt.y;
-			}
-		}
-		return this.setY(cmt,index+1);
-	};
-	this.vCheck = function(y,cmt){
-		var bottom = y + cmt.height;
-		var right = cmt.x + cmt.width;
-		this.validateCmt(cmt);
-		for(var i=0;i<this.pool.length;i++){
-			this.pool[i] = this.validateCmt(this.pool[i]);
-			if(this.pool[i].y > bottom || this.pool[i].bottom < y)
-				continue;
-			else if(this.pool[i].right < cmt.x || this.pool[i].x > right){
-				if(this.getEnd(this.pool[i]) < this.getMiddle(cmt))
-					continue;
-				else
-					return false;
-			}else{
-				return false;}
-		}
-		cmt.y = y;
-		cmt.bottom = cmt.height + y;
-		return true;
-	};
-	this.getEnd  = function(cmt){
-		return cmt.stime + cmt.ttl;
-	};
-	this.getMiddle = function(cmt){
-		return cmt.stime + (cmt.ttl / 2);
-	};
-}
-function TopCommentSpaceAllocator(w,h){
-	var csa = new CommentSpaceAllocator(w,h);
-	csa.add = function (cmt){
-		csa.validateCmt(cmt);
-		cmt.style.left = (csa.width - cmt.width)/2 + "px";
-		if(cmt.height >= csa.height){
-			cmt.cindex = csa.pools.indexOf(csa.pool);
-			cmt.style.top = "0px";
-		}else{
-			cmt.cindex = csa.pools.indexOf(csa.pool);
-			cmt.style.top = csa.setY(cmt) + "px";
-		}
-	};
-	csa.vCheck = function(y,cmt){
-		var bottom = y + cmt.height;
-		for(var i=0;i<csa.pool.length;i++){
-			var c = csa.validateCmt(csa.pool[i]);
-			if(c.y > bottom || c.bottom < y){
-				continue;
-			}else{
-				return false;
-			}
-		}
-		cmt.y = y;
-		cmt.bottom = cmt.bottom + y;
-		return true;
-	};
-	this.setBounds = function(w,h){csa.setBounds(w,h);};
-	this.add = function(what){csa.add(what);};
-	this.remove = function(d){csa.remove(d);};
-}
-function BottomCommentSpaceAllocator(w,h){
-	var csa = new CommentSpaceAllocator(w,h);
-	csa.add = function (cmt){
-		cmt.style.top = "";
-		cmt.style.bottom = "0px";
-		csa.validateCmt(cmt);
-		cmt.style.left = (csa.width - cmt.width)/2 + "px";
-		if(cmt.height >= csa.height){
-			cmt.cindex = csa.pools.indexOf(csa.pool);
-			cmt.style.bottom = "0px";
-		}else{
-			cmt.cindex = csa.pools.indexOf(csa.pool);
-			cmt.style.bottom = csa.setY(cmt) + "px";
-		}
-	};
-	csa.validateCmt = function(cmt){
-		cmt.y = csa.height - (cmt.offsetTop + cmt.offsetHeight);
-		cmt.bottom = cmt.y + cmt.offsetHeight;
-		cmt.x = cmt.offsetLeft;
-		cmt.right = cmt.offsetLeft + cmt.offsetWidth;
-		cmt.height = cmt.offsetHeight;
-		cmt.width = cmt.offsetWidth;
-		cmt.top = cmt.y;
-		cmt.left = cmt.offsetLeft;
-		return cmt;
-	};
-	csa.vCheck = function(y,cmt){
-		var bottom = y + cmt.height;
-		for(var i=0;i<csa.pool.length;i++){
-			var c = csa.validateCmt(csa.pool[i]);
-			if(c.y > bottom || c.bottom < y){
-				continue;
-			}else{
-				return false;
-			}
-		}
-		cmt.y = y;
-		cmt.bottom = cmt.bottom + y;
-		return true;
-	};
-	this.setBounds = function(w,h){csa.setBounds(w,h);};
-	this.add = function(what){csa.add(what);};
-	this.remove = function(d){csa.remove(d);};
-}
-function ReverseCommentSpaceAllocator(w,h){
-	var csa= new CommentSpaceAllocator(w,h);
-	csa.vCheck = function(y,cmt){
-		var bottom = y + cmt.height;
-		var right = cmt.x + cmt.width;
-		this.validateCmt(cmt);
-		for(var i=0;i<this.pool.length;i++){
-			var c = this.validateCmt(this.pool[i]);
-			if(c.y > bottom || c.bottom < y)
-				continue;
-			else if(c.x > right || c.right < cmt.x){
-				if(this.getEnd(c) < this.getMiddle(cmt))
-					continue;
-				else
-					return false;
-			}else{
-				return false;}
-		}
-		cmt.y = y;
-		cmt.bottom = cmt.height + y;
-		return true;
-	}
-	this.setBounds = function(w,h){csa.setBounds(w,h);};
-	this.add = function(what){csa.add(what);};
-	this.remove = function(d){csa.remove(d);};
-}
-function BottomScrollCommentSpaceAllocator(w,h){
-	var csa = new CommentSpaceAllocator(w,h);
-	csa.validateCmt = function(cmt){
-		cmt.y = csa.height - (cmt.offsetTop + cmt.offsetHeight);
-		cmt.bottom = cmt.y + cmt.offsetHeight;
-		cmt.x = cmt.offsetLeft;
-		cmt.right = cmt.offsetLeft + cmt.offsetWidth;
-		cmt.height = cmt.offsetHeight;
-		cmt.width = cmt.offsetWidth;
-		cmt.top = cmt.y;
-		cmt.left = cmt.offsetLeft;
-		return cmt;
-	};
-	csa.add = function (cmt){
-		cmt.style.top = "";
-		cmt.style.bottom = "0px";
-		csa.validateCmt(cmt);
-		cmt.style.left = csa.width + "px";
-		if(cmt.height >= csa.height){
-			cmt.cindex = csa.pools.indexOf(csa.pool);
-			cmt.style.bottom = "0px";
-		}else{
-			cmt.cindex = csa.pools.indexOf(csa.pool);
-			cmt.style.bottom = csa.setY(cmt) + "px";
-		}
-	};
-	this.setBounds = function(w,h){csa.setBounds(w,h);};
-	this.add = function(what){csa.add(what);};
-	this.remove = function(d){csa.remove(d);};
-}
-
 /*!
  * Comment Core For HTML5 VideoPlayers
  * Copyright (c) 2014 Jim Chen
@@ -399,7 +681,7 @@ function BottomScrollCommentSpaceAllocator(w,h){
 function CommentManager(stageObject){
 	var __timer = 0;
 	this.stage = stageObject;
-	this.def = {
+	this.options = {
 		opacity:1,
 		globalScale:1,
 		scrollScale:1
@@ -419,43 +701,8 @@ function CommentManager(stageObject){
 	/** Precompute the offset width **/
 	this.stage.width = this.stage.offsetWidth;
 	this.stage.height= this.stage.offsetHeight;
-	/** Private **/
-	this.initCmt = function(cmt,data){
-		cmt.className = 'cmt';
-		cmt.stime = data.stime;
-		cmt.mode = data.mode;
-		cmt.data = data;
-		if(cmt.mode === 17){
-
-		}else{
-			cmt.appendChild(document.createTextNode(data.text));
-			cmt.innerText = data.text;
-			cmt.style.fontSize = data.size + "px";
-		}
-		if(data.font != null && data.font != '')
-			cmt.style.fontFamily = data.font;
-		if(data.shadow === false)
-			cmt.className = 'cmt noshadow';
-		if(data.color == "#000000" && (data.shadow || data.shadow == null))
-			cmt.className += ' rshadow';
-		if(data.margin != null)
-			cmt.style.margin = data.margin;
-		if(data.color != null)
-			cmt.style.color = data.color;
-		if(this.def.opacity != 1 && data.mode == 1)
-			cmt.style.opacity = this.def.opacity;
-		if(data.alphaFrom != null)
-			cmt.style.opacity = data.alphaFrom;
-		if(data.border)
-			cmt.style.border = "1px solid #00ffff";
-		cmt.ttl = Math.round(4000 * this.def.globalScale);
-		cmt.dur = cmt.ttl;
-		if(cmt.mode === 1 || cmt.mode === 6 || cmt.mode === 2){
-			cmt.ttl *= this.def.scrollScale;
-			cmt.dur = cmt.ttl;
-		}
-		return cmt;
-	};
+	this.width = this.stage.width;
+	this.height = this.stage.height;
 	this.startTimer = function(){
 		if(__timer > 0)
 			return;
@@ -481,11 +728,13 @@ CommentManager.prototype.seek = function(time){
 		else return 0;
 	});
 };
+
 CommentManager.prototype.validate = function(cmt){
 	if(cmt == null)
 		return false;
 	return this.filter.doValidate(cmt);
 };
+
 CommentManager.prototype.load = function(a){
 	this.timeline = a;
 	this.timeline.sort(function(a,b){
@@ -503,19 +752,23 @@ CommentManager.prototype.load = function(a){
 		}
 	});
 };
+
 CommentManager.prototype.clear = function(){
 	for(var i=0;i<this.runline.length;i++){
 		this.finish(this.runline[i]);
-		this.stage.removeChild(this.runline[i]);
+		this.stage.removeChild(this.runline[i].dom);
 	}
 	this.runline = [];
 };
+
 CommentManager.prototype.setBounds = function(){
 	for(var comAlloc in this.csa){
 		this.csa[comAlloc].setBounds(this.stage.offsetWidth,this.stage.offsetHeight);
 	}
 	this.stage.width = this.stage.offsetWidth;
 	this.stage.height= this.stage.offsetHeight;
+	this.width = this.stage.width;
+	this.height = this.stage.height;
 	// Update 3d perspective
 	this.stage.style.perspective = this.stage.width * Math.tan(40 * Math.PI/180) / 2 + "px";
 	this.stage.style.webkitPerspective = this.stage.width * Math.tan(40 * Math.PI/180) / 2 + "px";
@@ -545,10 +798,7 @@ CommentManager.prototype.time = function(time){
 	}
 };
 CommentManager.prototype.rescale = function(){
-	for(var i = 0; i < this.runline.length; i++){
-		this.runline[i].dur = Math.round(this.runline[i].dur * this.def.globalScale);
-		this.runline[i].ttl = Math.round(this.runline[i].ttl * this.def.globalScale);
-	}
+	
 };
 CommentManager.prototype.sendComment = function(data){
 	if(data.mode === 8){
@@ -558,19 +808,17 @@ CommentManager.prototype.sendComment = function(data){
 		}
 		return;
 	}
-	var cmt = document.createElement('div');
 	if(this.filter != null){
 		data = this.filter.doModify(data);
 		if(data == null) return;
 	}
-	cmt = this.initCmt(cmt,data);
-	
-	this.stage.appendChild(cmt);
-	cmt.width = cmt.offsetWidth;
-	cmt.height = cmt.offsetHeight;
-	//cmt.style.width = (cmt.width + 1) + "px";
-	//cmt.style.height = (cmt.height - 3) + "px";
-	cmt.style.left = this.stage.width + "px";
+	if(data.mode === 1 || data.mode === 2 || data.mode === 4){
+		var cmt = new ScrollComment(this, data);
+	}else{
+		var cmt = new CoreComment(this, data);
+	}
+	cmt.init();
+	this.stage.appendChild(cmt.dom);
 
 	if(this.filter != null && !this.filter.beforeSend(cmt)){
 		this.stage.removeChild(cmt);
@@ -631,9 +879,14 @@ CommentManager.prototype.sendComment = function(data){
 			}
 		}break;
 	}
+	cmt.y = cmt.y;
 	this.runline.push(cmt);
 };
 CommentManager.prototype.finish = function(cmt){
+	var index = this.runline.indexOf(cmt);
+	if(index >= 0){
+		this.runline.splice(index, 1);
+	}
 	switch(cmt.mode){
 		default:
 		case 1:{this.csa.scroll.remove(cmt);}break;
@@ -651,38 +904,7 @@ CommentManager.prototype.onTimerEvent = function(timePassed,cmObj){
 		if(cmt.hold){
 			continue;
 		}
-		cmt.ttl -= timePassed;
-		if(cmt.mode == 1 || cmt.mode == 2) {
-			cmt.style.left = (cmt.ttl / cmt.dur) * (cmObj.stage.width + cmt.width) - cmt.width + "px";
-		}else if(cmt.mode == 6) {
-			cmt.style.left = (1 - cmt.ttl / cmt.dur) * (cmObj.stage.width + cmt.width) - cmt.width + "px";
-		}else if(cmt.mode == 4 || cmt.mode == 5 || cmt.mode >= 7){
-			if(cmt.dur == null)
-				cmt.dur = 4000;
-			if(cmt.data.alphaFrom != null && cmt.data.alphaTo != null){
-				cmt.style.opacity = (cmt.data.alphaFrom - cmt.data.alphaTo) *
-					(cmt.ttl/cmt.dur) + cmt.data.alphaTo;
-			}
-			if(cmt.mode == 7 && cmt.data.movable){
-				var posT = Math.min(Math.max(cmt.dur - cmt.data.moveDelay - cmt.ttl,0),
-					cmt.data.moveDuration) / cmt.data.moveDuration;
-				if(cmt.data.position !== "relative"){
-					cmt.style.top = ((cmt.data.toY - cmt.data.y) * posT + cmt.data.y) + "px";
-					cmt.style.left= ((cmt.data.toX - cmt.data.x) * posT + cmt.data.x) + "px";
-				}else{
-					cmt.style.top = (((cmt.data.toY - cmt.data.y) * posT + cmt.data.y) * cmObj.stage.height) + "px";
-					cmt.style.left= (((cmt.data.toX - cmt.data.x) * posT + cmt.data.x) * cmObj.stage.width) + "px";
-				}
-			}
-		}
-		if(cmObj.filter != null){
-			cmt = cmObj.filter.runtimeFilter(cmt);
-		}
-		if(cmt.ttl <= 0){
-			cmObj.stage.removeChild(cmt);
-			cmObj.runline.splice(i,1);//remove the comment
-			cmObj.finish(cmt);
-		}
+		cmt.time(timePassed);
 	}
 };
 
@@ -775,14 +997,7 @@ Bilibili Format
 Licensed Under MIT License
  Takes in an XMLDoc/LooseXMLDoc and parses that into a Generic Comment List
 **/
-function BilibiliParser(xmlDoc, text, warn){
-	function fillRGB(string){
-		while(string.length < 6){
-			string = "0" + string;
-		}
-		return string;
-	}
-	
+function BilibiliParser(xmlDoc, text, warn){	
 	//Format the bili output to be json-valid
 	function format(string){
 		return string.replace(/\t/,"\\t");	
@@ -817,7 +1032,7 @@ function BilibiliParser(xmlDoc, text, warn){
 			var obj = {};
 			obj.stime = Math.round(parseFloat(opt[0]*1000));
 			obj.size = parseInt(opt[2]);
-			obj.color = "#" + fillRGB(parseInt(opt[3]).toString(16));
+			obj.color = parseInt(opt[3]);
 			obj.mode = parseInt(opt[1]);
 			obj.date = parseInt(opt[4]);
 			obj.pool = parseInt(opt[5]);

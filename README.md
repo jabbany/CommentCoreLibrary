@@ -19,10 +19,10 @@ to use this in any project, you can simply include the following line:
     CommentCoreLibrary (//github.com/jabbany/CommentCoreLibrary) - Licensed under the MIT license
 
 ## Installing
-With [bower](http://bower.io/)
+With [bower](http://bower.io/):
 `bower install comment-core-library`
 
-With [npm](https://www.npmjs.org/)
+With [npm](https://www.npmjs.org/):
 `npm install comment-core-library`
 
 For Rails, installing with [rails-assets](https://rails-assets.org/) is recommended

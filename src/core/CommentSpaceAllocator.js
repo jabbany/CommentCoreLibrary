@@ -79,6 +79,7 @@ var CommentSpaceAllocator = (function () {
         var pool = this._pools[cindex];
         if (pool.length === 0) {
             pool.push(comment);
+            comment.cindex = cindex;
             return 0;
         } else if (this.pathCheck(0, comment, pool)) {
             // Has a path in the current pool
@@ -175,10 +176,14 @@ var TopCommentSpaceAllocator = (function (_super) {
         comment.x = (this._width - comment.width) / 2;
     };
 
+    TopCommentSpaceAllocator.prototype.willCollide = function (a, b) {
+        return true;
+    };
+
     TopCommentSpaceAllocator.prototype.pathCheck = function (y, comment, pool) {
         var bottom = comment.bottom;
         for (var i = 0; i < pool.length; i++) {
-            if (comment.y > bottom || comment.bottom < y) {
+            if (pool[i].y > bottom || pool[i].bottom < y) {
                 continue;
             } else {
                 return false;
@@ -216,15 +221,15 @@ var ReverseCommentSpaceAllocator = (function (_super) {
     return ReverseCommentSpaceAllocator;
 })(CommentSpaceAllocator);
 
-var BottomScrollCommentAllocator = (function (_super) {
-    __extends(BottomScrollCommentAllocator, _super);
-    function BottomScrollCommentAllocator() {
+var BottomScrollCommentSpaceAllocator = (function (_super) {
+    __extends(BottomScrollCommentSpaceAllocator, _super);
+    function BottomScrollCommentSpaceAllocator() {
         _super.apply(this, arguments);
     }
-    BottomScrollCommentAllocator.prototype.add = function (comment) {
+    BottomScrollCommentSpaceAllocator.prototype.add = function (comment) {
         comment.align = 1;
         comment.invalidate();
         _super.prototype.add.call(this, comment);
     };
-    return BottomScrollCommentAllocator;
+    return BottomScrollCommentSpaceAllocator;
 })(CommentSpaceAllocator);
