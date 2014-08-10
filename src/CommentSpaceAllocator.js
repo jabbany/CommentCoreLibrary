@@ -21,7 +21,9 @@ function CommentSpaceAllocator(w,h){
 	};
 	this.remove = function(cmt){
 		var tpool = this.pools[cmt.cindex];
-		tpool.remove(cmt);
+		var index = tpool.indexOf(cmt);
+		if(index < 0) return;
+		tpool.splice(index, 1);
 	};
 	this.validateCmt = function(cmt){
 		cmt.bottom = cmt.offsetTop + cmt.offsetHeight;

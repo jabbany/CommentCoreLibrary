@@ -1,8 +1,11 @@
 module.exports = (grunt) ->
   require('load-grunt-tasks') grunt
   grunt.file.readJSON('package.json')
-
+  
+  # !! Compile configurations
   License = '/*!Copyright(c) CommentCoreLibrary (//github.com/jabbany/CommentCoreLibrary) - Licensed under the MIT License */'
+  FilterType = "Simple" # "Comment" || "Simple"
+  # !! End of config area
 
   CSS = [
     'src/css/base.css',
@@ -10,7 +13,8 @@ module.exports = (grunt) ->
   ]
 
   SRC_CORE = [
-    'src/CommentFilter.js'
+    'src/Array.js'
+    'src/filter/' + FilterType + 'Filter.js'
     'src/CommentSpaceAllocator.js'
     'src/CommentCoreLibrary.js'
   ]

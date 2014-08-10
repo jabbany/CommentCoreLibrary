@@ -1,8 +1,8 @@
 /** 
-Comment Filters/Filter Lang
-Licensed Under MIT License
-**/
-
+ * Comment Filters Module
+ * @license MIT
+ * @author Jim Chen
+ */
 function CommentFilter(){
 	this.rulebook = {"all":[]};
 	this.modifiers = [];

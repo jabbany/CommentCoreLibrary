@@ -1,10 +1,42 @@
-/** 
-Comment Filters/Filter Lang
-Licensed Under MIT License
-**/
+/**
+ * Binary Search Stubs for JS Arrays
+ * @license MIT
+ * @author Jim Chen
+ */
+Array.prototype.bsearch = function(what,how){
+	if(this.length == 0) return 0;
+	if(how(what,this[0]) < 0) return 0;
+	if(how(what,this[this.length - 1]) >=0) return this.length;
+	var low =0;
+	var i = 0;
+	var count = 0;
+	var high = this.length - 1;
+	while(low<=high){
+		i = Math.floor((high + low + 1)/2);
+		count++;
+		if(how(what,this[i-1])>=0 && how(what,this[i])<0){
+			return i;
+		}else if(how(what,this[i-1])<0){
+			high = i-1;
+		}else if(how(what,this[i])>=0){
+			low = i;
+		}else
+			console.error('Program Error');
+		if(count > 1500) console.error('Too many run cycles.');
+	}
+	return -1;
+};
 
+Array.prototype.binsert = function(what,how){
+	this.splice(this.bsearch(what,how),0,what);
+};
+
+/** 
+ * Comment Filters Module Simplified (only supports modifiers & types)
+ * @license MIT
+ * @author Jim Chen
+ */
 function CommentFilter(){
-	this.rulebook = {"all":[]};
 	this.modifiers = [];
 	this.runtime = null;
 	this.allowTypes = {
@@ -22,86 +54,16 @@ function CommentFilter(){
 		}
 		return cmt;
 	};
-	this.isMatchRule = function(cmtData,rule){
-		switch(rule['operator']){
-			case '==':if(cmtData[rule['subject']] == rule['value']){return false;};break;
-			case '>':if(cmtData[rule['subject']] > rule['value']){return false;};break;
-			case '<':if(cmtData[rule['subject']] < rule['value']){return false;};break;
-			case 'range':if(cmtData[rule['subject']] > rule.value.min && cmtData[rule['subject']] < rule.value.max){return false;};break;
-			case '!=':if(cmtData[rule['subject']] != rule.value){return false;}break;
-			case '~':if(new RegExp(rule.value).test(cmtData[rule[subject]])){return false;}break;
-			case '!~':if(!(new RegExp(rule.value).test(cmtData[rule[subject]]))){return false;}break;
-		}
-		return true;
-	};
 	this.beforeSend = function(cmt){
-		//Check with the rules upon size
-		var cmtMode = cmt.data.mode;
-		if(this.rulebook[cmtMode]!=null){
-			for(var i=0;i<this.rulebook[cmtMode].length;i++){
-				if(this.rulebook[cmtMode][i].subject == 'width' || this.rulebook[cmtMode][i].subject == 'height'){
-					if(this.rulebook[cmtMode][i].subject == 'width'){
-						switch(this.rulebook[cmtMode][i].operator){
-							case '>':if(this.rulebook[cmtMode][i].value < cmt.offsetWidth)return false;break;
-							case '<':if(this.rulebook[cmtMode][i].value > cmt.offsetWidth)return false;break;
-							case 'range':if(this.rulebook[cmtMode][i].value.max > cmt.offsetWidth && this.rulebook[cmtMode][i].min < cmt.offsetWidth)return false;break;
-							case '==':if(this.rulebook[cmtMode][i].value == cmt.offsetWidth)return false;break;
-							default:break;
-						}
-					}else{
-						switch(this.rulebook[cmtMode][i].operator){
-							case '>':if(this.rulebook[cmtMode][i].value < cmt.offsetHeight)return false;break;
-							case '<':if(this.rulebook[cmtMode][i].value > cmt.offsetHeight)return false;break;
-							case 'range':if(this.rulebook[cmtMode][i].value.max > cmt.offsetHeight && this.rulebook[cmtMode][i].min < cmt.offsetHeight)return false;break;
-							case '==':if(this.rulebook[cmtMode][i].value == cmt.offsetHeight)return false;break;
-							default:break;
-						}
-					}
-				}
-			}
-			return true;
-		}else{return true;}
+		return cmt;
 	}
 	this.doValidate = function(cmtData){
 		if(!this.allowTypes[cmtData.mode])
 			return false;
-		/** Create abstract cmt data **/
-		var abstCmtData = {
-			text:cmtData.text,
-			mode:cmtData.mode,
-			color:cmtData.color,
-			size:cmtData.size,
-			stime:cmtData.stime,
-			hash:cmtData.hash,
-		}
-		if(this.rulebook[cmtData.mode] != null && this.rulebook[cmtData.mode].length > 0){
-			for(var i=0;i<this.rulebook[cmtData.mode];i++){
-				if(!this.isMatchRule(abstCmtData,this.rulebook[cmtData.mode][i]))
-					return false;
-			}
-		}
-		for(var i=0;i<this.rulebook[cmtData.mode];i++){
-			if(!this.isMatchRule(abstCmtData,this.rulebook[cmtData.mode][i]))
-				return false;
-		}
 		return true;
 	};
 	this.addRule = function(rule){
-		if(this.rulebook[rule.mode + ""] == null)
-			this.rulebook[rule.mode + ""] = [];
-		/** Normalize Operators **/
-		switch(rule.operator){
-			case 'eq':
-			case 'equals':
-			case '=':rule.operator='==';break;
-			case 'ineq':rule.operator='!=';break;
-			case 'regex':
-			case 'matches':rule.operator='~';break;
-			case 'notmatch':
-			case 'iregex':rule.operator='!~';break;
-		}
-		this.rulebook[rule.mode].push(rule);
-		return (this.rulebook[rule.mode].length - 1);
+		
 	};
 	this.addModifier = function(f){
 		this.modifiers.push(f);
@@ -139,7 +101,9 @@ function CommentSpaceAllocator(w,h){
 	};
 	this.remove = function(cmt){
 		var tpool = this.pools[cmt.cindex];
-		tpool.remove(cmt);
+		var index = tpool.indexOf(cmt);
+		if(index < 0) return;
+		tpool.splice(index, 1);
 	};
 	this.validateCmt = function(cmt){
 		cmt.bottom = cmt.offsetTop + cmt.offsetHeight;
@@ -354,44 +318,12 @@ function BottomScrollCommentSpaceAllocator(w,h){
 	this.remove = function(d){csa.remove(d);};
 }
 
-/******
-* Comment Core For HTML5 VideoPlayers
-* Author : Jim Chen
-* Licensing : MIT License
-******/
-Array.prototype.remove = function(obj){
-	for(var a = 0; a < this.length;a++)
-		if(this[a] == obj){
-			this.splice(a,1);
-			break;
-		}
-};
-Array.prototype.bsearch = function(what,how){
-	if(this.length == 0) return 0;
-	if(how(what,this[0]) < 0) return 0;
-	if(how(what,this[this.length - 1]) >=0) return this.length;
-	var low =0;
-	var i = 0;
-	var count = 0;
-	var high = this.length - 1;
-	while(low<=high){
-		i = Math.floor((high + low + 1)/2);
-		count++;
-		if(how(what,this[i-1])>=0 && how(what,this[i])<0){
-			return i;
-		}else if(how(what,this[i-1])<0){
-			high = i-1;
-		}else if(how(what,this[i])>=0){
-			low = i;
-		}else
-			console.error('Program Error');
-		if(count > 1500) console.error('Too many run cycles.');
-	}
-	return -1;
-};
-Array.prototype.binsert = function(what,how){
-	this.splice(this.bsearch(what,how),0,what);
-};
+/*!
+ * Comment Core For HTML5 VideoPlayers
+ * Copyright (c) 2014 Jim Chen
+ * License: MIT
+ */
+
 /****** Load Core Engine Classes ******/
 function CommentManager(stageObject){
 	var __timer = 0;
@@ -423,7 +355,7 @@ function CommentManager(stageObject){
 		cmt.mode = data.mode;
 		cmt.data = data;
 		if(cmt.mode === 17){
-			
+
 		}else{
 			cmt.appendChild(document.createTextNode(data.text));
 			cmt.innerText = data.text;
@@ -469,7 +401,7 @@ function CommentManager(stageObject){
 		__timer = 0;
 	};
 }
-	
+
 /** Public **/
 CommentManager.prototype.seek = function(time){
 	this.position = this.timeline.bsearch(time,function(a,b){
@@ -568,7 +500,7 @@ CommentManager.prototype.sendComment = function(data){
 	//cmt.style.width = (cmt.width + 1) + "px";
 	//cmt.style.height = (cmt.height - 3) + "px";
 	cmt.style.left = this.stage.width + "px";
-	
+
 	if(this.filter != null && !this.filter.beforeSend(cmt)){
 		this.stage.removeChild(cmt);
 		cmt = null;
@@ -602,8 +534,8 @@ CommentManager.prototype.sendComment = function(data){
 					var COS = Math.cos;
 					var SIN = Math.sin;
 					var matrix = [
-						COS(yr) * COS(zr)    , COS(yr) * SIN(zr)     , SIN(yr)  , 0, 
-						(-SIN(zr))           , COS(zr)               , 0        , 0, 
+						COS(yr) * COS(zr)    , COS(yr) * SIN(zr)     , SIN(yr)  , 0,
+						(-SIN(zr))           , COS(zr)               , 0        , 0,
 						(-SIN(yr) * COS(zr)) , (-SIN(yr) * SIN(zr))  , COS(yr)  , 0,
 						0                    , 0                     , 0        , 1
 					];
@@ -657,7 +589,7 @@ CommentManager.prototype.onTimerEvent = function(timePassed,cmObj){
 			if(cmt.dur == null)
 				cmt.dur = 4000;
 			if(cmt.data.alphaFrom != null && cmt.data.alphaTo != null){
-				cmt.style.opacity = (cmt.data.alphaFrom - cmt.data.alphaTo) * 
+				cmt.style.opacity = (cmt.data.alphaFrom - cmt.data.alphaTo) *
 					(cmt.ttl/cmt.dur) + cmt.data.alphaTo;
 			}
 			if(cmt.mode == 7 && cmt.data.movable){
