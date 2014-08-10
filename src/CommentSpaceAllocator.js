@@ -21,17 +21,16 @@ function CommentSpaceAllocator(w,h){
 	};
 	this.remove = function(cmt){
 		var tpool = this.pools[cmt.cindex];
-		tpool.remove(cmt);
+		var index = tpool.indexOf(cmt);
+		if(index < 0) return;
+		tpool.splice(index, 1);
 	};
 	this.validateCmt = function(cmt){
 		cmt.bottom = cmt.offsetTop + cmt.offsetHeight;
 		cmt.y = cmt.offsetTop;
 		cmt.x = cmt.offsetLeft;
 		cmt.right = cmt.offsetLeft + cmt.offsetWidth;
-		if(cmt.w && cmt.h){
-			cmt.width = cmt.w;
-			cmt.height = cmt.h;
-		}else{
+		if(!cmt.width || !cmt.height){
 			cmt.height = cmt.offsetHeight;
 			cmt.width = cmt.offsetWidth;
 		}
@@ -78,7 +77,7 @@ function CommentSpaceAllocator(w,h){
 				return cmt.y;
 			}
 		}
-		this.setY(cmt,index+1);
+		return this.setY(cmt,index+1);
 	};
 	this.vCheck = function(y,cmt){
 		var bottom = y + cmt.height;

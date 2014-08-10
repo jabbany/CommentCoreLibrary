@@ -1,0 +1,12 @@
+/** 3D rotating sheet **/
+var a = $.createShape({x:Player.width / 2,y:Player.height/2,lifeTime:100, motion:{rotationX:{fromValue:0, toValue:3600, lifeTime:10}, rotationY:{fromValue:0, toValue:360, lifeTime:5}}});
+a.graphics.beginFill(0x0000ff);
+a.graphics.drawRect(-60,-110,120,220);
+
+var s = $.createShape({x:Player.width / 2,y:Player.height/2,lifeTime:100, motion:{rotationX:{fromValue:0, toValue:3600, lifeTime:10}, rotationY:{fromValue:0, toValue:360, lifeTime:5}}});
+s.graphics.beginFill(0xff0000);
+s.graphics.drawRect(10,10,50,100);
+var c = $.createShape({x:Player.width / 2,y:Player.height/2,lifeTime:100, motion:{rotationX:{fromValue:0, toValue:3600, lifeTime:10}, rotationY:{fromValue:0, toValue:360, lifeTime:5}}});
+c.graphics.beginFill(0x00ff00);
+c.graphics.drawRect(-60,-110,50,100);
+

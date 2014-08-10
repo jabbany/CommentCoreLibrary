@@ -1,41 +1,9 @@
-/******
-* Comment Core For HTML5 VideoPlayers
-* Author : Jim Chen
-* Licensing : MIT License
-******/
-Array.prototype.remove = function(obj){
-	for(var a = 0; a < this.length;a++)
-		if(this[a] == obj){
-			this.splice(a,1);
-			break;
-		}
-};
-Array.prototype.bsearch = function(what,how){
-	if(this.length == 0) return 0;
-	if(how(what,this[0]) < 0) return 0;
-	if(how(what,this[this.length - 1]) >=0) return this.length;
-	var low =0;
-	var i = 0;
-	var count = 0;
-	var high = this.length - 1;
-	while(low<=high){
-		i = Math.floor((high + low + 1)/2);
-		count++;
-		if(how(what,this[i-1])>=0 && how(what,this[i])<0){
-			return i;
-		}else if(how(what,this[i-1])<0){
-			high = i-1;
-		}else if(how(what,this[i])>=0){
-			low = i;
-		}else
-			console.error('Program Error');
-		if(count > 1500) console.error('Too many run cycles.');
-	}
-	return -1;
-};
-Array.prototype.binsert = function(what,how){
-	this.splice(this.bsearch(what,how),0,what);
-};
+/*!
+ * Comment Core For HTML5 VideoPlayers
+ * Copyright (c) 2014 Jim Chen
+ * License: MIT
+ */
+
 /****** Load Core Engine Classes ******/
 function CommentManager(stageObject){
 	var __timer = 0;
@@ -67,7 +35,7 @@ function CommentManager(stageObject){
 		cmt.mode = data.mode;
 		cmt.data = data;
 		if(cmt.mode === 17){
-			
+
 		}else{
 			cmt.appendChild(document.createTextNode(data.text));
 			cmt.innerText = data.text;
@@ -113,7 +81,7 @@ function CommentManager(stageObject){
 		__timer = 0;
 	};
 }
-	
+
 /** Public **/
 CommentManager.prototype.seek = function(time){
 	this.position = this.timeline.bsearch(time,function(a,b){
@@ -173,11 +141,16 @@ CommentManager.prototype.time = function(time){
 		this.lastPos = time;
 		if(this.timeline.length <= this.position)
 			return;
-	}else this.lastPos = time;
+	}else{
+		this.lastPos = time;
+	}
 	for(;this.position < this.timeline.length;this.position++){
 		if(this.limiter > 0 && this.runline.length > this.limiter) break;
-		if(this.validate(this.timeline[this.position]) && this.timeline[this.position]['stime']<=time) this.sendComment(this.timeline[this.position]);
-		else break;
+		if(this.validate(this.timeline[this.position]) && this.timeline[this.position]['stime']<=time){
+			this.sendComment(this.timeline[this.position]);
+		}else{
+			break;
+		}
 	}
 };
 CommentManager.prototype.rescale = function(){
@@ -200,13 +173,14 @@ CommentManager.prototype.sendComment = function(data){
 		if(data == null) return;
 	}
 	cmt = this.initCmt(cmt,data);
+	
 	this.stage.appendChild(cmt);
 	cmt.width = cmt.offsetWidth;
 	cmt.height = cmt.offsetHeight;
-	cmt.style.width = (cmt.w + 1) + "px";
-	cmt.style.height = (cmt.h - 3) + "px";
+	//cmt.style.width = (cmt.width + 1) + "px";
+	//cmt.style.height = (cmt.height - 3) + "px";
 	cmt.style.left = this.stage.width + "px";
-	
+
 	if(this.filter != null && !this.filter.beforeSend(cmt)){
 		this.stage.removeChild(cmt);
 		cmt = null;
@@ -240,8 +214,8 @@ CommentManager.prototype.sendComment = function(data){
 					var COS = Math.cos;
 					var SIN = Math.sin;
 					var matrix = [
-						COS(yr) * COS(zr)    , COS(yr) * SIN(zr)     , SIN(yr)  , 0, 
-						(-SIN(zr))           , COS(zr)               , 0        , 0, 
+						COS(yr) * COS(zr)    , COS(yr) * SIN(zr)     , SIN(yr)  , 0,
+						(-SIN(zr))           , COS(zr)               , 0        , 0,
 						(-SIN(yr) * COS(zr)) , (-SIN(yr) * SIN(zr))  , COS(yr)  , 0,
 						0                    , 0                     , 0        , 1
 					];
@@ -295,7 +269,7 @@ CommentManager.prototype.onTimerEvent = function(timePassed,cmObj){
 			if(cmt.dur == null)
 				cmt.dur = 4000;
 			if(cmt.data.alphaFrom != null && cmt.data.alphaTo != null){
-				cmt.style.opacity = (cmt.data.alphaFrom - cmt.data.alphaTo) * 
+				cmt.style.opacity = (cmt.data.alphaFrom - cmt.data.alphaTo) *
 					(cmt.ttl/cmt.dur) + cmt.data.alphaTo;
 			}
 			if(cmt.mode == 7 && cmt.data.movable){

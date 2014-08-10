@@ -1,0 +1,123 @@
+/** 
+* 3d Modeler
+* Loads a custom three.js type model.
+* Demo Model - All rights reserved (some author). Contact me if you are the model author.
+* **/
+var screen = $.createShape({x:Player.width / 2,y:Player.height * 1.7,lifeTime:9999});
+var verts = [];
+var indices = [];
+var projectedVerts = [];
+var matrix3D = $.createMatrix3D();
+var rx = 0;
+var ry = 0;
+var Vector3D = ($.createVector3D()).constructor;
+
+function dist(x,y,z){
+	return Math.sqrt(x * x + y * y + z * z)
+}
+
+function getPerspectiveMatrix(fov, n, f){
+	var S = 1 / Math.tan(fov * Math.PI / 360);
+	var m = $.createMatrix3D();
+	m._data = [
+		S,0,0,0,
+		0,S,0,0,
+		0,0,-(f/(f-n)),-1,
+		0,0,-(f*n/(f-n)),0
+	];
+	return m;
+}
+
+var pm = getPerspectiveMatrix(30, 100,1.5);
+
+function loadModel(callback){
+	// Technically BSE does not have this. But meh
+	var XHR = new XMLHttpRequest();
+	XHR.onreadystatechange = function(){
+		if(XHR.readyState === 4 && XHR.status === 200){
+			callback(XHR.responseText);
+		}else if(XHR.readyState === 4){
+			Runtime.alert("Oops. Load failed with response code " + XHR.status);
+		}
+	};
+	XHR.open("GET","../../../tests/scripting/3dmodeler-assets/3404",true);
+	XHR.send();
+};
+
+function findSize(type) {
+	var size = 1;
+	var edgeCount;
+	if (type % 2 == 0) {
+		edgeCount = 3;
+	} else {
+		edgeCount = 4;
+	}
+	size += edgeCount;
+	if (Math.floor(type / 2) % 2 == 1)
+		size += 1; /* Material */
+	if (Math.floor(type / 4) % 2 == 1)
+		size += 1; /* Face UV */
+	if (Math.floor(type / 8) % 2 == 1)
+		size += edgeCount; /* Face Vertex UV */
+	if (Math.floor(type / 16) % 2 == 1)
+		size += 1; /* Face normal */
+	if (Math.floor(type / 32) % 2 == 1)
+		size += edgeCount; /* Face vertex normal */
+	if (Math.floor(type / 64) % 2 == 1)
+		size += 1; /* Face color */
+	if (Math.floor(type / 128) % 2 == 1)
+		size += edgeCount; /* Face vertex color */
+	return size;
+}
+var counter = 0;
+function render(){
+	matrix3D.identity();
+    rx ++;
+    if(rx >= 60) rx = 0;
+    matrix3D.prependRotation((rx < 30? rx: 60-rx), Vector3D.X_AXIS);
+    matrix3D.prependRotation(ry+=2.5, Vector3D.Y_AXIS);
+    matrix3D.append(pm);
+    $.projectVectors(matrix3D, verts, projectedVerts);
+    screen.graphics.clear();
+    var color = 0xff0000;
+    screen.graphics.lineStyle(0.4, 0xffffff,1);
+    screen.graphics.drawTriangles(projectedVerts, indices, null, 'positive');
+    screen.graphics.endFill();
+}
+
+function startRender(model){
+	verts = model["vertices"];
+	indices = [];
+	var pointer = 0;
+	while(pointer < model["faces"].length){
+		var type = model["faces"][pointer];
+		if(type % 2 === 0){
+			// Triangle
+			indices.push(model["faces"][pointer + 1], model["faces"][pointer + 2], model["faces"][pointer + 3]);
+		}else{
+			// Quadrangle
+			indices.push(model["faces"][pointer + 1], model["faces"][pointer + 2], model["faces"][pointer + 3]);
+			indices.push(model["faces"][pointer + 3], model["faces"][pointer + 4], model["faces"][pointer + 1]);
+		}
+		pointer += findSize(type);
+	}
+	interval(render, 100, 0);
+};
+
+loadModel(function(m){
+	var model = {};
+	var ms = m.split("\n");
+	for(var i = 0; i < ms.length; i++){
+		var line = ms[i].split(":");
+		model[line[0]] = line[1].split(",");
+		for(var j = 0; j < model[line[0]].length; j++){
+			if(line[0] === "vertices"){
+				model[line[0]][j] = -parseFloat(model[line[0]][j]) * 50;
+			}else{
+				model[line[0]][j] = parseFloat(model[line[0]][j]);
+			}
+		}
+	}
+	startRender(model);
+});
+

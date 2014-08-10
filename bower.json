@@ -1,0 +1,12 @@
+{
+  "name":    "comment-core-library",
+  "version": "0.9.1",
+  "main":    ["build/CommentCoreLibrary.js","build/style.css"],
+  "ignore":  [ 
+  	"tests/**/*",
+  	"experimental/**/*",
+  	"demo/**/*"
+  ],
+  "dependencies": {
+  }
+}
