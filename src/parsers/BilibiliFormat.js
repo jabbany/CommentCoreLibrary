@@ -36,7 +36,7 @@ function BilibiliParser(xmlDoc, text, warn){
 			  continue;
 			var text = elems[i].childNodes[0].nodeValue;
 			var obj = {};
-			obj.stime = Math.round(parseFloat(opt[0]*1000));
+			obj.stime = Math.round(parseFloat(opt[0])*1000);
 			obj.size = parseInt(opt[2]);
 			obj.color = parseInt(opt[3]);
 			obj.mode = parseInt(opt[1]);

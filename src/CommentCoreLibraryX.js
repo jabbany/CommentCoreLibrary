@@ -20,10 +20,10 @@ function CommentManager(stageObject){
 	this.filter = null;
 	this.csa = {
 		scroll: new CommentSpaceAllocator(0,0),
-		top:new TopCommentSpaceAllocator(0,0),
-		bottom:new BottomCommentSpaceAllocator(0,0),
-		reverse:new ReverseCommentSpaceAllocator(0,0),
-		scrollbtm:new BottomScrollCommentSpaceAllocator(0,0)
+		top:new AnchorCommentSpaceAllocator(0,0),
+		bottom:new AnchorCommentSpaceAllocator(0,0),
+		reverse:new CommentSpaceAllocator(0,0),
+		scrollbtm:new CommentSpaceAllocator(0,0)
 	};
 	/** Precompute the offset width **/
 	this.stage.width = this.stage.offsetWidth;
@@ -81,11 +81,9 @@ CommentManager.prototype.load = function(a){
 };
 
 CommentManager.prototype.clear = function(){
-	for(var i=0;i<this.runline.length;i++){
-		this.finish(this.runline[i]);
-		this.stage.removeChild(this.runline[i].dom);
+	while(this.runline.length > 0){
+		this.runline[0].finish();
 	}
-	this.runline = [];
 };
 
 CommentManager.prototype.setBounds = function(){
@@ -139,19 +137,20 @@ CommentManager.prototype.sendComment = function(data){
 		data = this.filter.doModify(data);
 		if(data == null) return;
 	}
-	if(data.mode === 1 || data.mode === 2 || data.mode === 4){
+	if(data.mode === 1 || data.mode === 2 || data.mode === 6){
 		var cmt = new ScrollComment(this, data);
 	}else{
 		var cmt = new CoreComment(this, data);
 	}
+	switch(cmt.mode){
+		case 1:cmt.align = 0;break;
+		case 2:cmt.align = 2;break;
+		case 4:cmt.align = 2;break;
+		case 5:cmt.align = 0;break;
+		case 6:cmt.align = 1;break;
+	}
 	cmt.init();
 	this.stage.appendChild(cmt.dom);
-
-	if(this.filter != null && !this.filter.beforeSend(cmt)){
-		this.stage.removeChild(cmt);
-		cmt = null;
-		return;
-	}
 	switch(cmt.mode){
 		default:
 		case 1:{this.csa.scroll.add(cmt);}break;
@@ -161,15 +160,10 @@ CommentManager.prototype.sendComment = function(data){
 		case 6:{this.csa.reverse.add(cmt);}break;
 		case 17:
 		case 7:{
-			if(cmt.data.position !== "relative"){
-				cmt.style.top = cmt.data.y + "px";
-				cmt.style.left = cmt.data.x + "px";
-			}else{
-				cmt.style.top = cmt.data.y * this.stage.height + "px";
-				cmt.style.left = cmt.data.x * this.stage.width + "px";
+			if(data.position === "relative"){
+				cmt.x = data.x * this.stage.width;
+				cmt.y = data.y * this.stage.height;
 			}
-			cmt.ttl = Math.round(data.duration * this.def.globalScale);
-			cmt.dur = Math.round(data.duration * this.def.globalScale);
 			if(data.rY !== 0 || data.rZ !== 0){
 				/** TODO: revise when browser manufacturers make up their mind on Transform APIs **/
 				var getRotMatrix = function(yrot, zrot) {
@@ -193,16 +187,16 @@ CommentManager.prototype.sendComment = function(data){
 					}
 					return "matrix3d(" + matrix.join(",") + ")";
 				}
-				cmt.style.transformOrigin = "0% 0%";
-				cmt.style.webkitTransformOrigin = "0% 0%";
-				cmt.style.OTransformOrigin = "0% 0%";
-				cmt.style.MozTransformOrigin = "0% 0%";
-				cmt.style.MSTransformOrigin = "0% 0%";
-				cmt.style.transform = getRotMatrix(data.rY, data.rZ);
-				cmt.style.webkitTransform = getRotMatrix(data.rY, data.rZ);
-				cmt.style.OTransform = getRotMatrix(data.rY, data.rZ);
-				cmt.style.MozTransform = getRotMatrix(data.rY, data.rZ);
-				cmt.style.MSTransform = getRotMatrix(data.rY, data.rZ);
+				cmt.dom.style.transformOrigin = "0% 0%";
+				cmt.dom.style.webkitTransformOrigin = "0% 0%";
+				cmt.dom.style.OTransformOrigin = "0% 0%";
+				cmt.dom.style.MozTransformOrigin = "0% 0%";
+				cmt.dom.style.MSTransformOrigin = "0% 0%";
+				cmt.dom.style.transform = getRotMatrix(data.rY, data.rZ);
+				cmt.dom.style.webkitTransform = getRotMatrix(data.rY, data.rZ);
+				cmt.dom.style.OTransform = getRotMatrix(data.rY, data.rZ);
+				cmt.dom.style.MozTransform = getRotMatrix(data.rY, data.rZ);
+				cmt.dom.style.MSTransform = getRotMatrix(data.rY, data.rZ);
 			}
 		}break;
 	}
@@ -210,6 +204,7 @@ CommentManager.prototype.sendComment = function(data){
 	this.runline.push(cmt);
 };
 CommentManager.prototype.finish = function(cmt){
+	this.stage.removeChild(cmt.dom);
 	var index = this.runline.indexOf(cmt);
 	if(index >= 0){
 		this.runline.splice(index, 1);

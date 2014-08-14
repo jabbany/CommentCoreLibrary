@@ -67,7 +67,7 @@ var CommentSpaceAllocator = (function () {
     * @returns {boolean} checked collides with exisiting
     */
     CommentSpaceAllocator.prototype.willCollide = function (existing, check) {
-        return existing.stime + existing.ttl > check.stime + check.ttl / 2;
+        return existing.stime + existing.ttl >= check.stime + check.ttl / 2;
     };
 
     /**
@@ -84,7 +84,7 @@ var CommentSpaceAllocator = (function () {
         for (var i = 0; i < pool.length; i++) {
             if (pool[i].y > bottom || pool[i].bottom < y) {
                 continue;
-            } else if (pool[i].x < comment.x || pool[i].x > right) {
+            } else if (pool[i].right < comment.x || pool[i].x > right) {
                 if (this.willCollide(pool[i], comment)) {
                     return false;
                 } else {
@@ -199,22 +199,22 @@ var CommentSpaceAllocator = (function () {
     return CommentSpaceAllocator;
 })();
 
-var TopCommentSpaceAllocator = (function (_super) {
-    __extends(TopCommentSpaceAllocator, _super);
-    function TopCommentSpaceAllocator() {
+var AnchorCommentSpaceAllocator = (function (_super) {
+    __extends(AnchorCommentSpaceAllocator, _super);
+    function AnchorCommentSpaceAllocator() {
         _super.apply(this, arguments);
     }
-    TopCommentSpaceAllocator.prototype.add = function (comment) {
+    AnchorCommentSpaceAllocator.prototype.add = function (comment) {
         _super.prototype.add.call(this, comment);
         comment.x = (this._width - comment.width) / 2;
     };
 
-    TopCommentSpaceAllocator.prototype.willCollide = function (a, b) {
+    AnchorCommentSpaceAllocator.prototype.willCollide = function (a, b) {
         return true;
     };
 
-    TopCommentSpaceAllocator.prototype.pathCheck = function (y, comment, pool) {
-        var bottom = comment.bottom;
+    AnchorCommentSpaceAllocator.prototype.pathCheck = function (y, comment, pool) {
+        var bottom = y + comment.height;
         for (var i = 0; i < pool.length; i++) {
             if (pool[i].y > bottom || pool[i].bottom < y) {
                 continue;
@@ -224,47 +224,7 @@ var TopCommentSpaceAllocator = (function (_super) {
         }
         return true;
     };
-    return TopCommentSpaceAllocator;
-})(CommentSpaceAllocator);
-
-var BottomCommentSpaceAllocator = (function (_super) {
-    __extends(BottomCommentSpaceAllocator, _super);
-    function BottomCommentSpaceAllocator() {
-        _super.apply(this, arguments);
-    }
-    BottomCommentSpaceAllocator.prototype.add = function (comment) {
-        comment.align = 2;
-        comment.invalidate();
-        _super.prototype.add.call(this, comment);
-        comment.x = (this._width - comment.width) / 2;
-    };
-    return BottomCommentSpaceAllocator;
-})(TopCommentSpaceAllocator);
-
-var ReverseCommentSpaceAllocator = (function (_super) {
-    __extends(ReverseCommentSpaceAllocator, _super);
-    function ReverseCommentSpaceAllocator() {
-        _super.apply(this, arguments);
-    }
-    ReverseCommentSpaceAllocator.prototype.add = function (comment) {
-        comment.align = 1;
-        comment.invalidate();
-        _super.prototype.add.call(this, comment);
-    };
-    return ReverseCommentSpaceAllocator;
-})(CommentSpaceAllocator);
-
-var BottomScrollCommentSpaceAllocator = (function (_super) {
-    __extends(BottomScrollCommentSpaceAllocator, _super);
-    function BottomScrollCommentSpaceAllocator() {
-        _super.apply(this, arguments);
-    }
-    BottomScrollCommentSpaceAllocator.prototype.add = function (comment) {
-        comment.align = 1;
-        comment.invalidate();
-        _super.prototype.add.call(this, comment);
-    };
-    return BottomScrollCommentSpaceAllocator;
+    return AnchorCommentSpaceAllocator;
 })(CommentSpaceAllocator);
 
 var __extends = this.__extends || function (d, b) {
@@ -300,13 +260,16 @@ var CoreComment = (function () {
         } else {
             this.parent = parent;
         }
+        if (init.hasOwnProperty("stime")) {
+            this.stime = init["stime"];
+        }
         if (init.hasOwnProperty("mode")) {
-            this.mode = parseInt(init["mode"], 10);
+            this.mode = init["mode"];
         } else {
             this.mode = 1;
         }
         if (init.hasOwnProperty("dur")) {
-            this.dur = parseInt(init["dur"], 10);
+            this.dur = init["dur"];
             this.ttl = this.dur;
         }
         this.dur *= this.parent.options.globalScale;
@@ -339,6 +302,15 @@ var CoreComment = (function () {
         if (init.hasOwnProperty("font")) {
             this._font = init["font"];
         }
+        if (init.hasOwnProperty("x")) {
+            this._x = init["x"];
+        }
+        if (init.hasOwnProperty("y")) {
+            this._y = init["y"];
+        }
+        if (init.hasOwnProperty("shadow")) {
+            this._shadow = init["shadow"];
+        }
     }
     /**
     * Initializes the DOM element (or canvas) backing the comment
@@ -362,6 +334,12 @@ var CoreComment = (function () {
         this.shadow = this._shadow;
         if (this._font !== "") {
             this.font = this._font;
+        }
+        if (this._x !== undefined) {
+            this.x = this._x;
+        }
+        if (this._y !== undefined) {
+            this.y = this._y;
         }
     };
 
@@ -599,7 +577,6 @@ var CoreComment = (function () {
     * Remove the comment and do some cleanup.
     */
     CoreComment.prototype.finish = function () {
-        this.dom.parentElement.removeChild(this.dom);
         this.parent.finish(this);
     };
     return CoreComment;
@@ -693,10 +670,10 @@ function CommentManager(stageObject){
 	this.filter = null;
 	this.csa = {
 		scroll: new CommentSpaceAllocator(0,0),
-		top:new TopCommentSpaceAllocator(0,0),
-		bottom:new BottomCommentSpaceAllocator(0,0),
-		reverse:new ReverseCommentSpaceAllocator(0,0),
-		scrollbtm:new BottomScrollCommentSpaceAllocator(0,0)
+		top:new AnchorCommentSpaceAllocator(0,0),
+		bottom:new AnchorCommentSpaceAllocator(0,0),
+		reverse:new CommentSpaceAllocator(0,0),
+		scrollbtm:new CommentSpaceAllocator(0,0)
 	};
 	/** Precompute the offset width **/
 	this.stage.width = this.stage.offsetWidth;
@@ -754,11 +731,9 @@ CommentManager.prototype.load = function(a){
 };
 
 CommentManager.prototype.clear = function(){
-	for(var i=0;i<this.runline.length;i++){
-		this.finish(this.runline[i]);
-		this.stage.removeChild(this.runline[i].dom);
+	while(this.runline.length > 0){
+		this.runline[0].finish();
 	}
-	this.runline = [];
 };
 
 CommentManager.prototype.setBounds = function(){
@@ -812,19 +787,20 @@ CommentManager.prototype.sendComment = function(data){
 		data = this.filter.doModify(data);
 		if(data == null) return;
 	}
-	if(data.mode === 1 || data.mode === 2 || data.mode === 4){
+	if(data.mode === 1 || data.mode === 2 || data.mode === 6){
 		var cmt = new ScrollComment(this, data);
 	}else{
 		var cmt = new CoreComment(this, data);
 	}
+	switch(cmt.mode){
+		case 1:cmt.align = 0;break;
+		case 2:cmt.align = 2;break;
+		case 4:cmt.align = 2;break;
+		case 5:cmt.align = 0;break;
+		case 6:cmt.align = 1;break;
+	}
 	cmt.init();
 	this.stage.appendChild(cmt.dom);
-
-	if(this.filter != null && !this.filter.beforeSend(cmt)){
-		this.stage.removeChild(cmt);
-		cmt = null;
-		return;
-	}
 	switch(cmt.mode){
 		default:
 		case 1:{this.csa.scroll.add(cmt);}break;
@@ -834,15 +810,10 @@ CommentManager.prototype.sendComment = function(data){
 		case 6:{this.csa.reverse.add(cmt);}break;
 		case 17:
 		case 7:{
-			if(cmt.data.position !== "relative"){
-				cmt.style.top = cmt.data.y + "px";
-				cmt.style.left = cmt.data.x + "px";
-			}else{
-				cmt.style.top = cmt.data.y * this.stage.height + "px";
-				cmt.style.left = cmt.data.x * this.stage.width + "px";
+			if(data.position === "relative"){
+				cmt.x = data.x * this.stage.width;
+				cmt.y = data.y * this.stage.height;
 			}
-			cmt.ttl = Math.round(data.duration * this.def.globalScale);
-			cmt.dur = Math.round(data.duration * this.def.globalScale);
 			if(data.rY !== 0 || data.rZ !== 0){
 				/** TODO: revise when browser manufacturers make up their mind on Transform APIs **/
 				var getRotMatrix = function(yrot, zrot) {
@@ -866,16 +837,16 @@ CommentManager.prototype.sendComment = function(data){
 					}
 					return "matrix3d(" + matrix.join(",") + ")";
 				}
-				cmt.style.transformOrigin = "0% 0%";
-				cmt.style.webkitTransformOrigin = "0% 0%";
-				cmt.style.OTransformOrigin = "0% 0%";
-				cmt.style.MozTransformOrigin = "0% 0%";
-				cmt.style.MSTransformOrigin = "0% 0%";
-				cmt.style.transform = getRotMatrix(data.rY, data.rZ);
-				cmt.style.webkitTransform = getRotMatrix(data.rY, data.rZ);
-				cmt.style.OTransform = getRotMatrix(data.rY, data.rZ);
-				cmt.style.MozTransform = getRotMatrix(data.rY, data.rZ);
-				cmt.style.MSTransform = getRotMatrix(data.rY, data.rZ);
+				cmt.dom.style.transformOrigin = "0% 0%";
+				cmt.dom.style.webkitTransformOrigin = "0% 0%";
+				cmt.dom.style.OTransformOrigin = "0% 0%";
+				cmt.dom.style.MozTransformOrigin = "0% 0%";
+				cmt.dom.style.MSTransformOrigin = "0% 0%";
+				cmt.dom.style.transform = getRotMatrix(data.rY, data.rZ);
+				cmt.dom.style.webkitTransform = getRotMatrix(data.rY, data.rZ);
+				cmt.dom.style.OTransform = getRotMatrix(data.rY, data.rZ);
+				cmt.dom.style.MozTransform = getRotMatrix(data.rY, data.rZ);
+				cmt.dom.style.MSTransform = getRotMatrix(data.rY, data.rZ);
 			}
 		}break;
 	}
@@ -883,6 +854,7 @@ CommentManager.prototype.sendComment = function(data){
 	this.runline.push(cmt);
 };
 CommentManager.prototype.finish = function(cmt){
+	this.stage.removeChild(cmt.dom);
 	var index = this.runline.indexOf(cmt);
 	if(index >= 0){
 		this.runline.splice(index, 1);
@@ -1030,7 +1002,7 @@ function BilibiliParser(xmlDoc, text, warn){
 			  continue;
 			var text = elems[i].childNodes[0].nodeValue;
 			var obj = {};
-			obj.stime = Math.round(parseFloat(opt[0]*1000));
+			obj.stime = Math.round(parseFloat(opt[0])*1000);
 			obj.size = parseInt(opt[2]);
 			obj.color = parseInt(opt[3]);
 			obj.mode = parseInt(opt[1]);

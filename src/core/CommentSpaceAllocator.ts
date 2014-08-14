@@ -54,7 +54,7 @@ class CommentSpaceAllocator implements ISpaceAllocator {
 	 * @returns {boolean} checked collides with exisiting
 	 */
 	public willCollide(existing:IComment, check:IComment):boolean {
-		return existing.stime + existing.ttl > check.stime + check.ttl / 2;
+		return existing.stime + existing.ttl >= check.stime + check.ttl / 2;
 	}
 
 	/**
@@ -72,7 +72,8 @@ class CommentSpaceAllocator implements ISpaceAllocator {
 			if (pool[i].y > bottom || pool[i].bottom < y) {
 				// This comment is not in the path bounds
 				continue;
-			} else if (pool[i].x < comment.x || pool[i].x > right) {
+			} else if (pool[i].right < comment.x || pool[i].x > right) {
+
 				if (this.willCollide(pool[i], comment)) {
 					return false;
 				} else {
@@ -185,7 +186,7 @@ class CommentSpaceAllocator implements ISpaceAllocator {
 	}
 }
 
-class TopCommentSpaceAllocator extends CommentSpaceAllocator {
+class AnchorCommentSpaceAllocator extends CommentSpaceAllocator {
 	public add(comment:IComment):void {
 		super.add(comment);
 		comment.x = (this._width - comment.width) / 2;
@@ -196,7 +197,7 @@ class TopCommentSpaceAllocator extends CommentSpaceAllocator {
 	}
 
 	public pathCheck(y:number, comment:IComment, pool:Array<IComment>):boolean {
-		var bottom = comment.bottom;
+		var bottom = y + comment.height;
 		for (var i = 0; i < pool.length; i++) {
 			if (pool[i].y > bottom || pool[i].bottom < y) {
 				continue;
@@ -205,30 +206,5 @@ class TopCommentSpaceAllocator extends CommentSpaceAllocator {
 			}
 		}
 		return true;
-	}
-}
-
-class BottomCommentSpaceAllocator extends TopCommentSpaceAllocator {
-	public add(comment:IComment):void {
-		comment.align = 2;
-		comment.invalidate();
-		super.add(comment);
-		comment.x = (this._width - comment.width) / 2;
-	}
-}
-
-class ReverseCommentSpaceAllocator extends CommentSpaceAllocator {
-	public add(comment:IComment):void {
-		comment.align = 1;
-		comment.invalidate();
-		super.add(comment);
-	}
-}
-
-class BottomScrollCommentSpaceAllocator extends CommentSpaceAllocator {
-	public add(comment:IComment):void {
-		comment.align = 1;
-		comment.invalidate();
-		super.add(comment);
 	}
 }

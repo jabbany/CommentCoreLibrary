@@ -31,13 +31,16 @@ var CoreComment = (function () {
         } else {
             this.parent = parent;
         }
+        if (init.hasOwnProperty("stime")) {
+            this.stime = init["stime"];
+        }
         if (init.hasOwnProperty("mode")) {
-            this.mode = parseInt(init["mode"], 10);
+            this.mode = init["mode"];
         } else {
             this.mode = 1;
         }
         if (init.hasOwnProperty("dur")) {
-            this.dur = parseInt(init["dur"], 10);
+            this.dur = init["dur"];
             this.ttl = this.dur;
         }
         this.dur *= this.parent.options.globalScale;
@@ -70,6 +73,15 @@ var CoreComment = (function () {
         if (init.hasOwnProperty("font")) {
             this._font = init["font"];
         }
+        if (init.hasOwnProperty("x")) {
+            this._x = init["x"];
+        }
+        if (init.hasOwnProperty("y")) {
+            this._y = init["y"];
+        }
+        if (init.hasOwnProperty("shadow")) {
+            this._shadow = init["shadow"];
+        }
     }
     /**
     * Initializes the DOM element (or canvas) backing the comment
@@ -93,6 +105,12 @@ var CoreComment = (function () {
         this.shadow = this._shadow;
         if (this._font !== "") {
             this.font = this._font;
+        }
+        if (this._x !== undefined) {
+            this.x = this._x;
+        }
+        if (this._y !== undefined) {
+            this.y = this._y;
         }
     };
 
@@ -330,7 +348,6 @@ var CoreComment = (function () {
     * Remove the comment and do some cleanup.
     */
     CoreComment.prototype.finish = function () {
-        this.dom.parentElement.removeChild(this.dom);
         this.parent.finish(this);
     };
     return CoreComment;

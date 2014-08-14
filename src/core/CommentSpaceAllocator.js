@@ -34,7 +34,7 @@ var CommentSpaceAllocator = (function () {
     * @returns {boolean} checked collides with exisiting
     */
     CommentSpaceAllocator.prototype.willCollide = function (existing, check) {
-        return existing.stime + existing.ttl > check.stime + check.ttl / 2;
+        return existing.stime + existing.ttl >= check.stime + check.ttl / 2;
     };
 
     /**
@@ -51,7 +51,7 @@ var CommentSpaceAllocator = (function () {
         for (var i = 0; i < pool.length; i++) {
             if (pool[i].y > bottom || pool[i].bottom < y) {
                 continue;
-            } else if (pool[i].x < comment.x || pool[i].x > right) {
+            } else if (pool[i].right < comment.x || pool[i].x > right) {
                 if (this.willCollide(pool[i], comment)) {
                     return false;
                 } else {
@@ -166,22 +166,22 @@ var CommentSpaceAllocator = (function () {
     return CommentSpaceAllocator;
 })();
 
-var TopCommentSpaceAllocator = (function (_super) {
-    __extends(TopCommentSpaceAllocator, _super);
-    function TopCommentSpaceAllocator() {
+var AnchorCommentSpaceAllocator = (function (_super) {
+    __extends(AnchorCommentSpaceAllocator, _super);
+    function AnchorCommentSpaceAllocator() {
         _super.apply(this, arguments);
     }
-    TopCommentSpaceAllocator.prototype.add = function (comment) {
+    AnchorCommentSpaceAllocator.prototype.add = function (comment) {
         _super.prototype.add.call(this, comment);
         comment.x = (this._width - comment.width) / 2;
     };
 
-    TopCommentSpaceAllocator.prototype.willCollide = function (a, b) {
+    AnchorCommentSpaceAllocator.prototype.willCollide = function (a, b) {
         return true;
     };
 
-    TopCommentSpaceAllocator.prototype.pathCheck = function (y, comment, pool) {
-        var bottom = comment.bottom;
+    AnchorCommentSpaceAllocator.prototype.pathCheck = function (y, comment, pool) {
+        var bottom = y + comment.height;
         for (var i = 0; i < pool.length; i++) {
             if (pool[i].y > bottom || pool[i].bottom < y) {
                 continue;
@@ -191,45 +191,5 @@ var TopCommentSpaceAllocator = (function (_super) {
         }
         return true;
     };
-    return TopCommentSpaceAllocator;
-})(CommentSpaceAllocator);
-
-var BottomCommentSpaceAllocator = (function (_super) {
-    __extends(BottomCommentSpaceAllocator, _super);
-    function BottomCommentSpaceAllocator() {
-        _super.apply(this, arguments);
-    }
-    BottomCommentSpaceAllocator.prototype.add = function (comment) {
-        comment.align = 2;
-        comment.invalidate();
-        _super.prototype.add.call(this, comment);
-        comment.x = (this._width - comment.width) / 2;
-    };
-    return BottomCommentSpaceAllocator;
-})(TopCommentSpaceAllocator);
-
-var ReverseCommentSpaceAllocator = (function (_super) {
-    __extends(ReverseCommentSpaceAllocator, _super);
-    function ReverseCommentSpaceAllocator() {
-        _super.apply(this, arguments);
-    }
-    ReverseCommentSpaceAllocator.prototype.add = function (comment) {
-        comment.align = 1;
-        comment.invalidate();
-        _super.prototype.add.call(this, comment);
-    };
-    return ReverseCommentSpaceAllocator;
-})(CommentSpaceAllocator);
-
-var BottomScrollCommentSpaceAllocator = (function (_super) {
-    __extends(BottomScrollCommentSpaceAllocator, _super);
-    function BottomScrollCommentSpaceAllocator() {
-        _super.apply(this, arguments);
-    }
-    BottomScrollCommentSpaceAllocator.prototype.add = function (comment) {
-        comment.align = 1;
-        comment.invalidate();
-        _super.prototype.add.call(this, comment);
-    };
-    return BottomScrollCommentSpaceAllocator;
+    return AnchorCommentSpaceAllocator;
 })(CommentSpaceAllocator);
