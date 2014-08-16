@@ -51,12 +51,22 @@ var CoreComment = (function () {
         if (init.hasOwnProperty("motion")) {
             this._motionStart = [];
             this._motionEnd = [];
+            this.motion = init["motion"];
+            var head = 0;
             for (var i = 0; i < init["motion"].length; i++) {
+                this._motionStart.push(head);
                 var maxDur = 0;
                 for (var k in init["motion"][i]) {
-                    maxDur = Math.max(init["motion"][i][k].dur, maxDur);
+                    var m = init["motion"][i][k];
+                    maxDur = Math.max(m.dur, maxDur);
+                    if (m.easing === null || m.easing === undefined) {
+                        init["motion"][i][k]["easing"] = CoreComment.LINEAR;
+                    }
                 }
+                head += maxDur;
+                this._motionEnd.push(head);
             }
+            this._curMotion = 0;
         }
         if (init.hasOwnProperty("color")) {
             this._color = init["color"];
@@ -111,6 +121,9 @@ var CoreComment = (function () {
         }
         if (this._y !== undefined) {
             this.y = this._y;
+        }
+        if (this._alpha !== 1) {
+            this.alpha = this._alpha;
         }
     };
 
@@ -340,7 +353,20 @@ var CoreComment = (function () {
     * groups.
     */
     CoreComment.prototype.animate = function () {
-        for (var i = 0; i < this.motion.length; i++) {
+        if (this.motion.length === 0) {
+            return;
+        }
+        if (this.dur - this.ttl > this._motionEnd[this._curMotion]) {
+            this._curMotion++;
+        } else {
+            var currentMotion = this.motion[this._curMotion];
+            var time = (this.dur - Math.max(this.ttl, 0)) - this._motionStart[this._curMotion];
+            for (var prop in currentMotion) {
+                if (currentMotion.hasOwnProperty(prop)) {
+                    var m = currentMotion[prop];
+                    this[prop] = m.easing(Math.max(time - m.delay, 0), m.from, m.to - m.from, m.dur);
+                }
+            }
         }
     };
 
@@ -349,6 +375,17 @@ var CoreComment = (function () {
     */
     CoreComment.prototype.finish = function () {
         this.parent.finish(this);
+    };
+
+    /**
+    * Returns string representation of comment
+    * @returns {string}
+    */
+    CoreComment.prototype.toString = function () {
+        return ["[", this.stime, "|", this.ttl, "/", this.dur, "]", "(", this.mode, ")", this.text].join("");
+    };
+    CoreComment.LINEAR = function (t, b, c, d) {
+        return t * c / d + b;
     };
     return CoreComment;
 })();

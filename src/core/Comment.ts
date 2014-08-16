@@ -46,6 +46,9 @@ interface IComment {
 }
 
 class CoreComment implements IComment {
+	public static LINEAR:Function = function(t:number, b:number, c:number, d:number):number {
+		return t * c / d + b;
+	};
 	public mode:number = 1;
 	public stime:number = 0;
 	public text:string = "";
@@ -104,12 +107,22 @@ class CoreComment implements IComment {
 		if (init.hasOwnProperty("motion")) {
 			this._motionStart = [];
 			this._motionEnd = [];
+			this.motion = init["motion"];
+			var head = 0;
 			for (var i = 0; i < init["motion"].length; i++) {
+				this._motionStart.push(head);
 				var maxDur = 0;
 				for (var k in init["motion"][i]) {
-					maxDur = Math.max(init["motion"][i][k].dur, maxDur);
+					var m = <IMotion> init["motion"][i][k];
+					maxDur = Math.max(m.dur, maxDur);
+					if(m.easing === null || m.easing === undefined){
+						init["motion"][i][k]["easing"] = CoreComment.LINEAR;
+					}
 				}
+				head += maxDur;
+				this._motionEnd.push(head);
 			}
+			this._curMotion = 0;
 		}
 		if (init.hasOwnProperty("color")) {
 			this._color = init["color"];
@@ -164,6 +177,9 @@ class CoreComment implements IComment {
 		}
 		if (this._y !== undefined) {
 			this.y = this._y;
+		}
+		if (this._alpha !== 1) {
+			this.alpha = this._alpha;
 		}
 	}
 
@@ -345,8 +361,20 @@ class CoreComment implements IComment {
 	 * groups.
 	 */
 	public animate():void {
-		for (var i = 0; i < this.motion.length; i++) {
-
+		if(this.motion.length === 0){
+			return;
+		}
+		if(this.dur - this.ttl > this._motionEnd[this._curMotion]){
+			this._curMotion ++;
+		}else{
+			var currentMotion = this.motion[this._curMotion];
+			var time = (this.dur - Math.max(this.ttl,0)) - this._motionStart[this._curMotion];
+			for(var prop in currentMotion){
+				if(currentMotion.hasOwnProperty(prop)){
+					var m = <IMotion> currentMotion[prop];
+					this[prop] = m.easing(Math.max(time - m.delay, 0), m.from, m.to - m.from, m.dur);
+				}
+			}
 		}
 	}
 
@@ -355,6 +383,14 @@ class CoreComment implements IComment {
 	 */
 	public finish():void {
 		this.parent.finish(this);
+	}
+
+	/**
+	 * Returns string representation of comment
+	 * @returns {string}
+	 */
+	public toString():string{
+		return ["[", this.stime, "|", this.ttl, "/",this.dur,"]","(",this.mode,")",this.text].join("");
 	}
 }
 

@@ -54,26 +54,31 @@ function BilibiliParser(xmlDoc, text, warn){
 					try{
 						adv = JSON.parse(format(text));
 						obj.shadow = true;
-						obj.x = parseInt(adv[0]);
-						obj.y = parseInt(adv[1]);
+						obj.x = parseInt(adv[0], 10);
+						obj.y = parseInt(adv[1], 10);
 						obj.text = adv[4].replace(/(\/n|\\n|\n|\r\n)/g, "\n");
 						obj.rZ = 0;
 						obj.rY = 0;
 						if(adv.length >= 7){
-							obj.rZ = parseInt(adv[5]);
-							obj.rY = parseInt(adv[6]);
+							obj.rZ = parseInt(adv[5], 10);
+							obj.rY = parseInt(adv[6], 10);
 						}
+						obj.motion = [];
 						obj.movable = false;
 						if(adv.length >= 11){
 							obj.movable = true;
-							obj.toX = adv[7];
-							obj.toY = adv[8];
-							obj.moveDuration = 500;
-							obj.moveDelay = 0;
-							if(adv[9]!='')
-								obj.moveDuration = adv[9];
-							if(adv[10]!="")
-								obj.moveDelay = adv[10];
+							var motion = {
+								x:{from: obj.x, to:parseInt(adv[7], 10), dur:500, delay:0},
+								y:{from: obj.y, to:parseInt(adv[8], 10), dur:500, delay:0},
+							}
+							if(adv[9] !== ''){
+								motion.x.dur = parseInt(adv[9], 10);
+								motion.y.dur = parseInt(adv[9], 10);
+							}
+							if(adv[10] !== ''){
+								motion.x.delay = parseInt(adv[10], 10);
+								motion.y.delay = parseInt(adv[10], 10);
+							}
 							if(adv.length > 11){
 								obj.shadow = adv[11];
 								if(obj.shadow === "true"){
@@ -82,20 +87,27 @@ function BilibiliParser(xmlDoc, text, warn){
 								if(obj.shadow === "false"){
 									obj.shadow = false;
 								}
-								if(adv[12]!=null)
+								if(adv[12] != null){
 									obj.font = adv[12];
+								}
 							}
+							obj.motion.push(motion);
 						}
-						obj.duration = 2500;
+						obj.dur = 2500;
 						if(adv[3] < 12){
-							obj.duration = adv[3] * 1000;
+							obj.dur = adv[3] * 1000;
 						}
-						obj.alphaFrom = 1;
-						obj.alphaTo = 1;
 						var tmp = adv[2].split('-');
 						if(tmp != null && tmp.length>1){
-							obj.alphaFrom = parseFloat(tmp[0]);
-							obj.alphaTo = parseFloat(tmp[1]);
+							var alphaFrom = parseFloat(tmp[0]);
+							var alphaTo = parseFloat(tmp[1]);
+							obj.opacity = alphaFrom;
+							var alphaObj = {from:alphaFrom, to:alphaTo, dur:obj.dur, delay:0};
+							if(obj.motion.length > 0){
+								obj.motion[0]["alpha"] = alphaObj;
+							}else{
+								obj.motion.push({alpha:alphaObj});
+							}
 						}
 					}catch(e){
 						console.log('[Err] Error occurred in JSON parsing');
