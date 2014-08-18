@@ -593,7 +593,7 @@ var CoreComment = (function () {
             for (var prop in currentMotion) {
                 if (currentMotion.hasOwnProperty(prop)) {
                     var m = currentMotion[prop];
-                    this[prop] = m.easing(Math.max(time - m.delay, 0), m.from, m.to - m.from, m.dur);
+                    this[prop] = m.easing(Math.min(Math.max(time - m.delay, 0), m.dur), m.from, m.to - m.from, m.dur);
                 }
             }
         }
