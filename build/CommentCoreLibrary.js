@@ -233,6 +233,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
+
 var CoreComment = (function () {
     function CoreComment(parent, init) {
         if (typeof init === "undefined") { init = {}; }
@@ -342,6 +343,9 @@ var CoreComment = (function () {
             this.color = this._color;
         }
         this.shadow = this._shadow;
+        if (this._border) {
+            this.border = this._border;
+        }
         if (this._font !== "") {
             this.font = this._font;
         }
@@ -587,6 +591,8 @@ var CoreComment = (function () {
         }
         if (this.dur - this.ttl > this._motionEnd[this._curMotion]) {
             this._curMotion++;
+            this.animate();
+            return;
         } else {
             var currentMotion = this.motion[this._curMotion];
             var time = (this.dur - Math.max(this.ttl, 0)) - this._motionStart[this._curMotion];

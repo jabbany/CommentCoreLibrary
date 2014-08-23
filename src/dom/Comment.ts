@@ -1,6 +1,5 @@
 /**
- * Basic Comment Abstraction
- * Built on DOM actions
+ *
  */
 interface CCLOptions {
 	globalScale:number;
