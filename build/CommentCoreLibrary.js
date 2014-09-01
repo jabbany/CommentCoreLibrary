@@ -245,6 +245,12 @@ var CoreComment = (function () {
         this.cindex = -1;
         this.motion = [];
         this.movable = true;
+        this._alphaMotion = null;
+        /**
+        * Absolute coordinates. Use absolute coordinates if true otherwise use percentages.
+        * @type {boolean} use absolute coordinates or not (default true)
+        */
+        this.absolute = true;
         /**
         * Alignment
         * @type {number} 0=tl, 2=bl, 1=tr, 3=br
@@ -310,6 +316,9 @@ var CoreComment = (function () {
         if (init.hasOwnProperty("opacity")) {
             this._alpha = init["opacity"];
         }
+        if (init.hasOwnProperty("alpha")) {
+            this._alphaMotion = init["alpha"];
+        }
         if (init.hasOwnProperty("font")) {
             this._font = init["font"];
         }
@@ -321,6 +330,14 @@ var CoreComment = (function () {
         }
         if (init.hasOwnProperty("shadow")) {
             this._shadow = init["shadow"];
+        }
+        if (init.hasOwnProperty("position")) {
+            if (init["position"] === "relative") {
+                this.absolute = false;
+                if (this.mode < 7) {
+                    console.warn("Using relative position for CSA comment.");
+                }
+            }
         }
     }
     /**
@@ -369,10 +386,16 @@ var CoreComment = (function () {
                     this._x = this.parent.width - this.dom.offsetLeft - this.width;
                 }
             }
+            if (!this.absolute) {
+                return this._x / this.parent.width;
+            }
             return this._x;
         },
         set: function (x) {
             this._x = x;
+            if (!this.absolute) {
+                this._x *= this.parent.width;
+            }
             if (this.align % 2 === 0) {
                 this.dom.style.left = this._x + "px";
             } else {
@@ -392,10 +415,16 @@ var CoreComment = (function () {
                     this._y = this.parent.height - this.dom.offsetTop - this.height;
                 }
             }
+            if (!this.absolute) {
+                return this._y / this.parent.height;
+            }
             return this._y;
         },
         set: function (y) {
             this._y = y;
+            if (!this.absolute) {
+                this._y *= this.parent.height;
+            }
             if (this.align < 2) {
                 this.dom.style.top = this._y + "px";
             } else {
@@ -582,26 +611,43 @@ var CoreComment = (function () {
     };
 
     /**
+    * Executes a motion object
+    * @param currentMotion - motion object
+    * @private
+    */
+    CoreComment.prototype._execMotion = function (currentMotion, time) {
+        for (var prop in currentMotion) {
+            if (currentMotion.hasOwnProperty(prop)) {
+                var m = currentMotion[prop];
+                this[prop] = m.easing(Math.min(Math.max(time - m.delay, 0), m.dur), m.from, m.to - m.from, m.dur);
+            }
+        }
+    };
+
+    /**
     * Update the comment's position depending on the applied motion
     * groups.
     */
     CoreComment.prototype.animate = function () {
+        if (this._alphaMotion) {
+            this.alpha = (this.dur - this.ttl) * (this._alphaMotion["to"] - this._alphaMotion["from"]) / this.dur + this._alphaMotion["from"];
+        }
         if (this.motion.length === 0) {
             return;
         }
-        if (this.dur - this.ttl > this._motionEnd[this._curMotion]) {
+        var ttl = Math.max(this.ttl, 0);
+        var time = (this.dur - ttl) - this._motionStart[this._curMotion];
+        if (this.dur - ttl > this._motionEnd[this._curMotion]) {
+            var oldMotion = this.motion[this._curMotion];
+            this._execMotion(oldMotion, time);
             this._curMotion++;
-            this.animate();
+            if (this._curMotion >= this.motion.length) {
+                this._curMotion = this.motion.length - 1;
+            }
             return;
         } else {
             var currentMotion = this.motion[this._curMotion];
-            var time = (this.dur - Math.max(this.ttl, 0)) - this._motionStart[this._curMotion];
-            for (var prop in currentMotion) {
-                if (currentMotion.hasOwnProperty(prop)) {
-                    var m = currentMotion[prop];
-                    this[prop] = m.easing(Math.min(Math.max(time - m.delay, 0), m.dur), m.from, m.to - m.from, m.dur);
-                }
-            }
+            this._execMotion(currentMotion, time);
         }
     };
 
@@ -636,6 +682,7 @@ var ScrollComment = (function (_super) {
         if (typeof recycle === "undefined") { recycle = null; }
         _super.prototype.init.call(this, recycle);
         this.x = this.parent.width;
+        this.absolute = true;
     };
 
     ScrollComment.prototype.update = function () {
@@ -929,12 +976,6 @@ Licensed Under MIT License
  An alternative format comment parser
 **/
 function AcfunParser(jsond){
-	function fillRGB(string){
-		while(string.length < 6){
-			string = "0" + string;
-		}
-		return string;
-	}
 	var list = [];
 	try{
 		var jsondt = JSON.parse(jsond);
@@ -948,12 +989,12 @@ function AcfunParser(jsond){
 		var xc = jsondt[i]['c'].split(',');
 		if(xc.length > 0){
 			data.stime = parseFloat(xc[0]) * 1000;
-			data.color = '#' + fillRGB(parseInt(xc[1]).toString(16));
+			data.color = parseInt(xc[1])
 			data.mode = parseInt(xc[2]);
 			data.size = parseInt(xc[3]);
 			data.hash = xc[4];
 			data.date = parseInt(xc[5]);
-			data.position = "relative";
+			data.position = "absolute";
 			if(data.mode != 7){
 				data.text = jsondt[i].m.replace(/(\/n|\\n|\n|\r\n|\\r)/g,"\n");
 				data.text = data.text.replace(/\r/g,"\n");
@@ -970,9 +1011,15 @@ function AcfunParser(jsond){
 					console.log('[Dbg] ' + data.text);
 					continue;
 				}
+				data.position = "relative";
 				data.text = x.n; /*.replace(/\r/g,"\n");*/
 				data.text = data.text.replace(/\ /g,"\u00a0");
 				console.log(data.text);
+				if(x.a != null){
+					data.opacity = x.a;
+				}else{
+					data.opacity = 1;
+				}
 				if(x.p != null){
 					data.x = x.p.x / 1000; // relative position
 					data.y = x.p.y / 1000;
@@ -981,25 +1028,40 @@ function AcfunParser(jsond){
 					data.y = 0;
 				}
 				data.shadow = x.b;
-				data.duration = 4000;
+				data.dur = 4000;
 				if(x.l != null)
 					data.moveDelay = x.l * 1000;
 				if(x.z != null && x.z.length > 0){
 					data.movable = true;
-					data.toX = x.z[0].x / 1000;
-					data.toY = x.z[0].y / 1000;
-					data.alphaTo = x.z[0].t;
-					data.colorTo = x.z[0].c;
-					data.moveDuration = x.z[0].l != null ? (x.z[0].l * 1000) : 500;
-					data.duration = data.moveDelay + data.moveDuration;
+					data.motion = [];
+					var moveDuration = 0;
+					var last = {x:data.x, y:data.y, alpha:data.opacity, color:data.color};
+					for(var m = 0; m < x.z.length; m++){
+						var dur = x.z[m].l != null ? (x.z[m].l * 1000) : 500;
+						moveDuration += dur;
+						var motion = {
+							x:{from:last.x, to:x.z[m].x/1000, dur: dur, delay: 0},
+							y:{from:last.y, to:x.z[m].y/1000, dur: dur, delay: 0}
+						};
+						last.x = motion.x.to;
+						last.y = motion.y.to;
+						if(x.z[m].t !== last.alpha){
+							motion.alpha = {from:last.alpha, to:x.z[m].t, dur: dur, delay: 0};
+							last.alpha = motion.alpha.to;
+						}
+						if(x.z[m].c != null && x.z[m].c !== last.color){
+							motion.color = {from:last.color, to:x.z[m].c, dur: dur, delay: 0};
+							last.color = motion.color.to;
+						}
+						data.motion.push(motion);
+					}
+					data.dur = moveDuration + (data.moveDelay ? data.moveDelay : 0);
 				}
 				if(x.r != null && x.k != null){
 					data.rX = x.r;
 					data.rY = x.k;
 				}
-				if(x.a){
-					data.alphaFrom = x.a;
-				}
+				
 			}
 			list.push(data);
 		}
@@ -1013,32 +1075,36 @@ Licensed Under MIT License
  Takes in an XMLDoc/LooseXMLDoc and parses that into a Generic Comment List
 **/
 function BilibiliParser(xmlDoc, text, warn){	
-	//Format the bili output to be json-valid
 	function format(string){
+		//Format the bili output to be json-valid
 		return string.replace(/\t/,"\\t");	
 	}
+	
 	if(xmlDoc !== null){
-        var elems = xmlDoc.getElementsByTagName('d');
-    }else{
-    	if(warn){
-    		if(!confirm("XML Parse Error. \n Allow tag soup parsing?\n[WARNING: This is unsafe.]")){
-    			return [];
-    		}
-    	}else{
-    		// clobber some potentially bad things
-        	text = text.replace(new RegExp("</([^d])","g"), "</disabled $1");
-        	text = text.replace(new RegExp("</(\S{2,})","g"), "</disabled $1");
-        	text = text.replace(new RegExp("<([^d/]\W*?)","g"), "<disabled $1");
-        	text = text.replace(new RegExp("<([^/ ]{2,}\W*?)","g"), "<disabled $1");
-        	console.log(text);
-    	}
-        var tmp = document.createElement("div");
-        tmp.innerHTML = text;
-        console.log(tmp);
-        var elems = tmp.getElementsByTagName('d');
-    }
+		var elems = xmlDoc.getElementsByTagName('d');
+	}else{
+		if(!document || !document.createElement){
+			//Maybe we are in a restricted context
+			return [];
+		}
+		if(warn){
+			if(!confirm("XML Parse Error. \n Allow tag soup parsing?\n[WARNING: This is unsafe.]")){
+				return [];
+			}
+		}else{
+			// clobber some potentially bad things
+			text = text.replace(new RegExp("</([^d])","g"), "</disabled $1");
+			text = text.replace(new RegExp("</(\S{2,})","g"), "</disabled $1");
+			text = text.replace(new RegExp("<([^d/]\W*?)","g"), "<disabled $1");
+			text = text.replace(new RegExp("<([^/ ]{2,}\W*?)","g"), "<disabled $1");
+		}
+		var tmp = document.createElement("div");
+		tmp.innerHTML = text;
+		var elems = tmp.getElementsByTagName('d');
+	}
+	
 	var tlist = [];
-	for(var i=0;i<elems.length;i++){
+	for(var i=0;i < elems.length;i++){
 		if(elems[i].getAttribute('p') != null){
 			var opt = elems[i].getAttribute('p').split(',');
 			if(!elems[i].childNodes[0])
@@ -1063,8 +1129,11 @@ function BilibiliParser(xmlDoc, text, warn){
 					try{
 						adv = JSON.parse(format(text));
 						obj.shadow = true;
-						obj.x = parseInt(adv[0], 10);
-						obj.y = parseInt(adv[1], 10);
+						obj.x = parseFloat(adv[0]);
+						obj.y = parseFloat(adv[1]);
+						if(Math.floor(obj.x) < obj.x || Math.floor(obj.y) < obj.y){
+							obj.position = "relative";
+						}
 						obj.text = adv[4].replace(/(\/n|\\n|\n|\r\n)/g, "\n");
 						obj.rZ = 0;
 						obj.rY = 0;
@@ -1076,13 +1145,15 @@ function BilibiliParser(xmlDoc, text, warn){
 						obj.movable = false;
 						if(adv.length >= 11){
 							obj.movable = true;
+							var singleStepDur = 500;
 							var motion = {
-								x:{from: obj.x, to:parseInt(adv[7], 10), dur:500, delay:0},
-								y:{from: obj.y, to:parseInt(adv[8], 10), dur:500, delay:0},
-							}
+								x:{from: obj.x, to:parseFloat(adv[7]), dur:singleStepDur, delay:0},
+								y:{from: obj.y, to:parseFloat(adv[8]), dur:singleStepDur, delay:0},
+							};
 							if(adv[9] !== ''){
-								motion.x.dur = parseInt(adv[9], 10);
-								motion.y.dur = parseInt(adv[9], 10);
+								singleStepDur = parseInt(adv[9], 10);
+								motion.x.dur = singleStepDur;
+								motion.y.dur = singleStepDur;
 							}
 							if(adv[10] !== ''){
 								motion.x.delay = parseInt(adv[10], 10);
@@ -1099,8 +1170,42 @@ function BilibiliParser(xmlDoc, text, warn){
 								if(adv[12] != null){
 									obj.font = adv[12];
 								}
+								if(adv.length > 14){
+									// Support for Bilibili Advanced Paths
+									if(obj.position === "relative"){
+										console.log("Cannot mix relative and absolute positioning");
+										obj.position = "absolute";
+									}
+									var path = adv[14];
+									var lastPoint = {x:motion.x.from, y:motion.y.from};
+									var pathMotion = [];
+									var regex = new RegExp("([a-zA-Z])\\s*(\\d+)[, ](\\d+)","g");
+									var counts = path.split(/[a-zA-Z]/).length - 1;
+									var m = regex.exec(path);
+									while(m !== null){
+										switch(m[1]){
+											case "M":{
+												lastPoint.x = parseInt(m[2],10);
+												lastPoint.y = parseInt(m[3],10);
+											}break;
+											case "L":{
+												pathMotion.push({
+													"x":{"from":lastPoint.x, "to":parseInt(m[2],10), "dur": singleStepDur / counts, "delay": 0},
+													"y":{"from":lastPoint.y, "to":parseInt(m[3],10), "dur": singleStepDur / counts, "delay": 0}
+												});
+												lastPoint.x = parseInt(m[2],10);
+												lastPoint.y = parseInt(m[3],10);
+											}break;
+										}
+										m = regex.exec(path);
+									}
+									motion = null;
+									obj.motion = pathMotion;
+								}
 							}
-							obj.motion.push(motion);
+							if(motion !== null){
+								obj.motion.push(motion);
+							}
 						}
 						obj.dur = 2500;
 						if(adv[3] < 12){
@@ -1111,11 +1216,8 @@ function BilibiliParser(xmlDoc, text, warn){
 							var alphaFrom = parseFloat(tmp[0]);
 							var alphaTo = parseFloat(tmp[1]);
 							obj.opacity = alphaFrom;
-							var alphaObj = {from:alphaFrom, to:alphaTo, dur:obj.dur, delay:0};
-							if(obj.motion.length > 0){
-								obj.motion[0]["alpha"] = alphaObj;
-							}else{
-								obj.motion.push({alpha:alphaObj});
+							if(alphaFrom !== alphaTo){
+								obj.alpha = {from:alphaFrom, to:alphaTo}
 							}
 						}
 					}catch(e){
@@ -1126,7 +1228,6 @@ function BilibiliParser(xmlDoc, text, warn){
 					obj.code = text; //Code comments are special
 				}
 			}
-			//Before we push
 			if(obj.text != null)
 				obj.text = obj.text.replace(/\u25a0/g,"\u2588");
 			tlist.push(obj);

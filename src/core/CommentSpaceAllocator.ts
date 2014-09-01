@@ -6,6 +6,7 @@ interface IComment {
 	align:number;
 	x:number;
 	y:number;
+	absolute:boolean;
 	bottom:number;
 	right:number;
 	width:number;
@@ -165,6 +166,9 @@ class CommentSpaceAllocator implements ISpaceAllocator {
 	public remove(comment:IComment):void {
 		if (comment.cindex < 0) {
 			return;
+		}
+		if (comment.cindex >= this._pools.length){
+			throw new Error("cindex out of bounds");
 		}
 		var index = this._pools[comment.cindex].indexOf(comment);
 		if (index < 0)

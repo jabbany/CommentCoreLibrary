@@ -65,9 +65,15 @@ class CoreComment implements IComment {
 	private _curMotion:number;
 	private _motionStart:Array<number>;
 	private _motionEnd:Array<number>;
+	private _alphaMotion:Object = null;
 
 	public _x:number;
 	public _y:number;
+	/**
+	 * Absolute coordinates. Use absolute coordinates if true otherwise use percentages.
+	 * @type {boolean} use absolute coordinates or not (default true)
+	 */
+	public absolute:boolean = true;
 	/**
 	 * Alignment
 	 * @type {number} 0=tl, 2=bl, 1=tr, 3=br
@@ -140,6 +146,9 @@ class CoreComment implements IComment {
 		if (init.hasOwnProperty("opacity")) {
 			this._alpha = init["opacity"];
 		}
+		if (init.hasOwnProperty("alpha")) {
+			this._alphaMotion = init["alpha"];
+		}
 		if (init.hasOwnProperty("font")) {
 			this._font = init["font"];
 		}
@@ -151,6 +160,14 @@ class CoreComment implements IComment {
 		}
 		if (init.hasOwnProperty("shadow")) {
 			this._shadow = init["shadow"];
+		}
+		if (init.hasOwnProperty("position")) {
+			if(init["position"] === "relative"){
+				this.absolute = false;
+				if(this.mode < 7){
+					console.warn("Using relative position for CSA comment.");
+				}
+			}
 		}
 	}
 
@@ -198,6 +215,9 @@ class CoreComment implements IComment {
 				this._x = this.parent.width - this.dom.offsetLeft - this.width;
 			}
 		}
+		if(!this.absolute){
+			return this._x / this.parent.width;
+		}
 		return this._x;
 	}
 
@@ -208,6 +228,9 @@ class CoreComment implements IComment {
 			} else {
 				this._y = this.parent.height - this.dom.offsetTop - this.height;
 			}
+		}
+		if(!this.absolute){
+			return this._y / this.parent.height;
 		}
 		return this._y;
 	}
@@ -260,6 +283,9 @@ class CoreComment implements IComment {
 
 	set x(x:number) {
 		this._x = x;
+		if(!this.absolute){
+			this._x *= this.parent.width;
+		}
 		if (this.align % 2 === 0) {
 			this.dom.style.left = this._x + "px";
 		} else {
@@ -269,6 +295,9 @@ class CoreComment implements IComment {
 
 	set y(y:number) {
 		this._y = y;
+		if(!this.absolute){
+			this._y *= this.parent.height;
+		}
 		if (this.align < 2) {
 			this.dom.style.top = this._y + "px";
 		} else {
@@ -364,26 +393,39 @@ class CoreComment implements IComment {
 	}
 
 	/**
+	 * Executes a motion object
+	 * @param currentMotion - motion object
+	 * @private
+	 */
+	private _execMotion(currentMotion:Object, time:number):void {
+		for(var prop in currentMotion){
+			if(currentMotion.hasOwnProperty(prop)){
+				var m = <IMotion> currentMotion[prop];
+				this[prop] = m.easing(Math.min(Math.max(time - m.delay, 0), m.dur), m.from, m.to - m.from, m.dur);
+			}
+		}
+	}
+
+	/**
 	 * Update the comment's position depending on the applied motion
 	 * groups.
 	 */
 	public animate():void {
+		if (this._alphaMotion) {
+			this.alpha = (this.dur - this.ttl) * (this._alphaMotion["to"] - this._alphaMotion["from"]) / this.dur + this._alphaMotion["from"];
+		}
 		if(this.motion.length === 0){
 			return;
 		}
-		if(this.dur - this.ttl > this._motionEnd[this._curMotion]){
+		var ttl:number = Math.max(this.ttl, 0);
+		var time:number = (this.dur - ttl) - this._motionStart[this._curMotion];
+		this._execMotion(this.motion[this._curMotion], time);
+		if(this.dur - ttl > this._motionEnd[this._curMotion]){
 			this._curMotion++;
-			this.animate();
-			return;
-		}else{
-			var currentMotion = this.motion[this._curMotion];
-			var time = (this.dur - Math.max(this.ttl,0)) - this._motionStart[this._curMotion];
-			for(var prop in currentMotion){
-				if(currentMotion.hasOwnProperty(prop)){
-					var m = <IMotion> currentMotion[prop];
-					this[prop] = m.easing(Math.min(Math.max(time - m.delay, 0), m.dur), m.from, m.to - m.from, m.dur);
-				}
+			if(this._curMotion >= this.motion.length){
+				this._curMotion = this.motion.length - 1;
 			}
+			return;
 		}
 	}
 
@@ -413,6 +455,7 @@ class ScrollComment extends CoreComment {
 	public init(recycle:IComment = null):void {
 		super.init(recycle);
 		this.x = this.parent.width;
+		this.absolute = true;
 	}
 
 	public update():void {

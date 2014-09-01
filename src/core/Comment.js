@@ -16,6 +16,12 @@ var CoreComment = (function () {
         this.cindex = -1;
         this.motion = [];
         this.movable = true;
+        this._alphaMotion = null;
+        /**
+        * Absolute coordinates. Use absolute coordinates if true otherwise use percentages.
+        * @type {boolean} use absolute coordinates or not (default true)
+        */
+        this.absolute = true;
         /**
         * Alignment
         * @type {number} 0=tl, 2=bl, 1=tr, 3=br
@@ -81,6 +87,9 @@ var CoreComment = (function () {
         if (init.hasOwnProperty("opacity")) {
             this._alpha = init["opacity"];
         }
+        if (init.hasOwnProperty("alpha")) {
+            this._alphaMotion = init["alpha"];
+        }
         if (init.hasOwnProperty("font")) {
             this._font = init["font"];
         }
@@ -92,6 +101,14 @@ var CoreComment = (function () {
         }
         if (init.hasOwnProperty("shadow")) {
             this._shadow = init["shadow"];
+        }
+        if (init.hasOwnProperty("position")) {
+            if (init["position"] === "relative") {
+                this.absolute = false;
+                if (this.mode < 7) {
+                    console.warn("Using relative position for CSA comment.");
+                }
+            }
         }
     }
     /**
@@ -140,10 +157,16 @@ var CoreComment = (function () {
                     this._x = this.parent.width - this.dom.offsetLeft - this.width;
                 }
             }
+            if (!this.absolute) {
+                return this._x / this.parent.width;
+            }
             return this._x;
         },
         set: function (x) {
             this._x = x;
+            if (!this.absolute) {
+                this._x *= this.parent.width;
+            }
             if (this.align % 2 === 0) {
                 this.dom.style.left = this._x + "px";
             } else {
@@ -163,10 +186,16 @@ var CoreComment = (function () {
                     this._y = this.parent.height - this.dom.offsetTop - this.height;
                 }
             }
+            if (!this.absolute) {
+                return this._y / this.parent.height;
+            }
             return this._y;
         },
         set: function (y) {
             this._y = y;
+            if (!this.absolute) {
+                this._y *= this.parent.height;
+            }
             if (this.align < 2) {
                 this.dom.style.top = this._y + "px";
             } else {
@@ -353,26 +382,43 @@ var CoreComment = (function () {
     };
 
     /**
+    * Executes a motion object
+    * @param currentMotion - motion object
+    * @private
+    */
+    CoreComment.prototype._execMotion = function (currentMotion, time) {
+        for (var prop in currentMotion) {
+            if (currentMotion.hasOwnProperty(prop)) {
+                var m = currentMotion[prop];
+                this[prop] = m.easing(Math.min(Math.max(time - m.delay, 0), m.dur), m.from, m.to - m.from, m.dur);
+            }
+        }
+    };
+
+    /**
     * Update the comment's position depending on the applied motion
     * groups.
     */
     CoreComment.prototype.animate = function () {
+        if (this._alphaMotion) {
+            this.alpha = (this.dur - this.ttl) * (this._alphaMotion["to"] - this._alphaMotion["from"]) / this.dur + this._alphaMotion["from"];
+        }
         if (this.motion.length === 0) {
             return;
         }
-        if (this.dur - this.ttl > this._motionEnd[this._curMotion]) {
+        var ttl = Math.max(this.ttl, 0);
+        var time = (this.dur - ttl) - this._motionStart[this._curMotion];
+        if (this.dur - ttl > this._motionEnd[this._curMotion]) {
+            var oldMotion = this.motion[this._curMotion];
+            this._execMotion(oldMotion, time);
             this._curMotion++;
-            this.animate();
+            if (this._curMotion >= this.motion.length) {
+                this._curMotion = this.motion.length - 1;
+            }
             return;
         } else {
             var currentMotion = this.motion[this._curMotion];
-            var time = (this.dur - Math.max(this.ttl, 0)) - this._motionStart[this._curMotion];
-            for (var prop in currentMotion) {
-                if (currentMotion.hasOwnProperty(prop)) {
-                    var m = currentMotion[prop];
-                    this[prop] = m.easing(Math.min(Math.max(time - m.delay, 0), m.dur), m.from, m.to - m.from, m.dur);
-                }
-            }
+            this._execMotion(currentMotion, time);
         }
     };
 
@@ -407,6 +453,7 @@ var ScrollComment = (function (_super) {
         if (typeof recycle === "undefined") { recycle = null; }
         _super.prototype.init.call(this, recycle);
         this.x = this.parent.width;
+        this.absolute = true;
     };
 
     ScrollComment.prototype.update = function () {

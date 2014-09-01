@@ -7,7 +7,7 @@ var tests = {
 	"test-5":"tests/unowen.xml",
 	"test-6":"tests/comment.xml",
 	"test-7":"tests/extended.xml",
-	"test-8":"tests/bilibili.xml",
+	"test-8":"tests/boss.xml",
 	"test-9":"tests/utsukushiki_mono.xml",
 	"test-s":"tests/scripting/kanpai.xml",
 	"test-ac-1":{"f":'tests/ACFun.json',"p":"acfun"},
