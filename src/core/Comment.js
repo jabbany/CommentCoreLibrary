@@ -408,17 +408,13 @@ var CoreComment = (function () {
         }
         var ttl = Math.max(this.ttl, 0);
         var time = (this.dur - ttl) - this._motionStart[this._curMotion];
+        this._execMotion(this.motion[this._curMotion], time);
         if (this.dur - ttl > this._motionEnd[this._curMotion]) {
-            var oldMotion = this.motion[this._curMotion];
-            this._execMotion(oldMotion, time);
             this._curMotion++;
             if (this._curMotion >= this.motion.length) {
                 this._curMotion = this.motion.length - 1;
             }
             return;
-        } else {
-            var currentMotion = this.motion[this._curMotion];
-            this._execMotion(currentMotion, time);
         }
     };
 

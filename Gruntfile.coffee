@@ -17,7 +17,7 @@ module.exports = (grunt) ->
     'src/core/CommentSpaceAllocator.js'
     'src/core/Comment.js'
     'src/filter/' + FilterType + 'Filter.js'
-    'src/CommentCoreLibraryX.js'
+    'src/CommentCoreLibrary.js'
   ]
 
   SRC_SCRIPTING_KAGEROU =

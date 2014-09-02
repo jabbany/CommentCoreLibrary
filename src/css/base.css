@@ -18,6 +18,7 @@
 }
 .abp .container .cmt{
   transform: matrix3d(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
+  transform-origin: 0% 0%;
   position: absolute;
   padding: 3px 0 0 0;
   margin: 0;
