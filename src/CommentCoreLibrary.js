@@ -28,6 +28,7 @@ var CommentManager = (function() {
 	
 	function CommentManager(stageObject){
 		var __timer = 0;
+		this._listeners = {};
 		this.stage = stageObject;
 		this.options = {
 			opacity:1,
@@ -97,17 +98,20 @@ var CommentManager = (function() {
 					return 0;
 			}
 		});
+		this.dispatchEvent("load");
 	};
 
 	CommentManager.prototype.clear = function(){
 		while(this.runline.length > 0){
 			this.runline[0].finish();
 		}
+		this.dispatchEvent("clear");
 	};
 
 	CommentManager.prototype.setBounds = function(){
 		this.width = this.stage.offsetWidth;
 		this.height= this.stage.offsetHeight;
+		this.dispatchEvent("resize");
 		for(var comAlloc in this.csa){
 			this.csa[comAlloc].setBounds(this.width,this.height);
 		}
@@ -188,10 +192,12 @@ var CommentManager = (function() {
 			}break;
 		}
 		cmt.y = cmt.y;
+		this.dispatchEvent("enterComment", cmt);
 		this.runline.push(cmt);
 	};
 
 	CommentManager.prototype.finish = function(cmt){
+		this.dispatchEvent("exitComment", cmt);
 		this.stage.removeChild(cmt.dom);
 		var index = this.runline.indexOf(cmt);
 		if(index >= 0){
@@ -207,7 +213,24 @@ var CommentManager = (function() {
 			case 7:break;
 		}
 	};
-
+	CommentManager.prototype.addEventListener = function(event, listener){
+		if(typeof this._listeners[event] !== "undefined"){
+			this._listeners[event].push(listener);
+		}else{
+			this._listeners[event] = [listener];
+		}
+	};
+	CommentManager.prototype.dispatchEvent = function(event, data){
+		if(typeof this._listeners[event] !== "undefined"){
+			for(var i = 0; i < this._listeners[event].length; i++){
+				try{
+					this._listeners[event][i](data);
+				}catch(e){
+					console.err(e.stack);
+				}
+			}
+		}
+	};
 	/** Static Functions **/
 	CommentManager.prototype.onTimerEvent = function(timePassed,cmObj){
 		for(var i= 0;i < cmObj.runline.length; i++){
