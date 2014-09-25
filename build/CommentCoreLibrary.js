@@ -797,6 +797,14 @@ var CommentManager = (function() {
 	}
 
 	/** Public **/
+	CommentManager.prototype.stop = function(){
+		this.stopTimer();
+	};
+
+	CommentManager.prototype.start = function(){
+		this.startTimer();
+	};
+
 	CommentManager.prototype.seek = function(time){
 		this.position = this.timeline.bsearch(time,function(a,b){
 			if(a < b.stime) return -1
@@ -828,6 +836,24 @@ var CommentManager = (function() {
 			}
 		});
 		this.dispatchEvent("load");
+	};
+
+	CommentManager.prototype.insert = function(c){
+		this.timeline.binsert(c,function(a,b){
+			if(a.stime > b.stime) return 2;
+			else if(a.stime < b.stime) return -2;
+			else{
+				if(a.date > b.date) return 1;
+				else if(a.date < b.date) return -1;
+				else if(a.dbid != null && b.dbid != null){
+					if(a.dbid > b.dbid) return 1;
+					else if(a.dbid < b.dbid) return -1;
+					return 0;
+				}else
+					return 0;
+			}
+		});
+		this.dispatchEvent("insert");
 	};
 
 	CommentManager.prototype.clear = function(){

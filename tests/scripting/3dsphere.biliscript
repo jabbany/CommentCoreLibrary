@@ -32,8 +32,8 @@ var screen = $.createShape({
             lifeTime: 1000
 });
 screen.transform.matrix3D = null;
-screen.x = 640 / 2;
-screen.y = 400 / 2;
+screen.x = $.width / 2;
+screen.y = $.height / 2;
 
 function getR(a, c) {
     return Math.sqrt(c * c - a * a);

@@ -22,7 +22,11 @@ window.addEventListener('load',function(){
 	});
 	$("evaluate-host").addEventListener("click", function(){
 		var sandbox = window.sandbox;
-		eval($("console-input").value);
+		try{
+			eval($("console-input").value);
+		}catch(e){
+			bscripter.logger.error("[Host] " + e.stack.toString());
+		};
 	});
 	function fetchFile(filename){
 		var xhr = new XMLHttpRequest();
