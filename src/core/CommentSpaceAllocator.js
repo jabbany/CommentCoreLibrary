@@ -78,21 +78,11 @@ var CommentSpaceAllocator = (function () {
         }
         var pool = this._pools[cindex];
         if (pool.length === 0) {
-            pool.push(comment);
             comment.cindex = cindex;
             return 0;
         } else if (this.pathCheck(0, comment, pool)) {
             // Has a path in the current pool
             comment.cindex = cindex;
-            pool.binsert(comment, function (a, b) {
-                if (a.bottom < b.bottom) {
-                    return -1;
-                } else if (a.bottom === b.bottom) {
-                    return 0;
-                } else {
-                    return 1;
-                }
-            });
             return 0;
         }
         var y = 0;
@@ -104,15 +94,6 @@ var CommentSpaceAllocator = (function () {
             if (this.pathCheck(y, comment, pool)) {
                 // Has a path in the current pool
                 comment.cindex = cindex;
-                pool.binsert(comment, function (a, b) {
-                    if (a.bottom < b.bottom) {
-                        return -1;
-                    } else if (a.bottom === b.bottom) {
-                        return 0;
-                    } else {
-                        return 1;
-                    }
-                });
                 return y;
             }
         }
@@ -133,6 +114,15 @@ var CommentSpaceAllocator = (function () {
             comment.y = 0;
         } else {
             comment.y = this.assign(comment, 0);
+            this._pools[comment.cindex].binsert(comment, function (a, b) {
+                if (a.bottom < b.bottom) {
+                    return -1;
+                } else if (a.bottom > b.bottom) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            });
         }
     };
 
@@ -144,6 +134,9 @@ var CommentSpaceAllocator = (function () {
     CommentSpaceAllocator.prototype.remove = function (comment) {
         if (comment.cindex < 0) {
             return;
+        }
+        if (comment.cindex >= this._pools.length) {
+            throw new Error("cindex out of bounds");
         }
         var index = this._pools[comment.cindex].indexOf(comment);
         if (index < 0)

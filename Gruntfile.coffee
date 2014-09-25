@@ -115,5 +115,5 @@ module.exports = (grunt) ->
   grunt.registerTask 'build-scripting', ['clean:scripting','concat:scripting', 'copy:scripting', 'typescript']
   grunt.registerTask 'build-core', ['concat:core_only', 'autoprefixer', 'cssmin', 'uglify:core_only']
   grunt.registerTask 'build', ['concat:all', 'autoprefixer', 'cssmin', 'uglify:all']
-  grunt.registerTask 'default', ['clean', 'build', 'watch']
+  grunt.registerTask 'default', ['clean', 'build', 'build-scripting', 'watch']
 
