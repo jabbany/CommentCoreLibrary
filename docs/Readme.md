@@ -1,7 +1,8 @@
 # Readme 文档
 
 CCL包括一套尽可能完备的文档来帮助二次开发。文档主要针对两个部分：各种东西都是什么，各种东西都应该
-怎么用。
+怎么用。如果想看看现实里使用了 CCL 的项目，可以参考 [Powered By CCL](PoweredByCCL.md) 里面
+的不完全收录。
 
 ### 部件参考（Individual Parts）
 
