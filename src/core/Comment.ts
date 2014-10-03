@@ -202,9 +202,13 @@ class CoreComment implements IComment {
 		if (this._y !== undefined) {
 			this.y = this._y;
 		}
-		if (this._alpha !== 1) {
+		if (this._alpha !== 1 || this.parent.options.opacity < 1) {
 			this.alpha = this._alpha;
 		}
+        if (this.motion.length > 0){
+            // Force a position update before doing anything
+            this.animate();
+        }
 	}
 
 	get x():number {
@@ -368,6 +372,9 @@ class CoreComment implements IComment {
 	 */
 	public time(time:number):void {
 		this.ttl -= time;
+        if (this.ttl < 0) {
+            this.ttl = 0;
+        }
 		if (this.movable) {
 			this.update();
 		}

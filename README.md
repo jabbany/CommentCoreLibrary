@@ -55,7 +55,7 @@ implementation of a video player with CommentCoreLibrary.
 
 不管你在开发基于Javascript的Web服务，还是其他的需要弹幕播放功能服务，都可以参考弹幕核心
 的实现代码。我们以简单的方法构建了 (1) 时间轴管理 (2) 基础空间规划 (3) 弹幕过滤 (4)
-高级弹幕效果 (5) 基础格式解析 (6) 代码弹幕支持
+高级弹幕效果 (5) 基础格式解析 (6) 代码弹幕支持。
 
 ## 测试
 你可以在[这里](http://jabbany.github.com/CommentCoreLibrary/demo) 访问到测试页面。

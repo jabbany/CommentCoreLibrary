@@ -1,6 +1,8 @@
 CCLScripting API 定义 (API Definitions）
 ===========================
 
+![Diagram](Scripting-Diagram.svg?raw=true)
+
 CCLScripting 是一套在最大可能的程度上兼容Bilibili代码弹幕语法和环境的安全的高层接口。
 它建造于 OOAPI 底层API之上，并通过 OOAPI 与显示端进行通讯。受益于这种隔离，我们可以在 
 CCLScripting 中运行相对不受信任的脚本弹幕而不影响整个网站的安全。

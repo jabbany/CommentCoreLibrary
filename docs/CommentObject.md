@@ -14,7 +14,7 @@
 ### LINEAR <Func> [静态]
 LINEAR 为线形拟合函数，提供用于默认补间动画的拟合。
 
-### mode <Num>
+### mode <Num> = 1
 Danmaku Mode: mode 表示弹幕的类型，参考 [弹幕类型 (Comment Types)](CommentTypes.md)
 
 ### stime <Num> = 0
@@ -23,7 +23,7 @@ Start Time: stime 表示弹幕相对于视频位置的开始时间（ms），`0`
 ### text <String>
 Text: text 表示弹幕的文字内容。注意：在创造弹幕对象后，对 text 的更改将无意义。
 
-### ttl <Num>
+### ttl <Num> = 4000
 Time To Live: ttl 表示弹幕剩余的生存时间（ms）（注意：在css模式下该子段可能不准确）
 
 ### dur <Num> = 4000
@@ -103,7 +103,7 @@ DOM Correspondance: 对应的渲染元素，根据不同情况是不一样的。
 用于进行打扫。
 
 ### update()
-根据 ttl 和 dur 计算弹幕位置，并渲染
+根据 ttl 和 dur 计算弹幕位置，并渲染弹幕。不同的弹幕可以覆盖 update 函数来绘制 canvas 等。
 
 ### invalidate()
 无效化缓存的弹幕空间信息。下次读取 width, height, x, y, right, bottom 强制重新计算。
