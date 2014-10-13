@@ -48,3 +48,14 @@ container.style.transform = "scale(" + scale + ")";
 一般情况下，允许用户更改的透明度上限应该是滚动弹幕上限。更改全局上限的话可能引发弹幕字符画的不利显示。
 注意：虽然在设置里叫opacity其实这个是对应弹幕的 alpha 字段。
 
+### 弹幕显示模式切换 Change Global Display Mode
+如果希望给弹幕更改显示模式（描边/字体/粗体等等），则可以采取更改 `options.global.className` 
+的方法，来直接更改未来弹幕的寄生默认CSS类。默认情况下，弹幕都属于 `cmt` 但是你可以改掉如下：
+
+```CSS
+.cmt { /** 默认，描边，无粗体 **/ }
+.cmt.bold { font-weight: bold; }
+.cmt.shadow { /** 某些魔法的实现影子的CSS **/ }
+```
+
+进而通过让用户设置 `options.global.className = 'cmt bold'` 即可开启/关闭粗体等等。
