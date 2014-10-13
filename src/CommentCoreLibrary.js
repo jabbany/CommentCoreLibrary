@@ -31,9 +31,15 @@ var CommentManager = (function() {
 		this._listeners = {};
 		this.stage = stageObject;
 		this.options = {
-			opacity:1,
-			globalScale:1,
-			scrollScale:1
+			global:{
+				opacity:1,
+				scale:1,
+				className:"cmt"
+			},
+			scroll:{
+				opacity:1,
+				scale:1
+			}
 		};
 		this.timeline = [];
 		this.runline = [];
@@ -77,7 +83,7 @@ var CommentManager = (function() {
 	};
 
 	CommentManager.prototype.seek = function(time){
-		this.position = this.timeline.bsearch(time,function(a,b){
+		this.position = BinArray.bsearch(this.timeline, time, function(a,b){
 			if(a < b.stime) return -1
 			else if(a > b.stime) return 1;
 			else return 0;
@@ -110,7 +116,7 @@ var CommentManager = (function() {
 	};
 
 	CommentManager.prototype.insert = function(c){
-		this.timeline.binsert(c,function(a,b){
+		var index = BinArray.binsert(this.timeline, c, function(a,b){
 			if(a.stime > b.stime) return 2;
 			else if(a.stime < b.stime) return -2;
 			else{
@@ -124,6 +130,9 @@ var CommentManager = (function() {
 					return 0;
 			}
 		});
+		if(index <= this.position){
+			this.position++;
+		}
 		this.dispatchEvent("insert");
 	};
 
@@ -221,7 +230,9 @@ var CommentManager = (function() {
 		this.dispatchEvent("enterComment", cmt);
 		this.runline.push(cmt);
 	};
-
+	CommentManager.prototype.send = function(data){
+		this.sendComment(data); // Wrapper for future apis
+	};
 	CommentManager.prototype.finish = function(cmt){
 		this.dispatchEvent("exitComment", cmt);
 		this.stage.removeChild(cmt.dom);

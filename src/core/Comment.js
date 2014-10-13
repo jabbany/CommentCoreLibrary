@@ -4,7 +4,6 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-
 var CoreComment = (function () {
     function CoreComment(parent, init) {
         if (typeof init === "undefined") { init = {}; }
@@ -17,20 +16,12 @@ var CoreComment = (function () {
         this.motion = [];
         this.movable = true;
         this._alphaMotion = null;
-        /**
-        * Absolute coordinates. Use absolute coordinates if true otherwise use percentages.
-        * @type {boolean} use absolute coordinates or not (default true)
-        */
         this.absolute = true;
-        /**
-        * Alignment
-        * @type {number} 0=tl, 2=bl, 1=tr, 3=br
-        */
         this.align = 0;
+        this._alpha = 1;
         this._size = 25;
         this._color = 0xffffff;
         this._border = false;
-        this._alpha = 1;
         this._shadow = true;
         this._font = "";
         if (!parent) {
@@ -50,8 +41,8 @@ var CoreComment = (function () {
             this.dur = init["dur"];
             this.ttl = this.dur;
         }
-        this.dur *= this.parent.options.globalScale;
-        this.ttl *= this.parent.options.globalScale;
+        this.dur *= this.parent.options.global.scale;
+        this.ttl *= this.parent.options.global.scale;
         if (init.hasOwnProperty("text")) {
             this.text = init["text"];
         }
@@ -111,10 +102,6 @@ var CoreComment = (function () {
             }
         }
     }
-    /**
-    * Initializes the DOM element (or canvas) backing the comment
-    * This method takes the place of 'initCmt' in the old CCL
-    */
     CoreComment.prototype.init = function (recycle) {
         if (typeof recycle === "undefined") { recycle = null; }
         if (recycle !== null) {
@@ -122,7 +109,7 @@ var CoreComment = (function () {
         } else {
             this.dom = document.createElement("div");
         }
-        this.dom.className = "cmt";
+        this.dom.className = this.parent.options.global.className;
         this.dom.appendChild(document.createTextNode(this.text));
         this.dom.textContent = this.text;
         this.dom.innerText = this.text;
@@ -143,11 +130,10 @@ var CoreComment = (function () {
         if (this._y !== undefined) {
             this.y = this._y;
         }
-        if (this._alpha !== 1 || this.parent.options.opacity < 1) {
+        if (this._alpha !== 1 || this.parent.options.global.opacity < 1) {
             this.alpha = this._alpha;
         }
         if (this.motion.length > 0) {
-            // Force a position update before doing anything
             this.animate();
         }
     };
@@ -278,7 +264,7 @@ var CoreComment = (function () {
             color = color.length >= 6 ? color : new Array(6 - color.length + 1).join("0") + color;
             this.dom.style.color = "#" + color;
             if (this._color === 0) {
-                this.dom.className = "cmt rshadow";
+                this.dom.className = this.parent.options.global.className + " rshadow";
             }
         },
         enumerable: true,
@@ -291,7 +277,7 @@ var CoreComment = (function () {
         },
         set: function (a) {
             this._alpha = a;
-            this.dom.style.opacity = Math.min(this._alpha, this.parent.options.opacity) + "";
+            this.dom.style.opacity = Math.min(this._alpha, this.parent.options.global.opacity) + "";
         },
         enumerable: true,
         configurable: true
@@ -320,7 +306,7 @@ var CoreComment = (function () {
         set: function (s) {
             this._shadow = s;
             if (!this._shadow) {
-                this.dom.className = "cmt noshadow";
+                this.dom.className = this.parent.options.global.className + " noshadow";
             }
         },
         enumerable: true,
@@ -353,12 +339,6 @@ var CoreComment = (function () {
 
 
 
-    /**
-    * Moves the comment by a number of milliseconds. When
-    * the given parameter is greater than 0 the comment moves
-    * forward. Otherwise it moves backwards.
-    * @param time - elapsed time in ms
-    */
     CoreComment.prototype.time = function (time) {
         this.ttl -= time;
         if (this.ttl < 0) {
@@ -372,27 +352,17 @@ var CoreComment = (function () {
         }
     };
 
-    /**
-    * Update the comment's position depending on its mode and
-    * the current ttl/dur values.
-    */
     CoreComment.prototype.update = function () {
         this.animate();
     };
 
-    /**
-    * Invalidate the comment position.
-    */
     CoreComment.prototype.invalidate = function () {
         this._x = null;
         this._y = null;
+        this._width = null;
+        this._height = null;
     };
 
-    /**
-    * Executes a motion object
-    * @param currentMotion - motion object
-    * @private
-    */
     CoreComment.prototype._execMotion = function (currentMotion, time) {
         for (var prop in currentMotion) {
             if (currentMotion.hasOwnProperty(prop)) {
@@ -402,10 +372,6 @@ var CoreComment = (function () {
         }
     };
 
-    /**
-    * Update the comment's position depending on the applied motion
-    * groups.
-    */
     CoreComment.prototype.animate = function () {
         if (this._alphaMotion) {
             this.alpha = (this.dur - this.ttl) * (this._alphaMotion["to"] - this._alphaMotion["from"]) / this.dur + this._alphaMotion["from"];
@@ -425,17 +391,10 @@ var CoreComment = (function () {
         }
     };
 
-    /**
-    * Remove the comment and do some cleanup.
-    */
     CoreComment.prototype.finish = function () {
         this.parent.finish(this);
     };
 
-    /**
-    * Returns string representation of comment
-    * @returns {string}
-    */
     CoreComment.prototype.toString = function () {
         return ["[", this.stime, "|", this.ttl, "/", this.dur, "]", "(", this.mode, ")", this.text].join("");
     };
@@ -449,13 +408,25 @@ var ScrollComment = (function (_super) {
     __extends(ScrollComment, _super);
     function ScrollComment(parent, data) {
         _super.call(this, parent, data);
-        this.dur *= this.parent.options.scrollScale;
-        this.ttl *= this.parent.options.scrollScale;
+        this.dur *= this.parent.options.scroll.scale;
+        this.ttl *= this.parent.options.scroll.scale;
     }
+    Object.defineProperty(ScrollComment.prototype, "alpha", {
+        set: function (a) {
+            this._alpha = a;
+            this.dom.style.opacity = Math.min(Math.min(this._alpha, this.parent.options.global.opacity), this.parent.options.scroll.opacity) + "";
+        },
+        enumerable: true,
+        configurable: true
+    });
+
     ScrollComment.prototype.init = function (recycle) {
         if (typeof recycle === "undefined") { recycle = null; }
         _super.prototype.init.call(this, recycle);
         this.x = this.parent.width;
+        if (this.parent.options.scroll.opacity < 1) {
+            this.alpha = this._alpha;
+        }
         this.absolute = true;
     };
 

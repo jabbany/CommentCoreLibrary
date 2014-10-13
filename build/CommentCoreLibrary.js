@@ -3,33 +3,37 @@
  * @license MIT
  * @author Jim Chen
  */
-Array.prototype.bsearch = function(what,how){
-	if(this.length == 0) return 0;
-	if(how(what,this[0]) < 0) return 0;
-	if(how(what,this[this.length - 1]) >=0) return this.length;
-	var low =0;
-	var i = 0;
-	var count = 0;
-	var high = this.length - 1;
-	while(low<=high){
-		i = Math.floor((high + low + 1)/2);
-		count++;
-		if(how(what,this[i-1])>=0 && how(what,this[i])<0){
-			return i;
-		}else if(how(what,this[i-1])<0){
-			high = i-1;
-		}else if(how(what,this[i])>=0){
-			low = i;
-		}else
-			console.error('Program Error');
-		if(count > 1500) console.error('Too many run cycles.');
-	}
-	return -1;
-};
-
-Array.prototype.binsert = function(what,how){
-	this.splice(this.bsearch(what,how),0,what);
-};
+var BinArray = {};
+(function(BinArray){
+	BinArray.bsearch = function(arr, what, how){
+		if(arr.length == 0) return 0;
+		if(how(what,arr[0]) < 0) return 0;
+		if(how(what,arr[arr.length - 1]) >=0) return arr.length;
+		var low =0;
+		var i = 0;
+		var count = 0;
+		var high = arr.length - 1;
+		while(low<=high){
+			i = Math.floor((high + low + 1)/2);
+			count++;
+			if(how(what,arr[i-1])>=0 && how(what,arr[i])<0){
+				return i;
+			}else if(how(what,arr[i-1])<0){
+				high = i-1;
+			}else if(how(what,arr[i])>=0){
+				low = i;
+			}else
+				console.error('Program Error');
+			if(count > 1500) console.error('Too many run cycles.');
+		}
+		return -1;
+	};
+	BinArray.binsert = function(arr, what, how){
+		var index = BinArray.bsearch(arr,what,how);
+		arr.splice(index,0,what);
+		return index;
+	};
+})(BinArray);
 
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -37,47 +41,22 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
+
 var CommentSpaceAllocator = (function () {
-    /**
-    * Constructs a space allocator
-    * @param width - allocator width pixels (default 0)
-    * @param height - allocator height pixels (default 0)
-    */
     function CommentSpaceAllocator(width, height) {
         if (typeof width === "undefined") { width = 0; }
         if (typeof height === "undefined") { height = 0; }
         this._pools = [
             []
         ];
-        /**
-        * Number of pixels to avoid from last possible y-offset
-        * @type {number}
-        */
         this.avoid = 1;
         this._width = width;
         this._height = height;
     }
-    /**
-    * Logic to determine if checked comment collides with existing comment
-    * We say that comments collide if the existing comment finishes later
-    * than the checked comment is halfway through
-    *
-    * @param existing - Existing comment;
-    * @param check - Checked comment
-    * @returns {boolean} checked collides with exisiting
-    */
     CommentSpaceAllocator.prototype.willCollide = function (existing, check) {
         return existing.stime + existing.ttl >= check.stime + check.ttl / 2;
     };
 
-    /**
-    * Validates sufficient space for a "bullet path" for the comment.
-    *
-    * @param y - Path starting at y offset (path height is the comment height)
-    * @param comment - Comment instance to test
-    * @param pool - The pool to test in.
-    * @returns {boolean} whether or not a valid path exists in the tested pool.
-    */
     CommentSpaceAllocator.prototype.pathCheck = function (y, comment, pool) {
         var bottom = y + comment.height;
         var right = comment.right;
@@ -97,14 +76,6 @@ var CommentSpaceAllocator = (function () {
         return true;
     };
 
-    /**
-    * Finds a good y-coordinate for comment such that minimal collision happens.
-    * This method will also add the comment to the allocated pool and assign a proper cindex
-    *
-    * @param comment - Comment
-    * @param cindex - Pool index
-    * @returns {number} Y offset assigned
-    */
     CommentSpaceAllocator.prototype.assign = function (comment, cindex) {
         while (this._pools.length <= cindex) {
             this._pools.push([]);
@@ -114,7 +85,6 @@ var CommentSpaceAllocator = (function () {
             comment.cindex = cindex;
             return 0;
         } else if (this.pathCheck(0, comment, pool)) {
-            // Has a path in the current pool
             comment.cindex = cindex;
             return 0;
         }
@@ -125,29 +95,21 @@ var CommentSpaceAllocator = (function () {
                 break;
             }
             if (this.pathCheck(y, comment, pool)) {
-                // Has a path in the current pool
                 comment.cindex = cindex;
                 return y;
             }
         }
 
-        // Assign one pool deeper
         return this.assign(comment, cindex + 1);
     };
 
-    /**
-    * Adds a comment to the space allocator. Will also assign the
-    * comment's y values. Note that added comments may not be actually
-    * recorded, check the cindex value.
-    * @param comment
-    */
     CommentSpaceAllocator.prototype.add = function (comment) {
         if (comment.height > this._height) {
             comment.cindex = -2;
             comment.y = 0;
         } else {
             comment.y = this.assign(comment, 0);
-            this._pools[comment.cindex].binsert(comment, function (a, b) {
+            BinArray.binsert(this._pools[comment.cindex], comment, function (a, b) {
                 if (a.bottom < b.bottom) {
                     return -1;
                 } else if (a.bottom > b.bottom) {
@@ -159,11 +121,6 @@ var CommentSpaceAllocator = (function () {
         }
     };
 
-    /**
-    * Remove the comment from the space allocator. Will silently fail
-    * if the comment is not found
-    * @param comment
-    */
     CommentSpaceAllocator.prototype.remove = function (comment) {
         if (comment.cindex < 0) {
             return;
@@ -177,14 +134,6 @@ var CommentSpaceAllocator = (function () {
         this._pools[comment.cindex].splice(index, 1);
     };
 
-    /**
-    * Set the bounds (width, height) of the allocator. Normally this
-    * should be as big as the stage DOM object. But you can manually set
-    * this to another smaller value too.
-    *
-    * @param width
-    * @param height
-    */
     CommentSpaceAllocator.prototype.setBounds = function (width, height) {
         this._width = width;
         this._height = height;
@@ -226,7 +175,6 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-
 var CoreComment = (function () {
     function CoreComment(parent, init) {
         if (typeof init === "undefined") { init = {}; }
@@ -239,20 +187,12 @@ var CoreComment = (function () {
         this.motion = [];
         this.movable = true;
         this._alphaMotion = null;
-        /**
-        * Absolute coordinates. Use absolute coordinates if true otherwise use percentages.
-        * @type {boolean} use absolute coordinates or not (default true)
-        */
         this.absolute = true;
-        /**
-        * Alignment
-        * @type {number} 0=tl, 2=bl, 1=tr, 3=br
-        */
         this.align = 0;
+        this._alpha = 1;
         this._size = 25;
         this._color = 0xffffff;
         this._border = false;
-        this._alpha = 1;
         this._shadow = true;
         this._font = "";
         if (!parent) {
@@ -272,8 +212,8 @@ var CoreComment = (function () {
             this.dur = init["dur"];
             this.ttl = this.dur;
         }
-        this.dur *= this.parent.options.globalScale;
-        this.ttl *= this.parent.options.globalScale;
+        this.dur *= this.parent.options.global.scale;
+        this.ttl *= this.parent.options.global.scale;
         if (init.hasOwnProperty("text")) {
             this.text = init["text"];
         }
@@ -333,10 +273,6 @@ var CoreComment = (function () {
             }
         }
     }
-    /**
-    * Initializes the DOM element (or canvas) backing the comment
-    * This method takes the place of 'initCmt' in the old CCL
-    */
     CoreComment.prototype.init = function (recycle) {
         if (typeof recycle === "undefined") { recycle = null; }
         if (recycle !== null) {
@@ -344,7 +280,7 @@ var CoreComment = (function () {
         } else {
             this.dom = document.createElement("div");
         }
-        this.dom.className = "cmt";
+        this.dom.className = this.parent.options.global.className;
         this.dom.appendChild(document.createTextNode(this.text));
         this.dom.textContent = this.text;
         this.dom.innerText = this.text;
@@ -365,11 +301,10 @@ var CoreComment = (function () {
         if (this._y !== undefined) {
             this.y = this._y;
         }
-        if (this._alpha !== 1 || this.parent.options.opacity < 1) {
+        if (this._alpha !== 1 || this.parent.options.global.opacity < 1) {
             this.alpha = this._alpha;
         }
         if (this.motion.length > 0) {
-            // Force a position update before doing anything
             this.animate();
         }
     };
@@ -500,7 +435,7 @@ var CoreComment = (function () {
             color = color.length >= 6 ? color : new Array(6 - color.length + 1).join("0") + color;
             this.dom.style.color = "#" + color;
             if (this._color === 0) {
-                this.dom.className = "cmt rshadow";
+                this.dom.className = this.parent.options.global.className + " rshadow";
             }
         },
         enumerable: true,
@@ -513,7 +448,7 @@ var CoreComment = (function () {
         },
         set: function (a) {
             this._alpha = a;
-            this.dom.style.opacity = Math.min(this._alpha, this.parent.options.opacity) + "";
+            this.dom.style.opacity = Math.min(this._alpha, this.parent.options.global.opacity) + "";
         },
         enumerable: true,
         configurable: true
@@ -542,7 +477,7 @@ var CoreComment = (function () {
         set: function (s) {
             this._shadow = s;
             if (!this._shadow) {
-                this.dom.className = "cmt noshadow";
+                this.dom.className = this.parent.options.global.className + " noshadow";
             }
         },
         enumerable: true,
@@ -575,12 +510,6 @@ var CoreComment = (function () {
 
 
 
-    /**
-    * Moves the comment by a number of milliseconds. When
-    * the given parameter is greater than 0 the comment moves
-    * forward. Otherwise it moves backwards.
-    * @param time - elapsed time in ms
-    */
     CoreComment.prototype.time = function (time) {
         this.ttl -= time;
         if (this.ttl < 0) {
@@ -594,27 +523,17 @@ var CoreComment = (function () {
         }
     };
 
-    /**
-    * Update the comment's position depending on its mode and
-    * the current ttl/dur values.
-    */
     CoreComment.prototype.update = function () {
         this.animate();
     };
 
-    /**
-    * Invalidate the comment position.
-    */
     CoreComment.prototype.invalidate = function () {
         this._x = null;
         this._y = null;
+        this._width = null;
+        this._height = null;
     };
 
-    /**
-    * Executes a motion object
-    * @param currentMotion - motion object
-    * @private
-    */
     CoreComment.prototype._execMotion = function (currentMotion, time) {
         for (var prop in currentMotion) {
             if (currentMotion.hasOwnProperty(prop)) {
@@ -624,10 +543,6 @@ var CoreComment = (function () {
         }
     };
 
-    /**
-    * Update the comment's position depending on the applied motion
-    * groups.
-    */
     CoreComment.prototype.animate = function () {
         if (this._alphaMotion) {
             this.alpha = (this.dur - this.ttl) * (this._alphaMotion["to"] - this._alphaMotion["from"]) / this.dur + this._alphaMotion["from"];
@@ -647,17 +562,10 @@ var CoreComment = (function () {
         }
     };
 
-    /**
-    * Remove the comment and do some cleanup.
-    */
     CoreComment.prototype.finish = function () {
         this.parent.finish(this);
     };
 
-    /**
-    * Returns string representation of comment
-    * @returns {string}
-    */
     CoreComment.prototype.toString = function () {
         return ["[", this.stime, "|", this.ttl, "/", this.dur, "]", "(", this.mode, ")", this.text].join("");
     };
@@ -671,13 +579,25 @@ var ScrollComment = (function (_super) {
     __extends(ScrollComment, _super);
     function ScrollComment(parent, data) {
         _super.call(this, parent, data);
-        this.dur *= this.parent.options.scrollScale;
-        this.ttl *= this.parent.options.scrollScale;
+        this.dur *= this.parent.options.scroll.scale;
+        this.ttl *= this.parent.options.scroll.scale;
     }
+    Object.defineProperty(ScrollComment.prototype, "alpha", {
+        set: function (a) {
+            this._alpha = a;
+            this.dom.style.opacity = Math.min(Math.min(this._alpha, this.parent.options.global.opacity), this.parent.options.scroll.opacity) + "";
+        },
+        enumerable: true,
+        configurable: true
+    });
+
     ScrollComment.prototype.init = function (recycle) {
         if (typeof recycle === "undefined") { recycle = null; }
         _super.prototype.init.call(this, recycle);
         this.x = this.parent.width;
+        if (this.parent.options.scroll.opacity < 1) {
+            this.alpha = this._alpha;
+        }
         this.absolute = true;
     };
 
@@ -767,9 +687,15 @@ var CommentManager = (function() {
 		this._listeners = {};
 		this.stage = stageObject;
 		this.options = {
-			opacity:1,
-			globalScale:1,
-			scrollScale:1
+			global:{
+				opacity:1,
+				scale:1,
+				className:"cmt"
+			},
+			scroll:{
+				opacity:1,
+				scale:1
+			}
 		};
 		this.timeline = [];
 		this.runline = [];
@@ -813,7 +739,7 @@ var CommentManager = (function() {
 	};
 
 	CommentManager.prototype.seek = function(time){
-		this.position = this.timeline.bsearch(time,function(a,b){
+		this.position = BinArray.bsearch(this.timeline, time, function(a,b){
 			if(a < b.stime) return -1
 			else if(a > b.stime) return 1;
 			else return 0;
@@ -846,7 +772,7 @@ var CommentManager = (function() {
 	};
 
 	CommentManager.prototype.insert = function(c){
-		this.timeline.binsert(c,function(a,b){
+		var index = BinArray.binsert(this.timeline, c, function(a,b){
 			if(a.stime > b.stime) return 2;
 			else if(a.stime < b.stime) return -2;
 			else{
@@ -860,6 +786,9 @@ var CommentManager = (function() {
 					return 0;
 			}
 		});
+		if(index <= this.position){
+			this.position++;
+		}
 		this.dispatchEvent("insert");
 	};
 
@@ -957,7 +886,9 @@ var CommentManager = (function() {
 		this.dispatchEvent("enterComment", cmt);
 		this.runline.push(cmt);
 	};
-
+	CommentManager.prototype.send = function(data){
+		this.sendComment(data); // Wrapper for future apis
+	};
 	CommentManager.prototype.finish = function(cmt){
 		this.dispatchEvent("exitComment", cmt);
 		this.stage.removeChild(cmt.dom);
