@@ -3,8 +3,8 @@
  * @license MIT
  * @author Jim Chen
  */
-var BinArray = {};
-(function(BinArray){
+var BinArray = (function(){
+	var BinArray = {};
 	BinArray.bsearch = function(arr, what, how){
 		if(arr.length == 0) return 0;
 		if(how(what,arr[0]) < 0) return 0;
@@ -33,4 +33,5 @@ var BinArray = {};
 		arr.splice(index,0,what);
 		return index;
 	};
-})(BinArray);
+	return BinArray;
+})();

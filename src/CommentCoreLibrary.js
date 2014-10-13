@@ -1,7 +1,9 @@
 /*!
- * Comment Core For HTML5 VideoPlayers
+ * Comment Core Library CommentManager
+ * @license MIT
+ * @author Jim Chen
+ * 
  * Copyright (c) 2014 Jim Chen
- * License: MIT
  */
 var CommentManager = (function() {
 	var getRotMatrix = function(yrot, zrot) {
@@ -39,7 +41,8 @@ var CommentManager = (function() {
 			scroll:{
 				opacity:1,
 				scale:1
-			}
+			},
+			limit: 0
 		};
 		this.timeline = [];
 		this.runline = [];
@@ -170,9 +173,9 @@ var CommentManager = (function() {
 			this.lastPos = time;
 		}
 		for(;this.position < this.timeline.length;this.position++){
-			if(this.limiter > 0 && this.runline.length > this.limiter) break;
+			if(this.options.limit > 0 && this.runline.length > this.limiter) break;
 			if(this.validate(this.timeline[this.position]) && this.timeline[this.position]['stime']<=time){
-				this.sendComment(this.timeline[this.position]);
+				this.send(this.timeline[this.position]);
 			}else{
 				break;
 			}
@@ -181,7 +184,7 @@ var CommentManager = (function() {
 	CommentManager.prototype.rescale = function(){
 	
 	};
-	CommentManager.prototype.sendComment = function(data){
+	CommentManager.prototype.send = function(data){
 		if(data.mode === 8){
 			console.log(data);
 			if(this.scripting){
@@ -230,8 +233,9 @@ var CommentManager = (function() {
 		this.dispatchEvent("enterComment", cmt);
 		this.runline.push(cmt);
 	};
-	CommentManager.prototype.send = function(data){
-		this.sendComment(data); // Wrapper for future apis
+	CommentManager.prototype.sendComment = function(data){
+		console.log("CommentManager.sendComment is deprecated. Please use send instead");
+		this.send(data); // Wrapper for Backwards Compatible APIs
 	};
 	CommentManager.prototype.finish = function(cmt){
 		this.dispatchEvent("exitComment", cmt);

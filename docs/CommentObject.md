@@ -11,37 +11,37 @@
 
 ## Properties 属性
 
-### LINEAR <Func> [静态]
+### LINEAR &lt;Func&gt; [静态]
 LINEAR 为线形拟合函数，提供用于默认补间动画的拟合。
 
-### mode <Num> = 1
+### mode &lt;Num&gt; = 1
 Danmaku Mode: mode 表示弹幕的类型，参考 [弹幕类型 (Comment Types)](CommentTypes.md)
 
-### stime <Num> = 0
+### stime &lt;Num&gt; = 0
 Start Time: stime 表示弹幕相对于视频位置的开始时间（ms），`0`即在视频开始立即出现
 
-### text <String>
+### text &lt;String&gt;
 Text: text 表示弹幕的文字内容。注意：在创造弹幕对象后，对 text 的更改将无意义。
 
-### ttl <Num> = 4000
+### ttl &lt;Num&gt; = 4000
 Time To Live: ttl 表示弹幕剩余的生存时间（ms）（注意：在css模式下该子段可能不准确）
 
-### dur <Num> = 4000
+### dur &lt;Num&gt; = 4000
 Duration: dur 表示弹幕的总生存时间（ms）。默认情况下，对于滚动弹幕这个数字是 4000。
 
-### cindex <Num> = -1
+### cindex &lt;Num&gt; = -1
 Pool Index: cindex 表示弹幕的弹幕池ID，用于在删除弹幕时寻找弹幕所在弹幕池。
 
-### motion <Array<IMotion>> = []
+### motion &lt;Array&lt;IMotion&gt;&gt; = []
 Motion Group: motion 控制一般弹幕（CoreComment）的运动轨迹，别的类型的弹幕可能忽略此属性（如
 滚动弹幕）
 
-### movable <Bool> = true
+### movable &lt;Bool&gt; = true
 Is Movable: 弹幕是否可以移动。此处为 `False` 时，弹幕的 time 函数将不会调用 update() 来移动
 弹幕。这样弹幕将无动画效果（不管 motion 或者 update 函数的实现）。但是更改 `x,y` 坐标还是可以
 重新定位弹幕的。
 
-### align <Num> = 0
+### align &lt;Num&gt; = 0
 Alignment: 对齐锚点（方形四角）。此数的高位表示上下，低位表示左右。
 
       Byte  |  Number  |  Alignment
@@ -57,35 +57,35 @@ Alignment: 对齐锚点（方形四角）。此数的高位表示上下，低位
 设定后x,y坐标的锚点将变成对应的方形角。不过，在右和下的对齐时，读取 x,y 坐标不一定准确，而且因为
 效率低所以不推荐。比如 top right 模式下，读 x 坐标效率比较低，但是读 y 就要好很多。
 
-### absolute <Bool> =  true
+### absolute &lt;Bool&gt; =  true
 Absolute Coordinates: 是否使用绝对坐标。当 `absolute === false` 时，x,y坐标将会表示相对
 于整个弹幕管理器的比例，如 `x=0.5` 在 `640 x 480` 的管理器上则会显示在 `320` 位置。
 
 注意：width, height 总会以绝对坐标返回，所以如果需要叠加则必须手动转换到相对坐标。
 
-### width/height/bottom/right <Num>
+### width/height/bottom/right &lt;Num&gt;
 Bounding Box: 定义弹幕的宽高和下部右部位置，前两个定义了 top left 顶点，后两个定义了bottom 
 right顶点。
 
-### size <Num> = 25
+### size &lt;Num&gt; = 25
 Font Size: 弹幕的文字大小，请参考 [弹幕大小 Comment Sizes](CommentSizes.md)。更改会更新视图。
 
-### color <Num> = 0xffffff
+### color &lt;Num&gt; = 0xffffff
 Text Color: 文字颜色，为数字表示，RGB依次由高位到低位：`0xRRGGBB`。更改会更新视图。
 
-### border <Bool> = false
+### border &lt;Bool&gt; = false
 Display Border: 是否显示边框。用于标注新弹幕。更改会同步更新视图。
 
-### shadow <Bool> = true
+### shadow &lt;Bool&gt; = true
 Display Shadow: 是否显示弹幕描边/阴影（注意：具体用哪个描边效果需要CSS控制）。更改会同步更新视图。
 
-### font <String> = ""
+### font &lt;String&gt; = ""
 Font Family: 弹幕字体。当设置为空字符串时，使用默认字体。更改会同步更新视图。
 
-### parent <CommentManager>
+### parent &lt;CommentManager&gt;
 Parent: 此弹幕归属的上层管理器
 
-### dom <HTMLDivElement/Canvas/etc.>
+### dom &lt;HTMLDivElement/Canvas/etc.&gt;
 DOM Correspondance: 对应的渲染元素，根据不同情况是不一样的。默认是 DIV 元素。
 
 ## Methods 方法

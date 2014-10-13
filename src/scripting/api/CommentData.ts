@@ -5,12 +5,12 @@ class CommentData {
 	private _dbid = 0;
 
 	constructor(comment:Object) {
-		this._dbid = comment.dbid;
-		this.size = comment.size;
-		this.text = comment.text;
-		this.mode = comment.mode;
-		this.stime = comment.stime;
-		this.date = comment.date;
+		this._dbid = comment["dbid"];
+		this.size = comment["size"];
+		this.text = comment["text"];
+		this.mode = comment["mode"];
+		this.stime = comment["stime"];
+		this.date = comment["date"];
 	}
 
 	public blocked:boolean = false;
