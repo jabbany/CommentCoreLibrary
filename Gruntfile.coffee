@@ -4,7 +4,7 @@ module.exports = (grunt) ->
   
   # !! Compile configurations
   License = '/*!Copyright(c) CommentCoreLibrary (//github.com/jabbany/CommentCoreLibrary) - Licensed under the MIT License */'
-  FilterType = "Comment" # "Comment" || "Simple"
+  FilterType = "Simple" # "Comment" || "Simple"
   RenderType = "Transition" # "" || "Transition" || "Canvas"
   # !! End of config area
 
@@ -13,13 +13,19 @@ module.exports = (grunt) ->
     'src/css/fontalias.css'
   ]
 
-  SRC_CORE = [
-    'src/Array.js'
-    'src/filter/' + FilterType + 'Filter.js'
-    'src/CommentSpaceAllocator.js'
-    'src/CommentCoreLibrary' + RenderType + '.js'
+  SRC_CORE_CMP = [
+    'Comment'
+    'CommentSpaceAllocator'
   ]
 
+  SRC_CORE = [
+    'src/Array.js'
+    'src/core/CommentSpaceAllocator.js'
+    'src/core/Comment.js'
+    'src/filter/' + FilterType + 'Filter.js'
+    'src/CommentCoreLibrary' + RenderType + '.js'
+  ]
+  
   SRC_SCRIPTING_KAGEROU =
     display: 'src/scripting/api/Display/Display.ts'
     runtime: 'src/scripting/api/Runtime/Runtime.ts'
@@ -32,15 +38,37 @@ module.exports = (grunt) ->
     'src/parsers/BilibiliFormat.js'
   ]
   
-  # Dynamically generate the ts targets
-  kagerou_config = { }
+  # !! Below are compile settings
+  # Dynamically generate the core ts targets
+  CMP_CORE_TS = { }
+  CMP_CORE_NAME = [ ]
+  for target in SRC_CORE_CMP
+    CMP_CORE_NAME.push ("typescript:" + target)
+    CMP_CORE_TS[target] = 
+      options:
+        target: 'es5'
+        basePath: 'src/core'
+      src:  "src/core/" + target + ".ts"
+      dest: "src/core/" + target + ".js"
+
+  # Dynamically generate the kagerou ts targets
+  CMP_KAGEROU_TS = { }
+  CMP_KAGEROU_NAME = [ ]
   for target,src of SRC_SCRIPTING_KAGEROU
-    kagerou_config['kagerou_engine_' + target] = 
+    CMP_KAGEROU_NAME.push ('typescript:kagerou_engine_' + target)
+    CMP_KAGEROU_TS['kagerou_engine_' + target] = 
       options: 
         target: 'es5'
         basePath: src.split('/')[0..-1].join('/')
       src: src
       dest: 'build/scripting/api/' + src.split('/').pop().split('.')[0] + '.js'
+  
+  # Append Typescript Tasks
+  ts_config = {}
+  for key,value of CMP_CORE_TS
+    ts_config[key] = value
+  for key,value of CMP_KAGEROU_TS
+    ts_config[key] = value
   
   # Core concatenated with libraries
   # Actual concat ordering does not/should not matter
@@ -55,7 +83,7 @@ module.exports = (grunt) ->
     # core_only : builds CCL without parsers
     # all       : builds CCL with everything
     concat:
-      scripting:
+      scripting_host:
         files:
           'build/scripting/Host.js': ['src/scripting/Host.js','src/scripting/Unpacker.js']
       core_only:
@@ -68,11 +96,11 @@ module.exports = (grunt) ->
           'build/CommentCoreLibrary.js': SRC_CORELIB
     
     # Compile TypeScript
-    typescript: kagerou_config
+    typescript: ts_config
     
     # Copy
     copy:
-      scripting:
+      scripting_sandbox:
         files:[
           {expand: true, cwd:'src/scripting/api/', src: ['*.js'],  dest:'build/scripting/api/'},
           {expand: true, cwd:'src/scripting/', src: ['OOAPI.js','Worker.js'],  dest:'build/scripting/'}
@@ -110,10 +138,14 @@ module.exports = (grunt) ->
         # Run concat, autoprefixer, cssmin and uglify
         tasks: ['build']
   )
-
+  
+  # Register special compiles
+  grunt.registerTask 'compile-ts-kagerou', CMP_KAGEROU_NAME
+  grunt.registerTask 'compile-ts-core', CMP_CORE_NAME
+  
   # Register our tasks
-  grunt.registerTask 'build-scripting', ['clean:scripting','concat:scripting', 'copy:scripting', 'typescript']
-  grunt.registerTask 'build-core', ['concat:core_only', 'autoprefixer', 'cssmin', 'uglify:core_only']
-  grunt.registerTask 'build', ['concat:all', 'autoprefixer', 'cssmin', 'uglify:all']
-  grunt.registerTask 'default', ['clean', 'build', 'watch']
+  grunt.registerTask 'build-scripting', ['clean:scripting','concat:scripting_host', 'compile-ts-kagerou', 'copy:scripting_sandbox']
+  grunt.registerTask 'build-core', ['compile-ts-core', 'concat:core_only', 'autoprefixer', 'cssmin', 'uglify:core_only']
+  grunt.registerTask 'build', ['compile-ts-core', 'concat:all', 'autoprefixer', 'cssmin', 'uglify:all']
+  grunt.registerTask 'default', ['clean', 'build', 'build-scripting', 'watch']
 

@@ -1,4 +1,9 @@
 # CommentCoreLibrary 弹幕核心通用构件
+[![NPM version](https://badge.fury.io/js/comment-core-library.svg)](http://badge.fury.io/js/comment-core-library)
+[![Bower version](https://badge.fury.io/bo/comment-core-library.svg)](http://badge.fury.io/bo/comment-core-library)
+[![Built with Grunt](https://cdn.gruntjs.com/builtwith.png)](http://gruntjs.com/)
+[![License](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
+
 The CommentCoreLibrary is a set of Javascript modules that make up the
 core controller for comments streaming on top of timed media (video or audio).
 It is intended as a catalyst for the development of timed "danmaku" comments
@@ -19,10 +24,10 @@ to use this in any project, you can simply include the following line:
     CommentCoreLibrary (//github.com/jabbany/CommentCoreLibrary) - Licensed under the MIT license
 
 ## Installing
-With [bower](http://bower.io/)
+With [bower](http://bower.io/):
 `bower install comment-core-library`
 
-With [npm](https://www.npmjs.org/)
+With [npm](https://www.npmjs.org/):
 `npm install comment-core-library`
 
 For Rails, installing with [rails-assets](https://rails-assets.org/) is recommended
@@ -35,8 +40,8 @@ gem 'rails-assets-comment-core-library'
 ```
 
 ## Examples and Documentation
-- Documentation can be found inside the `docs/` folder.
-- Some sample extension modules may be found in `extend/`.
+- [Documentation](docs/) can be found inside the `docs/` folder.
+- Some sample extension modules may be found in `src/extend/`.
 - Experimental modules are in `experimental/`.
 - You may test using test data found in `tests/`.
 
@@ -55,7 +60,7 @@ implementation of a video player with CommentCoreLibrary.
 
 不管你在开发基于Javascript的Web服务，还是其他的需要弹幕播放功能服务，都可以参考弹幕核心
 的实现代码。我们以简单的方法构建了 (1) 时间轴管理 (2) 基础空间规划 (3) 弹幕过滤 (4)
-高级弹幕效果 (5) 基础格式解析 (6) 代码弹幕支持
+高级弹幕效果 (5) 基础格式解析 (6) 代码弹幕支持。
 
 ## 测试
 你可以在[这里](http://jabbany.github.com/CommentCoreLibrary/demo) 访问到测试页面。
@@ -68,8 +73,8 @@ implementation of a video player with CommentCoreLibrary.
     CommentCoreLibrary (//github.com/jabbany/CommentCoreLibrary) - Licensed under the MIT license
 
 ## 使用
-- 有关本项目的文档可以在 `docs/` 文件夹里面找到。
-- 一些功能性扩展模块会出现在 `extend/` 中。
+- 有关本项目的[文档](docs/) 可以在 `docs/` 文件夹里面找到。
+- 一些功能性扩展模块会出现在 `src/extend/` 中。
 - 一些实验性模块在 `experimental/` 里。
 - 测试数据在 `tests/` 里。
 

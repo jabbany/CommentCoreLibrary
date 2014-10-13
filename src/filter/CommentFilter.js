@@ -73,7 +73,7 @@ function CommentFilter(){
 			size:cmtData.size,
 			stime:cmtData.stime,
 			hash:cmtData.hash,
-		}
+		};
 		if(this.rulebook[cmtData.mode] != null && this.rulebook[cmtData.mode].length > 0){
 			for(var i=0;i<this.rulebook[cmtData.mode];i++){
 				if(!this.isMatchRule(abstCmtData,this.rulebook[cmtData.mode][i]))

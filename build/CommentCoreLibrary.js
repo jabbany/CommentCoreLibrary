@@ -3,41 +3,617 @@
  * @license MIT
  * @author Jim Chen
  */
-Array.prototype.bsearch = function(what,how){
-	if(this.length == 0) return 0;
-	if(how(what,this[0]) < 0) return 0;
-	if(how(what,this[this.length - 1]) >=0) return this.length;
-	var low =0;
-	var i = 0;
-	var count = 0;
-	var high = this.length - 1;
-	while(low<=high){
-		i = Math.floor((high + low + 1)/2);
-		count++;
-		if(how(what,this[i-1])>=0 && how(what,this[i])<0){
-			return i;
-		}else if(how(what,this[i-1])<0){
-			high = i-1;
-		}else if(how(what,this[i])>=0){
-			low = i;
-		}else
-			console.error('Program Error');
-		if(count > 1500) console.error('Too many run cycles.');
-	}
-	return -1;
+var BinArray = (function(){
+	var BinArray = {};
+	BinArray.bsearch = function(arr, what, how){
+		if(arr.length == 0) return 0;
+		if(how(what,arr[0]) < 0) return 0;
+		if(how(what,arr[arr.length - 1]) >=0) return arr.length;
+		var low =0;
+		var i = 0;
+		var count = 0;
+		var high = arr.length - 1;
+		while(low<=high){
+			i = Math.floor((high + low + 1)/2);
+			count++;
+			if(how(what,arr[i-1])>=0 && how(what,arr[i])<0){
+				return i;
+			}else if(how(what,arr[i-1])<0){
+				high = i-1;
+			}else if(how(what,arr[i])>=0){
+				low = i;
+			}else
+				console.error('Program Error');
+			if(count > 1500) console.error('Too many run cycles.');
+		}
+		return -1;
+	};
+	BinArray.binsert = function(arr, what, how){
+		var index = BinArray.bsearch(arr,what,how);
+		arr.splice(index,0,what);
+		return index;
+	};
+	return BinArray;
+})();
+
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
 };
 
-Array.prototype.binsert = function(what,how){
-	this.splice(this.bsearch(what,how),0,what);
+var CommentSpaceAllocator = (function () {
+    function CommentSpaceAllocator(width, height) {
+        if (typeof width === "undefined") { width = 0; }
+        if (typeof height === "undefined") { height = 0; }
+        this._pools = [
+            []
+        ];
+        this.avoid = 1;
+        this._width = width;
+        this._height = height;
+    }
+    CommentSpaceAllocator.prototype.willCollide = function (existing, check) {
+        return existing.stime + existing.ttl >= check.stime + check.ttl / 2;
+    };
+
+    CommentSpaceAllocator.prototype.pathCheck = function (y, comment, pool) {
+        var bottom = y + comment.height;
+        var right = comment.right;
+        for (var i = 0; i < pool.length; i++) {
+            if (pool[i].y > bottom || pool[i].bottom < y) {
+                continue;
+            } else if (pool[i].right < comment.x || pool[i].x > right) {
+                if (this.willCollide(pool[i], comment)) {
+                    return false;
+                } else {
+                    continue;
+                }
+            } else {
+                return false;
+            }
+        }
+        return true;
+    };
+
+    CommentSpaceAllocator.prototype.assign = function (comment, cindex) {
+        while (this._pools.length <= cindex) {
+            this._pools.push([]);
+        }
+        var pool = this._pools[cindex];
+        if (pool.length === 0) {
+            comment.cindex = cindex;
+            return 0;
+        } else if (this.pathCheck(0, comment, pool)) {
+            comment.cindex = cindex;
+            return 0;
+        }
+        var y = 0;
+        for (var k = 0; k < pool.length; k++) {
+            y = pool[k].bottom + this.avoid;
+            if (y + comment.height > this._height) {
+                break;
+            }
+            if (this.pathCheck(y, comment, pool)) {
+                comment.cindex = cindex;
+                return y;
+            }
+        }
+
+        return this.assign(comment, cindex + 1);
+    };
+
+    CommentSpaceAllocator.prototype.add = function (comment) {
+        if (comment.height > this._height) {
+            comment.cindex = -2;
+            comment.y = 0;
+        } else {
+            comment.y = this.assign(comment, 0);
+            BinArray.binsert(this._pools[comment.cindex], comment, function (a, b) {
+                if (a.bottom < b.bottom) {
+                    return -1;
+                } else if (a.bottom > b.bottom) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            });
+        }
+    };
+
+    CommentSpaceAllocator.prototype.remove = function (comment) {
+        if (comment.cindex < 0) {
+            return;
+        }
+        if (comment.cindex >= this._pools.length) {
+            throw new Error("cindex out of bounds");
+        }
+        var index = this._pools[comment.cindex].indexOf(comment);
+        if (index < 0)
+            return;
+        this._pools[comment.cindex].splice(index, 1);
+    };
+
+    CommentSpaceAllocator.prototype.setBounds = function (width, height) {
+        this._width = width;
+        this._height = height;
+    };
+    return CommentSpaceAllocator;
+})();
+
+var AnchorCommentSpaceAllocator = (function (_super) {
+    __extends(AnchorCommentSpaceAllocator, _super);
+    function AnchorCommentSpaceAllocator() {
+        _super.apply(this, arguments);
+    }
+    AnchorCommentSpaceAllocator.prototype.add = function (comment) {
+        _super.prototype.add.call(this, comment);
+        comment.x = (this._width - comment.width) / 2;
+    };
+
+    AnchorCommentSpaceAllocator.prototype.willCollide = function (a, b) {
+        return true;
+    };
+
+    AnchorCommentSpaceAllocator.prototype.pathCheck = function (y, comment, pool) {
+        var bottom = y + comment.height;
+        for (var i = 0; i < pool.length; i++) {
+            if (pool[i].y > bottom || pool[i].bottom < y) {
+                continue;
+            } else {
+                return false;
+            }
+        }
+        return true;
+    };
+    return AnchorCommentSpaceAllocator;
+})(CommentSpaceAllocator);
+
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
 };
+var CoreComment = (function () {
+    function CoreComment(parent, init) {
+        if (typeof init === "undefined") { init = {}; }
+        this.mode = 1;
+        this.stime = 0;
+        this.text = "";
+        this.ttl = 4000;
+        this.dur = 4000;
+        this.cindex = -1;
+        this.motion = [];
+        this.movable = true;
+        this._alphaMotion = null;
+        this.absolute = true;
+        this.align = 0;
+        this._alpha = 1;
+        this._size = 25;
+        this._color = 0xffffff;
+        this._border = false;
+        this._shadow = true;
+        this._font = "";
+        if (!parent) {
+            throw new Error("Comment not bound to comment manager.");
+        } else {
+            this.parent = parent;
+        }
+        if (init.hasOwnProperty("stime")) {
+            this.stime = init["stime"];
+        }
+        if (init.hasOwnProperty("mode")) {
+            this.mode = init["mode"];
+        } else {
+            this.mode = 1;
+        }
+        if (init.hasOwnProperty("dur")) {
+            this.dur = init["dur"];
+            this.ttl = this.dur;
+        }
+        this.dur *= this.parent.options.global.scale;
+        this.ttl *= this.parent.options.global.scale;
+        if (init.hasOwnProperty("text")) {
+            this.text = init["text"];
+        }
+        if (init.hasOwnProperty("motion")) {
+            this._motionStart = [];
+            this._motionEnd = [];
+            this.motion = init["motion"];
+            var head = 0;
+            for (var i = 0; i < init["motion"].length; i++) {
+                this._motionStart.push(head);
+                var maxDur = 0;
+                for (var k in init["motion"][i]) {
+                    var m = init["motion"][i][k];
+                    maxDur = Math.max(m.dur, maxDur);
+                    if (m.easing === null || m.easing === undefined) {
+                        init["motion"][i][k]["easing"] = CoreComment.LINEAR;
+                    }
+                }
+                head += maxDur;
+                this._motionEnd.push(head);
+            }
+            this._curMotion = 0;
+        }
+        if (init.hasOwnProperty("color")) {
+            this._color = init["color"];
+        }
+        if (init.hasOwnProperty("size")) {
+            this._size = init["size"];
+        }
+        if (init.hasOwnProperty("border")) {
+            this._border = init["border"];
+        }
+        if (init.hasOwnProperty("opacity")) {
+            this._alpha = init["opacity"];
+        }
+        if (init.hasOwnProperty("alpha")) {
+            this._alphaMotion = init["alpha"];
+        }
+        if (init.hasOwnProperty("font")) {
+            this._font = init["font"];
+        }
+        if (init.hasOwnProperty("x")) {
+            this._x = init["x"];
+        }
+        if (init.hasOwnProperty("y")) {
+            this._y = init["y"];
+        }
+        if (init.hasOwnProperty("shadow")) {
+            this._shadow = init["shadow"];
+        }
+        if (init.hasOwnProperty("position")) {
+            if (init["position"] === "relative") {
+                this.absolute = false;
+                if (this.mode < 7) {
+                    console.warn("Using relative position for CSA comment.");
+                }
+            }
+        }
+    }
+    CoreComment.prototype.init = function (recycle) {
+        if (typeof recycle === "undefined") { recycle = null; }
+        if (recycle !== null) {
+            this.dom = recycle.dom;
+        } else {
+            this.dom = document.createElement("div");
+        }
+        this.dom.className = this.parent.options.global.className;
+        this.dom.appendChild(document.createTextNode(this.text));
+        this.dom.textContent = this.text;
+        this.dom.innerText = this.text;
+        this.size = this._size;
+        if (this._color != 0xffffff) {
+            this.color = this._color;
+        }
+        this.shadow = this._shadow;
+        if (this._border) {
+            this.border = this._border;
+        }
+        if (this._font !== "") {
+            this.font = this._font;
+        }
+        if (this._x !== undefined) {
+            this.x = this._x;
+        }
+        if (this._y !== undefined) {
+            this.y = this._y;
+        }
+        if (this._alpha !== 1 || this.parent.options.global.opacity < 1) {
+            this.alpha = this._alpha;
+        }
+        if (this.motion.length > 0) {
+            this.animate();
+        }
+    };
+
+    Object.defineProperty(CoreComment.prototype, "x", {
+        get: function () {
+            if (this._x === null || this._x === undefined) {
+                if (this.align % 2 === 0) {
+                    this._x = this.dom.offsetLeft;
+                } else {
+                    this._x = this.parent.width - this.dom.offsetLeft - this.width;
+                }
+            }
+            if (!this.absolute) {
+                return this._x / this.parent.width;
+            }
+            return this._x;
+        },
+        set: function (x) {
+            this._x = x;
+            if (!this.absolute) {
+                this._x *= this.parent.width;
+            }
+            if (this.align % 2 === 0) {
+                this.dom.style.left = this._x + "px";
+            } else {
+                this.dom.style.right = this._x + "px";
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+
+    Object.defineProperty(CoreComment.prototype, "y", {
+        get: function () {
+            if (this._y === null || this._y === undefined) {
+                if (this.align < 2) {
+                    this._y = this.dom.offsetTop;
+                } else {
+                    this._y = this.parent.height - this.dom.offsetTop - this.height;
+                }
+            }
+            if (!this.absolute) {
+                return this._y / this.parent.height;
+            }
+            return this._y;
+        },
+        set: function (y) {
+            this._y = y;
+            if (!this.absolute) {
+                this._y *= this.parent.height;
+            }
+            if (this.align < 2) {
+                this.dom.style.top = this._y + "px";
+            } else {
+                this.dom.style.bottom = this._y + "px";
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+
+    Object.defineProperty(CoreComment.prototype, "bottom", {
+        get: function () {
+            return this.y + this.height;
+        },
+        enumerable: true,
+        configurable: true
+    });
+
+    Object.defineProperty(CoreComment.prototype, "right", {
+        get: function () {
+            return this.x + this.width;
+        },
+        enumerable: true,
+        configurable: true
+    });
+
+    Object.defineProperty(CoreComment.prototype, "width", {
+        get: function () {
+            if (this._width === null || this._width === undefined) {
+                this._width = this.dom.offsetWidth;
+            }
+            return this._width;
+        },
+        set: function (w) {
+            this._width = w;
+            this.dom.style.width = this._width + "px";
+        },
+        enumerable: true,
+        configurable: true
+    });
+
+    Object.defineProperty(CoreComment.prototype, "height", {
+        get: function () {
+            if (this._height === null || this._height === undefined) {
+                this._height = this.dom.offsetHeight;
+            }
+            return this._height;
+        },
+        set: function (h) {
+            this._height = h;
+            this.dom.style.height = this._height + "px";
+        },
+        enumerable: true,
+        configurable: true
+    });
+
+    Object.defineProperty(CoreComment.prototype, "size", {
+        get: function () {
+            return this._size;
+        },
+        set: function (s) {
+            this._size = s;
+            this.dom.style.fontSize = this._size + "px";
+        },
+        enumerable: true,
+        configurable: true
+    });
+
+    Object.defineProperty(CoreComment.prototype, "color", {
+        get: function () {
+            return this._color;
+        },
+        set: function (c) {
+            this._color = c;
+            var color = c.toString(16);
+            color = color.length >= 6 ? color : new Array(6 - color.length + 1).join("0") + color;
+            this.dom.style.color = "#" + color;
+            if (this._color === 0) {
+                this.dom.className = this.parent.options.global.className + " rshadow";
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+
+    Object.defineProperty(CoreComment.prototype, "alpha", {
+        get: function () {
+            return this._alpha;
+        },
+        set: function (a) {
+            this._alpha = a;
+            this.dom.style.opacity = Math.min(this._alpha, this.parent.options.global.opacity) + "";
+        },
+        enumerable: true,
+        configurable: true
+    });
+
+    Object.defineProperty(CoreComment.prototype, "border", {
+        get: function () {
+            return this._border;
+        },
+        set: function (b) {
+            this._border = b;
+            if (this._border) {
+                this.dom.style.border = "1px solid #00ffff";
+            } else {
+                this.dom.style.border = "none";
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+
+    Object.defineProperty(CoreComment.prototype, "shadow", {
+        get: function () {
+            return this._shadow;
+        },
+        set: function (s) {
+            this._shadow = s;
+            if (!this._shadow) {
+                this.dom.className = this.parent.options.global.className + " noshadow";
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+
+    Object.defineProperty(CoreComment.prototype, "font", {
+        get: function () {
+            return this._font;
+        },
+        set: function (f) {
+            this._font = f;
+            if (this._font.length > 0) {
+                this.dom.style.fontFamily = this._font;
+            } else {
+                this.dom.style.fontFamily = "";
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+
+
+
+
+
+
+
+
+
+
+
+    CoreComment.prototype.time = function (time) {
+        this.ttl -= time;
+        if (this.ttl < 0) {
+            this.ttl = 0;
+        }
+        if (this.movable) {
+            this.update();
+        }
+        if (this.ttl <= 0) {
+            this.finish();
+        }
+    };
+
+    CoreComment.prototype.update = function () {
+        this.animate();
+    };
+
+    CoreComment.prototype.invalidate = function () {
+        this._x = null;
+        this._y = null;
+        this._width = null;
+        this._height = null;
+    };
+
+    CoreComment.prototype._execMotion = function (currentMotion, time) {
+        for (var prop in currentMotion) {
+            if (currentMotion.hasOwnProperty(prop)) {
+                var m = currentMotion[prop];
+                this[prop] = m.easing(Math.min(Math.max(time - m.delay, 0), m.dur), m.from, m.to - m.from, m.dur);
+            }
+        }
+    };
+
+    CoreComment.prototype.animate = function () {
+        if (this._alphaMotion) {
+            this.alpha = (this.dur - this.ttl) * (this._alphaMotion["to"] - this._alphaMotion["from"]) / this.dur + this._alphaMotion["from"];
+        }
+        if (this.motion.length === 0) {
+            return;
+        }
+        var ttl = Math.max(this.ttl, 0);
+        var time = (this.dur - ttl) - this._motionStart[this._curMotion];
+        this._execMotion(this.motion[this._curMotion], time);
+        if (this.dur - ttl > this._motionEnd[this._curMotion]) {
+            this._curMotion++;
+            if (this._curMotion >= this.motion.length) {
+                this._curMotion = this.motion.length - 1;
+            }
+            return;
+        }
+    };
+
+    CoreComment.prototype.finish = function () {
+        this.parent.finish(this);
+    };
+
+    CoreComment.prototype.toString = function () {
+        return ["[", this.stime, "|", this.ttl, "/", this.dur, "]", "(", this.mode, ")", this.text].join("");
+    };
+    CoreComment.LINEAR = function (t, b, c, d) {
+        return t * c / d + b;
+    };
+    return CoreComment;
+})();
+
+var ScrollComment = (function (_super) {
+    __extends(ScrollComment, _super);
+    function ScrollComment(parent, data) {
+        _super.call(this, parent, data);
+        this.dur *= this.parent.options.scroll.scale;
+        this.ttl *= this.parent.options.scroll.scale;
+    }
+    Object.defineProperty(ScrollComment.prototype, "alpha", {
+        set: function (a) {
+            this._alpha = a;
+            this.dom.style.opacity = Math.min(Math.min(this._alpha, this.parent.options.global.opacity), this.parent.options.scroll.opacity) + "";
+        },
+        enumerable: true,
+        configurable: true
+    });
+
+    ScrollComment.prototype.init = function (recycle) {
+        if (typeof recycle === "undefined") { recycle = null; }
+        _super.prototype.init.call(this, recycle);
+        this.x = this.parent.width;
+        if (this.parent.options.scroll.opacity < 1) {
+            this.alpha = this._alpha;
+        }
+        this.absolute = true;
+    };
+
+    ScrollComment.prototype.update = function () {
+        this.x = (this.ttl / this.dur) * (this.parent.width + this.width) - this.width;
+    };
+    return ScrollComment;
+})(CoreComment);
 
 /** 
- * Comment Filters Module
+ * Comment Filters Module Simplified (only supports modifiers & types)
  * @license MIT
  * @author Jim Chen
  */
 function CommentFilter(){
-	this.rulebook = {"all":[]};
 	this.modifiers = [];
 	this.runtime = null;
 	this.allowTypes = {
@@ -55,86 +631,16 @@ function CommentFilter(){
 		}
 		return cmt;
 	};
-	this.isMatchRule = function(cmtData,rule){
-		switch(rule['operator']){
-			case '==':if(cmtData[rule['subject']] == rule['value']){return false;};break;
-			case '>':if(cmtData[rule['subject']] > rule['value']){return false;};break;
-			case '<':if(cmtData[rule['subject']] < rule['value']){return false;};break;
-			case 'range':if(cmtData[rule['subject']] > rule.value.min && cmtData[rule['subject']] < rule.value.max){return false;};break;
-			case '!=':if(cmtData[rule['subject']] != rule.value){return false;}break;
-			case '~':if(new RegExp(rule.value).test(cmtData[rule[subject]])){return false;}break;
-			case '!~':if(!(new RegExp(rule.value).test(cmtData[rule[subject]]))){return false;}break;
-		}
-		return true;
-	};
 	this.beforeSend = function(cmt){
-		//Check with the rules upon size
-		var cmtMode = cmt.data.mode;
-		if(this.rulebook[cmtMode]!=null){
-			for(var i=0;i<this.rulebook[cmtMode].length;i++){
-				if(this.rulebook[cmtMode][i].subject == 'width' || this.rulebook[cmtMode][i].subject == 'height'){
-					if(this.rulebook[cmtMode][i].subject == 'width'){
-						switch(this.rulebook[cmtMode][i].operator){
-							case '>':if(this.rulebook[cmtMode][i].value < cmt.offsetWidth)return false;break;
-							case '<':if(this.rulebook[cmtMode][i].value > cmt.offsetWidth)return false;break;
-							case 'range':if(this.rulebook[cmtMode][i].value.max > cmt.offsetWidth && this.rulebook[cmtMode][i].min < cmt.offsetWidth)return false;break;
-							case '==':if(this.rulebook[cmtMode][i].value == cmt.offsetWidth)return false;break;
-							default:break;
-						}
-					}else{
-						switch(this.rulebook[cmtMode][i].operator){
-							case '>':if(this.rulebook[cmtMode][i].value < cmt.offsetHeight)return false;break;
-							case '<':if(this.rulebook[cmtMode][i].value > cmt.offsetHeight)return false;break;
-							case 'range':if(this.rulebook[cmtMode][i].value.max > cmt.offsetHeight && this.rulebook[cmtMode][i].min < cmt.offsetHeight)return false;break;
-							case '==':if(this.rulebook[cmtMode][i].value == cmt.offsetHeight)return false;break;
-							default:break;
-						}
-					}
-				}
-			}
-			return true;
-		}else{return true;}
+		return cmt;
 	}
 	this.doValidate = function(cmtData){
 		if(!this.allowTypes[cmtData.mode])
 			return false;
-		/** Create abstract cmt data **/
-		var abstCmtData = {
-			text:cmtData.text,
-			mode:cmtData.mode,
-			color:cmtData.color,
-			size:cmtData.size,
-			stime:cmtData.stime,
-			hash:cmtData.hash,
-		}
-		if(this.rulebook[cmtData.mode] != null && this.rulebook[cmtData.mode].length > 0){
-			for(var i=0;i<this.rulebook[cmtData.mode];i++){
-				if(!this.isMatchRule(abstCmtData,this.rulebook[cmtData.mode][i]))
-					return false;
-			}
-		}
-		for(var i=0;i<this.rulebook[cmtData.mode];i++){
-			if(!this.isMatchRule(abstCmtData,this.rulebook[cmtData.mode][i]))
-				return false;
-		}
 		return true;
 	};
 	this.addRule = function(rule){
-		if(this.rulebook[rule.mode + ""] == null)
-			this.rulebook[rule.mode + ""] = [];
-		/** Normalize Operators **/
-		switch(rule.operator){
-			case 'eq':
-			case 'equals':
-			case '=':rule.operator='==';break;
-			case 'ineq':rule.operator='!=';break;
-			case 'regex':
-			case 'matches':rule.operator='~';break;
-			case 'notmatch':
-			case 'iregex':rule.operator='!~';break;
-		}
-		this.rulebook[rule.mode].push(rule);
-		return (this.rulebook[rule.mode].length - 1);
+		
 	};
 	this.addModifier = function(f){
 		this.modifiers.push(f);
@@ -147,246 +653,6 @@ function CommentFilter(){
 	this.setRuntimeFilter = function(f){
 		this.runtime = f;
 	}
-}
-
-/** 
-Comment Space Allocators Classes
-Licensed Under MIT License
-You may create your own.
-**/
-function CommentSpaceAllocator(w,h){
-	this.width = w;
-	this.height = h;
-	this.dur = 4000;
-	this.pools = [[]];
-	this.pool = this.pools[0];
-	this.setBounds = function(w,h){this.width = w;this.height = h;};
-	this.add = function(cmt){
-		if(cmt.height >= this.height){
-			cmt.cindex = this.pools.indexOf(this.pool);
-			cmt.style.top = "0px";
-		}else{
-			cmt.cindex = this.pools.indexOf(this.pool);
-			cmt.style.top = this.setY(cmt) + "px";
-		}
-	};
-	this.remove = function(cmt){
-		var tpool = this.pools[cmt.cindex];
-		var index = tpool.indexOf(cmt);
-		if(index < 0) return;
-		tpool.splice(index, 1);
-	};
-	this.validateCmt = function(cmt){
-		cmt.bottom = cmt.offsetTop + cmt.offsetHeight;
-		cmt.y = cmt.offsetTop;
-		cmt.x = cmt.offsetLeft;
-		cmt.right = cmt.offsetLeft + cmt.offsetWidth;
-		if(!cmt.width || !cmt.height){
-			cmt.height = cmt.offsetHeight;
-			cmt.width = cmt.offsetWidth;
-		}
-		cmt.top = cmt.offsetTop;
-		cmt.left = cmt.offsetLeft;
-		return cmt;
-	};
-	this.setY = function(cmt,index){
-		if(!index)
-			var index = 0;
-		cmt = this.validateCmt(cmt);
-		if(this.pools.length <= index){
-			this.pools.push([]);
-		}
-		this.pool = this.pools[index];
-		if(this.pool.length == 0){
-			this.pool.push(cmt);	
-			return 0;
-		}
-		else if(this.vCheck(0,cmt)){
-			this.pool.binsert(cmt,function(a,b){
-					if(a.bottom < b.bottom){
-						return -1;
-					}else if (a.bottom == b.bottom){
-						return 0;
-					}else{return 1;}
-				});
-			return cmt.y;
-		}
-		var y=0;
-		for(var k=0;k<this.pool.length;k++){
-			y = this.pool[k].bottom + 1;
-			if(y + cmt.offsetHeight > this.height){
-				break;
-			}
-			if(this.vCheck(y,cmt)){
-				this.pool.binsert(cmt,function(a,b){
-					if(a.bottom < b.bottom){
-						return -1;
-					}else if (a.bottom == b.bottom){
-						return 0;
-					}else{return 1;}
-				});
-				return cmt.y;
-			}
-		}
-		return this.setY(cmt,index+1);
-	};
-	this.vCheck = function(y,cmt){
-		var bottom = y + cmt.height;
-		var right = cmt.x + cmt.width;
-		this.validateCmt(cmt);
-		for(var i=0;i<this.pool.length;i++){
-			this.pool[i] = this.validateCmt(this.pool[i]);
-			if(this.pool[i].y > bottom || this.pool[i].bottom < y)
-				continue;
-			else if(this.pool[i].right < cmt.x || this.pool[i].x > right){
-				if(this.getEnd(this.pool[i]) < this.getMiddle(cmt))
-					continue;
-				else
-					return false;
-			}else{
-				return false;}
-		}
-		cmt.y = y;
-		cmt.bottom = cmt.height + y;
-		return true;
-	};
-	this.getEnd  = function(cmt){
-		return cmt.stime + cmt.ttl;
-	};
-	this.getMiddle = function(cmt){
-		return cmt.stime + (cmt.ttl / 2);
-	};
-}
-function TopCommentSpaceAllocator(w,h){
-	var csa = new CommentSpaceAllocator(w,h);
-	csa.add = function (cmt){
-		csa.validateCmt(cmt);
-		cmt.style.left = (csa.width - cmt.width)/2 + "px";
-		if(cmt.height >= csa.height){
-			cmt.cindex = csa.pools.indexOf(csa.pool);
-			cmt.style.top = "0px";
-		}else{
-			cmt.cindex = csa.pools.indexOf(csa.pool);
-			cmt.style.top = csa.setY(cmt) + "px";
-		}
-	};
-	csa.vCheck = function(y,cmt){
-		var bottom = y + cmt.height;
-		for(var i=0;i<csa.pool.length;i++){
-			var c = csa.validateCmt(csa.pool[i]);
-			if(c.y > bottom || c.bottom < y){
-				continue;
-			}else{
-				return false;
-			}
-		}
-		cmt.y = y;
-		cmt.bottom = cmt.bottom + y;
-		return true;
-	};
-	this.setBounds = function(w,h){csa.setBounds(w,h);};
-	this.add = function(what){csa.add(what);};
-	this.remove = function(d){csa.remove(d);};
-}
-function BottomCommentSpaceAllocator(w,h){
-	var csa = new CommentSpaceAllocator(w,h);
-	csa.add = function (cmt){
-		cmt.style.top = "";
-		cmt.style.bottom = "0px";
-		csa.validateCmt(cmt);
-		cmt.style.left = (csa.width - cmt.width)/2 + "px";
-		if(cmt.height >= csa.height){
-			cmt.cindex = csa.pools.indexOf(csa.pool);
-			cmt.style.bottom = "0px";
-		}else{
-			cmt.cindex = csa.pools.indexOf(csa.pool);
-			cmt.style.bottom = csa.setY(cmt) + "px";
-		}
-	};
-	csa.validateCmt = function(cmt){
-		cmt.y = csa.height - (cmt.offsetTop + cmt.offsetHeight);
-		cmt.bottom = cmt.y + cmt.offsetHeight;
-		cmt.x = cmt.offsetLeft;
-		cmt.right = cmt.offsetLeft + cmt.offsetWidth;
-		cmt.height = cmt.offsetHeight;
-		cmt.width = cmt.offsetWidth;
-		cmt.top = cmt.y;
-		cmt.left = cmt.offsetLeft;
-		return cmt;
-	};
-	csa.vCheck = function(y,cmt){
-		var bottom = y + cmt.height;
-		for(var i=0;i<csa.pool.length;i++){
-			var c = csa.validateCmt(csa.pool[i]);
-			if(c.y > bottom || c.bottom < y){
-				continue;
-			}else{
-				return false;
-			}
-		}
-		cmt.y = y;
-		cmt.bottom = cmt.bottom + y;
-		return true;
-	};
-	this.setBounds = function(w,h){csa.setBounds(w,h);};
-	this.add = function(what){csa.add(what);};
-	this.remove = function(d){csa.remove(d);};
-}
-function ReverseCommentSpaceAllocator(w,h){
-	var csa= new CommentSpaceAllocator(w,h);
-	csa.vCheck = function(y,cmt){
-		var bottom = y + cmt.height;
-		var right = cmt.x + cmt.width;
-		this.validateCmt(cmt);
-		for(var i=0;i<this.pool.length;i++){
-			var c = this.validateCmt(this.pool[i]);
-			if(c.y > bottom || c.bottom < y)
-				continue;
-			else if(c.x > right || c.right < cmt.x){
-				if(this.getEnd(c) < this.getMiddle(cmt))
-					continue;
-				else
-					return false;
-			}else{
-				return false;}
-		}
-		cmt.y = y;
-		cmt.bottom = cmt.height + y;
-		return true;
-	}
-	this.setBounds = function(w,h){csa.setBounds(w,h);};
-	this.add = function(what){csa.add(what);};
-	this.remove = function(d){csa.remove(d);};
-}
-function BottomScrollCommentSpaceAllocator(w,h){
-	var csa = new CommentSpaceAllocator(w,h);
-	csa.validateCmt = function(cmt){
-		cmt.y = csa.height - (cmt.offsetTop + cmt.offsetHeight);
-		cmt.bottom = cmt.y + cmt.offsetHeight;
-		cmt.x = cmt.offsetLeft;
-		cmt.right = cmt.offsetLeft + cmt.offsetWidth;
-		cmt.height = cmt.offsetHeight;
-		cmt.width = cmt.offsetWidth;
-		cmt.top = cmt.y;
-		cmt.left = cmt.offsetLeft;
-		return cmt;
-	};
-	csa.add = function (cmt){
-		cmt.style.top = "";
-		cmt.style.bottom = "0px";
-		csa.validateCmt(cmt);
-		cmt.style.left = csa.width + "px";
-		if(cmt.height >= csa.height){
-			cmt.cindex = csa.pools.indexOf(csa.pool);
-			cmt.style.bottom = "0px";
-		}else{
-			cmt.cindex = csa.pools.indexOf(csa.pool);
-			cmt.style.bottom = csa.setY(cmt) + "px";
-		}
-	};
-	this.setBounds = function(w,h){csa.setBounds(w,h);};
-	this.add = function(what){csa.add(what);};
-	this.remove = function(d){csa.remove(d);};
 }
 
 /******
@@ -679,12 +945,6 @@ Licensed Under MIT License
  An alternative format comment parser
 **/
 function AcfunParser(jsond){
-	function fillRGB(string){
-		while(string.length < 6){
-			string = "0" + string;
-		}
-		return string;
-	}
 	var list = [];
 	try{
 		var jsondt = JSON.parse(jsond);
@@ -698,12 +958,12 @@ function AcfunParser(jsond){
 		var xc = jsondt[i]['c'].split(',');
 		if(xc.length > 0){
 			data.stime = parseFloat(xc[0]) * 1000;
-			data.color = '#' + fillRGB(parseInt(xc[1]).toString(16));
+			data.color = parseInt(xc[1])
 			data.mode = parseInt(xc[2]);
 			data.size = parseInt(xc[3]);
 			data.hash = xc[4];
 			data.date = parseInt(xc[5]);
-			data.position = "relative";
+			data.position = "absolute";
 			if(data.mode != 7){
 				data.text = jsondt[i].m.replace(/(\/n|\\n|\n|\r\n|\\r)/g,"\n");
 				data.text = data.text.replace(/\r/g,"\n");
@@ -720,9 +980,15 @@ function AcfunParser(jsond){
 					console.log('[Dbg] ' + data.text);
 					continue;
 				}
+				data.position = "relative";
 				data.text = x.n; /*.replace(/\r/g,"\n");*/
 				data.text = data.text.replace(/\ /g,"\u00a0");
 				console.log(data.text);
+				if(x.a != null){
+					data.opacity = x.a;
+				}else{
+					data.opacity = 1;
+				}
 				if(x.p != null){
 					data.x = x.p.x / 1000; // relative position
 					data.y = x.p.y / 1000;
@@ -731,25 +997,40 @@ function AcfunParser(jsond){
 					data.y = 0;
 				}
 				data.shadow = x.b;
-				data.duration = 4000;
+				data.dur = 4000;
 				if(x.l != null)
 					data.moveDelay = x.l * 1000;
 				if(x.z != null && x.z.length > 0){
 					data.movable = true;
-					data.toX = x.z[0].x / 1000;
-					data.toY = x.z[0].y / 1000;
-					data.alphaTo = x.z[0].t;
-					data.colorTo = x.z[0].c;
-					data.moveDuration = x.z[0].l != null ? (x.z[0].l * 1000) : 500;
-					data.duration = data.moveDelay + data.moveDuration;
+					data.motion = [];
+					var moveDuration = 0;
+					var last = {x:data.x, y:data.y, alpha:data.opacity, color:data.color};
+					for(var m = 0; m < x.z.length; m++){
+						var dur = x.z[m].l != null ? (x.z[m].l * 1000) : 500;
+						moveDuration += dur;
+						var motion = {
+							x:{from:last.x, to:x.z[m].x/1000, dur: dur, delay: 0},
+							y:{from:last.y, to:x.z[m].y/1000, dur: dur, delay: 0}
+						};
+						last.x = motion.x.to;
+						last.y = motion.y.to;
+						if(x.z[m].t !== last.alpha){
+							motion.alpha = {from:last.alpha, to:x.z[m].t, dur: dur, delay: 0};
+							last.alpha = motion.alpha.to;
+						}
+						if(x.z[m].c != null && x.z[m].c !== last.color){
+							motion.color = {from:last.color, to:x.z[m].c, dur: dur, delay: 0};
+							last.color = motion.color.to;
+						}
+						data.motion.push(motion);
+					}
+					data.dur = moveDuration + (data.moveDelay ? data.moveDelay : 0);
 				}
 				if(x.r != null && x.k != null){
 					data.rX = x.r;
 					data.rY = x.k;
 				}
-				if(x.a){
-					data.alphaFrom = x.a;
-				}
+				
 			}
 			list.push(data);
 		}
@@ -762,49 +1043,46 @@ Bilibili Format
 Licensed Under MIT License
  Takes in an XMLDoc/LooseXMLDoc and parses that into a Generic Comment List
 **/
-function BilibiliParser(xmlDoc, text, warn){
-	function fillRGB(string){
-		while(string.length < 6){
-			string = "0" + string;
-		}
-		return string;
-	}
-	
-	//Format the bili output to be json-valid
+function BilibiliParser(xmlDoc, text, warn){	
 	function format(string){
+		//Format the bili output to be json-valid
 		return string.replace(/\t/,"\\t");	
 	}
+	
 	if(xmlDoc !== null){
-        var elems = xmlDoc.getElementsByTagName('d');
-    }else{
-    	if(warn){
-    		if(!confirm("XML Parse Error. \n Allow tag soup parsing?\n[WARNING: This is unsafe.]")){
-    			return [];
-    		}
-    	}else{
-    		// clobber some potentially bad things
-        	text = text.replace(new RegExp("</([^d])","g"), "</disabled $1");
-        	text = text.replace(new RegExp("</(\S{2,})","g"), "</disabled $1");
-        	text = text.replace(new RegExp("<([^d/]\W*?)","g"), "<disabled $1");
-        	text = text.replace(new RegExp("<([^/ ]{2,}\W*?)","g"), "<disabled $1");
-        	console.log(text);
-    	}
-        var tmp = document.createElement("div");
-        tmp.innerHTML = text;
-        console.log(tmp);
-        var elems = tmp.getElementsByTagName('d');
-    }
+		var elems = xmlDoc.getElementsByTagName('d');
+	}else{
+		if(!document || !document.createElement){
+			//Maybe we are in a restricted context
+			return [];
+		}
+		if(warn){
+			if(!confirm("XML Parse Error. \n Allow tag soup parsing?\n[WARNING: This is unsafe.]")){
+				return [];
+			}
+		}else{
+			// clobber some potentially bad things
+			text = text.replace(new RegExp("</([^d])","g"), "</disabled $1");
+			text = text.replace(new RegExp("</(\S{2,})","g"), "</disabled $1");
+			text = text.replace(new RegExp("<([^d/]\W*?)","g"), "<disabled $1");
+			text = text.replace(new RegExp("<([^/ ]{2,}\W*?)","g"), "<disabled $1");
+		}
+		var tmp = document.createElement("div");
+		tmp.innerHTML = text;
+		var elems = tmp.getElementsByTagName('d');
+	}
+	
 	var tlist = [];
-	for(var i=0;i<elems.length;i++){
+	for(var i=0;i < elems.length;i++){
 		if(elems[i].getAttribute('p') != null){
 			var opt = elems[i].getAttribute('p').split(',');
 			if(!elems[i].childNodes[0])
 			  continue;
 			var text = elems[i].childNodes[0].nodeValue;
 			var obj = {};
-			obj.stime = Math.round(parseFloat(opt[0]*1000));
+			obj.stime = Math.round(parseFloat(opt[0])*1000);
 			obj.size = parseInt(opt[2]);
-			obj.color = "#" + fillRGB(parseInt(opt[3]).toString(16));
+			obj.color = parseInt(opt[3]);
 			obj.mode = parseInt(opt[1]);
 			obj.date = parseInt(opt[4]);
 			obj.pool = parseInt(opt[5]);
@@ -820,26 +1098,36 @@ function BilibiliParser(xmlDoc, text, warn){
 					try{
 						adv = JSON.parse(format(text));
 						obj.shadow = true;
-						obj.x = parseInt(adv[0]);
-						obj.y = parseInt(adv[1]);
+						obj.x = parseFloat(adv[0]);
+						obj.y = parseFloat(adv[1]);
+						if(Math.floor(obj.x) < obj.x || Math.floor(obj.y) < obj.y){
+							obj.position = "relative";
+						}
 						obj.text = adv[4].replace(/(\/n|\\n|\n|\r\n)/g, "\n");
 						obj.rZ = 0;
 						obj.rY = 0;
 						if(adv.length >= 7){
-							obj.rZ = parseInt(adv[5]);
-							obj.rY = parseInt(adv[6]);
+							obj.rZ = parseInt(adv[5], 10);
+							obj.rY = parseInt(adv[6], 10);
 						}
+						obj.motion = [];
 						obj.movable = false;
 						if(adv.length >= 11){
 							obj.movable = true;
-							obj.toX = adv[7];
-							obj.toY = adv[8];
-							obj.moveDuration = 500;
-							obj.moveDelay = 0;
-							if(adv[9]!='')
-								obj.moveDuration = adv[9];
-							if(adv[10]!="")
-								obj.moveDelay = adv[10];
+							var singleStepDur = 500;
+							var motion = {
+								x:{from: obj.x, to:parseFloat(adv[7]), dur:singleStepDur, delay:0},
+								y:{from: obj.y, to:parseFloat(adv[8]), dur:singleStepDur, delay:0},
+							};
+							if(adv[9] !== ''){
+								singleStepDur = parseInt(adv[9], 10);
+								motion.x.dur = singleStepDur;
+								motion.y.dur = singleStepDur;
+							}
+							if(adv[10] !== ''){
+								motion.x.delay = parseInt(adv[10], 10);
+								motion.y.delay = parseInt(adv[10], 10);
+							}
 							if(adv.length > 11){
 								obj.shadow = adv[11];
 								if(obj.shadow === "true"){
@@ -848,20 +1136,58 @@ function BilibiliParser(xmlDoc, text, warn){
 								if(obj.shadow === "false"){
 									obj.shadow = false;
 								}
-								if(adv[12]!=null)
+								if(adv[12] != null){
 									obj.font = adv[12];
+								}
+								if(adv.length > 14){
+									// Support for Bilibili Advanced Paths
+									if(obj.position === "relative"){
+										console.log("Cannot mix relative and absolute positioning");
+										obj.position = "absolute";
+									}
+									var path = adv[14];
+									var lastPoint = {x:motion.x.from, y:motion.y.from};
+									var pathMotion = [];
+									var regex = new RegExp("([a-zA-Z])\\s*(\\d+)[, ](\\d+)","g");
+									var counts = path.split(/[a-zA-Z]/).length - 1;
+									var m = regex.exec(path);
+									while(m !== null){
+										switch(m[1]){
+											case "M":{
+												lastPoint.x = parseInt(m[2],10);
+												lastPoint.y = parseInt(m[3],10);
+											}break;
+											case "L":{
+												pathMotion.push({
+													"x":{"from":lastPoint.x, "to":parseInt(m[2],10), "dur": singleStepDur / counts, "delay": 0},
+													"y":{"from":lastPoint.y, "to":parseInt(m[3],10), "dur": singleStepDur / counts, "delay": 0}
+												});
+												lastPoint.x = parseInt(m[2],10);
+												lastPoint.y = parseInt(m[3],10);
+											}break;
+										}
+										m = regex.exec(path);
+									}
+									motion = null;
+									obj.motion = pathMotion;
+								}
+							}
+							if(motion !== null){
+								obj.motion.push(motion);
 							}
 						}
-						obj.duration = 2500;
+						obj.dur = 2500;
 						if(adv[3] < 12){
-							obj.duration = adv[3] * 1000;
+							obj.dur = adv[3] * 1000;
 						}
-						obj.alphaFrom = 1;
-						obj.alphaTo = 1;
 						var tmp = adv[2].split('-');
 						if(tmp != null && tmp.length>1){
-							obj.alphaFrom = parseFloat(tmp[0]);
-							obj.alphaTo = parseFloat(tmp[1]);
+							var alphaFrom = parseFloat(tmp[0]);
+							var alphaTo = parseFloat(tmp[1]);
+							obj.opacity = alphaFrom;
+							if(alphaFrom !== alphaTo){
+								obj.alpha = {from:alphaFrom, to:alphaTo}
+							}
 						}
 					}catch(e){
 						console.log('[Err] Error occurred in JSON parsing');
@@ -871,7 +1197,6 @@ function BilibiliParser(xmlDoc, text, warn){
 					obj.code = text; //Code comments are special
 				}
 			}
-			//Before we push
 			if(obj.text != null)
 				obj.text = obj.text.replace(/\u25a0/g,"\u2588");
 			tlist.push(obj);

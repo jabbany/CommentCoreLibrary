@@ -1,4 +1,4 @@
-# 弹幕类型说明
+# 弹幕类型说明 Types
 弹幕播放器自主支持以下类型的弹幕模式：
 * 1 - 上端滚动弹幕
 * 2 - 下端滚动弹幕
@@ -46,6 +46,17 @@
 定位移动弹幕允许用户指定了扩展弹幕后进行移动，由初始位置(x,y)线性移动到(toX,toY)，同时 dur 表示整个移动的时长（默认500ms），delay 表示移动的滞后时间（默认为0ms)。
 定位移动开始于弹幕生命周期的delay，并完结于生命周期的 (delay+dur) 时间。如果(delay+dur)>duration，则移动会在duration到达时终止（注意此时可能并未到达移动终点）
 定位弹幕的Shadow为"true"或"false"字符串，若为false则文字不钩边。font如果指定，则会改变当前弹幕的字体。linear目前暂时不起作用。
+
+### 定位移动弹幕轨道跟踪模式
+    可选参量：Array[x,y,opacity,duration,text,rotateZ,rotateY,toX,toY,dur,delay,shadow,font,linear,path]
+定位移动弹幕轨道跟踪模式允许定位弹幕沿着轨道path进行线性跟踪。path的格式类似于 SVG 的轨道定义，其中目前支持的是`L`和`M`参数。形似：`M100,100L200,200L200,400L400,400L100,100`
+- `M`: Move to (x, y) ：表示轨迹的起点，一般来说只应该出现一次。
+- `L`: Line to (x, y) ：表示轨迹的中继连线。它表示从上一个坐标到现在坐标进行连线。
+- `C`: Curve to (cx, cy, ax, ay) ：表示轨迹中从现在的坐标到 (ax,ay) 经过控制点 (cx,cy) 进行贝塞尔曲线运动
+- `Q`: Quadratic curve to （不支持）
+- `A`: Elliptical Arc （不支持）
+
+其中如果字母是小写的，采用相对坐标，否则采用绝对坐标。
 
 ## 代码弹幕
 ### 标准代码弹幕
