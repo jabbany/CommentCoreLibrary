@@ -9,6 +9,10 @@ CCL包括一套尽可能完备的文档来帮助二次开发。文档主要针�
 - [CommentManager 弹幕管理器](CommentManager.md)
 - [CommentObject 弹幕对象](CommentObject.md)
 
+### 使用方法参考（Customization）
+理论上CCL兼容的功能非常之多，但是并不是所有的功能都在库中有实现，有关实现一些效果的较好的做法，请参考
+[DoingItRight 推荐使用方法](DoingItRight.md)
+
 ## 如何架设（How to Deploy）
 CommentCoreLibrary主要包括两个部分，CommentCore主体和KagerouEngine代码弹幕支持引擎。
 
