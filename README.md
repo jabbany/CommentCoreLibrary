@@ -1,7 +1,6 @@
 # CommentCoreLibrary 弹幕核心通用构件
 [![NPM version](https://badge.fury.io/js/comment-core-library.svg)](http://badge.fury.io/js/comment-core-library)
 [![Bower version](https://badge.fury.io/bo/comment-core-library.svg)](http://badge.fury.io/bo/comment-core-library)
-[![Dependency Status](https://gemnasium.com/aptx4869/CommentCoreLibrary.svg)](https://gemnasium.com/aptx4869/CommentCoreLibrary)
 [![Built with Grunt](https://cdn.gruntjs.com/builtwith.png)](http://gruntjs.com/)
 
 
