@@ -3,7 +3,8 @@
 [![Bower version](https://badge.fury.io/bo/comment-core-library.svg)](http://badge.fury.io/bo/comment-core-library)
 [![Built with Grunt](https://cdn.gruntjs.com/builtwith.png)](http://gruntjs.com/)
 [![License](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
-
+[![Build Status: Linux](https://travis-ci.org/aptx4869/CommentCoreLibrary.svg?branch=auto-test)](https://travis-ci.org/aptx4869/CommentCoreLibrary)
+<!--[![Build Status: Linux](https://travis-ci.org/jabbany/CommentCoreLibrary.svg?branch=master)](https://travis-ci.org/jabbany/CommentCoreLibrary)-->
 The CommentCoreLibrary is a set of Javascript modules that make up the
 core controller for comments streaming on top of timed media (video or audio).
 It is intended as a catalyst for the development of timed "danmaku" comments
@@ -31,6 +32,7 @@ With [npm](https://www.npmjs.org/):
 `npm install comment-core-library`
 
 For Rails, installing with [rails-assets](https://rails-assets.org/) is recommended
+
 In Gemfile:
 ```ruby
 # Add https://rails-assets.org as the new gem source
