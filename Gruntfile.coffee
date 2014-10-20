@@ -140,6 +140,24 @@ module.exports = (grunt) ->
         # Run concat, autoprefixer, cssmin and uglify
         tasks: ['build']
 
+    jshint:
+      options:
+        curly:   true,
+        eqeqeq:  true,
+        immed:   true,
+        latedef: true,
+        newcap:  true,
+        noarg:   true,
+        sub:     true,
+        undef:   true,
+        boss:    true,
+        eqnull:  true,
+        node:    true,
+        strict:  false,
+        mocha:   true
+      all:
+        src: ['src/*.js']
+
     # Jasmine test
 
     jasmine:

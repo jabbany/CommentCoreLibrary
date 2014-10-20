@@ -6,9 +6,15 @@
 var BinArray = (function(){
 	var BinArray = {};
 	BinArray.bsearch = function(arr, what, how){
-		if(arr.length == 0) return 0;
-		if(how(what,arr[0]) < 0) return 0;
-		if(how(what,arr[arr.length - 1]) >=0) return arr.length;
+		if(arr.length === 0) {
+			return 0;
+		}
+		if(how(what,arr[0]) < 0) {
+			return 0;
+		}
+		if(how(what,arr[arr.length - 1]) >=0) {
+			return arr.length;
+		}
 		var low =0;
 		var i = 0;
 		var count = 0;
@@ -18,15 +24,17 @@ var BinArray = (function(){
 			count++;
 			if(how(what,arr[i-1])>=0 && how(what,arr[i])<0){
 				return i;
-			}else if(how(what,arr[i-1])<0){
+			}
+			if(how(what,arr[i-1])<0){
 				high = i-1;
 			}else if(how(what,arr[i])>=0){
 				low = i;
-			}else
+			}else {
 				console.error('Program Error');
-			if(count > 1500) console.error('Too many run cycles.');
+			}
+			if(count > 1500) { console.error('Too many run cycles.'); }
 		}
-		return -1;
+		return -1; //this line can never been run
 	};
 	BinArray.binsert = function(arr, what, how){
 		var index = BinArray.bsearch(arr,what,how);
