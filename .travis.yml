@@ -7,3 +7,4 @@ before_script:
   - npm install -g grunt-cli
 script:
   - grunt test
+  - cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js

@@ -169,7 +169,10 @@ module.exports = (grunt) ->
           helpers: 'spec/*helper.js'
           template: require('grunt-template-jasmine-istanbul')
           templateOptions:
-            report:   'coverage'
+            report:
+              type: 'lcovonly'
+              options:
+                dir:  'coverage'
             coverage: 'coverage/coverage.json'
     coffee:
       glob_to_multiple:
