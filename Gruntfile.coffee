@@ -163,10 +163,26 @@ module.exports = (grunt) ->
     jasmine:
       coverage:
         src: 'src/**/*.js'
-        #src: 'build/CommentCoreLibrary.js'
         options:
           specs: 'compiled_spec/*spec.js'
           helpers: 'spec/*helper.js'
+          vendor: [
+            'node_modules/jasmine-jquery/vendor/jquery/jquery.js'
+            'node_modules/jasmine-jquery/lib/jasmine-jquery.js'
+          ]
+          template: require('grunt-template-jasmine-istanbul')
+          templateOptions:
+            report: 'coverage'
+            coverage: 'coverage/coverage.json'
+      ci:
+        src: 'build/CommentCoreLibrary.js'
+        options:
+          specs: 'compiled_spec/*spec.js'
+          helpers: 'spec/*helper.js'
+          vendor: [
+            'node_modules/jasmine-jquery/vendor/jquery/jquery.js'
+            'node_modules/jasmine-jquery/lib/jasmine-jquery.js'
+          ]
           template: require('grunt-template-jasmine-istanbul')
           templateOptions:
             report:
@@ -188,9 +204,10 @@ module.exports = (grunt) ->
   grunt.registerTask 'compile-ts-core', CMP_CORE_NAME
 
   # Register our tasks
-  grunt.registerTask 'test', ['coffee', 'jasmine']
+  grunt.registerTask 'test', ['coffee', 'jasmine:coverage']
   grunt.registerTask 'build-scripting', ['clean:scripting','concat:scripting_host', 'compile-ts-kagerou', 'copy:scripting_sandbox']
   grunt.registerTask 'build-core', ['compile-ts-core', 'concat:core_only', 'autoprefixer', 'cssmin', 'uglify:core_only']
   grunt.registerTask 'build', ['compile-ts-core', 'concat:all', 'autoprefixer', 'cssmin', 'uglify:all']
+  grunt.registerTask 'ci', ['build', 'coffee', 'jasmine:ci']
   grunt.registerTask 'default', ['clean', 'build', 'build-scripting', 'watch']
 
