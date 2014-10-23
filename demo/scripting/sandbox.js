@@ -46,10 +46,10 @@ window.addEventListener('load',function(){
 		window.sandbox.send("Update:DimensionUpdate", window.sandbox.getContext().getDimensions());
 	}
 	$("debug-basic").addEventListener("click", function(){
-		fetchFile("../../tests/scripting/manzoku.biliscript");
+		fetchFile("../../test/scripting/manzoku.biliscript");
 	});
 	$("debug-svg-madoka").addEventListener("click", function(){
-		fetchFile("../../tests/scripting/madoka.biliscript");
+		fetchFile("../../test/scripting/madoka.biliscript");
 	});
 	$("show-console").addEventListener("click", function(){
 		$("codediv").style.display="none";
@@ -60,12 +60,12 @@ window.addEventListener('load',function(){
 		$("consolediv").style.display="none";
 	});
 	$("debug-3dsphere").addEventListener("click", function(){
-		fetchFile("../../tests/scripting/3dsphere.biliscript");
+		fetchFile("../../test/scripting/3dsphere.biliscript");
 	});
 	$("debug-custom").addEventListener("click", function(){
 		var file = prompt("Please input test file name:");
 		if(file !== null && file !== ""){
-			fetchFile("../../tests/scripting/" + file);
+			fetchFile("../../test/scripting/" + file);
 		}
 	});
 	$("debug-clear").addEventListener("click", function(){

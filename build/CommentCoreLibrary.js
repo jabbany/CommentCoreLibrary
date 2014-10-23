@@ -34,7 +34,7 @@ var BinArray = (function(){
 			}
 			if(count > 1500) { console.error('Too many run cycles.'); }
 		}
-		return -1; //this line can never been run
+		return -1; // Never actually run
 	};
 	BinArray.binsert = function(arr, what, how){
 		var index = BinArray.bsearch(arr,what,how);
@@ -994,7 +994,6 @@ function AcfunParser(jsond){
 				data.position = "relative";
 				data.text = x.n; /*.replace(/\r/g,"\n");*/
 				data.text = data.text.replace(/\ /g,"\u00a0");
-				console.log(data.text);
 				if(x.a != null){
 					data.opacity = x.a;
 				}else{

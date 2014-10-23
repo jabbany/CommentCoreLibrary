@@ -1,6 +1,6 @@
 'use strict'
 describe 'AcfunFormat', ->
-  jasmine.getFixtures().fixturesPath = "tests/"
+  jasmine.getFixtures().fixturesPath = "test/"
   it 'works', ->
     json = readFixtures 'ACFun.json'
     comments = AcfunParser(json)

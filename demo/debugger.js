@@ -1,20 +1,20 @@
 // Debugger for demo
 var tests = {
-	"test-1":"tests/test.xml",
-	"test-2":"tests/test2.xml",
-	"test-3":"tests/rokubunnoichi.xml",
-	"test-4":"tests/mikunoshoushitsu.xml",
-	"test-5":"tests/unowen.xml",
-	"test-6":"tests/comment.xml",
-	"test-7":"tests/extended.xml",
-	"test-8":"tests/boss.xml",
-	"test-9":"tests/utsukushiki_mono.xml",
-	"test-s":"tests/scripting/kanpai.xml",
-	"test-ac-1":{"f":'tests/ACFun.json',"p":"acfun"},
-	"test-ac-2":{"f":'tests/ac940133.json',"p":"acfun"},
-    "test-ts-1":"tests/invalid/no_closing.xml",
-    "test-ts-2":"tests/invalid/syntax_error.xml",
-    "test-ts-3":"tests/invalid/xss.xml"
+	"test-1":"test/test.xml",
+	"test-2":"test/test2.xml",
+	"test-3":"test/rokubunnoichi.xml",
+	"test-4":"test/mikunoshoushitsu.xml",
+	"test-5":"test/unowen.xml",
+	"test-6":"test/comment.xml",
+	"test-7":"test/extended.xml",
+	"test-8":"test/boss.xml",
+	"test-9":"test/utsukushiki_mono.xml",
+	"test-s":"test/scripting/kanpai.xml",
+	"test-ac-1":{"f":'test/ACFun.json',"p":"acfun"},
+	"test-ac-2":{"f":'test/ac940133.json',"p":"acfun"},
+    "test-ts-1":"test/invalid/no_closing.xml",
+    "test-ts-2":"test/invalid/syntax_error.xml",
+    "test-ts-3":"test/invalid/xss.xml"
 };
 
 var debugs = {

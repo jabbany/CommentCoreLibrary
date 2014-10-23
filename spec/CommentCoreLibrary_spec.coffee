@@ -51,7 +51,7 @@ describe 'CommentManager', ->
         expect(manager.timeline).toEqual [c1, c2, c3, c4, c5]
 
       it 'smoking test', ->
-        jasmine.getFixtures().fixturesPath = "tests/"
+        jasmine.getFixtures().fixturesPath = "test/"
         comments = AcfunParser(readFixtures 'ac940133.json')
         # TODO: Construct a json that cover all types of comments
         # and use it for smoking test

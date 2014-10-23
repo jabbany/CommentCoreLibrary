@@ -1,6 +1,6 @@
 'use strict'
 describe 'BilibiliFormat', ->
-  jasmine.getFixtures().fixturesPath = "tests/"
+  jasmine.getFixtures().fixturesPath = "test/"
   it 'parses normal comments', ->
     xml_text = readFixtures 'av207527.xml'
     comments = BilibiliParser(null, xml_text)
