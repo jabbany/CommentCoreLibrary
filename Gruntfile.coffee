@@ -1,5 +1,7 @@
 module.exports = (grunt) ->
-  require('load-grunt-tasks') grunt
+  require('load-grunt-tasks') grunt , {
+    pattern: ['grunt-*', '!grunt-template-jasmine-istanbul']
+  }
   grunt.file.readJSON('package.json')
 
   # !! Compile configurations

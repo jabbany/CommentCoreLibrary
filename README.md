@@ -3,10 +3,8 @@
 [![Bower version](https://badge.fury.io/bo/comment-core-library.svg)](http://badge.fury.io/bo/comment-core-library)
 [![Built with Grunt](https://cdn.gruntjs.com/builtwith.png)](http://gruntjs.com/)
 [![License](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
-[![Build Status: Linux](https://travis-ci.org/aptx4869/CommentCoreLibrary.svg?branch=auto-test)](https://travis-ci.org/aptx4869/CommentCoreLibrary)
-<!--[![Build Status: Linux](https://travis-ci.org/jabbany/CommentCoreLibrary.svg?branch=master)](https://travis-ci.org/jabbany/CommentCoreLibrary)-->
-[![Coverage Status](https://coveralls.io/repos/aptx4869/CommentCoreLibrary/badge.png?branch=auto-test)](https://coveralls.io/r/aptx4869/CommentCoreLibrary?branch=auto-test)
-<!--[![Coverage Status](https://img.shields.io/coveralls/jabbany/CommentCoreLibrary.svg)](https://coveralls.io/r/jabbany/CommentCoreLibrary?branch=master)-->
+[![Build Status: Linux](https://travis-ci.org/jabbany/CommentCoreLibrary.svg?branch=master)](https://travis-ci.org/jabbany/CommentCoreLibrary)
+[![Coverage Status](https://img.shields.io/coveralls/jabbany/CommentCoreLibrary.svg)](https://coveralls.io/r/jabbany/CommentCoreLibrary?branch=master)
 
 The CommentCoreLibrary is a set of Javascript modules that make up the
 core controller for comments streaming on top of timed media (video or audio).
