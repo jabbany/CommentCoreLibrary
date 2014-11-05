@@ -2,6 +2,8 @@
 describe 'BilibiliFormat', ->
   jasmine.getFixtures().fixturesPath = "test/"
   it 'parses normal comments', ->
+    # TODO: Update testing to pass in an XML object instead of 
+    # relying on the unsafe innerHTML. 
     xml_text = readFixtures 'av207527.xml'
     comments = BilibiliParser(null, xml_text)
     expect(comments.length).toBe 12546
@@ -24,3 +26,10 @@ describe 'BilibiliFormat', ->
     expect(comments.length).toBe 654
     expect(comments[0].mode).toEqual 7
     expect(comments[653].mode).toEqual 8
+  
+  it 'parses advanced comments', ->
+    xml_text = readFixtures 'boss.xml'
+    comments = BilibiliParser(null, xml_text)
+    expect(comments.length).toBe 1000
+    expect(comments[0].mode).toEqual 7
+    expect(comments[0].motion).not.toBe null

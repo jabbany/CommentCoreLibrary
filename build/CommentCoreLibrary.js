@@ -951,10 +951,10 @@ var CommentManager = (function() {
 })();
 
 /** 
-AcFun Format
-Licensed Under MIT License
- An alternative format comment parser
-**/
+ * AcFun Format Parser
+ * @license MIT License
+ * An alternative format comment parser
+ */
 function AcfunParser(jsond){
 	var list = [];
 	try{
@@ -1049,13 +1049,13 @@ function AcfunParser(jsond){
 }
 
 /** 
-Bilibili Format
-Licensed Under MIT License
- Takes in an XMLDoc/LooseXMLDoc and parses that into a Generic Comment List
-**/
+ * Bilibili Format Parser
+ * @license MIT License
+ * Takes in an XMLDoc/LooseXMLDoc and parses that into a Generic Comment List
+ **/
 function BilibiliParser(xmlDoc, text, warn){	
 	function format(string){
-		//Format the bili output to be json-valid
+		// Format the comment text to be JSON Valid.
 		return string.replace(/\t/,"\\t");	
 	}
 	
@@ -1063,7 +1063,7 @@ function BilibiliParser(xmlDoc, text, warn){
 		var elems = xmlDoc.getElementsByTagName('d');
 	}else{
 		if(!document || !document.createElement){
-			//Maybe we are in a restricted context
+			// Maybe we are in a restricted context? Bail.
 			return [];
 		}
 		if(warn){
@@ -1071,7 +1071,7 @@ function BilibiliParser(xmlDoc, text, warn){
 				return [];
 			}
 		}else{
-			// clobber some potentially bad things
+			// TODO: Make this safer in the future
 			text = text.replace(new RegExp("</([^d])","g"), "</disabled $1");
 			text = text.replace(new RegExp("</(\S{2,})","g"), "</disabled $1");
 			text = text.replace(new RegExp("<([^d/]\W*?)","g"), "<disabled $1");
