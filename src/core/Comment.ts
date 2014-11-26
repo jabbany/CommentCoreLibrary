@@ -1,6 +1,9 @@
 /**
  * Basic Comment Abstraction
- * Built on DOM actions
+ *
+ * @author Jim Chen
+ * @license MIT License
+ * @description Comment abstraction based on DOM implementation
  */
 /// <reference path="Core.d.ts" />
 class CoreComment implements IComment {
@@ -42,10 +45,10 @@ class CoreComment implements IComment {
     private _shadow:boolean = true;
     private _font:string = "";
 
-    public parent:CommentManager;
+    public parent:ICommentManager;
     public dom:HTMLDivElement;
 
-    constructor(parent:CommentManager, init:Object = {}) {
+    constructor(parent:ICommentManager, init:Object = {}) {
         if (!parent) {
             throw new Error("Comment not bound to comment manager.");
         } else {
@@ -409,7 +412,7 @@ class CoreComment implements IComment {
 }
 
 class ScrollComment extends CoreComment {
-    constructor(parent:CommentManager, data:Object) {
+    constructor(parent:ICommentManager, data:Object) {
         super(parent, data);
         this.dur *= this.parent.options.scroll.scale;
         this.ttl *= this.parent.options.scroll.scale;

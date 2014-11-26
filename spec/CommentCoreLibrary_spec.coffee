@@ -67,7 +67,6 @@ describe 'CommentManager', ->
     describe '.start', ->
       it 'starts the timer', ->
         manager.start()
-        manager.start()
         # TODO: figure out how to test the timer
         # maybe just add spy on window.setInterval
 
@@ -90,3 +89,20 @@ describe 'CommentManager', ->
         expect(manager.timeline).toEqual [c3, c5]
         manager.insert c4
         expect(manager.timeline).toEqual [c3, c4 , c5]
+        
+    describe '.addEventListener .dispatchEvent', ->
+      it 'add one event listener', ->
+        hasDispatchedEvent = false
+        manager.addEventListener 'myCustomEvent', ->
+          hasDispatchedEvent = true
+        manager.dispatchEvent 'myCustomEvent'
+        expect(hasDispatchedEvent).toBe true
+
+      it 'add multiple event listeners', ->
+        dispatchedEventId = 0
+        manager.addEventListener 'myCustomEvent', ->
+          dispatchedEventId = 1
+        manager.addEventListener 'myCustomEvent', ->
+          dispatchedEventId = 2
+        manager.dispatchEvent 'myCustomEvent'
+        expect(dispatchedEventId).toBe 2
