@@ -17,12 +17,14 @@ module.exports = (grunt) ->
   SRC_CORE_CMP = [
     'Comment'
     'CommentSpaceAllocator'
+    'css/CSSComment'
   ]
 
   SRC_CORE = [
     'src/Array.js'
     'src/core/CommentSpaceAllocator.js'
     'src/core/Comment.js'
+    'src/core/css/CSSComment.js'
     'src/filter/' + FilterType + 'Filter.js'
     'src/CommentCoreLibrary.js'
   ]

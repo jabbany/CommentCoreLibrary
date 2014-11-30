@@ -243,7 +243,7 @@ function bind(){
 	
 	function stop(){
 		if(state.mode === "timer"){
-			cm.stopTimer();
+			cm.stop();
 			$("control-status").className = "status";
 			clearInterval(tmr);
 			tmr = -1;
@@ -259,7 +259,7 @@ function bind(){
 		if(tmr !== -1)
 			return;
 		$("control-status").className = "status active";
-		cm.startTimer();
+		cm.start();
 		start = new Date().getTime() - playhead;
 		tmr = setInterval(function(){
 			playhead = new Date().getTime() - start;
@@ -281,7 +281,7 @@ function bind(){
 			trace("Loading " + dmf + " : " + provider);
 		}
 		CommentLoader('../' + dmf, cm, provider);
-		cm.startTimer();
+		cm.start();
 		$("control-status").className = "status active";
 		if(state.mode !== "timer"){
 			$("abpVideo").play();
@@ -526,16 +526,16 @@ function bindVideo(video, cm){
 		displayTime(Math.floor(video.currentTime * 1000));
 	});
 	video.addEventListener("play", function(){
-		cm.startTimer();
+		cm.start();
 	});
 	video.addEventListener("pause", function(){
-		cm.stopTimer();
+		cm.stop();
 	});
 	video.addEventListener("waiting", function(){
-		cm.stopTimer();
+		cm.stop();
 	});
 	video.addEventListener("playing",function(){
-		cm.startTimer();
+		cm.start();
 	});
 };
 
