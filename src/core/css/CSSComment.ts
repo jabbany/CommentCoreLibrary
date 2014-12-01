@@ -6,11 +6,39 @@
  * @description Comment abstraction based on CSS3 implementation
  */
 /// <reference path="../Comment.ts" />
+class CSSCompatLayer {
+    public static transform(dom:HTMLDivElement, trans:string):void{
+        dom.style.transform = trans;
+        dom.style["webkitTransform"] = trans;
+        dom.style["msTransform"] = trans;
+        dom.style["oTransform"] = trans;
+    }
+}
 class CSSScrollComment extends ScrollComment{
     private _dirtyCSS:boolean = true;
+    set x(x:number){
+        if(typeof this._x === "number") {
+            var dx:number = x - this._x;
+            this._x = x;
+            CSSCompatLayer.transform(this.dom, "translateX(" + dx + "px)");
+        }else{
+            this._x = x;
+            if (!this.absolute) {
+                this._x *= this.parent.width;
+            }
+            if (this.align % 2 === 0) {
+                this.dom.style.left = this._x + "px";
+            } else {
+                this.dom.style.right = this._x + "px";
+            }
+        }
+    }
+    get x():number{
+        return (this.ttl / this.dur) * (this.parent.width + this.width) - this.width;
+    }
     public update():void{
         if(this._dirtyCSS){
-            this.dom.style.transition = "left " + this.ttl + "ms linear, right " + this.ttl + "ms linear";
+            this.dom.style.transition = "transform " + this.ttl + "ms linear";
             this.x = - this.width;
             this._dirtyCSS = false;
         }
@@ -23,6 +51,8 @@ class CSSScrollComment extends ScrollComment{
 
     public stop():void{
         this.dom.style.transition = "";
+        this.x = this._x;
+        this._x = null;
         this.x = (this.ttl / this.dur) * (this.parent.width + this.width) - this.width;
         this._dirtyCSS = true;
     }
