@@ -79,6 +79,11 @@ var CommentManager = (function() {
 	/** Public **/
 	CommentManager.prototype.stop = function(){
 		this.stopTimer();
+        for(var i = 0; i < this.runline.length; i++){
+            if(typeof this.runline[i].stop !== "undefined"){
+                this.runline[i].stop();
+            }
+        }
 	};
 
 	CommentManager.prototype.start = function(){
@@ -197,7 +202,7 @@ var CommentManager = (function() {
 			if(data == null) return;
 		}
 		if(data.mode === 1 || data.mode === 2 || data.mode === 6){
-			var cmt = new ScrollComment(this, data);
+			var cmt = new CSSScrollComment(this, data);
 		}else{
 			var cmt = new CoreComment(this, data);
 		}

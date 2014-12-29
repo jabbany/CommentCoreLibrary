@@ -6,6 +6,22 @@
  * @description Comment management unit for CCL
  */
 /// <reference path="Core.d.ts" />
+class ScrollCommentFactory implements ICommentFactory{
+    public create(manager:ICommentManager, data:Object):ScrollComment{
+        return new ScrollComment(manager, data);
+    }
+}
+
+class CanvasCommentFactory implements ICommentFactory{
+    public canvas:HTMLCanvasElement;
+    constructor(canvas:HTMLCanvasElement){
+        this.canvas = canvas;
+    }
+    public create(manager:ICommentManager, data:Object):IComment{
+        return null;
+    }
+}
+
 class CommentManager implements ICommentManager {
     private _width:number = 0;
     private _height:number = 0;
@@ -22,7 +38,12 @@ class CommentManager implements ICommentManager {
         },
         "scroll": {
             "scale": 1,
-            "opacity": 1
+            "opacity": 1,
+            "factory":new ScrollCommentFactory()
+        },
+        "scripting":{
+            "mode":[8],
+            "engine": null
         }
     };
     public timeline:Array<Object> = [];
@@ -88,7 +109,9 @@ class CommentManager implements ICommentManager {
      * Clears all comments managed from the stage
      */
     public clear():void {
-
+        while(this.runline.length > 0){
+            this.runline[0].finish();
+        }
     }
 
     /**
@@ -96,6 +119,21 @@ class CommentManager implements ICommentManager {
      * @param data - abstract comment data
      */
     public send(data:Object):void {
+        if(!data.hasOwnProperty("mode")){
+            data["mode"] = 1;
+        }
+        if(this.options.scripting.mode.indexOf(data["mode"]) >= 0){
+            /** Scripting comment **/
+            if(this.options.scripting.engine !== null){
+                this.options.scripting.engine.eval(data["code"]);
+            }
+        }
+        var cmt:IComment;
+        if(data["mode"] === 1 || data["mode"] === 2 || data["mode"] === 6){
+            cmt = this.options.scroll.factory.create(this, data);
+        }else{
+            cmt = new CoreComment(this, data);
+        }
 
     }
 
@@ -151,7 +189,10 @@ class CommentManager implements ICommentManager {
     }
 
     public finish(cmt:IComment):void {
-
+        var index:number = this.runline.indexOf(cmt);
+        if(index >= 0){
+            this.runline.splice(index, 1);
+        }
     }
 
 }
