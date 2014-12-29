@@ -6,9 +6,15 @@
 var BinArray = (function(){
 	var BinArray = {};
 	BinArray.bsearch = function(arr, what, how){
-		if(arr.length == 0) return 0;
-		if(how(what,arr[0]) < 0) return 0;
-		if(how(what,arr[arr.length - 1]) >=0) return arr.length;
+		if(arr.length === 0) {
+			return 0;
+		}
+		if(how(what,arr[0]) < 0) {
+			return 0;
+		}
+		if(how(what,arr[arr.length - 1]) >=0) {
+			return arr.length;
+		}
 		var low =0;
 		var i = 0;
 		var count = 0;
@@ -18,15 +24,17 @@ var BinArray = (function(){
 			count++;
 			if(how(what,arr[i-1])>=0 && how(what,arr[i])<0){
 				return i;
-			}else if(how(what,arr[i-1])<0){
+			}
+			if(how(what,arr[i-1])<0){
 				high = i-1;
 			}else if(how(what,arr[i])>=0){
 				low = i;
-			}else
+			}else {
 				console.error('Program Error');
-			if(count > 1500) console.error('Too many run cycles.');
+			}
+			if(count > 1500) { console.error('Too many run cycles.'); }
 		}
-		return -1;
+		return -1; // Never actually run
 	};
 	BinArray.binsert = function(arr, what, how){
 		var index = BinArray.bsearch(arr,what,how);
@@ -940,10 +948,10 @@ CommentManager.prototype.finish = function(cmt){
 };
 
 /** 
-AcFun Format
-Licensed Under MIT License
- An alternative format comment parser
-**/
+ * AcFun Format Parser
+ * @license MIT License
+ * An alternative format comment parser
+ */
 function AcfunParser(jsond){
 	var list = [];
 	try{
@@ -983,7 +991,6 @@ function AcfunParser(jsond){
 				data.position = "relative";
 				data.text = x.n; /*.replace(/\r/g,"\n");*/
 				data.text = data.text.replace(/\ /g,"\u00a0");
-				console.log(data.text);
 				if(x.a != null){
 					data.opacity = x.a;
 				}else{
@@ -1039,13 +1046,13 @@ function AcfunParser(jsond){
 }
 
 /** 
-Bilibili Format
-Licensed Under MIT License
- Takes in an XMLDoc/LooseXMLDoc and parses that into a Generic Comment List
-**/
+ * Bilibili Format Parser
+ * @license MIT License
+ * Takes in an XMLDoc/LooseXMLDoc and parses that into a Generic Comment List
+ **/
 function BilibiliParser(xmlDoc, text, warn){	
 	function format(string){
-		//Format the bili output to be json-valid
+		// Format the comment text to be JSON Valid.
 		return string.replace(/\t/,"\\t");	
 	}
 	
@@ -1053,7 +1060,7 @@ function BilibiliParser(xmlDoc, text, warn){
 		var elems = xmlDoc.getElementsByTagName('d');
 	}else{
 		if(!document || !document.createElement){
-			//Maybe we are in a restricted context
+			// Maybe we are in a restricted context? Bail.
 			return [];
 		}
 		if(warn){
@@ -1061,7 +1068,7 @@ function BilibiliParser(xmlDoc, text, warn){
 				return [];
 			}
 		}else{
-			// clobber some potentially bad things
+			// TODO: Make this safer in the future
 			text = text.replace(new RegExp("</([^d])","g"), "</disabled $1");
 			text = text.replace(new RegExp("</(\S{2,})","g"), "</disabled $1");
 			text = text.replace(new RegExp("<([^d/]\W*?)","g"), "<disabled $1");

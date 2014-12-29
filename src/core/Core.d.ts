@@ -1,9 +1,24 @@
 /**
  * Core Definitions file
+ *
+ * @author Jim Chen
+ * @description Definitions file for interfaces used in CCL
  */
 
 interface IBinArray {
+    /**
+     * Binary insert into array
+     * @param arr - target array
+     * @param inserted - element to be inserted
+     * @param how - comparison function
+     */
     binsert(arr:Array<any>, inserted:any, how:Function):number;
+    /**
+     * Binary loose search
+     * @param arr - array to look in
+     * @param what - object to try to find
+     * @param how - comparison function
+     */
     bsearch(arr:Array<any>, what:any, how:Function):number;
 }
 declare var BinArray:IBinArray;
@@ -20,10 +35,14 @@ interface CCLOptions {
     }
 }
 
-interface CommentManager {
+interface ICommentManager {
     width:number;
     height:number;
     options:CCLOptions;
+    /**
+     * Cleanup the given comment since it has finished
+     * @param c - IComment
+     */
     finish(c:IComment):void;
 }
 

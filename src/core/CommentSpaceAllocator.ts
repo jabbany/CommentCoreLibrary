@@ -1,6 +1,9 @@
 /**
  * Basic Space Allocation Unit
- * For Static and Movable comments
+ *
+ * @author Jim Chen (jabbany)
+ * @license MIT License
+ * @description Comment space allocation units for static and movable comments
  */
 /// <reference path="Core.d.ts" />
 interface ISpaceAllocator {

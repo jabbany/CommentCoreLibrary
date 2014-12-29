@@ -1,8 +1,8 @@
 /** 
-AcFun Format
-Licensed Under MIT License
- An alternative format comment parser
-**/
+ * AcFun Format Parser
+ * @license MIT License
+ * An alternative format comment parser
+ */
 function AcfunParser(jsond){
 	var list = [];
 	try{
@@ -42,7 +42,6 @@ function AcfunParser(jsond){
 				data.position = "relative";
 				data.text = x.n; /*.replace(/\r/g,"\n");*/
 				data.text = data.text.replace(/\ /g,"\u00a0");
-				console.log(data.text);
 				if(x.a != null){
 					data.opacity = x.a;
 				}else{

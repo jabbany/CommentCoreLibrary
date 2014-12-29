@@ -3,6 +3,8 @@
 [![Bower version](https://badge.fury.io/bo/comment-core-library.svg)](http://badge.fury.io/bo/comment-core-library)
 [![Built with Grunt](https://cdn.gruntjs.com/builtwith.png)](http://gruntjs.com/)
 [![License](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
+[![Build Status: Linux](https://travis-ci.org/jabbany/CommentCoreLibrary.svg?branch=master)](https://travis-ci.org/jabbany/CommentCoreLibrary)
+[![Coverage Status](https://img.shields.io/coveralls/jabbany/CommentCoreLibrary.svg)](https://coveralls.io/r/jabbany/CommentCoreLibrary?branch=master)
 
 The CommentCoreLibrary is a set of Javascript modules that make up the
 core controller for comments streaming on top of timed media (video or audio).
@@ -31,6 +33,7 @@ With [npm](https://www.npmjs.org/):
 `npm install comment-core-library`
 
 For Rails, installing with [rails-assets](https://rails-assets.org/) is recommended
+
 In Gemfile:
 ```ruby
 # Add https://rails-assets.org as the new gem source
@@ -43,7 +46,7 @@ gem 'rails-assets-comment-core-library'
 - [Documentation](docs/) can be found inside the `docs/` folder.
 - Some sample extension modules may be found in `src/extend/`.
 - Experimental modules are in `experimental/`.
-- You may test using test data found in `tests/`.
+- You may test using test data found in `test/`.
 
 ## Contributing
 We encourage any contributions to this project, please read
@@ -76,7 +79,7 @@ implementation of a video player with CommentCoreLibrary.
 - 有关本项目的[文档](docs/) 可以在 `docs/` 文件夹里面找到。
 - 一些功能性扩展模块会出现在 `src/extend/` 中。
 - 一些实验性模块在 `experimental/` 里。
-- 测试数据在 `tests/` 里。
+- 测试数据在 `test/` 里。
 
 ## 做出贡献
 非常欢迎提交问题报告和意见建议，同时你也可以在GitHub上Fork本工程，并发送Pull请求来提交
