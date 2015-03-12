@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta http-equiv="X-UA-Compatible" value="IE=9">
+	<title>This is a Sample of the Library</title>
+	<!-- 在这里载入CCL的基础库 -->
+	<link rel="stylesheet" href="../../build/style.css" />
+	<script type="text/javascript" src="../../build/CommentCoreLibrary.js"></script>
+	<!-- 你还可以载入其他的库，比如jQuery之类的 -->
+	<link rel="stylesheet" href="my-page-styles.css" />
+</head>
+<body>
+	<!-- CommentCoreLibrary 的基础 DOM 结构。这个结构也可以动态生成，只要 class 设置正确即可 -->
+	<div id="my-player" class="abp" style="width:100%; height:300px; background:#000;">
+		<div id="my-comment-stage" class="container"></div>
+	</div>
+	
+	<!-- 当然可以放很多别的东西 -->
+	<div class="controlbox">
+		<h3>调试用绑定</h3>
+		<p>这里提供了一些调试用的绑定，可以通过操作它们感受操控 CCL 的方法。打开 main.js 就可以看到实现这些方法的绑定函数。</p>
+		<ul>
+			<li><a href="#" id="btnLoadTimeline">载入一个弹幕列表</a></li>
+			<li><a href="#" id="btnInsertTimeline">插入一个弹幕到弹幕列表</a></li>
+			<li><a href="#" id="btnTimer">启用/重置 定时器来告知播放器目前的播放位置</a> <span id="txPlayPos">0</span></li>
+		</ul>
+	</div>
+	
+	<!-- 下面接入 CCL 代码 -->
+	<script type="text/javascript" src="main.js"></script>
+</body>
+</html>
