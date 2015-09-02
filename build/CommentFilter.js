@@ -55,10 +55,11 @@ function CommentFilter(){
         return eval("a" + op + "b");
       }
     };
+    var config = this.config;
     for (var i = 0; i < this.rules.length; ++i){
-      if(!result) continue;
-      //if(this.rules[i].mode != 'all' && this.rules[i].mode != cmtData.mode) continue;
+      if(!result) break;
       var deal = null;
+
       switch(this.rules[i].operator){
         case '=':
         case '==':
@@ -86,37 +87,33 @@ function CommentFilter(){
           deal = compare('<='); break;
         case 'has':
         case 'contain':
-          deal = function(){
-            if (this.useRegExp){
+          deal = (function(){
+            if (config.useRegExp){
               return function(a, b){
                 var reg = new RegExp(b);
                 return reg.test(a);
               }
             } else {
               return function(a, b){
-                return a.indexOf(b);
+                return a.indexOf(b) > -1;
               }
             }
-          };
+          })();
           break;
         default:
           deal = function(){return true;}; break;
       }
       this.rules[i].item = this.rules[i].item.toLowerCase();
-      console.log(this.rules[i].item);
       console.log(cmtData);
-      console.log(cmtData[this.rules[i].item]);
-      console.log(this.rules[i].subject);
       result = !(deal(cmtData[this.rules[i].item], this.rules[i].subject));
     }
-    console.log(result);
     return result;
   };
   this.addRule = function(rule){
-    this.blockList.push(new RegExp(rule));
+    this.rules.push(rule);
   };
   this.delRule = function(index){
-    this.blockList.splice(index, 1);
+    this.rules.splice(index, 1);
   };
   this.addModifier = function(f){
     this.modifiers.push(f);
