@@ -174,8 +174,10 @@ var CommentManager = (function() {
 		}
 		for(;this.position < this.timeline.length;this.position++){
 			if(this.options.limit > 0 && this.runline.length > this.limiter) break;
-			if(this.validate(this.timeline[this.position]) && this.timeline[this.position]['stime']<=time){
-				this.send(this.timeline[this.position]);
+			if( this.timeline[this.position]['stime']<=time){
+				if(this.validate(this.timeline[this.position])){
+					this.send(this.timeline[this.position]);
+				}
 			}else{
 				break;
 			}
