@@ -667,7 +667,7 @@ function CommentFilter(){
  * Comment Core Library CommentManager
  * @license MIT
  * @author Jim Chen
- * 
+ *
  * Copyright (c) 2014 Jim Chen
  */
 var CommentManager = (function() {
@@ -692,7 +692,7 @@ var CommentManager = (function() {
 		}
 		return "matrix3d(" + matrix.join(",") + ")";
 	};
-	
+
 	function CommentManager(stageObject){
 		var __timer = 0;
 		this._listeners = {};
@@ -839,15 +839,17 @@ var CommentManager = (function() {
 		}
 		for(;this.position < this.timeline.length;this.position++){
 			if(this.options.limit > 0 && this.runline.length > this.limiter) break;
-			if(this.validate(this.timeline[this.position]) && this.timeline[this.position]['stime']<=time){
-				this.send(this.timeline[this.position]);
+			if(this.timeline[this.position]['stime']<=time){
+				if(this.validate(this.timeline[this.position])){
+					this.send(this.timeline[this.position]);
+				}
 			}else{
 				break;
 			}
 		}
 	};
 	CommentManager.prototype.rescale = function(){
-	
+		
 	};
 	CommentManager.prototype.send = function(data){
 		if(data.mode === 8){
