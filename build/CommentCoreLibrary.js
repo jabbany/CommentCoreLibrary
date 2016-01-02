@@ -824,23 +824,26 @@ var CommentManager = (function() {
 	};
 	CommentManager.prototype.init = function(){
 		this.setBounds();
-		if(this.filter == null)
+		if(this.filter == null) {
 			this.filter = new CommentFilter(); //Only create a filter if none exist
+		}
 	};
 	CommentManager.prototype.time = function(time){
 		time = time - 1;
 		if(this.position >= this.timeline.length || Math.abs(this.lastPos - time) >= 2000){
 			this.seek(time);
 			this.lastPos = time;
-			if(this.timeline.length <= this.position)
+			if(this.timeline.length <= this.position) {
 				return;
+			}
 		}else{
 			this.lastPos = time;
 		}
 		for(;this.position < this.timeline.length;this.position++){
-			if(this.options.limit > 0 && this.runline.length > this.limiter) break;
 			if(this.timeline[this.position]['stime']<=time){
-				if(this.validate(this.timeline[this.position])){
+				if(this.options.limit > 0 && this.runline.length > this.limiter) {
+					continue; // Skip comments but still move the position pointer
+				} else if(this.validate(this.timeline[this.position])){
 					this.send(this.timeline[this.position]);
 				}
 			}else{

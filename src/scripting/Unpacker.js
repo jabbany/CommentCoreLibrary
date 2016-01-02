@@ -599,9 +599,9 @@
 							cG = Math.floor((filter.params.color % 65536)/256), 
 							cB = filter.params.color % 256;
 						var cMatrix = [
-							0,0,0,cR,0,
-							0,0,0,cG,0,
-							0,0,0,cB,0,
+							0,0,0,cR/256,0,
+							0,0,0,cG/256,0,
+							0,0,0,cB/256,0,
 							0,0,0,1,0,
 						];
 						dFilter.appendChild(__("feColorMatrix",{
