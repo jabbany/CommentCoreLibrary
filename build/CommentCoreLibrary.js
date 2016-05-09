@@ -695,7 +695,10 @@ var CommentManager = (function() {
 
 	function CommentManager(stageObject){
 		var __timer = 0;
+		
 		this._listeners = {};
+		this._lastPosition = 0;
+		
 		this.stage = stageObject;
 		this.options = {
 			global:{
@@ -721,6 +724,7 @@ var CommentManager = (function() {
 			reverse:new CommentSpaceAllocator(0,0),
 			scrollbtm:new CommentSpaceAllocator(0,0)
 		};
+		
 		/** Precompute the offset width **/
 		this.width = this.stage.offsetWidth;
 		this.height = this.stage.offsetHeight;
@@ -830,14 +834,14 @@ var CommentManager = (function() {
 	};
 	CommentManager.prototype.time = function(time){
 		time = time - 1;
-		if(this.position >= this.timeline.length || Math.abs(this.lastPos - time) >= 2000){
+		if(this.position >= this.timeline.length || Math.abs(this.lastPosition - time) >= 2000){
 			this.seek(time);
-			this.lastPos = time;
+			this._lastPosition = time;
 			if(this.timeline.length <= this.position) {
 				return;
 			}
 		}else{
-			this.lastPos = time;
+			this._lastPosition = time;
 		}
 		for(;this.position < this.timeline.length;this.position++){
 			if(this.timeline[this.position]['stime']<=time){
