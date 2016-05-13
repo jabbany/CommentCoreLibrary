@@ -12,7 +12,7 @@
   "author": "Jim Chen <knh.jabbany@gmail.com>",
   "keywords": ["danmaku", "video", "comments", "CommentCoreLibrary"],
   "license":"MIT",
-  "version": "0.10.2-rc.1",
+  "version": "0.10.2-rc.2",
   "main": "build/CommentCoreLibrary.js",
   "devDependencies": {
     "grunt": "~0.4.1",
