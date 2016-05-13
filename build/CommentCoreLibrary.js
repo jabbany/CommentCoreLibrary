@@ -1340,7 +1340,7 @@ var CommentManager = (function() {
 	};
 	CommentManager.prototype.time = function(time){
 		time = time - 1;
-		if(this.position >= this.timeline.length || Math.abs(this.lastPosition - time) >= 2000){
+		if(this.position >= this.timeline.length || Math.abs(this._lastPosition - time) >= 2000){
 			this.seek(time);
 			this._lastPosition = time;
 			if(this.timeline.length <= this.position) {
