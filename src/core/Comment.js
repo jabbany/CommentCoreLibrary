@@ -391,6 +391,9 @@ var CoreComment = (function () {
         }
     };
 
+    CoreComment.prototype.stop = function () {
+    };
+
     CoreComment.prototype.finish = function () {
         this.parent.finish(this);
     };

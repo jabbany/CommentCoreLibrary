@@ -396,6 +396,14 @@ class CoreComment implements IComment {
     }
 
     /**
+     * Notify the comment to stop. This has no effect if the comment
+     * is driven by a timer.
+     */
+    public stop():void {
+        // Do nothing
+    }
+
+    /**
      * Remove the comment and do some cleanup.
      */
     public finish():void {

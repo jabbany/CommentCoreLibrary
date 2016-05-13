@@ -14,7 +14,8 @@ class CSSCompatLayer {
         dom.style["oTransform"] = trans;
     }
 }
-class CSSScrollComment extends ScrollComment{
+
+class CSSScrollComment extends ScrollComment {
     private _dirtyCSS:boolean = true;
     set x(x:number){
         if(typeof this._x === "number") {
@@ -49,6 +50,9 @@ class CSSScrollComment extends ScrollComment{
         this._dirtyCSS = true;
     }
 
+    /**
+     * Override the toplevel stop to actually stop the CSS.
+     */
     public stop():void{
         this.dom.style.transition = "";
         this.x = this._x;

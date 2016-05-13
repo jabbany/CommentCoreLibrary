@@ -391,6 +391,9 @@ var CoreComment = (function () {
         }
     };
 
+    CoreComment.prototype.stop = function () {
+    };
+
     CoreComment.prototype.finish = function () {
         this.parent.finish(this);
     };
@@ -446,6 +449,7 @@ var CSSCompatLayer = (function () {
     };
     return CSSCompatLayer;
 })();
+
 var CSSScrollComment = (function (_super) {
     __extends(CSSScrollComment, _super);
     function CSSScrollComment() {
