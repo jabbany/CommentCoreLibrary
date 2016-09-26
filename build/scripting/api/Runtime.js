@@ -9,18 +9,16 @@ var Runtime;
             this.callback = callback;
         }
         return RuntimeTimer;
-    })();
-
+    }());
     var TimerRuntime = (function () {
         function TimerRuntime(precision) {
-            if (typeof precision === "undefined") { precision = 10; }
+            if (precision === void 0) { precision = 10; }
             this._timer = -1;
             this._timers = [];
             this._lastToken = 0;
             this._key = 0;
             this._precision = precision;
         }
-
         Object.defineProperty(TimerRuntime.prototype, "isRunning", {
             get: function () {
                 return this._timer > -1;
@@ -28,14 +26,14 @@ var Runtime;
             set: function (state) {
                 if (state == false) {
                     this.stop();
-                } else {
+                }
+                else {
                     this.start();
                 }
             },
             enumerable: true,
             configurable: true
         });
-
         TimerRuntime.prototype.start = function () {
             if (this._timer < 0) {
                 this._lastToken = Date.now();
@@ -47,78 +45,77 @@ var Runtime;
                         if (timer.type === "timeout") {
                             timer.ttl -= elapsed;
                             if (timer.ttl <= 0) {
-                                try  {
+                                try {
                                     timer.callback();
-                                } catch (e) {
+                                }
+                                catch (e) {
                                     __trace(e.stack.toString(), "err");
                                 }
                                 _self._timers.splice(i, 1);
                                 i--;
                             }
-                        } else if (timer.type === "interval") {
+                        }
+                        else if (timer.type === "interval") {
                             timer.ttl -= elapsed;
                             if (timer.ttl <= 0) {
-                                try  {
+                                try {
                                     timer.callback();
-                                } catch (e) {
+                                }
+                                catch (e) {
                                     __trace(e.stack.toString(), "err");
                                 }
                                 timer.ttl += timer.dur;
                             }
-                        } else {
+                        }
+                        else {
                         }
                     }
                     _self._lastToken = Date.now();
                 }, this._precision);
             }
         };
-
         TimerRuntime.prototype.stop = function () {
             if (this._timer > -1) {
                 clearInterval(this._timer);
                 this._timer = -1;
             }
         };
-
         TimerRuntime.prototype.setInterval = function (f, interval) {
             var myKey = this._key++;
             this._timers.push(new RuntimeTimer("interval", interval, myKey, f));
             return myKey;
         };
-
         TimerRuntime.prototype.setTimeout = function (f, timeout) {
             var myKey = this._key++;
             this._timers.push(new RuntimeTimer("timeout", timeout, myKey, f));
             return myKey;
         };
-
         TimerRuntime.prototype.clearInterval = function (id) {
             for (var i = 0; i < this._timers.length; i++) {
-                if (this._timers[i].type === "interval" && this._timers[i].key === id) {
+                if (this._timers[i].type === "interval" &&
+                    this._timers[i].key === id) {
                     this._timers.splice(i, 1);
                     return;
                 }
             }
         };
-
         TimerRuntime.prototype.clearTimeout = function (id) {
             for (var i = 0; i < this._timers.length; i++) {
-                if (this._timers[i].type === "timeout" && this._timers[i].key === id) {
+                if (this._timers[i].type === "timeout" &&
+                    this._timers[i].key === id) {
                     this._timers.splice(i, 1);
                     return;
                 }
             }
         };
-
         TimerRuntime.prototype.clearAll = function () {
             this._timers = [];
         };
         return TimerRuntime;
-    })();
-
+    }());
     var Timer = (function () {
         function Timer(delay, repeatCount) {
-            if (typeof repeatCount === "undefined") { repeatCount = 0; }
+            if (repeatCount === void 0) { repeatCount = 0; }
             this._repeatCount = 0;
             this._delay = 0;
             this._microtime = 0;
@@ -129,7 +126,6 @@ var Runtime;
             this._delay = delay;
             this._repeatCount = repeatCount;
         }
-
         Object.defineProperty(Timer.prototype, "isRunning", {
             get: function () {
                 return this._timer >= 0;
@@ -140,7 +136,6 @@ var Runtime;
             enumerable: true,
             configurable: true
         });
-
         Timer.prototype.start = function () {
             if (!this.isRunning) {
                 var lastTime = Date.now();
@@ -154,50 +149,48 @@ var Runtime;
                         self.dispatchEvent("timer");
                     }
                     lastTime = Date.now();
-                    if (self._repeatCount > 0 && self._repeatCount <= self.currentCount) {
+                    if (self._repeatCount > 0 &&
+                        self._repeatCount <= self.currentCount) {
                         self.stop();
                         self.dispatchEvent("timerComplete");
                     }
                 }, 20);
             }
         };
-
         Timer.prototype.stop = function () {
             if (this.isRunning) {
                 clearInterval(this._timer);
                 this._timer = -1;
             }
         };
-
         Timer.prototype.reset = function () {
             this.stop();
             this.currentCount = 0;
             this._microtime = 0;
         };
-
         Timer.prototype.addEventListener = function (type, listener) {
             if (type === "timer") {
                 this._listeners.push(listener);
-            } else if (type === "timerComplete") {
+            }
+            else if (type === "timerComplete") {
                 this._complete.push(listener);
             }
         };
-
         Timer.prototype.dispatchEvent = function (event) {
             if (event === "timer") {
                 for (var i = 0; i < this._listeners.length; i++) {
                     this._listeners[i]();
                 }
-            } else if (event === "timerComplete") {
+            }
+            else if (event === "timerComplete") {
                 for (var i = 0; i < this._complete.length; i++) {
                     this._complete[i]();
                 }
             }
         };
         return Timer;
-    })();
+    }());
     Runtime.Timer = Timer;
-
     var masterTimer = new TimerRuntime();
     var internalTimer = new Timer(50);
     var enterFrameDispatcher = function () {
@@ -211,12 +204,10 @@ var Runtime;
     masterTimer.start();
     internalTimer.start();
     internalTimer.addEventListener("timer", enterFrameDispatcher);
-
     function getTimer() {
         return masterTimer;
     }
     Runtime.getTimer = getTimer;
-
     function updateFrameRate(frameRate) {
         if (frameRate > 60) {
             return;
@@ -236,7 +227,8 @@ var Runtime;
         }, function (result) {
             if (result === true) {
                 permissions[name] = true;
-            } else {
+            }
+            else {
                 permissions[name] = false;
             }
             if (typeof callback === "function") {
@@ -245,17 +237,16 @@ var Runtime;
         });
     }
     Runtime.requestPermission = requestPermission;
-
     function hasPermission(name) {
-        if (permissions.hasOwnProperty(name) && permissions[name]) {
+        if (permissions.hasOwnProperty(name) &&
+            permissions[name]) {
             return true;
         }
         return false;
     }
     Runtime.hasPermission = hasPermission;
-
     function openWindow(url, params, callback) {
-        if (typeof callback === "undefined") { callback = null; }
+        if (callback === void 0) { callback = null; }
         __channel("Runtime:PrivilegedAPI", {
             "method": "openWindow",
             "params": [url, params]
@@ -292,7 +283,6 @@ var Runtime;
         });
     }
     Runtime.openWindow = openWindow;
-
     function injectStyle(referenceObject, style) {
         __pchannel("Runtime:PrivilegedAPI", {
             "method": "injectStyle",
@@ -300,7 +290,6 @@ var Runtime;
         });
     }
     Runtime.injectStyle = injectStyle;
-
     function privilegedCode() {
         __trace("Runtime.privilegedCode not available.", "warn");
     }
@@ -310,7 +299,7 @@ var Runtime;
 (function (Runtime) {
     var MetaObject = (function () {
         function MetaObject(name, callback) {
-            if (typeof callback === "undefined") { callback = null; }
+            if (callback === void 0) { callback = null; }
             this._oncallback = null;
             this._name = name;
             this._oncallback = callback;
@@ -320,27 +309,22 @@ var Runtime;
                 this._oncallback(event, data);
             }
         };
-
         MetaObject.prototype.getId = function () {
             return this._name;
         };
-
         MetaObject.prototype.serialize = function () {
             return {
                 "class": this._name
             };
         };
         return MetaObject;
-    })();
-
+    }());
     var objCount = 0;
     var _registeredObjects = {
         "__self": new MetaObject("__self"),
         "__player": new MetaObject("__player"),
         "__root": new MetaObject("__root")
     };
-
-    Runtime.registeredObjects;
     Object.defineProperty(Runtime, 'registeredObjects', {
         get: function () {
             return _registeredObjects;
@@ -349,7 +333,6 @@ var Runtime;
             __trace("Runtime.registeredObjects is read-only", "warn");
         }
     });
-
     function _dispatchEvent(objectId, event, payload) {
         var obj = _registeredObjects[objectId];
         if (typeof obj === "object") {
@@ -357,17 +340,15 @@ var Runtime;
                 obj.dispatchEvent(event, payload);
         }
     }
-
     function hasObject(objectId) {
-        return _registeredObjects.hasOwnProperty(objectId) && _registeredObjects[objectId] !== null;
+        return _registeredObjects.hasOwnProperty(objectId) &&
+            _registeredObjects[objectId] !== null;
     }
     Runtime.hasObject = hasObject;
-
     function getObject(objectId) {
         return _registeredObjects[objectId];
     }
     Runtime.getObject = getObject;
-
     function registerObject(object) {
         if (!object.getId) {
             __trace("Attempted to register unnamed object", "warn");
@@ -380,19 +361,20 @@ var Runtime;
                 "data": object.serialize()
             });
             __schannel("object::(" + object.getId() + ")", function (payload) {
-                if (payload.hasOwnProperty("type") && payload.type === "event") {
+                if (payload.hasOwnProperty("type") &&
+                    payload.type === "event") {
                     _dispatchEvent(object.getId(), payload.event, payload.data);
                 }
             });
             objCount++;
             return;
-        } else {
+        }
+        else {
             __trace("Attempted to re-register object or id collision", "warn");
             return;
         }
     }
     Runtime.registerObject = registerObject;
-
     function deregisterObject(objectId) {
         if (Runtime.hasObject(objectId)) {
             if (objectId.substr(0, 2) === "__") {
@@ -413,18 +395,18 @@ var Runtime;
         }
     }
     Runtime.deregisterObject = deregisterObject;
-
     function generateId(type) {
-        if (typeof type === "undefined") { type = "obj"; }
-        var id = type + ":" + (new Date()).getTime() + "|" + Math.round(Math.random() * 4096) + ":" + objCount;
+        if (type === void 0) { type = "obj"; }
+        var id = type + ":" + (new Date()).getTime() + "|" +
+            Math.round(Math.random() * 4096) + ":" + objCount;
         while (Runtime.hasObject(id)) {
-            id = type + ":" + (new Date()).getTime() + "|" + Math.round(Math.random() * 4096) + ":" + objCount;
+            id = type + ":" + (new Date()).getTime() + "|" +
+                Math.round(Math.random() * 4096) + ":" + objCount;
         }
         return id;
     }
     Runtime.generateId = generateId;
     ;
-
     function reset() {
         for (var i in _registeredObjects) {
             if (i.substr(0, 2) !== "__") {
@@ -433,7 +415,6 @@ var Runtime;
         }
     }
     Runtime.reset = reset;
-
     function clear() {
         for (var i in _registeredObjects) {
             if (i.substr(0, 2) === "__")
@@ -444,19 +425,17 @@ var Runtime;
         }
     }
     Runtime.clear = clear;
-
     function crash() {
         __trace("Runtime.crash() : Manual crash", "fatal");
     }
     Runtime.crash = crash;
-
     function exit() {
         self.close();
     }
     Runtime.exit = exit;
-
     function alert(msg) {
         __achannel("Runtime::alert", "::Runtime", msg);
     }
     Runtime.alert = alert;
 })(Runtime || (Runtime = {}));
+//# sourceMappingURL=Runtime.js.map

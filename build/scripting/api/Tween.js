@@ -4,7 +4,6 @@ var Tween;
         return t * c / d + b;
     }
     Tween.linear = linear;
-
     function quadratic(t, b, c, d) {
         t /= d / 2;
         if (t < 1)
@@ -13,7 +12,6 @@ var Tween;
         return -c / 2 * (t * (t - 2) - 1) + b;
     }
     Tween.quadratic = quadratic;
-
     function cubic(t, b, c, d) {
         t /= d / 2;
         if (t < 1)
@@ -22,7 +20,6 @@ var Tween;
         return c / 2 * (t * t * t + 2) + b;
     }
     Tween.cubic = cubic;
-
     function quartic(t, b, c, d) {
         t /= d / 2;
         if (t < 1)
@@ -31,7 +28,6 @@ var Tween;
         return -c / 2 * (t * t * t * t - 2) + b;
     }
     Tween.quartic = quartic;
-
     function quintic(t, b, c, d) {
         t /= d / 2;
         if (t < 1)
@@ -40,7 +36,6 @@ var Tween;
         return c / 2 * (t * t * t * t * t + 2) + b;
     }
     Tween.quintic = quintic;
-
     function circuar(t, b, c, d) {
         t /= d / 2;
         if (t < 1)
@@ -49,12 +44,10 @@ var Tween;
         return c / 2 * (Math.sqrt(1 - t * t) + 1) + b;
     }
     Tween.circuar = circuar;
-
     function sine(t, b, c, d) {
         return -c / 2 * (Math.cos(Math.PI * t / d) - 1) + b;
     }
     Tween.sine = sine;
-
     function exponential(t, b, c, d) {
         t /= d / 2;
         if (t < 1)
@@ -63,7 +56,6 @@ var Tween;
         return c / 2 * (-Math.pow(2, -10 * t) + 2) + b;
     }
     Tween.exponential = exponential;
-
     function extendWithEasingFunctions(runtime) {
         var load = {
             linear: Tween.linear,
@@ -81,9 +73,8 @@ var Tween;
         }
     }
     Tween.extendWithEasingFunctions = extendWithEasingFunctions;
-
     function getEasingFuncByName(easing) {
-        if (typeof easing === "undefined") { easing = "None"; }
+        if (easing === void 0) { easing = "None"; }
         easing = easing.toLowerCase();
         switch (easing) {
             case "none":
@@ -108,13 +99,12 @@ var Tween;
     }
     Tween.getEasingFuncByName = getEasingFuncByName;
 })(Tween || (Tween = {}));
-
 Tween.extendWithEasingFunctions(self);
 var Tween;
 (function (Tween) {
     var ITween = (function () {
         function ITween(target, duration) {
-            if (typeof duration === "undefined") { duration = 0; }
+            if (duration === void 0) { duration = 0; }
             this._target = null;
             this._isPlaying = false;
             this._currentTime = 0;
@@ -123,7 +113,6 @@ var Tween;
             this.easing = Tween.linear;
             this._target = target;
             this._duration = duration;
-
             var timer = this._timer;
             var tween = this;
             this._timer.addEventListener("timer", function () {
@@ -143,7 +132,6 @@ var Tween;
                 }
             });
         }
-
         Object.defineProperty(ITween.prototype, "duration", {
             get: function () {
                 return this._duration;
@@ -154,8 +142,6 @@ var Tween;
             enumerable: true,
             configurable: true
         });
-
-
         Object.defineProperty(ITween.prototype, "position", {
             get: function () {
                 return this._currentTime;
@@ -166,8 +152,6 @@ var Tween;
             enumerable: true,
             configurable: true
         });
-
-
         Object.defineProperty(ITween.prototype, "repeat", {
             get: function () {
                 return this._repeats;
@@ -178,8 +162,6 @@ var Tween;
             enumerable: true,
             configurable: true
         });
-
-
         Object.defineProperty(ITween.prototype, "target", {
             get: function () {
                 return this._target;
@@ -191,31 +173,26 @@ var Tween;
             enumerable: true,
             configurable: true
         });
-
         ITween.prototype.clone = function () {
             var clone = new ITween(this._target, this._duration);
             clone.easing = this.easing;
             clone.step = this.step;
             return clone;
         };
-
         ITween.prototype.scale = function (factor) {
             this._currentTime *= factor;
             this._duration *= factor;
         };
-
         ITween.prototype.play = function () {
             if (this._isPlaying)
                 return;
             this.gotoAndPlay(this._currentTime);
         };
-
         ITween.prototype.stop = function () {
             if (!this._isPlaying)
                 return;
             this.gotoAndStop(this._currentTime);
         };
-
         ITween.prototype.gotoAndStop = function (position) {
             this._currentTime = position;
             if (this._isPlaying) {
@@ -224,7 +201,6 @@ var Tween;
             }
             this.step(this._target, this._currentTime, this._duration);
         };
-
         ITween.prototype.gotoAndPlay = function (position) {
             this._currentTime = position;
             if (!this._isPlaying) {
@@ -234,18 +210,17 @@ var Tween;
             }
             this.step(this._target, this._currentTime, this._duration);
         };
-
         ITween.prototype.togglePause = function () {
             if (this._isPlaying) {
                 this.stop();
-            } else {
+            }
+            else {
                 this.play();
             }
         };
         return ITween;
-    })();
+    }());
     Tween.ITween = ITween;
-
     function createStepFunction(object, dest, src, tween) {
         for (var property in dest) {
             if (!src.hasOwnProperty(property)) {
@@ -265,12 +240,11 @@ var Tween;
             }
         };
     }
-
     function tween(object, dest, src, duration, easing) {
-        if (typeof dest === "undefined") { dest = {}; }
-        if (typeof src === "undefined") { src = {}; }
-        if (typeof duration === "undefined") { duration = 0; }
-        if (typeof easing === "undefined") { easing = null; }
+        if (dest === void 0) { dest = {}; }
+        if (src === void 0) { src = {}; }
+        if (duration === void 0) { duration = 0; }
+        if (easing === void 0) { easing = null; }
         var t = new ITween(object, duration * 1000);
         t.step = createStepFunction(object, dest, src, t);
         if (easing !== null) {
@@ -279,17 +253,17 @@ var Tween;
         return t;
     }
     Tween.tween = tween;
-
     function to(object, dest, duration, easing) {
-        if (typeof dest === "undefined") { dest = {}; }
-        if (typeof duration === "undefined") { duration = 0; }
-        if (typeof easing === "undefined") { easing = null; }
+        if (dest === void 0) { dest = {}; }
+        if (duration === void 0) { duration = 0; }
+        if (easing === void 0) { easing = null; }
         var src = {};
         for (var x in dest) {
             if (dest.hasOwnProperty(x)) {
                 if (typeof object[x] !== "undefined") {
                     src[x] = object[x];
-                } else {
+                }
+                else {
                     src[x] = 0;
                 }
             }
@@ -297,19 +271,16 @@ var Tween;
         return Tween.tween(object, dest, src, duration, easing);
     }
     Tween.to = to;
-
     function beizer(object, dest, src, control) {
         return Tween.tween(object, dest, src);
     }
     Tween.beizer = beizer;
-
     function scale(src, scale) {
         var clone = src.clone();
         clone.scale(scale);
         return clone;
     }
     Tween.scale = scale;
-
     function delay(src, delay) {
         var newTween = new ITween(src.target, src.duration + delay * 1000);
         newTween.step = function (target, currentTime, totalTime) {
@@ -321,7 +292,6 @@ var Tween;
         return newTween;
     }
     Tween.delay = delay;
-
     function reverse(src) {
         var newTween = new ITween(src.target, src.duration);
         newTween.step = function (target, currentTime, totalTime) {
@@ -330,7 +300,6 @@ var Tween;
         return newTween;
     }
     Tween.reverse = reverse;
-
     function repeat(src, times) {
         var newTween = new ITween(src.target, src.duration * times);
         newTween.step = function (target, currentTime, totalTime) {
@@ -339,7 +308,6 @@ var Tween;
         return newTween;
     }
     Tween.repeat = repeat;
-
     function slice(src, from, to) {
         if (to === null) {
             to = src.duration;
@@ -356,11 +324,10 @@ var Tween;
         return newTween;
     }
     Tween.slice = slice;
-
     function serial() {
         var args = [];
-        for (var _i = 0; _i < (arguments.length - 0); _i++) {
-            args[_i] = arguments[_i + 0];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            args[_i - 0] = arguments[_i];
         }
         var totalTime = 0;
         var end = [];
@@ -377,7 +344,8 @@ var Tween;
                 var currentTween = args[newTween["lastSeek"]];
                 currentTween.step(currentTween.target, currentTime - start[newTween["lastSeek"]], currentTween.duration);
                 return;
-            } else {
+            }
+            else {
                 var oldTween = args[newTween["lastSeek"]];
                 oldTween.step(oldTween.target, oldTween.duration, oldTween.duration);
             }
@@ -393,11 +361,10 @@ var Tween;
         return newTween;
     }
     Tween.serial = serial;
-
     function parallel() {
         var args = [];
-        for (var _i = 0; _i < (arguments.length - 0); _i++) {
-            args[_i] = arguments[_i + 0];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            args[_i - 0] = arguments[_i];
         }
         var totalTime = 0;
         for (var i = 0; i < args.length; i++) {
@@ -414,3 +381,4 @@ var Tween;
     }
     Tween.parallel = parallel;
 })(Tween || (Tween = {}));
+//# sourceMappingURL=Tween.js.map

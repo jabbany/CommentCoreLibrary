@@ -25,7 +25,7 @@ var Player;
             };
         };
         return Sound;
-    })();
+    }());
 })(Player || (Player = {}));
 var Player;
 (function (Player) {
@@ -38,21 +38,8 @@ var Player;
     var _videoWidth;
     var _videoHeight;
     var _lastUpdate;
-
-    Player.state;
-    Player.time;
-    Player.commentList;
-    Player.refreshRate;
-    Player.width;
-    Player.height;
-    Player.videoWidth;
-    Player.videoHeight;
-    Player.version;
-
     Object.defineProperty(Player, 'state', {
-        get: function () {
-            return _state;
-        },
+        get: function () { return _state; },
         set: function (value) {
             __trace("Player.state is read-only", "warn");
         }
@@ -61,7 +48,8 @@ var Player;
         get: function () {
             if (_state !== "playing") {
                 return _time;
-            } else {
+            }
+            else {
                 return _time + (Date.now() - _lastUpdate);
             }
         },
@@ -84,33 +72,25 @@ var Player;
         }
     });
     Object.defineProperty(Player, 'width', {
-        get: function () {
-            return _width;
-        },
+        get: function () { return _width; },
         set: function (value) {
             __trace("Player.width is read-only", "warn");
         }
     });
     Object.defineProperty(Player, 'height', {
-        get: function () {
-            return _height;
-        },
+        get: function () { return _height; },
         set: function (value) {
             __trace("Player.height is read-only", "warn");
         }
     });
     Object.defineProperty(Player, 'videoWidth', {
-        get: function () {
-            return _videoWidth;
-        },
+        get: function () { return _videoWidth; },
         set: function (value) {
             __trace("Player.videoWidth is read-only", "warn");
         }
     });
     Object.defineProperty(Player, 'videoHeight', {
-        get: function () {
-            return _videoHeight;
-        },
+        get: function () { return _videoHeight; },
         set: function (value) {
             __trace("Player.videoHeight is read-only", "warn");
         }
@@ -123,21 +103,18 @@ var Player;
             __trace("Player.version is read-only", "warn");
         }
     });
-
     function play() {
         __pchannel("Player::action", {
             "action": "play"
         });
     }
     Player.play = play;
-
     function pause() {
         __pchannel("Player::action", {
             "action": "pause"
         });
     }
     Player.pause = pause;
-
     function seek(offset) {
         __pchannel("Player::action", {
             "action": "seek",
@@ -145,10 +122,9 @@ var Player;
         });
     }
     Player.seek = seek;
-
     function jump(video, page, newWindow) {
-        if (typeof page === "undefined") { page = 1; }
-        if (typeof newWindow === "undefined") { newWindow = false; }
+        if (page === void 0) { page = 1; }
+        if (newWindow === void 0) { newWindow = false; }
         __pchannel("Player::action", {
             "action": "jump",
             "params": {
@@ -159,25 +135,20 @@ var Player;
         });
     }
     Player.jump = jump;
-
     function commentTrigger(callback, timeout) {
     }
     Player.commentTrigger = commentTrigger;
-
     function keyTrigger(callback, timeout) {
     }
     Player.keyTrigger = keyTrigger;
-
     function setMask(mask) {
         __trace("Masking not supported yet", 'warn');
     }
     Player.setMask = setMask;
-
     function toString() {
         return "[player Player]";
     }
     Player.toString = toString;
-
     __schannel("Update:DimensionUpdate", function (payload) {
         _width = payload["stageWidth"];
         _height = payload["stageHeight"];
@@ -186,10 +157,10 @@ var Player;
             _videoHeight = payload["videoHeight"];
         }
     });
-
     __schannel("Update:TimeUpdate", function (payload) {
         _state = payload["state"];
         _time = payload["time"];
         _lastUpdate = Date.now();
     });
 })(Player || (Player = {}));
+//# sourceMappingURL=Player.js.map

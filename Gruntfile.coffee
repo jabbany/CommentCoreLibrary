@@ -44,28 +44,24 @@ module.exports = (grunt) ->
   CMP_CORE_TS = { }
   CMP_CORE_NAME = [ ]
   for target in SRC_CORE_CMP
-    CMP_CORE_NAME.push ("typescript:" + target)
+    CMP_CORE_NAME.push ("ts:" + target)
     CMP_CORE_TS[target] =
-      options:
-        target: 'es5'
-        basePath: 'src/core'
-      src:  "src/core/" + target + ".ts"
-      dest: "src/core/" + target + ".js"
+      src: ["src/core/" + target + ".ts"]
+      out: "src/core/" + target + ".js"
 
   # Dynamically generate the kagerou ts targets
   CMP_KAGEROU_TS = { }
   CMP_KAGEROU_NAME = [ ]
   for target,src of SRC_SCRIPTING_KAGEROU
-    CMP_KAGEROU_NAME.push ('typescript:kagerou_engine_' + target)
+    CMP_KAGEROU_NAME.push ('ts:kagerou_engine_' + target)
     CMP_KAGEROU_TS['kagerou_engine_' + target] =
-      options:
-        target: 'es5'
-        basePath: src.split('/')[0..-1].join('/')
       src: src
-      dest: 'build/scripting/api/' + src.split('/').pop().split('.')[0] + '.js'
+      out: 'build/scripting/api/' + src.split('/').pop().split('.')[0] + '.js'
 
   # Append Typescript Tasks
-  ts_config = {}
+  ts_config = 
+    options:
+      target: 'es5'
   for key,value of CMP_CORE_TS
     ts_config[key] = value
   for key,value of CMP_KAGEROU_TS
@@ -99,7 +95,7 @@ module.exports = (grunt) ->
           'build/CommentCoreLibrary.js': SRC_CORELIB
 
     # Compile TypeScript
-    typescript: ts_config
+    ts: ts_config
 
     # Copy
     copy:

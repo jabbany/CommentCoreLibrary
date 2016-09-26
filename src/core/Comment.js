@@ -1,12 +1,11 @@
-var __extends = this.__extends || function (d, b) {
+var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var CoreComment = (function () {
     function CoreComment(parent, init) {
-        if (typeof init === "undefined") { init = {}; }
+        if (init === void 0) { init = {}; }
         this.mode = 1;
         this.stime = 0;
         this.text = "";
@@ -26,7 +25,8 @@ var CoreComment = (function () {
         this._font = "";
         if (!parent) {
             throw new Error("Comment not bound to comment manager.");
-        } else {
+        }
+        else {
             this.parent = parent;
         }
         if (init.hasOwnProperty("stime")) {
@@ -34,7 +34,8 @@ var CoreComment = (function () {
         }
         if (init.hasOwnProperty("mode")) {
             this.mode = init["mode"];
-        } else {
+        }
+        else {
             this.mode = 1;
         }
         if (init.hasOwnProperty("dur")) {
@@ -103,10 +104,11 @@ var CoreComment = (function () {
         }
     }
     CoreComment.prototype.init = function (recycle) {
-        if (typeof recycle === "undefined") { recycle = null; }
+        if (recycle === void 0) { recycle = null; }
         if (recycle !== null) {
             this.dom = recycle.dom;
-        } else {
+        }
+        else {
             this.dom = document.createElement("div");
         }
         this.dom.className = this.parent.options.global.className;
@@ -137,13 +139,13 @@ var CoreComment = (function () {
             this.animate();
         }
     };
-
     Object.defineProperty(CoreComment.prototype, "x", {
         get: function () {
             if (this._x === null || this._x === undefined) {
                 if (this.align % 2 === 0) {
                     this._x = this.dom.offsetLeft;
-                } else {
+                }
+                else {
                     this._x = this.parent.width - this.dom.offsetLeft - this.width;
                 }
             }
@@ -159,20 +161,21 @@ var CoreComment = (function () {
             }
             if (this.align % 2 === 0) {
                 this.dom.style.left = this._x + "px";
-            } else {
+            }
+            else {
                 this.dom.style.right = this._x + "px";
             }
         },
         enumerable: true,
         configurable: true
     });
-
     Object.defineProperty(CoreComment.prototype, "y", {
         get: function () {
             if (this._y === null || this._y === undefined) {
                 if (this.align < 2) {
                     this._y = this.dom.offsetTop;
-                } else {
+                }
+                else {
                     this._y = this.parent.height - this.dom.offsetTop - this.height;
                 }
             }
@@ -188,14 +191,14 @@ var CoreComment = (function () {
             }
             if (this.align < 2) {
                 this.dom.style.top = this._y + "px";
-            } else {
+            }
+            else {
                 this.dom.style.bottom = this._y + "px";
             }
         },
         enumerable: true,
         configurable: true
     });
-
     Object.defineProperty(CoreComment.prototype, "bottom", {
         get: function () {
             return this.y + this.height;
@@ -203,7 +206,6 @@ var CoreComment = (function () {
         enumerable: true,
         configurable: true
     });
-
     Object.defineProperty(CoreComment.prototype, "right", {
         get: function () {
             return this.x + this.width;
@@ -211,7 +213,6 @@ var CoreComment = (function () {
         enumerable: true,
         configurable: true
     });
-
     Object.defineProperty(CoreComment.prototype, "width", {
         get: function () {
             if (this._width === null || this._width === undefined) {
@@ -226,7 +227,6 @@ var CoreComment = (function () {
         enumerable: true,
         configurable: true
     });
-
     Object.defineProperty(CoreComment.prototype, "height", {
         get: function () {
             if (this._height === null || this._height === undefined) {
@@ -241,7 +241,6 @@ var CoreComment = (function () {
         enumerable: true,
         configurable: true
     });
-
     Object.defineProperty(CoreComment.prototype, "size", {
         get: function () {
             return this._size;
@@ -253,7 +252,6 @@ var CoreComment = (function () {
         enumerable: true,
         configurable: true
     });
-
     Object.defineProperty(CoreComment.prototype, "color", {
         get: function () {
             return this._color;
@@ -270,7 +268,6 @@ var CoreComment = (function () {
         enumerable: true,
         configurable: true
     });
-
     Object.defineProperty(CoreComment.prototype, "alpha", {
         get: function () {
             return this._alpha;
@@ -282,7 +279,6 @@ var CoreComment = (function () {
         enumerable: true,
         configurable: true
     });
-
     Object.defineProperty(CoreComment.prototype, "border", {
         get: function () {
             return this._border;
@@ -291,14 +287,14 @@ var CoreComment = (function () {
             this._border = b;
             if (this._border) {
                 this.dom.style.border = "1px solid #00ffff";
-            } else {
+            }
+            else {
                 this.dom.style.border = "none";
             }
         },
         enumerable: true,
         configurable: true
     });
-
     Object.defineProperty(CoreComment.prototype, "shadow", {
         get: function () {
             return this._shadow;
@@ -312,7 +308,6 @@ var CoreComment = (function () {
         enumerable: true,
         configurable: true
     });
-
     Object.defineProperty(CoreComment.prototype, "font", {
         get: function () {
             return this._font;
@@ -321,24 +316,14 @@ var CoreComment = (function () {
             this._font = f;
             if (this._font.length > 0) {
                 this.dom.style.fontFamily = this._font;
-            } else {
+            }
+            else {
                 this.dom.style.fontFamily = "";
             }
         },
         enumerable: true,
         configurable: true
     });
-
-
-
-
-
-
-
-
-
-
-
     CoreComment.prototype.time = function (time) {
         this.ttl -= time;
         if (this.ttl < 0) {
@@ -351,18 +336,15 @@ var CoreComment = (function () {
             this.finish();
         }
     };
-
     CoreComment.prototype.update = function () {
         this.animate();
     };
-
     CoreComment.prototype.invalidate = function () {
         this._x = null;
         this._y = null;
         this._width = null;
         this._height = null;
     };
-
     CoreComment.prototype._execMotion = function (currentMotion, time) {
         for (var prop in currentMotion) {
             if (currentMotion.hasOwnProperty(prop)) {
@@ -371,7 +353,6 @@ var CoreComment = (function () {
             }
         }
     };
-
     CoreComment.prototype.animate = function () {
         if (this._alphaMotion) {
             this.alpha = (this.dur - this.ttl) * (this._alphaMotion["to"] - this._alphaMotion["from"]) / this.dur + this._alphaMotion["from"];
@@ -390,11 +371,9 @@ var CoreComment = (function () {
             return;
         }
     };
-
     CoreComment.prototype.finish = function () {
         this.parent.finish(this);
     };
-
     CoreComment.prototype.toString = function () {
         return ["[", this.stime, "|", this.ttl, "/", this.dur, "]", "(", this.mode, ")", this.text].join("");
     };
@@ -402,8 +381,7 @@ var CoreComment = (function () {
         return t * c / d + b;
     };
     return CoreComment;
-})();
-
+}());
 var ScrollComment = (function (_super) {
     __extends(ScrollComment, _super);
     function ScrollComment(parent, data) {
@@ -419,9 +397,8 @@ var ScrollComment = (function (_super) {
         enumerable: true,
         configurable: true
     });
-
     ScrollComment.prototype.init = function (recycle) {
-        if (typeof recycle === "undefined") { recycle = null; }
+        if (recycle === void 0) { recycle = null; }
         _super.prototype.init.call(this, recycle);
         this.x = this.parent.width;
         if (this.parent.options.scroll.opacity < 1) {
@@ -429,9 +406,9 @@ var ScrollComment = (function (_super) {
         }
         this.absolute = true;
     };
-
     ScrollComment.prototype.update = function () {
         this.x = (this.ttl / this.dur) * (this.parent.width + this.width) - this.width;
     };
     return ScrollComment;
-})(CoreComment);
+}(CoreComment));
+//# sourceMappingURL=Comment.js.map
