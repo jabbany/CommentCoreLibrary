@@ -4,5 +4,10 @@
 
 # Ignore Node Modules
 /node_modules/*
+
+# Ignore CI
 /compiled_spec/*
 /coverage/*
+
+# Ignore tscache
+.tscache
