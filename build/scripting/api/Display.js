@@ -1,13 +1,17 @@
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
 var Display;
 (function (Display) {
     var Point = (function () {
         function Point(x, y) {
-            if (typeof x === "undefined") { x = 0; }
-            if (typeof y === "undefined") { y = 0; }
+            if (x === void 0) { x = 0; }
+            if (y === void 0) { y = 0; }
             this.x = x;
             this.y = y;
         }
-
         Object.defineProperty(Point.prototype, "length", {
             get: function () {
                 return Math.sqrt(this.x * this.x + this.y * this.y);
@@ -18,63 +22,53 @@ var Display;
             enumerable: true,
             configurable: true
         });
-
         Point.prototype.add = function (p) {
             return new Point(p.x + this.x, p.y + this.y);
         };
-
         Point.prototype.subtract = function (p) {
             return new Point(this.x - p.x, this.y - p.y);
         };
-
         Point.interpolate = function (a, b, f) {
             return new Point((b.x - a.x) * f + a.x, (b.y - a.y) * f + a.y);
         };
-
         Point.prototype.offset = function (dx, dy) {
             this.x += dx;
             this.y += dy;
         };
-
         Point.prototype.normalize = function (thickness) {
             var ratio = thickness / this.length;
             this.x *= ratio;
             this.y *= ratio;
         };
-
         Point.polar = function (r, theta) {
             return new Point(r * Math.cos(theta), r * Math.sin(theta));
         };
-
         Point.prototype.setTo = function (x, y) {
             this.x = x;
             this.y = y;
         };
-
         Point.prototype.equals = function (p) {
             if (p.x === this.x && p.y === this.y)
                 return true;
             return false;
         };
-
         Point.prototype.toString = function () {
             return "(x=" + this.x + ", y=" + this.y + ")";
         };
-
         Point.prototype.clone = function () {
             return new Point(this.x, this.y);
         };
         return Point;
-    })();
+    }());
     Display.Point = Point;
     var Matrix = (function () {
         function Matrix(a, b, c, d, tx, ty) {
-            if (typeof a === "undefined") { a = 1; }
-            if (typeof b === "undefined") { b = 0; }
-            if (typeof c === "undefined") { c = 0; }
-            if (typeof d === "undefined") { d = 1; }
-            if (typeof tx === "undefined") { tx = 0; }
-            if (typeof ty === "undefined") { ty = 0; }
+            if (a === void 0) { a = 1; }
+            if (b === void 0) { b = 0; }
+            if (c === void 0) { c = 0; }
+            if (d === void 0) { d = 1; }
+            if (tx === void 0) { tx = 0; }
+            if (ty === void 0) { ty = 0; }
             this._data = [a, c, tx, b, d, ty, 0, 0, 1];
         }
         Matrix.prototype.dotProduct = function (o) {
@@ -91,22 +85,19 @@ var Display;
             }
             return res;
         };
-
         Matrix.prototype.setTo = function (a, b, c, d, tx, ty) {
-            if (typeof a === "undefined") { a = 1; }
-            if (typeof b === "undefined") { b = 0; }
-            if (typeof c === "undefined") { c = 0; }
-            if (typeof d === "undefined") { d = 1; }
-            if (typeof tx === "undefined") { tx = 0; }
-            if (typeof ty === "undefined") { ty = 0; }
+            if (a === void 0) { a = 1; }
+            if (b === void 0) { b = 0; }
+            if (c === void 0) { c = 0; }
+            if (d === void 0) { d = 1; }
+            if (tx === void 0) { tx = 0; }
+            if (ty === void 0) { ty = 0; }
             this._data = [a, c, tx, b, d, ty, 0, 0, 1];
         };
-
         Matrix.prototype.translate = function (tX, tY) {
             this._data[2] += tX;
             this._data[5] += tY;
         };
-
         Matrix.prototype.rotate = function (q) {
             this._data = this.dotProduct([
                 Math.cos(q), -Math.sin(q), 0,
@@ -114,7 +105,6 @@ var Display;
                 0, 0, 1
             ]);
         };
-
         Matrix.prototype.scale = function (sx, sy) {
             this._data = this.dotProduct([
                 sx, 0, 0,
@@ -122,42 +112,38 @@ var Display;
                 0, 0, 1
             ]);
         };
-
         Matrix.prototype.identity = function () {
             this.setTo(1, 0, 0, 1, 0, 0);
         };
-
         Matrix.prototype.createGradientBox = function (width, height, rotation, tX, tY) {
             this.createBox(width, height, rotation, tX, tY);
         };
-
         Matrix.prototype.createBox = function (sX, sY, q, tX, tY) {
             this.identity();
             this.rotate(q);
             this.scale(sX, sY);
             this.translate(tX, tY);
         };
-
         Matrix.prototype.clone = function () {
             var a = this._data[0], b = this._data[3], c = this._data[1], d = this._data[4], tx = this._data[2], ty = this._data[5];
             return new Matrix(a, b, c, d, tx, ty);
         };
-
         Matrix.prototype.serialize = function () {
             return this._data;
         };
         return Matrix;
-    })();
+    }());
     Display.Matrix = Matrix;
-
     var Matrix3D = (function () {
         function Matrix3D(iv) {
-            if (typeof iv === "undefined") { iv = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]; }
+            if (iv === void 0) { iv = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]; }
             if (iv.length === 16) {
                 this._data = iv;
-            } else if (iv.length === 0) {
+            }
+            else if (iv.length === 0) {
                 this.identity();
-            } else {
+            }
+            else {
                 __trace("Matrix3D initialization vector invalid", "warn");
                 this.identity();
             }
@@ -176,7 +162,6 @@ var Display;
             }
             return res;
         };
-
         Matrix3D.prototype.rotationMatrix = function (angle, axis) {
             var sT = Math.sin(angle), cT = Math.cos(angle);
             return [
@@ -186,17 +171,14 @@ var Display;
                 0, 0, 0, 1
             ];
         };
-
         Matrix3D.prototype.identity = function () {
             this._data = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
         };
-
         Matrix3D.prototype.append = function (lhs) {
             this._data = this.dotProduct(lhs._data, this._data);
         };
-
         Matrix3D.prototype.appendRotation = function (degrees, axis, pivotPoint) {
-            if (typeof pivotPoint === "undefined") { pivotPoint = null; }
+            if (pivotPoint === void 0) { pivotPoint = null; }
             if (pivotPoint !== null) {
                 this.appendTranslation(pivotPoint.x, pivotPoint.y, pivotPoint.z);
             }
@@ -205,7 +187,6 @@ var Display;
                 this.appendTranslation(-pivotPoint.x, -pivotPoint.y, -pivotPoint.z);
             }
         };
-
         Matrix3D.prototype.appendTranslation = function (x, y, z) {
             this._data = this.dotProduct([
                 1, 0, 0, x,
@@ -214,11 +195,10 @@ var Display;
                 0, 0, 0, 1
             ], this._data);
         };
-
         Matrix3D.prototype.appendScale = function (sX, sY, sZ) {
-            if (typeof sX === "undefined") { sX = 1; }
-            if (typeof sY === "undefined") { sY = 1; }
-            if (typeof sZ === "undefined") { sZ = 1; }
+            if (sX === void 0) { sX = 1; }
+            if (sY === void 0) { sY = 1; }
+            if (sZ === void 0) { sZ = 1; }
             this._data = this.dotProduct([
                 sX, 0, 0, 0,
                 0, sY, 0, 0,
@@ -226,13 +206,11 @@ var Display;
                 0, 0, 0, 1
             ], this._data);
         };
-
         Matrix3D.prototype.prepend = function (rhs) {
             this._data = this.dotProduct(this._data, rhs._data);
         };
-
         Matrix3D.prototype.prependRotation = function (degrees, axis, pivotPoint) {
-            if (typeof pivotPoint === "undefined") { pivotPoint = null; }
+            if (pivotPoint === void 0) { pivotPoint = null; }
             if (pivotPoint !== null) {
                 this.prependTranslation(pivotPoint.x, pivotPoint.y, pivotPoint.z);
             }
@@ -241,7 +219,6 @@ var Display;
                 this.prependTranslation(-pivotPoint.x, -pivotPoint.y, -pivotPoint.z);
             }
         };
-
         Matrix3D.prototype.prependTranslation = function (x, y, z) {
             this._data = this.dotProduct(this._data, [
                 1, 0, 0, x,
@@ -250,7 +227,6 @@ var Display;
                 0, 0, 0, 1
             ]);
         };
-
         Matrix3D.prototype.prependScale = function (sX, sY, sZ) {
             this._data = this.dotProduct(this._data, [
                 sX, 0, 0, 0,
@@ -259,7 +235,6 @@ var Display;
                 0, 0, 0, 1
             ]);
         };
-
         Matrix3D.prototype.transformVector = function (v) {
             var rx = this._data[0] * v.x + this._data[1] * v.y + this._data[2] * v.z + this._data[3] * v.w;
             var ry = this._data[4] * v.x + this._data[5] * v.y + this._data[6] * v.z + this._data[7] * v.w;
@@ -267,7 +242,6 @@ var Display;
             var rw = this._data[12] * v.x + this._data[13] * v.y + this._data[14] * v.z + this._data[15] * v.w;
             return new Vector3D(rx, ry, rz, rw);
         };
-
         Matrix3D.prototype.transformVectors = function (vin, vout) {
             if (vin.length % 3 !== 0) {
                 __trace("Matrix3D.transformVectors expects input size to be multiple of 3.", "err");
@@ -281,7 +255,6 @@ var Display;
                 vout.push(rx, ry, rz);
             }
         };
-
         Matrix3D.prototype.transpose = function () {
             this._data = [
                 this._data[0], this._data[4], this._data[8], this._data[12],
@@ -290,24 +263,21 @@ var Display;
                 this._data[3], this._data[7], this._data[11], this._data[15]
             ];
         };
-
         Matrix3D.prototype.clone = function () {
             return new Matrix3D(this._data);
         };
-
         Matrix3D.prototype.serialize = function () {
             return this._data;
         };
         return Matrix3D;
-    })();
+    }());
     Display.Matrix3D = Matrix3D;
-
     var Vector3D = (function () {
         function Vector3D(x, y, z, w) {
-            if (typeof x === "undefined") { x = 0; }
-            if (typeof y === "undefined") { y = 0; }
-            if (typeof z === "undefined") { z = 0; }
-            if (typeof w === "undefined") { w = 0; }
+            if (x === void 0) { x = 0; }
+            if (y === void 0) { y = 0; }
+            if (z === void 0) { z = 0; }
+            if (w === void 0) { w = 0; }
             this.x = x;
             this.y = y;
             this.z = z;
@@ -320,45 +290,38 @@ var Display;
         Vector3D.Y_AXIS = new Vector3D(0, 1, 0);
         Vector3D.Z_AXIS = new Vector3D(0, 0, 1);
         return Vector3D;
-    })();
+    }());
     Display.Vector3D = Vector3D;
-
     function createMatrix(a, b, c, d, tx, ty) {
         return new Matrix(a, b, c, d, tx, ty);
     }
     Display.createMatrix = createMatrix;
-
     function createMatrix3D(iv) {
         return new Matrix3D(iv);
     }
     Display.createMatrix3D = createMatrix3D;
-
     function createColorTransform() {
         return null;
     }
     Display.createColorTransform = createColorTransform;
-
     function createGradientBox(width, height, rotation, tX, tY) {
         var m = new Matrix();
         m.createGradientBox(width, height, rotation, tX, tY);
         return m;
     }
     Display.createGradientBox = createGradientBox;
-
     function createVector3D(x, y, z, w) {
-        if (typeof x === "undefined") { x = 0; }
-        if (typeof y === "undefined") { y = 0; }
-        if (typeof z === "undefined") { z = 0; }
-        if (typeof w === "undefined") { w = 0; }
+        if (x === void 0) { x = 0; }
+        if (y === void 0) { y = 0; }
+        if (z === void 0) { z = 0; }
+        if (w === void 0) { w = 0; }
         return new Vector3D(x, y, z, w);
     }
     Display.createVector3D = createVector3D;
-
     function projectVector(matrix, vector) {
         return matrix.transformVector(vector);
     }
     Display.projectVector = projectVector;
-
     function projectVectors(matrix, verts, projectedVerts, uvts) {
         while (projectedVerts.length > 0) {
             projectedVerts.pop();
@@ -375,14 +338,12 @@ var Display;
         }
     }
     Display.projectVectors = projectVectors;
-
     function createPoint(x, y) {
-        if (typeof x === "undefined") { x = 0; }
-        if (typeof y === "undefined") { y = 0; }
+        if (x === void 0) { x = 0; }
+        if (y === void 0) { y = 0; }
         return new Point(x, y);
     }
     Display.createPoint = createPoint;
-
     function toIntVector(array) {
         Object.defineProperty(array, 'as3Type', {
             get: function () {
@@ -394,7 +355,6 @@ var Display;
         return array;
     }
     Display.toIntVector = toIntVector;
-
     function toNumberVector(array) {
         Object.defineProperty(array, 'as3Type', {
             get: function () {
@@ -407,12 +367,6 @@ var Display;
     }
     Display.toNumberVector = toNumberVector;
 })(Display || (Display = {}));
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
 var Display;
 (function (Display) {
     var Filter = (function () {
@@ -425,14 +379,13 @@ var Display;
             };
         };
         return Filter;
-    })();
+    }());
     Display.Filter = Filter;
-
     var BlurFilter = (function (_super) {
         __extends(BlurFilter, _super);
         function BlurFilter(blurX, blurY) {
-            if (typeof blurX === "undefined") { blurX = 4.0; }
-            if (typeof blurY === "undefined") { blurY = 4.0; }
+            if (blurX === void 0) { blurX = 4.0; }
+            if (blurY === void 0) { blurY = 4.0; }
             _super.call(this);
             this._blurX = blurX;
             this._blurY = blurY;
@@ -447,19 +400,18 @@ var Display;
             return s;
         };
         return BlurFilter;
-    })(Filter);
-
+    }(Filter));
     var GlowFilter = (function (_super) {
         __extends(GlowFilter, _super);
         function GlowFilter(color, alpha, blurX, blurY, strength, quality, inner, knockout) {
-            if (typeof color === "undefined") { color = 16711680; }
-            if (typeof alpha === "undefined") { alpha = 1.0; }
-            if (typeof blurX === "undefined") { blurX = 6.0; }
-            if (typeof blurY === "undefined") { blurY = 6.0; }
-            if (typeof strength === "undefined") { strength = 2; }
-            if (typeof quality === "undefined") { quality = null; }
-            if (typeof inner === "undefined") { inner = false; }
-            if (typeof knockout === "undefined") { knockout = false; }
+            if (color === void 0) { color = 16711680; }
+            if (alpha === void 0) { alpha = 1.0; }
+            if (blurX === void 0) { blurX = 6.0; }
+            if (blurY === void 0) { blurY = 6.0; }
+            if (strength === void 0) { strength = 2; }
+            if (quality === void 0) { quality = null; }
+            if (inner === void 0) { inner = false; }
+            if (knockout === void 0) { knockout = false; }
             _super.call(this);
             this._color = color;
             this._alpha = alpha;
@@ -485,19 +437,18 @@ var Display;
             return s;
         };
         return GlowFilter;
-    })(Filter);
-
+    }(Filter));
     var DropShadowFilter = (function (_super) {
         __extends(DropShadowFilter, _super);
         function DropShadowFilter(distance, angle, color, alpha, blurX, blurY, strength, quality) {
-            if (typeof distance === "undefined") { distance = 4.0; }
-            if (typeof angle === "undefined") { angle = 45; }
-            if (typeof color === "undefined") { color = 0; }
-            if (typeof alpha === "undefined") { alpha = 1; }
-            if (typeof blurX === "undefined") { blurX = 4.0; }
-            if (typeof blurY === "undefined") { blurY = 4.0; }
-            if (typeof strength === "undefined") { strength = 1.0; }
-            if (typeof quality === "undefined") { quality = 1; }
+            if (distance === void 0) { distance = 4.0; }
+            if (angle === void 0) { angle = 45; }
+            if (color === void 0) { color = 0; }
+            if (alpha === void 0) { alpha = 1; }
+            if (blurX === void 0) { blurX = 4.0; }
+            if (blurY === void 0) { blurY = 4.0; }
+            if (strength === void 0) { strength = 1.0; }
+            if (quality === void 0) { quality = 1; }
             _super.call(this);
             this._color = color;
             this._alpha = alpha;
@@ -505,7 +456,6 @@ var Display;
             this._blurY = blurY;
             this._strength = strength;
             this._quality = quality;
-
             this._inner = false;
             this._knockout = false;
             this._distance = distance;
@@ -528,38 +478,35 @@ var Display;
             return s;
         };
         return DropShadowFilter;
-    })(Filter);
-
+    }(Filter));
     function createDropShadowFilter(distance, angle, color, alpha, blurX, blurY, strength, quality) {
-        if (typeof distance === "undefined") { distance = 4.0; }
-        if (typeof angle === "undefined") { angle = 45; }
-        if (typeof color === "undefined") { color = 0; }
-        if (typeof alpha === "undefined") { alpha = 1; }
-        if (typeof blurX === "undefined") { blurX = 4.0; }
-        if (typeof blurY === "undefined") { blurY = 4.0; }
-        if (typeof strength === "undefined") { strength = 1.0; }
-        if (typeof quality === "undefined") { quality = 1; }
+        if (distance === void 0) { distance = 4.0; }
+        if (angle === void 0) { angle = 45; }
+        if (color === void 0) { color = 0; }
+        if (alpha === void 0) { alpha = 1; }
+        if (blurX === void 0) { blurX = 4.0; }
+        if (blurY === void 0) { blurY = 4.0; }
+        if (strength === void 0) { strength = 1.0; }
+        if (quality === void 0) { quality = 1; }
         return new DropShadowFilter(distance, angle, color, alpha, blurX, blurY, strength, quality);
     }
     Display.createDropShadowFilter = createDropShadowFilter;
-
     function createGlowFilter(color, alpha, blurX, blurY, strength, quality, inner, knockout) {
-        if (typeof color === "undefined") { color = 16711680; }
-        if (typeof alpha === "undefined") { alpha = 1.0; }
-        if (typeof blurX === "undefined") { blurX = 6.0; }
-        if (typeof blurY === "undefined") { blurY = 6.0; }
-        if (typeof strength === "undefined") { strength = 2; }
-        if (typeof quality === "undefined") { quality = null; }
-        if (typeof inner === "undefined") { inner = false; }
-        if (typeof knockout === "undefined") { knockout = false; }
+        if (color === void 0) { color = 16711680; }
+        if (alpha === void 0) { alpha = 1.0; }
+        if (blurX === void 0) { blurX = 6.0; }
+        if (blurY === void 0) { blurY = 6.0; }
+        if (strength === void 0) { strength = 2; }
+        if (quality === void 0) { quality = null; }
+        if (inner === void 0) { inner = false; }
+        if (knockout === void 0) { knockout = false; }
         return new GlowFilter(color, alpha, blurX, blurY, strength, quality, inner, knockout);
     }
     Display.createGlowFilter = createGlowFilter;
-
     function createBlurFilter(blurX, blurY, strength) {
-        if (typeof blurX === "undefined") { blurX = 6.0; }
-        if (typeof blurY === "undefined") { blurY = 6.0; }
-        if (typeof strength === "undefined") { strength = 2; }
+        if (blurX === void 0) { blurX = 6.0; }
+        if (blurY === void 0) { blurY = 6.0; }
+        if (strength === void 0) { strength = 2; }
         return new BlurFilter(blurX, blurY);
     }
     Display.createBlurFilter = createBlurFilter;
@@ -573,15 +520,13 @@ var Display;
             return {};
         };
         return ColorTransform;
-    })();
-
+    }());
     var Transform = (function () {
         function Transform(parent) {
             this._matrix = new Display.Matrix();
             this._matrix3d = null;
             this._parent = parent;
         }
-
         Object.defineProperty(Transform.prototype, "parent", {
             get: function () {
                 return this._parent;
@@ -592,9 +537,6 @@ var Display;
             enumerable: true,
             configurable: true
         });
-
-
-
         Object.defineProperty(Transform.prototype, "matrix3D", {
             get: function () {
                 return this._matrix3d;
@@ -605,7 +547,8 @@ var Display;
                         return;
                     this._matrix3d = null;
                     this._matrix = new Display.Matrix();
-                } else {
+                }
+                else {
                     this._matrix = null;
                     this._matrix3d = m;
                 }
@@ -614,7 +557,6 @@ var Display;
             enumerable: true,
             configurable: true
         });
-
         Object.defineProperty(Transform.prototype, "matrix", {
             get: function () {
                 return this._matrix;
@@ -625,7 +567,8 @@ var Display;
                         return;
                     this._matrix = null;
                     this._matrix3d = new Display.Matrix3D();
-                } else {
+                }
+                else {
                     this._matrix3d = null;
                     this._matrix = m;
                 }
@@ -634,17 +577,16 @@ var Display;
             enumerable: true,
             configurable: true
         });
-
         Transform.prototype.box3d = function (sX, sY, sZ, rotX, rotY, rotZ, tX, tY, tZ) {
-            if (typeof sX === "undefined") { sX = 1; }
-            if (typeof sY === "undefined") { sY = 1; }
-            if (typeof sZ === "undefined") { sZ = 1; }
-            if (typeof rotX === "undefined") { rotX = 0; }
-            if (typeof rotY === "undefined") { rotY = 0; }
-            if (typeof rotZ === "undefined") { rotZ = 0; }
-            if (typeof tX === "undefined") { tX = 0; }
-            if (typeof tY === "undefined") { tY = 0; }
-            if (typeof tZ === "undefined") { tZ = 0; }
+            if (sX === void 0) { sX = 1; }
+            if (sY === void 0) { sY = 1; }
+            if (sZ === void 0) { sZ = 1; }
+            if (rotX === void 0) { rotX = 0; }
+            if (rotY === void 0) { rotY = 0; }
+            if (rotZ === void 0) { rotZ = 0; }
+            if (tX === void 0) { tX = 0; }
+            if (tY === void 0) { tY = 0; }
+            if (tZ === void 0) { tZ = 0; }
             if (this._matrix !== null || this._matrix3d === null) {
                 this._matrix = null;
                 this._matrix3d = new Display.Matrix3D();
@@ -656,45 +598,41 @@ var Display;
             this._matrix3d.appendScale(sX, sY, sZ);
             this._matrix3d.appendTranslation(tX, tY, tZ);
         };
-
         Transform.prototype.box = function (sX, sY, rot, tX, tY) {
-            if (typeof sX === "undefined") { sX = 1; }
-            if (typeof sY === "undefined") { sY = 1; }
-            if (typeof rot === "undefined") { rot = 0; }
-            if (typeof tX === "undefined") { tX = 0; }
-            if (typeof tY === "undefined") { tY = 0; }
+            if (sX === void 0) { sX = 1; }
+            if (sY === void 0) { sY = 1; }
+            if (rot === void 0) { rot = 0; }
+            if (tX === void 0) { tX = 0; }
+            if (tY === void 0) { tY = 0; }
             if (this._matrix) {
                 this._matrix.createBox(sX, sY, rot, tX, tY);
-            } else {
+            }
+            else {
                 this.box3d(sX, sY, 1, 0, 0, rot, tX, tY, 0);
             }
         };
-
         Transform.prototype.update = function () {
             if (this._parent === null)
                 return;
             this._parent.transform = this;
         };
-
         Transform.prototype.getMatrix = function () {
             if (this._matrix) {
                 return this._matrix;
-            } else {
+            }
+            else {
                 return this._matrix3d;
             }
         };
-
         Transform.prototype.getMatrixType = function () {
             return this._matrix ? "2d" : "3d";
         };
-
         Transform.prototype.clone = function () {
             var t = new Transform(null);
             t._matrix = this._matrix;
             t._matrix3d = this._matrix3d;
             return t;
         };
-
         Transform.prototype.serialize = function () {
             return {
                 "mode": this.getMatrixType(),
@@ -702,23 +640,18 @@ var Display;
             };
         };
         return Transform;
-    })();
-
+    }());
     var Rectangle = (function () {
         function Rectangle(x, y, width, height) {
-            if (typeof x === "undefined") { x = 0; }
-            if (typeof y === "undefined") { y = 0; }
-            if (typeof width === "undefined") { width = 0; }
-            if (typeof height === "undefined") { height = 0; }
+            if (x === void 0) { x = 0; }
+            if (y === void 0) { y = 0; }
+            if (width === void 0) { width = 0; }
+            if (height === void 0) { height = 0; }
             this._x = x;
             this._y = y;
             this._width = width;
             this._height = height;
         }
-
-
-
-
         Object.defineProperty(Rectangle.prototype, "x", {
             get: function () {
                 return this._x;
@@ -731,7 +664,6 @@ var Display;
             enumerable: true,
             configurable: true
         });
-
         Object.defineProperty(Rectangle.prototype, "y", {
             get: function () {
                 return this._y;
@@ -744,7 +676,6 @@ var Display;
             enumerable: true,
             configurable: true
         });
-
         Object.defineProperty(Rectangle.prototype, "width", {
             get: function () {
                 return this._width;
@@ -757,7 +688,6 @@ var Display;
             enumerable: true,
             configurable: true
         });
-
         Object.defineProperty(Rectangle.prototype, "height", {
             get: function () {
                 return this._height;
@@ -770,7 +700,6 @@ var Display;
             enumerable: true,
             configurable: true
         });
-
         Object.defineProperty(Rectangle.prototype, "left", {
             get: function () {
                 return this._x;
@@ -778,7 +707,6 @@ var Display;
             enumerable: true,
             configurable: true
         });
-
         Object.defineProperty(Rectangle.prototype, "right", {
             get: function () {
                 return this._x + this._width;
@@ -786,7 +714,6 @@ var Display;
             enumerable: true,
             configurable: true
         });
-
         Object.defineProperty(Rectangle.prototype, "top", {
             get: function () {
                 return this._y;
@@ -794,7 +721,6 @@ var Display;
             enumerable: true,
             configurable: true
         });
-
         Object.defineProperty(Rectangle.prototype, "bottom", {
             get: function () {
                 return this._y + this._height;
@@ -802,7 +728,6 @@ var Display;
             enumerable: true,
             configurable: true
         });
-
         Object.defineProperty(Rectangle.prototype, "size", {
             get: function () {
                 return Display.createPoint(this._width, this._height);
@@ -810,109 +735,93 @@ var Display;
             enumerable: true,
             configurable: true
         });
-
         Rectangle.prototype.contains = function (x, y) {
             return x >= this.left && y >= this.top && x <= this.right && y <= this.bottom;
         };
-
         Rectangle.prototype.containsPoint = function (p) {
             return this.contains(p.x, p.y);
         };
-
         Rectangle.prototype.containsRect = function (r) {
             return this.contains(r.left, r.top) && this.contains(r.right, r.bottom);
         };
-
         Rectangle.prototype.copyFrom = function (source) {
             this._x = source._x;
             this._y = source._y;
             this._width = source._width;
             this._height = source._height;
         };
-
         Rectangle.prototype.equals = function (other) {
             return this._x === other._x && this._y === other._y && this._width === other._width && this._height === other._height;
         };
-
         Rectangle.prototype.inflate = function (dx, dy) {
-            if (typeof dx === "undefined") { dx = 0; }
-            if (typeof dy === "undefined") { dy = 0; }
+            if (dx === void 0) { dx = 0; }
+            if (dy === void 0) { dy = 0; }
             this._x -= dx;
             this._width += 2 * dx;
             this._y -= dy;
             this._height += 2 * dy;
         };
-
         Rectangle.prototype.inflatePoint = function (p) {
             this.inflate(p.x, p.y);
         };
-
         Rectangle.prototype.isEmpty = function () {
             return this._width <= 0 || this.height <= 0;
         };
-
         Rectangle.prototype.setTo = function (x, y, width, height) {
-            if (typeof x === "undefined") { x = 0; }
-            if (typeof y === "undefined") { y = 0; }
-            if (typeof width === "undefined") { width = 0; }
-            if (typeof height === "undefined") { height = 0; }
+            if (x === void 0) { x = 0; }
+            if (y === void 0) { y = 0; }
+            if (width === void 0) { width = 0; }
+            if (height === void 0) { height = 0; }
             this._x = x;
             this._y = y;
             this._width = width;
             this._height = height;
         };
-
         Rectangle.prototype.offset = function (x, y) {
-            if (typeof x === "undefined") { x = 0; }
-            if (typeof y === "undefined") { y = 0; }
+            if (x === void 0) { x = 0; }
+            if (y === void 0) { y = 0; }
             this._x += x;
             this._y += y;
         };
-
         Rectangle.prototype.offsetPoint = function (p) {
             this.offset(p.x, p.y);
         };
-
         Rectangle.prototype.setEmpty = function () {
             this.setTo(0, 0, 0, 0);
         };
-
         Rectangle.prototype.unionCoord = function (x, y) {
             var dx = x - this._x;
             var dy = y - this._y;
             if (dx >= 0) {
                 this._width = Math.max(this._width, dx);
-            } else {
+            }
+            else {
                 this._x += dx;
                 this._width -= dx;
             }
             if (dy >= 0) {
                 this._height = Math.max(this._height, dy);
-            } else {
+            }
+            else {
                 this._y += dy;
                 this._height -= dy;
             }
         };
-
         Rectangle.prototype.unionPoint = function (p) {
             this.unionCoord(p.x, p.y);
         };
-
         Rectangle.prototype.union = function (r) {
             var n = this.clone();
             n.unionCoord(r.left, r.top);
             n.unionCoord(r.right, r.bottom);
             return n;
         };
-
         Rectangle.prototype.toString = function () {
             return "(x=" + this._x + ", y=" + this._y + ", width=" + this._width + ", height=" + this._height + ")";
         };
-
         Rectangle.prototype.clone = function () {
             return new Rectangle(this._x, this._y, this._width, this._height);
         };
-
         Rectangle.prototype.serialize = function () {
             return {
                 x: this._x,
@@ -922,12 +831,11 @@ var Display;
             };
         };
         return Rectangle;
-    })();
+    }());
     Display.Rectangle = Rectangle;
-
     var DisplayObject = (function () {
         function DisplayObject(id) {
-            if (typeof id === "undefined") { id = Runtime.generateId(); }
+            if (id === void 0) { id = Runtime.generateId(); }
             this._alpha = 1;
             this._anchor = new Display.Point();
             this._boundingBox = new Rectangle();
@@ -950,13 +858,13 @@ var Display;
             this._visible = true;
         }
         DisplayObject.prototype.setDefaults = function (defaults) {
-            if (typeof defaults === "undefined") { defaults = {}; }
+            if (defaults === void 0) { defaults = {}; }
             if (this._hasSetDefaults) {
                 __trace("DisplayObject.setDefaults called more than once.", "warn");
                 return;
             }
             this._hasSetDefaults = true;
-            try  {
+            try {
                 if (defaults.hasOwnProperty("motion")) {
                     var motion = defaults["motion"];
                     if (motion.hasOwnProperty("alpha")) {
@@ -968,7 +876,9 @@ var Display;
                     if (motion.hasOwnProperty("y")) {
                         this._anchor.y = motion["y"]["fromValue"];
                     }
-                } else if (defaults.hasOwnProperty("motionGroup") && defaults["motionGroup"] && defaults["motionGroup"].length > 0) {
+                }
+                else if (defaults.hasOwnProperty("motionGroup") &&
+                    defaults["motionGroup"] && defaults["motionGroup"].length > 0) {
                     var motion = defaults["motionGroup"][0];
                     if (motion.hasOwnProperty("alpha")) {
                         this._alpha = motion["alpha"]["fromValue"];
@@ -980,7 +890,8 @@ var Display;
                         this._anchor.y = motion["y"]["fromValue"];
                     }
                 }
-            } catch (e) {
+            }
+            catch (e) {
             }
             if (defaults.hasOwnProperty("alpha")) {
                 this._alpha = defaults["alpha"];
@@ -992,9 +903,8 @@ var Display;
                 this._anchor.y = defaults["y"];
             }
         };
-
         DisplayObject.prototype.eventToggle = function (eventName, mode) {
-            if (typeof mode === "undefined") { mode = "enable"; }
+            if (mode === void 0) { mode = "enable"; }
             if (DisplayObject.SANDBOX_EVENTS.indexOf(eventName) > -1) {
                 return;
             }
@@ -1004,7 +914,6 @@ var Display;
                 "mode": mode
             });
         };
-
         DisplayObject.prototype.propertyUpdate = function (propertyName, updatedValue) {
             __pchannel("Runtime:UpdateProperty", {
                 "id": this._id,
@@ -1012,7 +921,6 @@ var Display;
                 "value": updatedValue
             });
         };
-
         DisplayObject.prototype.methodCall = function (methodName, params) {
             __pchannel("Runtime:CallMethod", {
                 "id": this._id,
@@ -1020,8 +928,6 @@ var Display;
                 "params": params
             });
         };
-
-
         Object.defineProperty(DisplayObject.prototype, "alpha", {
             get: function () {
                 return this._alpha;
@@ -1033,8 +939,6 @@ var Display;
             enumerable: true,
             configurable: true
         });
-
-
         Object.defineProperty(DisplayObject.prototype, "anchor", {
             get: function () {
                 return this._anchor;
@@ -1047,8 +951,6 @@ var Display;
             enumerable: true,
             configurable: true
         });
-
-
         Object.defineProperty(DisplayObject.prototype, "boundingBox", {
             get: function () {
                 return this._boundingBox;
@@ -1060,8 +962,6 @@ var Display;
             enumerable: true,
             configurable: true
         });
-
-
         Object.defineProperty(DisplayObject.prototype, "cacheAsBitmap", {
             get: function () {
                 return false;
@@ -1072,8 +972,6 @@ var Display;
             enumerable: true,
             configurable: true
         });
-
-
         Object.defineProperty(DisplayObject.prototype, "filters", {
             get: function () {
                 return this._filters;
@@ -1092,7 +990,6 @@ var Display;
             enumerable: true,
             configurable: true
         });
-
         Object.defineProperty(DisplayObject.prototype, "root", {
             get: function () {
                 return Display.root;
@@ -1103,8 +1000,6 @@ var Display;
             enumerable: true,
             configurable: true
         });
-
-
         Object.defineProperty(DisplayObject.prototype, "stage", {
             get: function () {
                 return Display.root;
@@ -1115,28 +1010,16 @@ var Display;
             enumerable: true,
             configurable: true
         });
-
-
         DisplayObject.prototype._updateBox = function (mode) {
-            if (typeof mode === "undefined") { mode = this._transform.getMatrixType(); }
+            if (mode === void 0) { mode = this._transform.getMatrixType(); }
             if (mode === "3d") {
                 this._transform.box3d(this._scaleX, this._scaleY, this._scaleZ, this._rotationX, this._rotationY, this._rotationZ, 0, 0, this._z);
-            } else {
+            }
+            else {
                 this._transform.box(this._scaleX, this._scaleY, this._rotationZ * Math.PI / 180);
             }
             this.transform = this._transform;
         };
-
-
-
-
-
-
-
-
-
-
-
         Object.defineProperty(DisplayObject.prototype, "rotationX", {
             get: function () {
                 return this._rotationX;
@@ -1148,7 +1031,6 @@ var Display;
             enumerable: true,
             configurable: true
         });
-
         Object.defineProperty(DisplayObject.prototype, "rotationY", {
             get: function () {
                 return this._rotationY;
@@ -1160,7 +1042,6 @@ var Display;
             enumerable: true,
             configurable: true
         });
-
         Object.defineProperty(DisplayObject.prototype, "rotationZ", {
             get: function () {
                 return this._rotationZ;
@@ -1172,7 +1053,6 @@ var Display;
             enumerable: true,
             configurable: true
         });
-
         Object.defineProperty(DisplayObject.prototype, "rotation", {
             get: function () {
                 return this._rotationZ;
@@ -1184,7 +1064,6 @@ var Display;
             enumerable: true,
             configurable: true
         });
-
         Object.defineProperty(DisplayObject.prototype, "scaleX", {
             get: function () {
                 return this._scaleX;
@@ -1196,7 +1075,6 @@ var Display;
             enumerable: true,
             configurable: true
         });
-
         Object.defineProperty(DisplayObject.prototype, "scaleY", {
             get: function () {
                 return this._scaleY;
@@ -1208,7 +1086,6 @@ var Display;
             enumerable: true,
             configurable: true
         });
-
         Object.defineProperty(DisplayObject.prototype, "scaleZ", {
             get: function () {
                 return this._scaleZ;
@@ -1220,7 +1097,6 @@ var Display;
             enumerable: true,
             configurable: true
         });
-
         Object.defineProperty(DisplayObject.prototype, "x", {
             get: function () {
                 return this._anchor.x;
@@ -1232,7 +1108,6 @@ var Display;
             enumerable: true,
             configurable: true
         });
-
         Object.defineProperty(DisplayObject.prototype, "y", {
             get: function () {
                 return this._anchor.y;
@@ -1244,7 +1119,6 @@ var Display;
             enumerable: true,
             configurable: true
         });
-
         Object.defineProperty(DisplayObject.prototype, "z", {
             get: function () {
                 return this._z;
@@ -1256,8 +1130,6 @@ var Display;
             enumerable: true,
             configurable: true
         });
-
-
         Object.defineProperty(DisplayObject.prototype, "width", {
             get: function () {
                 return this._boundingBox.width;
@@ -1269,8 +1141,6 @@ var Display;
             enumerable: true,
             configurable: true
         });
-
-
         Object.defineProperty(DisplayObject.prototype, "height", {
             get: function () {
                 return this._boundingBox.height;
@@ -1282,8 +1152,6 @@ var Display;
             enumerable: true,
             configurable: true
         });
-
-
         Object.defineProperty(DisplayObject.prototype, "visible", {
             get: function () {
                 return this._visible;
@@ -1295,8 +1163,6 @@ var Display;
             enumerable: true,
             configurable: true
         });
-
-
         Object.defineProperty(DisplayObject.prototype, "blendMode", {
             get: function () {
                 return "normal";
@@ -1307,8 +1173,6 @@ var Display;
             enumerable: true,
             configurable: true
         });
-
-
         Object.defineProperty(DisplayObject.prototype, "transform", {
             get: function () {
                 return this._transform;
@@ -1323,8 +1187,6 @@ var Display;
             enumerable: true,
             configurable: true
         });
-
-
         Object.defineProperty(DisplayObject.prototype, "name", {
             get: function () {
                 return this._name;
@@ -1336,8 +1198,6 @@ var Display;
             enumerable: true,
             configurable: true
         });
-
-
         Object.defineProperty(DisplayObject.prototype, "loaderInfo", {
             get: function () {
                 __trace("DisplayObject.loaderInfo is not supported", "warn");
@@ -1349,8 +1209,6 @@ var Display;
             enumerable: true,
             configurable: true
         });
-
-
         Object.defineProperty(DisplayObject.prototype, "parent", {
             get: function () {
                 return this._parent !== null ? this._parent : Display.root;
@@ -1361,17 +1219,18 @@ var Display;
             enumerable: true,
             configurable: true
         });
-
         DisplayObject.prototype.dispatchEvent = function (event, data) {
             if (this._listeners.hasOwnProperty(event)) {
                 if (this._listeners[event] !== null) {
                     for (var i = 0; i < this._listeners[event].length; i++) {
-                        try  {
+                        try {
                             this._listeners[event][i](data);
-                        } catch (e) {
+                        }
+                        catch (e) {
                             if (e.hasOwnProperty("stack")) {
                                 __trace(e.stack.toString(), 'err');
-                            } else {
+                            }
+                            else {
                                 __trace(e.toString(), 'err');
                             }
                         }
@@ -1379,7 +1238,6 @@ var Display;
                 }
             }
         };
-
         DisplayObject.prototype.addEventListener = function (event, listener) {
             if (!this._listeners.hasOwnProperty(event)) {
                 this._listeners[event] = [];
@@ -1389,9 +1247,9 @@ var Display;
                 this.eventToggle(event, "enable");
             }
         };
-
         DisplayObject.prototype.removeEventListener = function (event, listener) {
-            if (!this._listeners.hasOwnProperty(event) || this._listeners["event"].length === 0) {
+            if (!this._listeners.hasOwnProperty(event) ||
+                this._listeners["event"].length === 0) {
                 return;
             }
             var index = this._listeners[event].indexOf(listener);
@@ -1402,7 +1260,6 @@ var Display;
                 this.eventToggle(event, "disable");
             }
         };
-
         Object.defineProperty(DisplayObject.prototype, "numChildren", {
             get: function () {
                 return this._children.length;
@@ -1410,7 +1267,6 @@ var Display;
             enumerable: true,
             configurable: true
         });
-
         DisplayObject.prototype.addChild = function (o) {
             this._children.push(o);
             this._boundingBox.unionCoord(o._anchor.x + o._boundingBox.left, o._anchor.y + o._boundingBox.top);
@@ -1418,34 +1274,29 @@ var Display;
             o._parent = this;
             this.methodCall("addChild", o._id);
         };
-
         DisplayObject.prototype.removeChild = function (o) {
             var index = this._children.indexOf(o);
             if (index >= 0) {
                 this.removeChildAt(index);
             }
         };
-
         DisplayObject.prototype.getChildAt = function (index) {
             if (index < 0 || index > this._children.length) {
                 throw new RangeError("No child at index " + index);
             }
             return this._children[index];
         };
-
         DisplayObject.prototype.getChildIndex = function (o) {
             return this._children.indexOf(o);
         };
-
         DisplayObject.prototype.removeChildAt = function (index) {
             var o = this.getChildAt(index);
             this._children.splice(index, 1);
             o._parent = null;
             this.methodCall("removeChild", o._id);
         };
-
         DisplayObject.prototype.removeChildren = function (begin, end) {
-            if (typeof end === "undefined") { end = this._children.length; }
+            if (end === void 0) { end = this._children.length; }
             var removed = this._children.splice(begin, end - begin);
             var ids = [];
             for (var i = 0; i < removed.length; i++) {
@@ -1454,19 +1305,17 @@ var Display;
             }
             this.methodCall("removeChildren", ids);
         };
-
         DisplayObject.prototype.remove = function () {
             if (this._parent !== null) {
                 this._parent.removeChild(this);
-            } else {
+            }
+            else {
                 this.root.removeChild(this);
             }
         };
-
         DisplayObject.prototype.toString = function () {
             return "[" + (this._name.length > 0 ? this._name : "displayObject") + " DisplayObject]@" + this._id;
         };
-
         DisplayObject.prototype.clone = function () {
             var alternate = new DisplayObject();
             alternate._transform = this._transform.clone();
@@ -1476,15 +1325,14 @@ var Display;
             alternate._alpha = this._alpha;
             return alternate;
         };
-
         DisplayObject.prototype.hasOwnProperty = function (prop) {
             if (prop === "clone") {
                 return true;
-            } else {
+            }
+            else {
                 return Object.prototype.hasOwnProperty.call(this, prop);
             }
         };
-
         DisplayObject.prototype.serialize = function () {
             this._hasSetDefaults = true;
             var filters = [];
@@ -1499,7 +1347,6 @@ var Display;
                 "filters": filters
             };
         };
-
         DisplayObject.prototype.unload = function () {
             this._visible = false;
             this.remove();
@@ -1509,13 +1356,12 @@ var Display;
                 "params": null
             });
         };
-
         DisplayObject.prototype.getId = function () {
             return this._id;
         };
         DisplayObject.SANDBOX_EVENTS = ["enterFrame"];
         return DisplayObject;
-    })();
+    }());
     Display.DisplayObject = DisplayObject;
 })(Display || (Display = {}));
 var Display;
@@ -1528,7 +1374,6 @@ var Display;
         Graphics.prototype._evaluateBoundingBox = function (x, y) {
             this._parent.boundingBox.unionCoord(x + this._lineWidth / 2, y + this._lineWidth / 2);
         };
-
         Graphics.prototype._callDrawMethod = function (method, params) {
             __pchannel("Runtime:CallMethod", {
                 "id": this._parent.getId(),
@@ -1537,128 +1382,112 @@ var Display;
                 "params": params
             });
         };
-
         Graphics.prototype.lineTo = function (x, y) {
             this._evaluateBoundingBox(x, y);
             this._callDrawMethod("lineTo", [x, y]);
         };
-
         Graphics.prototype.moveTo = function (x, y) {
             this._evaluateBoundingBox(x, y);
             this._callDrawMethod("moveTo", [x, y]);
         };
-
         Graphics.prototype.curveTo = function (cx, cy, ax, ay) {
             this._evaluateBoundingBox(ax, ay);
             this._evaluateBoundingBox(cx, cy);
             this._callDrawMethod("curveTo", [cx, cy, ax, ay]);
         };
-
         Graphics.prototype.cubicCurveTo = function (cax, cay, cbx, cby, ax, ay) {
             this._evaluateBoundingBox(cax, cay);
             this._evaluateBoundingBox(cbx, cby);
             this._evaluateBoundingBox(ax, ay);
             this._callDrawMethod("cubicCurveTo", [cax, cay, cbx, cby, ax, ay]);
         };
-
         Graphics.prototype.lineStyle = function (thickness, color, alpha, hinting, scale, caps, joints, miter) {
-            if (typeof color === "undefined") { color = 0; }
-            if (typeof alpha === "undefined") { alpha = 1.0; }
-            if (typeof hinting === "undefined") { hinting = false; }
-            if (typeof scale === "undefined") { scale = "normal"; }
-            if (typeof caps === "undefined") { caps = "none"; }
-            if (typeof joints === "undefined") { joints = "round"; }
-            if (typeof miter === "undefined") { miter = 3; }
+            if (color === void 0) { color = 0; }
+            if (alpha === void 0) { alpha = 1.0; }
+            if (hinting === void 0) { hinting = false; }
+            if (scale === void 0) { scale = "normal"; }
+            if (caps === void 0) { caps = "none"; }
+            if (joints === void 0) { joints = "round"; }
+            if (miter === void 0) { miter = 3; }
             this._lineWidth = thickness;
             this._callDrawMethod("lineStyle", [thickness, color, alpha, caps, joints, miter]);
         };
-
         Graphics.prototype.drawRect = function (x, y, w, h) {
             this._evaluateBoundingBox(x, y);
             this._evaluateBoundingBox(x + w, y + h);
             this._callDrawMethod("drawRect", [x, y, w, h]);
         };
-
         Graphics.prototype.drawCircle = function (x, y, r) {
             this._evaluateBoundingBox(x - r, y - r);
             this._evaluateBoundingBox(x + r, y + r);
             this._callDrawMethod("drawCircle", [x, y, r]);
         };
-
         Graphics.prototype.drawEllipse = function (cx, cy, w, h) {
             this._evaluateBoundingBox(cx - w / 2, cy - h / 2);
             this._evaluateBoundingBox(cx + w / 2, cy + h / 2);
             this._callDrawMethod("drawEllipse", [cx + w / 2, cy + h / 2, w / 2, h / 2]);
         };
-
         Graphics.prototype.drawRoundRect = function (x, y, w, h, elw, elh) {
             this._evaluateBoundingBox(x, y);
             this._evaluateBoundingBox(x + w, y + h);
             this._callDrawMethod("drawRoundRect", [x, y, w, h, elw, elh]);
         };
-
         Graphics.prototype.drawPath = function (commands, data, winding) {
-            if (typeof winding === "undefined") { winding = "evenOdd"; }
+            if (winding === void 0) { winding = "evenOdd"; }
             this._callDrawMethod("drawPath", [commands, data, winding]);
         };
-
         Graphics.prototype.beginFill = function (color, alpha) {
-            if (typeof alpha === "undefined") { alpha = 1.0; }
+            if (alpha === void 0) { alpha = 1.0; }
             this._callDrawMethod("beginFill", [color, alpha]);
         };
-
         Graphics.prototype.beginGradientFill = function () {
             __trace("Graphics: Gradients not supported yet.", 'warn');
         };
-
         Graphics.prototype.beginShaderFill = function () {
             __trace("Graphics: Shaders not supported yet.", 'warn');
         };
-
         Graphics.prototype.endFill = function () {
             this._callDrawMethod("endFill", []);
         };
-
         Graphics.prototype.drawTriangles = function (verts, indices, uvtData, culling) {
-            if (typeof indices === "undefined") { indices = null; }
-            if (typeof uvtData === "undefined") { uvtData = null; }
-            if (typeof culling === "undefined") { culling = "none"; }
+            if (indices === void 0) { indices = null; }
+            if (uvtData === void 0) { uvtData = null; }
+            if (culling === void 0) { culling = "none"; }
             if (indices === null) {
                 indices = [];
                 for (var i = 0; i < verts.length; i += 2) {
                     indices.push(i / 2);
                 }
-            } else {
+            }
+            else {
                 indices = indices.slice(0);
             }
             if (indices.length % 3 !== 0) {
                 __trace("Graphics.drawTriangles malformed indices count. Must be multiple of 3.", "err");
                 return;
             }
-
             if (culling !== "none") {
                 for (var i = 0; i < indices.length / 3; i++) {
                     var ux = verts[2 * indices[i * 3 + 1]] - verts[2 * indices[i * 3]], uy = verts[2 * indices[i * 3 + 1] + 1] - verts[2 * indices[i * 3] + 1], vx = verts[2 * indices[i * 3 + 2]] - verts[2 * indices[i * 3 + 1]], vy = verts[2 * indices[i * 3 + 2] + 1] - verts[2 * indices[i * 3 + 1] + 1];
                     var zcomp = ux * vy - vx * uy;
-                    if (zcomp < 0 && culling === "positive" || zcomp > 0 && culling === "negative") {
+                    if (zcomp < 0 && culling === "positive" ||
+                        zcomp > 0 && culling === "negative") {
                         indices.splice(i * 3, 3);
                         i--;
                     }
                 }
             }
-
             for (var i = 0; i < indices.length; i++) {
                 this._evaluateBoundingBox(verts[2 * indices[i]], verts[2 * indices[i] + 1]);
             }
             this._callDrawMethod("drawTriangles", [verts, indices, culling]);
         };
-
         Graphics.prototype.clear = function () {
             this._parent.boundingBox.setEmpty();
             this._callDrawMethod("clear", []);
         };
         return Graphics;
-    })();
+    }());
     Display.Graphics = Graphics;
 })(Display || (Display = {}));
 var Display;
@@ -1676,16 +1505,14 @@ var Display;
             enumerable: true,
             configurable: true
         });
-
         Sprite.prototype.serialize = function () {
             var serialized = _super.prototype.serialize.call(this);
             serialized["class"] = "Sprite";
             return serialized;
         };
         return Sprite;
-    })(Display.DisplayObject);
+    }(Display.DisplayObject));
     Display.Sprite = Sprite;
-
     var RootSprite = (function (_super) {
         __extends(RootSprite, _super);
         function RootSprite() {
@@ -1700,14 +1527,14 @@ var Display;
             configurable: true
         });
         return RootSprite;
-    })(Sprite);
+    }(Sprite));
     Display.RootSprite = RootSprite;
 })(Display || (Display = {}));
 var Display;
 (function (Display) {
     var MotionManager = (function () {
         function MotionManager(o, dur) {
-            if (typeof dur === "undefined") { dur = 1000; }
+            if (dur === void 0) { dur = 1000; }
             this._isRunning = false;
             this.oncomplete = null;
             this._ttl = dur;
@@ -1715,7 +1542,6 @@ var Display;
             this._parent = o;
             this._timer = new Runtime.Timer(41, 0);
         }
-
         Object.defineProperty(MotionManager.prototype, "dur", {
             get: function () {
                 return this._dur;
@@ -1729,7 +1555,6 @@ var Display;
             enumerable: true,
             configurable: true
         });
-
         Object.defineProperty(MotionManager.prototype, "running", {
             get: function () {
                 return this._isRunning;
@@ -1737,11 +1562,9 @@ var Display;
             enumerable: true,
             configurable: true
         });
-
         MotionManager.prototype.reset = function () {
             this._ttl = this._dur;
         };
-
         MotionManager.prototype.play = function () {
             if (this._isRunning)
                 return;
@@ -1767,7 +1590,6 @@ var Display;
                 this._tween.play();
             }
         };
-
         MotionManager.prototype.stop = function () {
             if (!this._isRunning)
                 return;
@@ -1777,22 +1599,20 @@ var Display;
                 this._tween.stop();
             }
         };
-
         MotionManager.prototype.forecasting = function (time) {
             return false;
         };
-
         MotionManager.prototype.setPlayTime = function (playtime) {
             this._ttl = this._dur - playtime;
             if (this._tween) {
                 if (this._isRunning) {
                     this._tween.gotoAndPlay(playtime);
-                } else {
+                }
+                else {
                     this._tween.gotoAndStop(playtime);
                 }
             }
         };
-
         MotionManager.prototype.motionSetToTween = function (motion) {
             var tweens = [];
             for (var movingVars in motion) {
@@ -1817,17 +1637,16 @@ var Display;
                 }
                 if (mProp.hasOwnProperty("startDelay")) {
                     tweens.push(Tween.delay(Tween.tween(this._parent, dst, src, mProp["lifeTime"], mProp["easing"]), mProp["startDelay"] / 1000));
-                } else {
+                }
+                else {
                     tweens.push(Tween.tween(this._parent, dst, src, mProp["lifeTime"], mProp["easing"]));
                 }
             }
             return Tween.parallel.apply(Tween, tweens);
         };
-
         MotionManager.prototype.initTween = function (motion, repeat) {
             this._tween = this.motionSetToTween(motion);
         };
-
         MotionManager.prototype.initTweenGroup = function (motionGroup, lifeTime) {
             var tweens = [];
             for (var i = 0; i < motionGroup.length; i++) {
@@ -1835,12 +1654,11 @@ var Display;
             }
             this._tween = Tween.serial.apply(Tween, tweens);
         };
-
         MotionManager.prototype.setCompleteListener = function (listener) {
             this.oncomplete = listener;
         };
         return MotionManager;
-    })();
+    }());
     Display.MotionManager = MotionManager;
 })(Display || (Display = {}));
 var Display;
@@ -1860,7 +1678,6 @@ var Display;
         CommentButton.prototype.setStyle = function (styleProp, value) {
             __trace("UIComponent.setStyle not implemented", "warn");
         };
-
         Object.defineProperty(CommentButton.prototype, "motionManager", {
             get: function () {
                 return this._mM;
@@ -1871,14 +1688,11 @@ var Display;
             enumerable: true,
             configurable: true
         });
-
-
         CommentButton.prototype.bindParent = function (params) {
             if (params.hasOwnProperty("parent")) {
                 params["parent"].addChild(this);
             }
         };
-
         CommentButton.prototype.initStyle = function (style) {
             if (style["lifeTime"]) {
                 this._mM.dur = style["lifeTime"] * 1000;
@@ -1888,11 +1702,11 @@ var Display;
             }
             if (style.hasOwnProperty("motionGroup")) {
                 this._mM.initTweenGroup(style["motionGroup"], this._mM.dur);
-            } else if (style.hasOwnProperty("motion")) {
+            }
+            else if (style.hasOwnProperty("motion")) {
                 this._mM.initTween(style["motion"], false);
             }
         };
-
         CommentButton.prototype.serialize = function () {
             var serialized = _super.prototype.serialize.call(this);
             serialized["class"] = "Button";
@@ -1900,8 +1714,7 @@ var Display;
             return serialized;
         };
         return CommentButton;
-    })(Display.Sprite);
-
+    }(Display.Sprite));
     function createButton(params) {
         return new CommentButton(params);
     }
@@ -1930,27 +1743,24 @@ var Display;
             enumerable: true,
             configurable: true
         });
-
-
         CommentCanvas.prototype.bindParent = function (params) {
             if (params.hasOwnProperty("parent")) {
                 params["parent"].addChild(this);
             }
         };
-
         CommentCanvas.prototype.initStyle = function (style) {
             if (style["lifeTime"]) {
                 this._mM.dur = style["lifeTime"] * 1000;
             }
             if (style.hasOwnProperty("motionGroup")) {
                 this._mM.initTweenGroup(style["motionGroup"], this._mM.dur);
-            } else if (style.hasOwnProperty("motion")) {
+            }
+            else if (style.hasOwnProperty("motion")) {
                 this._mM.initTween(style["motion"], false);
             }
         };
         return CommentCanvas;
-    })(Display.Sprite);
-
+    }(Display.Sprite));
     function createCanvas(params) {
         return new CommentCanvas(params);
     }
@@ -1971,14 +1781,13 @@ var Display;
             enumerable: true,
             configurable: true
         });
-
         Shape.prototype.serialize = function () {
             var serialized = _super.prototype.serialize.call(this);
             serialized["class"] = "Shape";
             return serialized;
         };
         return Shape;
-    })(Display.DisplayObject);
+    }(Display.DisplayObject));
     Display.Shape = Shape;
 })(Display || (Display = {}));
 var Display;
@@ -2004,27 +1813,24 @@ var Display;
             enumerable: true,
             configurable: true
         });
-
-
         CommentShape.prototype.bindParent = function (params) {
             if (params.hasOwnProperty("parent")) {
                 params["parent"].addChild(this);
             }
         };
-
         CommentShape.prototype.initStyle = function (style) {
             if (style["lifeTime"]) {
                 this._mM.dur = style["lifeTime"] * 1000;
             }
             if (style.hasOwnProperty("motionGroup")) {
                 this._mM.initTweenGroup(style["motionGroup"], this._mM.dur);
-            } else if (style.hasOwnProperty("motion")) {
+            }
+            else if (style.hasOwnProperty("motion")) {
                 this._mM.initTween(style["motion"], false);
             }
         };
         return CommentShape;
-    })(Display.Shape);
-
+    }(Display.Shape));
     function createShape(params) {
         return new CommentShape(params);
     }
@@ -2034,19 +1840,19 @@ var Display;
 (function (Display) {
     var TextFormat = (function () {
         function TextFormat(font, size, color, bold, italic, underline, url, target, align, leftMargin, rightMargin, indent, leading) {
-            if (typeof font === "undefined") { font = "SimHei"; }
-            if (typeof size === "undefined") { size = 25; }
-            if (typeof color === "undefined") { color = 0xFFFFFF; }
-            if (typeof bold === "undefined") { bold = false; }
-            if (typeof italic === "undefined") { italic = false; }
-            if (typeof underline === "undefined") { underline = false; }
-            if (typeof url === "undefined") { url = ""; }
-            if (typeof target === "undefined") { target = ""; }
-            if (typeof align === "undefined") { align = "left"; }
-            if (typeof leftMargin === "undefined") { leftMargin = 0; }
-            if (typeof rightMargin === "undefined") { rightMargin = 0; }
-            if (typeof indent === "undefined") { indent = 0; }
-            if (typeof leading === "undefined") { leading = 0; }
+            if (font === void 0) { font = "SimHei"; }
+            if (size === void 0) { size = 25; }
+            if (color === void 0) { color = 0xFFFFFF; }
+            if (bold === void 0) { bold = false; }
+            if (italic === void 0) { italic = false; }
+            if (underline === void 0) { underline = false; }
+            if (url === void 0) { url = ""; }
+            if (target === void 0) { target = ""; }
+            if (align === void 0) { align = "left"; }
+            if (leftMargin === void 0) { leftMargin = 0; }
+            if (rightMargin === void 0) { rightMargin = 0; }
+            if (indent === void 0) { indent = 0; }
+            if (leading === void 0) { leading = 0; }
             this.font = font;
             this.size = size;
             this.color = color;
@@ -2066,13 +1872,12 @@ var Display;
             };
         };
         return TextFormat;
-    })();
-
+    }());
     var TextField = (function (_super) {
         __extends(TextField, _super);
         function TextField(text, color) {
-            if (typeof text === "undefined") { text = ""; }
-            if (typeof color === "undefined") { color = 0; }
+            if (text === void 0) { text = ""; }
+            if (color === void 0) { color = 0; }
             _super.call(this);
             this._text = text;
             this._textFormat = new TextFormat();
@@ -2093,8 +1898,6 @@ var Display;
             enumerable: true,
             configurable: true
         });
-
-
         Object.defineProperty(TextField.prototype, "length", {
             get: function () {
                 return this.text.length;
@@ -2105,8 +1908,6 @@ var Display;
             enumerable: true,
             configurable: true
         });
-
-
         Object.defineProperty(TextField.prototype, "htmlText", {
             get: function () {
                 return this.text;
@@ -2118,10 +1919,6 @@ var Display;
             enumerable: true,
             configurable: true
         });
-
-
-
-
         Object.defineProperty(TextField.prototype, "textWidth", {
             get: function () {
                 return this._text.length * this._textFormat.size;
@@ -2132,7 +1929,6 @@ var Display;
             enumerable: true,
             configurable: true
         });
-
         Object.defineProperty(TextField.prototype, "textHeight", {
             get: function () {
                 return this._textFormat.size;
@@ -2143,7 +1939,6 @@ var Display;
             enumerable: true,
             configurable: true
         });
-
         Object.defineProperty(TextField.prototype, "color", {
             get: function () {
                 return this._textFormat.color;
@@ -2155,21 +1950,16 @@ var Display;
             enumerable: true,
             configurable: true
         });
-
-
         TextField.prototype.getTextFormat = function () {
             return this._textFormat;
         };
-
         TextField.prototype.setTextFormat = function (tf) {
             this._textFormat = tf;
             this.methodCall("setTextFormat", tf.serialize());
         };
-
         TextField.prototype.appendText = function (t) {
             this.text = this.text + t;
         };
-
         TextField.prototype.serialize = function () {
             var serialized = _super.prototype.serialize.call(this);
             serialized["class"] = "TextField";
@@ -2178,9 +1968,8 @@ var Display;
             return serialized;
         };
         return TextField;
-    })(Display.DisplayObject);
+    }(Display.DisplayObject));
     Display.TextField = TextField;
-
     function createTextFormat() {
         return new TextFormat();
     }
@@ -2199,7 +1988,6 @@ var Display;
             this.bindParent(params);
             this._mM.play();
         }
-
         Object.defineProperty(CommentField.prototype, "fontsize", {
             get: function () {
                 return this.getTextFormat().fontsize;
@@ -2212,8 +2000,6 @@ var Display;
             enumerable: true,
             configurable: true
         });
-
-
         Object.defineProperty(CommentField.prototype, "font", {
             get: function () {
                 return this.getTextFormat().font;
@@ -2226,8 +2012,6 @@ var Display;
             enumerable: true,
             configurable: true
         });
-
-
         Object.defineProperty(CommentField.prototype, "align", {
             get: function () {
                 return this.getTextFormat().align;
@@ -2240,8 +2024,6 @@ var Display;
             enumerable: true,
             configurable: true
         });
-
-
         Object.defineProperty(CommentField.prototype, "bold", {
             get: function () {
                 return this.getTextFormat().bold;
@@ -2254,7 +2036,6 @@ var Display;
             enumerable: true,
             configurable: true
         });
-
         Object.defineProperty(CommentField.prototype, "motionManager", {
             get: function () {
                 return this._mM;
@@ -2265,14 +2046,11 @@ var Display;
             enumerable: true,
             configurable: true
         });
-
-
         CommentField.prototype.bindParent = function (params) {
             if (params.hasOwnProperty("parent")) {
                 params["parent"].addChild(this);
             }
         };
-
         CommentField.prototype.initStyle = function (style) {
             if (style["lifeTime"]) {
                 this._mM.dur = style["lifeTime"] * 1000;
@@ -2291,18 +2069,17 @@ var Display;
             }
             if (style.hasOwnProperty("motionGroup")) {
                 this._mM.initTweenGroup(style["motionGroup"], this._mM.dur);
-            } else if (style.hasOwnProperty("motion")) {
+            }
+            else if (style.hasOwnProperty("motion")) {
                 this._mM.initTween(style["motion"], false);
             }
         };
         return CommentField;
-    })(Display.TextField);
-
+    }(Display.TextField));
     function createComment(text, params) {
         return new CommentField(text, params);
     }
     Display.createComment = createComment;
-
     function createTextField() {
         return new CommentField("", {});
     }
@@ -2310,23 +2087,12 @@ var Display;
 })(Display || (Display = {}));
 var Display;
 (function (Display) {
-    Display.root;
-    Display.loaderInfo;
-    Display.stage;
-    Display.version;
-    Display.width;
-    Display.height;
-    Display.fullScreenWidth;
-    Display.fullScreenHeight;
-    Display.frameRate;
-
     var _root = new Display.RootSprite();
     var _width = 0;
     var _height = 0;
     var _fullScreenWidth = 0;
     var _fullScreenHeight = 0;
     var _frameRate = 24;
-
     Object.defineProperty(Display, 'root', {
         get: function () {
             return _root;
@@ -2400,12 +2166,10 @@ var Display;
             __pchannel("Display:SetFrameRate", value);
         }
     });
-
     function toString() {
         return "[display Display]";
     }
     Display.toString = toString;
-
     __schannel("Update:DimensionUpdate", function (payload) {
         _width = payload["stageWidth"];
         _height = payload["stageHeight"];
@@ -2415,5 +2179,5 @@ var Display;
         }
     });
 })(Display || (Display = {}));
-
 var $ = Display;
+//# sourceMappingURL=Display.js.map

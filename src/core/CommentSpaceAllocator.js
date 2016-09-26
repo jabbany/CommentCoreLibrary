@@ -1,14 +1,12 @@
-var __extends = this.__extends || function (d, b) {
+var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-
 var CommentSpaceAllocator = (function () {
     function CommentSpaceAllocator(width, height) {
-        if (typeof width === "undefined") { width = 0; }
-        if (typeof height === "undefined") { height = 0; }
+        if (width === void 0) { width = 0; }
+        if (height === void 0) { height = 0; }
         this._pools = [
             []
         ];
@@ -19,26 +17,27 @@ var CommentSpaceAllocator = (function () {
     CommentSpaceAllocator.prototype.willCollide = function (existing, check) {
         return existing.stime + existing.ttl >= check.stime + check.ttl / 2;
     };
-
     CommentSpaceAllocator.prototype.pathCheck = function (y, comment, pool) {
         var bottom = y + comment.height;
         var right = comment.right;
         for (var i = 0; i < pool.length; i++) {
             if (pool[i].y > bottom || pool[i].bottom < y) {
                 continue;
-            } else if (pool[i].right < comment.x || pool[i].x > right) {
+            }
+            else if (pool[i].right < comment.x || pool[i].x > right) {
                 if (this.willCollide(pool[i], comment)) {
                     return false;
-                } else {
+                }
+                else {
                     continue;
                 }
-            } else {
+            }
+            else {
                 return false;
             }
         }
         return true;
     };
-
     CommentSpaceAllocator.prototype.assign = function (comment, cindex) {
         while (this._pools.length <= cindex) {
             this._pools.push([]);
@@ -47,7 +46,8 @@ var CommentSpaceAllocator = (function () {
         if (pool.length === 0) {
             comment.cindex = cindex;
             return 0;
-        } else if (this.pathCheck(0, comment, pool)) {
+        }
+        else if (this.pathCheck(0, comment, pool)) {
             comment.cindex = cindex;
             return 0;
         }
@@ -62,28 +62,28 @@ var CommentSpaceAllocator = (function () {
                 return y;
             }
         }
-
         return this.assign(comment, cindex + 1);
     };
-
     CommentSpaceAllocator.prototype.add = function (comment) {
         if (comment.height > this._height) {
             comment.cindex = -2;
             comment.y = 0;
-        } else {
+        }
+        else {
             comment.y = this.assign(comment, 0);
             BinArray.binsert(this._pools[comment.cindex], comment, function (a, b) {
                 if (a.bottom < b.bottom) {
                     return -1;
-                } else if (a.bottom > b.bottom) {
+                }
+                else if (a.bottom > b.bottom) {
                     return 1;
-                } else {
+                }
+                else {
                     return 0;
                 }
             });
         }
     };
-
     CommentSpaceAllocator.prototype.remove = function (comment) {
         if (comment.cindex < 0) {
             return;
@@ -96,14 +96,12 @@ var CommentSpaceAllocator = (function () {
             return;
         this._pools[comment.cindex].splice(index, 1);
     };
-
     CommentSpaceAllocator.prototype.setBounds = function (width, height) {
         this._width = width;
         this._height = height;
     };
     return CommentSpaceAllocator;
-})();
-
+}());
 var AnchorCommentSpaceAllocator = (function (_super) {
     __extends(AnchorCommentSpaceAllocator, _super);
     function AnchorCommentSpaceAllocator() {
@@ -113,21 +111,21 @@ var AnchorCommentSpaceAllocator = (function (_super) {
         _super.prototype.add.call(this, comment);
         comment.x = (this._width - comment.width) / 2;
     };
-
     AnchorCommentSpaceAllocator.prototype.willCollide = function (a, b) {
         return true;
     };
-
     AnchorCommentSpaceAllocator.prototype.pathCheck = function (y, comment, pool) {
         var bottom = y + comment.height;
         for (var i = 0; i < pool.length; i++) {
             if (pool[i].y > bottom || pool[i].bottom < y) {
                 continue;
-            } else {
+            }
+            else {
                 return false;
             }
         }
         return true;
     };
     return AnchorCommentSpaceAllocator;
-})(CommentSpaceAllocator);
+}(CommentSpaceAllocator));
+//# sourceMappingURL=CommentSpaceAllocator.js.map
