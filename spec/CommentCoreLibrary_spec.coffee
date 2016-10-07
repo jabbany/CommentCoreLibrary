@@ -1,4 +1,5 @@
 'use strict'
+
 describe 'CommentManager', ->
   manager = stage = cmt = c1 = c2 = c3 = c4 = c5 = null
 
@@ -66,15 +67,15 @@ describe 'CommentManager', ->
 
     describe '.start', ->
       it 'starts the timer', ->
+        spy = sinon.spy window, 'setInterval'
         manager.start()
-        # TODO: figure out how to test the timer
-        # maybe just add spy on window.setInterval
+        expect(spy).toHaveBeenCalled true
 
     describe '.stop', ->
       it 'stops the timer', ->
+        spy = sinon.spy window, 'clearInterval'
         manager.stop()
-        # TODO: figure out how to test the timer
-        # maybe just add spy on window.clearInterval
+        expect(spy).toHaveBeenCalled true
 
     describe '.clear', ->
       it 'clears', ->
