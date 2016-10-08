@@ -90,14 +90,37 @@ describe 'CommentManager', ->
         expect(manager.timeline).toEqual [c3, c5]
         manager.insert c4
         expect(manager.timeline).toEqual [c3, c4 , c5]
-        
+
+    describe '.setBounds', ->
+      beforeEach -> 
+        manager.stage.style.width = '640px'
+        manager.stage.style.width = '480px'
+
+      it 'updates width and height', ->
+        manager.setBounds()
+        expect(manager.width).toEqual stage.offsetWidth
+        expect(manager.height).toEqual stage.offsetHeight
+
+      it 'dispatches resize event', ->
+        callback = sinon.spy()
+        manager.addEventListener 'resize', callback
+        manager.setBounds()
+        expect(callback).toHaveBeenCalled true
+
+      it 'sets bounds on comment space allocators', ->
+        spies = {}
+        for allocatorName, allocator of manager.csa
+          spies[allocatorName] = sinon.spy allocator, 'setBounds'
+        manager.setBounds()
+        for allocatorName, spy of spies
+          expect(spy).toHaveBeenCalledWith stage.offsetWidth, stage.offsetHeight
+
     describe '.addEventListener .dispatchEvent', ->
       it 'add one event listener', ->
-        hasDispatchedEvent = false
-        manager.addEventListener 'myCustomEvent', ->
-          hasDispatchedEvent = true
+        callback = sinon.spy()
+        manager.addEventListener 'myCustomEvent', callback
         manager.dispatchEvent 'myCustomEvent'
-        expect(hasDispatchedEvent).toBe true
+        expect(callback).toHaveBeenCalled true
 
       it 'add multiple event listeners', ->
         dispatchedEventId = 0
@@ -107,3 +130,9 @@ describe 'CommentManager', ->
           dispatchedEventId = 2
         manager.dispatchEvent 'myCustomEvent'
         expect(dispatchedEventId).toBe 2
+
+      it 'dispatch event works with data', ->
+        callback = sinon.spy()
+        manager.addEventListener 'myCustomEvent', callback
+        manager.dispatchEvent 'myCustomEvent', 'foo'
+        expect(callback).toHaveBeenCalledWith 'foo'
