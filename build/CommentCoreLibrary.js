@@ -1041,6 +1041,20 @@ function BilibiliParser(xmlDoc, text, warn){
 		return string.replace(/\t/,"\\t");	
 	}
 	
+	function formatmode7(text) {
+	    if (text.charAt(0) == '[') switch (text.charAt(text.length - 1)) {
+	        case ']':
+	            return text;
+	        case '"':
+	            return text + ']';
+	        case ',':
+	            return text.substring(0, text.length - 1) + '"]';
+	        default:
+	            return formatmode7(text.substring(0, text.length - 1));
+	    };
+	    if (text.charAt(0) !== '[') return text;
+	};
+	
 	if(xmlDoc !== null){
 		var elems = xmlDoc.getElementsByTagName('d');
 	}else{
@@ -1088,7 +1102,7 @@ function BilibiliParser(xmlDoc, text, warn){
 			}else{
 				if(obj.mode == 7){
 					try{
-						adv = JSON.parse(format(text));
+						adv = JSON.parse(format(formatmode7(text)));
 						obj.shadow = true;
 						obj.x = parseFloat(adv[0]);
 						obj.y = parseFloat(adv[1]);

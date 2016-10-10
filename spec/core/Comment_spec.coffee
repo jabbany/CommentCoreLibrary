@@ -45,6 +45,60 @@ describe 'CoreComment', ->
       comment = new CoreComment(manager)
       expect(typeof comment[method]).toBe 'function'
 
+  describe '.time', ->
+    comment = null
+
+    beforeEach ->
+      config = 
+        dur: 1000
+      comment = new CoreComment(manager, config)
+
+    it 'ages comment', ->
+      comment.time 100
+      expect(comment.ttl).toBe (comment.dur - 100)
+
+    it 'calls update when movable', ->
+      spy = sinon.spy comment, 'update'
+      comment.time 100
+      expect(spy).toHaveBeenCalled true
+
+    it 'calls finish if expired', ->
+      spy = sinon.spy comment, 'finish'
+
+      # Create the DOM and add it to the manager
+      comment.init()
+      comment.parent.stage.appendChild comment.dom
+
+      comment.time 2000
+      expect(spy).toHaveBeenCalled true
+
+  describe '.invalidate', ->
+    comment = null
+
+    beforeEach ->
+      config = 
+        dur: 1000
+      comment = new CoreComment(manager, config)
+
+    it 'invalidates comment cache data', ->
+      comment.invalidate()
+      expect(comment._x).toBe null
+      expect(comment._y).toBe null
+      expect(comment._width).toBe null
+      expect(comment._height).toBe null
+
+  describe '.update', ->
+    it 'calls animate', ->
+      comment = new CoreComment(manager)
+      spy = sinon.spy comment, 'animate'
+      comment.update()
+      expect(spy).toHaveBeenCalled true
+
+  describe '.LINEAR', ->
+    it 'does linear interpolation', ->
+      v = CoreComment.LINEAR(400, 1, 1, 4000)
+      expect(v).toBe 1.1
+
 describe 'ScrollComment', ->
   manager = null 
 
