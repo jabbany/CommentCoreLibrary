@@ -35,8 +35,10 @@ module.exports = (grunt) ->
     tween:   'src/scripting/api/Tween/Tween.ts'
 
   SRC_PARSER = [
+    'src/CommentProvider.js'
     'src/parsers/AcfunFormat.js'
     'src/parsers/BilibiliFormat.js'
+    'src/parsers/CommonDanmakuFormat.js'
   ]
 
   # !! Below are compile settings

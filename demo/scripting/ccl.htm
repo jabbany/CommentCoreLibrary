@@ -145,18 +145,48 @@ function timeupdate(){
 }
 
 function load(dmf,dmfmd){
-	if(dmfmd == null)
-		dmfmd = 'bilibili';
+	if (cm._commentProvider && cm._commentProvider instanceof CommentProvider) {
+		// Unload the previous comment provider if possible
+		cm._commentProvider.destroy();
+	}
+    cm._commentProvider = new CommentProvider();
+    cm._commentProvider.addTarget(cm);
 	cm.clear();
+	// Hook Providers
+	switch (dmfmd) {
+		case 'acfun': {
+			cm._commentProvider.addStaticSource(
+				CommentProvider.XMLProvider('GET', dmf), 
+				CommentProvider.SOURCE_JSON).addParser(new AcfunFormat.JSONParser(), CommentProvider.SOURCE_JSON);
+			break;
+		}
+		case 'cdf': {
+			cm._commentProvider.addStaticSource(
+				CommentProvider.XMLProvider('GET', dmf), 
+				CommentProvider.SOURCE_JSON).addParser(new CommonDanmakuFormat.JSONParser(), CommentProvider.SOURCE_JSON)
+			break;
+		}
+		case 'bilibili': 
+		default: {
+			cm._commentProvider.addStaticSource(
+				CommentProvider.XMLProvider('GET', dmf), 
+				CommentProvider.SOURCE_XML).addParser(new BilibiliFormat.XMLParser(), CommentProvider.SOURCE_XML)
+			break;
+		}
+	}
 	start = 0;
-	try{
+	try {
 		clearTimeout(tmr);
-	}catch(e){}
-	CommentLoader(dmf,cm,dmfmd);
-	cm.startTimer();
-	start = new Date().getTime();
-	lasthead = playhead;
-	tmr = setInterval(timeupdate,42);
+	} catch (e) {}
+	cm._commentProvider.start().then(function () {
+		cm.startTimer();
+		start = new Date().getTime();
+		lasthead = playhead;
+		tmr = setInterval(timeupdate,42);
+	}).catch(function (e) {
+		console.error(e);
+		alert('Failed to load comment file!');
+	});
 }
 function stop(){
 	cm.stopTimer();

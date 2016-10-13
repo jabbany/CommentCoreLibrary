@@ -932,281 +932,790 @@ var CommentManager = (function() {
 	return CommentManager;
 })();
 
-/** 
+/**
+ * Comment Provider
+ * Provides functionality to send or receive danmaku
+ * @license MIT
+ * @author Jim Chen
+**/
+
+var CommentProvider = (function () {
+
+    function CommentProvider () {
+        this._started = false;
+        this._destroyed = false;
+        this._staticSources = {};
+        this._dynamicSources = {};
+        this._parsers = {}
+        this._targets = [];
+    }
+
+    CommentProvider.SOURCE_JSON = 'JSON';
+    CommentProvider.SOURCE_XML = 'XML';
+    CommentProvider.SOURCE_TEXT = 'TEXT';
+
+    /**
+     * Provider for HTTP content. This returns a promise that resolves to TEXT.
+     *
+     * @param method - HTTP method to use
+     * @param url - Base URL
+     * @param responseType - type of response expected.
+     * @param args - Arguments for query string. Note: This is only used when
+     *               method is POST or PUT
+     * @param body - Text body content. If not provided will omit a body
+     * @return Promise that resolves or rejects based on the success or failure
+     *         of the request
+     **/
+    CommentProvider.BaseHttpProvider = function (method, url, responseType, args, body) {
+        return new Promise(function (resolve, reject) {
+            var xhr = new XMLHttpRequest();
+            var uri = url;
+            if (args && (method === 'POST' || method === 'PUT')) {
+                uri += '?';
+                var argsArray = [];
+                for (var key in args) {
+                    if (args.hasOwnProperty(key)) {
+                        argsArray.push(encodeURIComponent(key) + '=' + encodeURIComponent(args[key]));
+                    }
+                }
+                uri += argsArray.join('&');
+            }
+
+            xhr.responseType = typeof responseType === "string" ? responseType : "";
+            xhr.onload = function () {
+                if (this.status >= 200 && this.status < 300) {
+                    resolve(this.response);
+                } else {
+                    reject(new Error(this.status + " " + this.statusText));
+                }
+            };
+
+            xhr.onerror = function () {
+                reject(new Error(this.status + " " + this.statusText));
+            }
+
+            xhr.open(method, uri);
+            if (typeof body !== 'undefined') {
+                xhr.send(body);
+            } else {
+                xhr.send();
+            }
+        });
+    };
+
+    /**
+     * Provider for JSON content. This returns a promise that resolves to JSON.
+     *
+     * @param method - HTTP method to use
+     * @param url - Base URL
+     * @param args - Arguments for query string. Note: This is only used when
+     *               method is POST or PUT
+     * @param body - Text body content. If not provided will omit a body
+     * @return Promise that resolves or rejects based on the success or failure
+     *         of the request
+     **/
+    CommentProvider.JSONProvider = function (method, url, args, body) {
+        return CommentProvider.BaseHttpProvider(method, url, "json", args, body).then(function (response) {
+            return response;
+        });
+    };
+
+    /**
+     * Provider for XML content. This returns a promise that resolves to Document.
+     *
+     * @param method - HTTP method to use
+     * @param url - Base URL
+     * @param args - Arguments for query string. Note: This is only used when
+     *               method is POST or PUT
+     * @param body - Text body content. If not provided will omit a body
+     * @return Promise that resolves or rejects based on the success or failure
+     *         of the request
+     **/
+    CommentProvider.XMLProvider = function (method, url, args, body) {
+        return CommentProvider.BaseHttpProvider(method, url, "document", args, body).then(function (response) {
+            return response;
+        });
+    };
+
+    /**
+     * Provider for text content. This returns a promise that resolves to Text.
+     *
+     * @param method - HTTP method to use
+     * @param url - Base URL
+     * @param args - Arguments for query string. Note: This is only used when
+     *               method is POST or PUT
+     * @param body - Text body content. If not provided will omit a body
+     * @return Promise that resolves or rejects based on the success or failure
+     *         of the request
+     **/
+    CommentProvider.TextProvider = function (method, url, args, body) {
+        return CommentProvider.BaseHttpProvider(method, url, "text", args, body).then(function (response) {
+            return response.text;
+        });
+    };
+
+    /**
+     * Attaches a static source to the corresponding type.
+     * NOTE: Multiple static sources will race to determine the initial comment
+     *       list so it is imperative that they all parse to the SAME content.
+     *
+     * @param source - Promise that resolves to one of the supported types
+     * @param type - Type that the provider resolves to
+     * @return this
+     **/
+    CommentProvider.prototype.addStaticSource = function (source, type) {
+        if (this._destroyed) {
+            throw new Error('Comment provider has been destroyed, cannot attach more sources.');
+        }
+        if (!(type in this._staticSources)) {
+            this._staticSources[type] = [];
+        }
+        this._staticSources[type].push(source);
+        return this;
+    };
+
+    /**
+     * Attaches a dynamic source to the corresponding type
+     * NOTE: Multiple dynamic sources will collectively provide comment data.
+     *
+     * @param source - Listenable that resolves to one of the supported types
+     * @param type - Type that the provider resolves to
+     * @return this
+     **/
+    CommentProvider.prototype.addDynamicSource = function (source, type) {
+        if (this._destroyed) {
+            throw new Error('Comment provider has been destroyed, cannot attach more sources.');
+        }
+        if (!(type in this._dynamicSources)) {
+            this._dynamicSources[type] = [];
+        }
+        this._dynamicSources[type].push(source);
+        return this;
+    };
+
+    /**
+     * Attaches a target comment manager so that we can stream comments to it
+     *
+     * @param commentManager - Comment Manager instance to attach to
+     * @return this
+     **/
+    CommentProvider.prototype.addTarget = function (commentManager) {
+        if (this._destroyed) {
+            throw new Error('Comment provider has been destroyed, cannot attach more targets.');
+        }
+        if (!(commentManager instanceof CommentManager)) {
+            throw new Error('Expected the target to be an instance of CommentManager.');
+        }
+        this._targets.push(commentManager);
+        return this;
+    };
+
+    /**
+     * Adds a parser for an incoming data type. If multiple parsers are added,
+     * parsers added later take precedence.
+     *
+     * @param parser - Parser spec compliant parser
+     * @param type - Type that the provider resolves to
+     * @return this
+     **/
+    CommentProvider.prototype.addParser = function (parser, type) {
+        if (this._destroyed) {
+            throw new Error('Comment provider has been destroyed, cannot attach more parsers.');
+        }
+        if (!(type in this._parsers)) {
+            this._parsers[type] = [];
+        }
+        this._parsers[type].unshift(parser);
+        return this;
+    };
+
+    CommentProvider.prototype.applyParsersOne = function (data, type) {
+        return new Promise(function (resolve, reject) {
+            if (!(type in this._parsers)) {
+                reject(new Error('No parsers defined for "' + type + '"'));
+                return;s
+            }
+            for (var i = 0; i < this._parsers[type].length; i++) {
+                var output = null;
+                try {
+                    output = this._parsers[type][i].parseOne(data);
+                } catch (e) {
+                    // TODO: log this failure
+                    console.error(e);
+                }
+                if (output !== null) {
+                    resolve(output);
+                    return;
+                }
+            }
+            reject(new Error("Ran out of parsers for they target type"));
+        }.bind(this));
+    };
+
+    CommentProvider.prototype.applyParsersList = function (data, type) {
+        return new Promise(function (resolve, reject) {
+            if (!(type in this._parsers)) {
+                reject(new Error('No parsers defined for "' + type + '"'));
+                return;
+            }
+            for (var i = 0; i < this._parsers[type].length; i++) {
+                var output = null;
+                try {
+                    output = this._parsers[type][i].parseMany(data);
+                } catch (e) {
+                    // TODO: log this failure
+                    console.error(e);
+                }
+                if (output !== null) {
+                    resolve(output);
+                    return;
+                }
+            }
+            reject(new Error("Ran out of parsers for the target type"));
+        }.bind(this));
+    };
+
+    /**
+     * Reloads static comments
+     *
+     * @return Promise that is resolved when the static sources have been
+     *         loaded
+     */
+    CommentProvider.prototype.load = function () {
+        if (this._destroyed) {
+            throw new Error('Cannot load sources on a destroyed provider.');
+        }
+        var promises = [];
+        for (var type in this._staticSources) {
+            promises.push(Promise.race(this._staticSources[type])
+                .then(function (data) {
+                    return this.applyParsersList(data, type);
+                }.bind(this)));
+        }
+        return Promise.race(promises).then(function (commentList) {
+            for (var i = 0; i < this._targets.length; i++) {
+                this._targets[i].load(commentList);
+            }
+            return Promise.resolve(commentList);
+        }.bind(this));
+    };
+
+    /**
+     * Commit the changes and boot up the provider
+     *
+     * @return Promise that is resolved when all the static sources are loaded
+     *         and all the dynamic sources are hooked up
+     **/
+    CommentProvider.prototype.start = function () {
+        if (this._destroyed) {
+            throw new Error('Cannot start a provider that has been destroyed.');
+        }
+        this._started = true;
+        return this.load().then(function (commentList) {
+            // Bind the dynamic sources
+            for (var type in this._dynamicSources) {
+                this._dynamicSources[type].foreach(function (source) {
+                    source.addEventListener('receive', function (data) {
+                        for (var i = 0; i < this._targets.length; i++) {
+                            this._targets[i].send(this.applyParserOne(data, type));
+                        }
+                    }.bind(this));
+                s}.bind(this));
+            }
+            return Promise.resolve(commentList);
+        }.bind(this));
+    };
+
+    /**
+     * Send out comments to both dynamic sources and POST targets.
+     *
+     * @param commentData - commentData to be sent to the server. Object.
+     * @param requireAll - Do we require that all servers to accept the comment
+     *                     for the promise to resolve. Defaults to true. If
+     *                     false, the returned promise will resolve as long as a
+     *                     single target accepts.
+     * @return Promise that is resolved when the server accepts or rejects the
+     *         comment. Dynamic sources will decide based on their promise while
+     *         POST targets are considered accepted if they return a successful
+     *         HTTP response code.
+     **/
+    CommentProvider.prototype.send = function (commentData, requireAll) {
+    
+    };
+
+    /**
+     * Stop providing dynamic comments to the targets
+     *
+     * @return Promise that is resolved when all bindings between dynamic
+     *         sources have been successfully unloaded.
+     **/
+    CommentProvider.prototype.destroy = function () {
+        if (this._destroyed) {
+            return;
+        }
+        // TODO: implement debinding for sources
+        this._destroyed = true;
+    };
+
+    return CommentProvider;
+})();
+
+/**
  * AcFun Format Parser
+ * Takes in JSON and parses it based on current documentation for AcFun comments
  * @license MIT License
- * An alternative format comment parser
- */
-function AcfunParser(jsond){
-	var list = [];
-	try{
-		var jsondt = JSON.parse(jsond);
-	}catch(e){
-		console.log('Error: Could not parse json list!');
-		return [];
-	}
-	for(var i=0;i<jsondt.length;i++){
-		//Read each comment and generate a correct comment object
-		var data = {};
-		var xc = jsondt[i]['c'].split(',');
-		if(xc.length > 0){
-			data.stime = parseFloat(xc[0]) * 1000;
-			data.color = parseInt(xc[1])
-			data.mode = parseInt(xc[2]);
-			data.size = parseInt(xc[3]);
-			data.hash = xc[4];
-			data.date = parseInt(xc[5]);
-			data.position = "absolute";
-			if(data.mode != 7){
-				data.text = jsondt[i].m.replace(/(\/n|\\n|\n|\r\n|\\r)/g,"\n");
-				data.text = data.text.replace(/\r/g,"\n");
-				data.text = data.text.replace(/\s/g,"\u00a0");
-			}else{
-				data.text = jsondt[i].m;
-			}
-			if(data.mode == 7){
-				//High level positioned dm
-				try{
-					var x = JSON.parse(data.text);
-				}catch(e){
-					console.log('[Err] Error parsing internal data for comment');
-					console.log('[Dbg] ' + data.text);
-					continue;
-				}
-				data.position = "relative";
-				data.text = x.n; /*.replace(/\r/g,"\n");*/
-				data.text = data.text.replace(/\ /g,"\u00a0");
-				if(x.a != null){
-					data.opacity = x.a;
-				}else{
-					data.opacity = 1;
-				}
-				if(x.p != null){
-					data.x = x.p.x / 1000; // relative position
-					data.y = x.p.y / 1000;
-				}else{
-					data.x = 0;
-					data.y = 0;
-				}
-				data.shadow = x.b;
-				data.dur = 4000;
-				if(x.l != null)
-					data.moveDelay = x.l * 1000;
-				if(x.z != null && x.z.length > 0){
-					data.movable = true;
-					data.motion = [];
-					var moveDuration = 0;
-					var last = {x:data.x, y:data.y, alpha:data.opacity, color:data.color};
-					for(var m = 0; m < x.z.length; m++){
-						var dur = x.z[m].l != null ? (x.z[m].l * 1000) : 500;
-						moveDuration += dur;
-						var motion = {
-							x:{from:last.x, to:x.z[m].x/1000, dur: dur, delay: 0},
-							y:{from:last.y, to:x.z[m].y/1000, dur: dur, delay: 0}
-						};
-						last.x = motion.x.to;
-						last.y = motion.y.to;
-						if(x.z[m].t !== last.alpha){
-							motion.alpha = {from:last.alpha, to:x.z[m].t, dur: dur, delay: 0};
-							last.alpha = motion.alpha.to;
-						}
-						if(x.z[m].c != null && x.z[m].c !== last.color){
-							motion.color = {from:last.color, to:x.z[m].c, dur: dur, delay: 0};
-							last.color = motion.color.to;
-						}
-						data.motion.push(motion);
-					}
-					data.dur = moveDuration + (data.moveDelay ? data.moveDelay : 0);
-				}
-				if(x.r != null && x.k != null){
-					data.rX = x.r;
-					data.rY = x.k;
-				}
-				
-			}
-			list.push(data);
-		}
-	}
-	return list;
-}
+ **/
+var AcfunFormat = (function () {
+    var AcfunFormat = {};
+
+    AcfunFormat.JSONParser = function (params) {
+        // No parameters currently needed
+    };
+
+    AcfunFormat.JSONParser.prototype.parseOne = function (comment) {
+        // Read a comment and generate a correct comment object
+        var data = {};
+        if (typeof comment !== 'object' || comment == null || !comment.hasOwnProperty('c')) {
+            // This is not parseable. The comment contains no config data
+            return null;
+        }
+        var config = comment['c'].split(',');
+        if (config.length >= 6) {
+            data.stime = parseFloat(config[0]) * 1000;
+            data.color = parseInt(config[1])
+            data.mode = parseInt(config[2]);
+            data.size = parseInt(config[3]);
+            data.hash = config[4];
+            data.date = parseInt(config[5]);
+            data.position = "absolute";
+            if (data.mode !== 7) {
+                // Do some text normalization on low complexity comments
+                data.text = comment.m.replace(/(\/n|\\n|\n|\r\n|\\r)/g,"\n");
+                data.text = data.text.replace(/\r/g,"\n");
+                data.text = data.text.replace(/\s/g,"\u00a0");
+            } else {
+                try { 
+                    var x = JSON.parse(comment.m);
+                } catch (e) {
+                    console.warn('Error parsing internal data for comment');
+                    console.log('[Dbg] ' + data.text);
+                    return null; // Can't actually parse this!
+                }
+                data.position = "relative";
+                data.text = x.n; /*.replace(/\r/g,"\n");*/
+                data.text = data.text.replace(/\ /g,"\u00a0");
+                if (x.a != null) {
+                    data.opacity = x.a;
+                } else {
+                    data.opacity = 1;
+                }
+                if (x.p != null) {
+                    // Relative position
+                    data.x = x.p.x / 1000;
+                    data.y = x.p.y / 1000;
+                } else {
+                    data.x = 0;
+                    data.y = 0;
+                }
+                data.shadow = x.b;
+                data.dur = 4000;
+                if (x.l != null) {
+                    data.moveDelay = x.l * 1000;
+                }
+                if (x.z != null && x.z.length > 0) {
+                    data.movable = true;
+                    data.motion = [];
+                    var moveDuration = 0;
+                    var last = {x:data.x, y:data.y, alpha:data.opacity, color:data.color};
+                    for (var m = 0; m < x.z.length; m++) {
+                        var dur = x.z[m].l != null ? (x.z[m].l * 1000) : 500;
+                        moveDuration += dur;
+                        var motion = {
+                            x:{from:last.x, to:x.z[m].x/1000, dur: dur, delay: 0},
+                            y:{from:last.y, to:x.z[m].y/1000, dur: dur, delay: 0}
+                        };
+                        last.x = motion.x.to;
+                        last.y = motion.y.to;
+                        if (x.z[m].t !== last.alpha) {
+                            motion.alpha = {from:last.alpha, to:x.z[m].t, dur: dur, delay: 0};
+                            last.alpha = motion.alpha.to;
+                        }
+                        if (x.z[m].c != null && x.z[m].c !== last.color) {
+                            motion.color = {from:last.color, to:x.z[m].c, dur: dur, delay: 0};
+                            last.color = motion.color.to;
+                        }
+                        data.motion.push(motion);
+                    }
+                    data.dur = moveDuration + (data.moveDelay ? data.moveDelay : 0);
+                }
+                if (x.r != null && x.k != null) {
+                    data.rX = x.r;
+                    data.rY = x.k;
+                }
+                
+            }
+            return data;
+        } else {
+            // Not enough arguments.
+            console.warn('Dropping this comment due to insufficient parameters. Got: ' + config.length);
+            return null;
+        }
+    };
+
+    AcfunFormat.JSONParser.prototype.parseMany = function (comments) {
+        if (!Array.isArray(comments)) {
+            return null;
+        }
+        var list = [];
+        for (var i = 0; i < comments.length; i++) {
+            var comment = this.parseOne(comments[i]);
+            if (comment !== null) {
+                list.push(comment);
+            }
+        }
+        return list;
+    };
+
+    return AcfunFormat;
+})();
 
 /** 
  * Bilibili Format Parser
- * @license MIT License
  * Takes in an XMLDoc/LooseXMLDoc and parses that into a Generic Comment List
+ * @license MIT License
  **/
-function BilibiliParser(xmlDoc, text, warn){	
-	function format(string){
-		// Format the comment text to be JSON Valid.
-		return string.replace(/\t/,"\\t");	
-	}
-	
-	function formatmode7(text) {
-	    if (text.charAt(0) == '[') switch (text.charAt(text.length - 1)) {
-	        case ']':
-	            return text;
-	        case '"':
-	            return text + ']';
-	        case ',':
-	            return text.substring(0, text.length - 1) + '"]';
-	        default:
-	            return formatmode7(text.substring(0, text.length - 1));
-	    };
-	    if (text.charAt(0) !== '[') return text;
-	};
-	
-	if(xmlDoc !== null){
-		var elems = xmlDoc.getElementsByTagName('d');
-	}else{
-		if(!document || !document.createElement){
-			// Maybe we are in a restricted context? Bail.
-			return [];
-		}
-		if(warn){
-			if(!confirm("XML Parse Error. \n Allow tag soup parsing?\n[WARNING: This is unsafe.]")){
-				return [];
-			}
-		}else{
-			// TODO: Make this safer in the future
-			text = text.replace(new RegExp("</([^d])","g"), "</disabled $1");
-			text = text.replace(new RegExp("</(\S{2,})","g"), "</disabled $1");
-			text = text.replace(new RegExp("<([^d/]\W*?)","g"), "<disabled $1");
-			text = text.replace(new RegExp("<([^/ ]{2,}\W*?)","g"), "<disabled $1");
-		}
-		var tmp = document.createElement("div");
-		tmp.innerHTML = text;
-		var elems = tmp.getElementsByTagName('d');
-	}
-	
-	var tlist = [];
-	for(var i=0;i < elems.length;i++){
-		if(elems[i].getAttribute('p') != null){
-			var opt = elems[i].getAttribute('p').split(',');
-			if(!elems[i].childNodes[0])
-			  continue;
-			var text = elems[i].childNodes[0].nodeValue;
-			var obj = {};
-			obj.stime = Math.round(parseFloat(opt[0])*1000);
-			obj.size = parseInt(opt[2]);
-			obj.color = parseInt(opt[3]);
-			obj.mode = parseInt(opt[1]);
-			obj.date = parseInt(opt[4]);
-			obj.pool = parseInt(opt[5]);
-			obj.position = "absolute";
-			if(opt[7] != null)
-				obj.dbid = parseInt(opt[7]);
-			obj.hash = opt[6];
-			obj.border = false;
-			if(obj.mode < 7){
-				obj.text = text.replace(/(\/n|\\n|\n|\r\n)/g, "\n");
-			}else{
-				if(obj.mode == 7){
-					try{
-						adv = JSON.parse(format(formatmode7(text)));
-						obj.shadow = true;
-						obj.x = parseFloat(adv[0]);
-						obj.y = parseFloat(adv[1]);
-						if(Math.floor(obj.x) < obj.x || Math.floor(obj.y) < obj.y){
-							obj.position = "relative";
-						}
-						obj.text = adv[4].replace(/(\/n|\\n|\n|\r\n)/g, "\n");
-						obj.rZ = 0;
-						obj.rY = 0;
-						if(adv.length >= 7){
-							obj.rZ = parseInt(adv[5], 10);
-							obj.rY = parseInt(adv[6], 10);
-						}
-						obj.motion = [];
-						obj.movable = false;
-						if(adv.length >= 11){
-							obj.movable = true;
-							var singleStepDur = 500;
-							var motion = {
-								x:{from: obj.x, to:parseFloat(adv[7]), dur:singleStepDur, delay:0},
-								y:{from: obj.y, to:parseFloat(adv[8]), dur:singleStepDur, delay:0},
-							};
-							if(adv[9] !== ''){
-								singleStepDur = parseInt(adv[9], 10);
-								motion.x.dur = singleStepDur;
-								motion.y.dur = singleStepDur;
-							}
-							if(adv[10] !== ''){
-								motion.x.delay = parseInt(adv[10], 10);
-								motion.y.delay = parseInt(adv[10], 10);
-							}
-							if(adv.length > 11){
-								obj.shadow = adv[11];
-								if(obj.shadow === "true"){
-									obj.shadow = true;
-								}
-								if(obj.shadow === "false"){
-									obj.shadow = false;
-								}
-								if(adv[12] != null){
-									obj.font = adv[12];
-								}
-								if(adv.length > 14){
-									// Support for Bilibili Advanced Paths
-									if(obj.position === "relative"){
-										console.log("Cannot mix relative and absolute positioning");
-										obj.position = "absolute";
-									}
-									var path = adv[14];
-									var lastPoint = {x:motion.x.from, y:motion.y.from};
-									var pathMotion = [];
-									var regex = new RegExp("([a-zA-Z])\\s*(\\d+)[, ](\\d+)","g");
-									var counts = path.split(/[a-zA-Z]/).length - 1;
-									var m = regex.exec(path);
-									while(m !== null){
-										switch(m[1]){
-											case "M":{
-												lastPoint.x = parseInt(m[2],10);
-												lastPoint.y = parseInt(m[3],10);
-											}break;
-											case "L":{
-												pathMotion.push({
-													"x":{"from":lastPoint.x, "to":parseInt(m[2],10), "dur": singleStepDur / counts, "delay": 0},
-													"y":{"from":lastPoint.y, "to":parseInt(m[3],10), "dur": singleStepDur / counts, "delay": 0}
-												});
-												lastPoint.x = parseInt(m[2],10);
-												lastPoint.y = parseInt(m[3],10);
-											}break;
-										}
-										m = regex.exec(path);
-									}
-									motion = null;
-									obj.motion = pathMotion;
-								}
-							}
-							if(motion !== null){
-								obj.motion.push(motion);
-							}
-						}
-						obj.dur = 2500;
-						if(adv[3] < 12){
-							obj.dur = adv[3] * 1000;
-						}
-						var tmp = adv[2].split('-');
-						if(tmp != null && tmp.length>1){
-							var alphaFrom = parseFloat(tmp[0]);
-							var alphaTo = parseFloat(tmp[1]);
-							obj.opacity = alphaFrom;
-							if(alphaFrom !== alphaTo){
-								obj.alpha = {from:alphaFrom, to:alphaTo}
-							}
-						}
-					}catch(e){
-						console.log('[Err] Error occurred in JSON parsing');
-						console.log('[Dbg] ' + text);
-					}
-				}else if(obj.mode == 8){
-					obj.code = text; //Code comments are special
-				}
-			}
-			if(obj.text != null)
-				obj.text = obj.text.replace(/\u25a0/g,"\u2588");
-			tlist.push(obj);
-		}
-	}
-	return tlist;
-}
+var BilibiliFormat = (function () {
+    var BilibiliFormat = {};
+
+    // Fix comments to be valid
+    var _format = function (text) {
+        return text.replace(/\t/,"\\t");
+    };
+
+    // Fix Mode7 comments when they are bad
+    var _formatmode7 = function (text) {
+        if (text.charAt(0) === '[') {
+            switch (text.charAt(text.length - 1)) {
+                case ']':
+                    return text;
+                case '"':
+                    return text + ']';
+                case ',':
+                    return text.substring(0, text.length - 1) + '"]';
+                default:
+                    return _formatmode7(text.substring(0, text.length - 1));
+            }
+        } else {
+            return text;
+        }
+    };
+
+    // Try to escape unsafe HTML code. DO NOT trust that this handles all cases
+    // Please do not allow insecure DOM parsing unless you can trust your input source.
+    var _escapeUnsafe = function (text) {
+        text = text.replace(new RegExp("</([^d])","g"), "</disabled $1");
+        text = text.replace(new RegExp("</(\S{2,})","g"), "</disabled $1");
+        text = text.replace(new RegExp("<([^d/]\W*?)","g"), "<disabled $1");
+        text = text.replace(new RegExp("<([^/ ]{2,}\W*?)","g"), "<disabled $1");
+        return text;
+    };
+
+    BilibiliFormat.XMLParser = function (params) {
+        this._attemptFix = true;
+        this._logBadComments = true;
+        if (typeof params === 'object') {
+            this._attemptFix = params.attemptFix === false ? false : true;
+            this._logBadComments = params.logBadComments === false ? false : true;
+        }
+    }
+
+    BilibiliFormat.XMLParser.prototype.parseOne = function (elem) {
+        var params = elem.getAttribute('p').split(',');
+        if (!elem.childNodes[0]) {
+            // Not a comment or nested comment, skip
+            return null;
+        }
+        var text = elem.childNodes[0].nodeValue;
+        var comment = {};
+        comment.stime = Math.round(parseFloat(params[0])*1000);
+        comment.size = parseInt(params[2]);
+        comment.color = parseInt(params[3]);
+        comment.mode = parseInt(params[1]);
+        comment.date = parseInt(params[4]);
+        comment.pool = parseInt(params[5]);
+        comment.position = "absolute";
+        if (params[7] != null) {
+            comment.dbid = parseInt(params[7]);
+        }
+        comment.hash = params[6];
+        comment.border = false;
+        if (comment.mode < 7) {
+            comment.text = text.replace(/(\/n|\\n|\n|\r\n)/g, "\n");
+        } else {
+            if (comment.mode === 7) {
+                try {
+                    if (this._attemptFix) {
+                        text = _format(_formatmode7(text));
+                    }
+                    var extendedParams = JSON.parse(text);
+                    comment.shadow = true;
+                    comment.x = parseFloat(extendedParams[0]);
+                    comment.y = parseFloat(extendedParams[1]);
+                    if (Math.floor(comment.x) < comment.x || Math.floor(comment.y) < comment.y) {
+                        comment.position = "relative";
+                    }
+                    comment.text = extendedParams[4].replace(/(\/n|\\n|\n|\r\n)/g, "\n");
+                    comment.rZ = 0;
+                    comment.rY = 0;
+                    if (extendedParams.length >= 7) {
+                        comment.rZ = parseInt(extendedParams[5], 10);
+                        comment.rY = parseInt(extendedParams[6], 10);
+                    }
+                    comment.motion = [];
+                    comment.movable = false;
+                    if (extendedParams.length >= 11) {
+                        comment.movable = true;
+                        var singleStepDur = 500;
+                        var motion = {
+                            'x': {
+                                'from': comment.x,
+                                'to': parseFloat(extendedParams[7]),
+                                'dur': singleStepDur,
+                                'delay': 0
+                            },
+                            'y': {
+                                'from': comment.y,
+                                'to': parseFloat(extendedParams[8]),
+                                'dur': singleStepDur,
+                                'delay': 0
+                            }
+                        };
+                        if (extendedParams[9] !== '') {
+                            singleStepDur = parseInt(extendedParams[9], 10);
+                            motion.x.dur = singleStepDur;
+                            motion.y.dur = singleStepDur;
+                        }
+                        if (extendedParams[10] !== '') {
+                            motion.x.delay = parseInt(extendedParams[10], 10);
+                            motion.y.delay = parseInt(extendedParams[10], 10);
+                        }
+                        if (extendedParams.length > 11) {
+                            comment.shadow = extendedParams[11];
+                            if (comment.shadow === 'true') {
+                                comment.shadow = true;
+                            }
+                            if (comment.shadow === 'false') {
+                                comment.shadow = false;
+                            }
+                            if (extendedParams[12] != null) {
+                                comment.font = extendedParams[12];
+                            }
+                            if (extendedParams.length > 14) {
+                                // Support for Bilibili advanced Paths
+                                if (comment.position === 'relative') {
+                                    if (this._logBadComments) {
+                                        console.warn('Cannot mix relative and absolute positioning!');
+                                    }
+                                    comment.position = 'absolute';
+                                }
+                                var path = extendedParams[14];
+                                var lastPoint = {
+                                    x: motion.x.from,
+                                    y: motion.y.from
+                                };
+                                var pathMotion = [];
+                                var regex = new RegExp("([a-zA-Z])\\s*(\\d+)[, ](\\d+)",'g');
+                                var counts = path.split(/[a-zA-Z]/).length - 1;
+                                var m = regex.exec(path);
+                                while (m !== null) {
+                                    switch( m[1]) {
+                                        case 'M': {
+                                            lastPoint.x = parseInt(m[2],10);
+                                            lastPoint.y = parseInt(m[3],10);
+                                        }
+                                        break;
+                                        case 'L': {
+                                            pathMotion.push({
+                                                'x': {
+                                                    'from': lastPoint.x,
+                                                    'to': parseInt(m[2],10),
+                                                    'dur': singleStepDur / counts,
+                                                    'delay': 0
+                                                },
+                                                'y': {
+                                                    'from': lastPoint.y,
+                                                    'to': parseInt(m[3],10),
+                                                    'dur': singleStepDur / counts,
+                                                    'delay': 0
+                                                }
+                                            });
+                                            lastPoint.x = parseInt(m[2],10);
+                                            lastPoint.y = parseInt(m[3],10);
+                                        }
+                                        break;
+                                    }
+                                    m = regex.exec(path);
+                                }
+                                motion = null;
+                                comment.motion = pathMotion;
+                           }
+                       }
+                       if (motion !== null) {
+                           comment.motion.push(motion);
+                       }
+                   }
+                   comment.dur = 2500;
+                   if (extendedParams[3] < 12) {
+                       comment.dur = extendedParams[3] * 1000;
+                   }
+                   var tmp = extendedParams[2].split('-');
+                   if (tmp != null && tmp.length > 1) {
+                       var alphaFrom = parseFloat(tmp[0]);
+                       var alphaTo = parseFloat(tmp[1]);
+                       comment.opacity = alphaFrom;
+                       if (alphaFrom !== alphaTo) {
+                            comment.alpha = {
+                                'from':alphaFrom,
+                                'to':alphaTo
+                            };
+                        }
+                    }
+                } catch (e) {
+                    if (this._logBadComments) {
+                        console.warn('Error occurred in JSON parsing. Could not parse comment.');
+                        console.log('[DEBUG] ' + text);
+                    }
+                }
+            } else if(comment.mode === 8) {
+                comment.code = text; // Code comments are special. Treat them that way.
+            } else {
+                if (this._logBadComments) {
+                    console.warn('Unknown comment type : ' + comment.mode + '. Not doing further parsing.');
+                    console.log('[DEBUG] ' + text);
+                }
+            }
+        }
+        if (comment.text !== null && typeof comment.text === 'string') {
+            comment.text = comment.text.replace(/\u25a0/g,"\u2588");
+        }
+        return comment;
+    };
+
+    BilibiliFormat.XMLParser.prototype.parseMany = function (xmldoc) {
+        var elements = [];
+        try {
+            elements = xmldoc.getElementsByTagName('d');
+        } catch (e) {
+            // TODO: handle XMLDOC errors.
+            return null; // Bail, I can't handle
+        }
+        var commentList = [];
+        for (var i = 0; i < elements.length; i++) {
+            var comment = this.parseOne(elements[i]);
+            if (comment !== null) {
+                commentList.push();
+            }
+        }
+        return commentList;
+    };
+
+    BilibiliFormat.TextParser = function (params) {
+        this._allowInsecureDomParsing = true;
+        this._attemptEscaping = true;
+        if (typeof params === 'object') {
+            this._allowInsecureDomParsing = params.allowInsecureDomParsing === false ? false : true;
+            this._attemptEscaping = params.attemptEscaping === false ? false : true;
+        }
+        if (typeof document === 'undefined' || !document || !document.createElement) {
+            // We can't rely on innerHTML anyways. Maybe we're in a restricted context (i.e. node).
+            this._allowInsecureDomParsing = false;
+        }
+        if (this._allowInsecureDomParsing) {
+            this._xmlParser = new BilibiliFormat.XMLParser(params);
+        }
+    };
+
+    BilibiliFormat.TextParser.prototype.parseOne = function (comment) {
+        // Attempt to parse a single tokenized tag
+        if (this._allowInsecureDomParsing) {
+            var source = comment;
+            if (this._attemptEscaping) {
+                source = _escapeUnsafe(source);
+            }
+            var temp = document.createElement('div');
+            temp.innerHTML = source;
+            var tags = temp.getElementsByTagName('d');
+            if (tags.length !== 1) {
+                return null; // Can't parse, delegate
+            } else {
+                return this._xmlParser.parseOne(tags[0]);
+            }
+        } else {
+            throw new Error('Secure parsing not implemented yet.');
+        }
+    };
+
+    BilibiliFormat.TextParser.prototype.parseMany = function (comment) {
+        // Attempt to parse a comment list
+        if (this._allowInsecureDomParsing) {
+            var source = comment;
+            if (this._attemptEscaping) {
+                source = _escapeUnsafe(source);
+            }
+            var temp = document.createElement('div');
+            temp.innerHTML = source;
+            var tags = temp.getElementsByTagName('d');
+            return this._xmlParser.parseMany(tags);
+        } else {
+            throw new Error('Secure parsing not implemented yet.');
+        }
+    };
+
+    return BilibiliFormat;
+})();
+
+/**
+ * CommonDanmakuFormat Parser
+ * Example parser for parsing comments that the CCL can accept directly.
+ * @license MIT
+ * @author Jim Chen
+ **/
+
+var CommonDanmakuFormat = (function () {
+    var CommonDanmakuFormat = {};
+    var _check = function () {
+        // Sanity check to see if we should be parsing these comments or not
+        if (comment.mode !== "number"|| typeof comment.stime !== "number") {
+            return false;
+        }
+        if (comment.mode === 8 && !(typeof comment.code === "string")) {
+            return false;
+        }
+        if (typeof comment.text !== "string") {
+            return false;
+        }
+        return true;
+    };
+
+    CommonDanmakuFormat.JSONParser = function () { };
+    CommonDanmakuFormat.JSONParser.prototype.parseOne = function (comment) {
+        // Refuse to parse the comment does not pass sanity check
+        return _check(comment) ? comment : null;
+    };
+
+    CommonDanmakuFormat.JSONParser.prototype.parseMany = function (comments) {
+        // Refuse to parse if any comment does not pass sanity check
+        return comments.every(_check) ? comments : null;
+    };
+
+    CommonDanmakuFormat.XMLParser = function () { };
+    CommonDanmakuFormat.XMLParser.prototype.parseOne = function (comment) {
+        
+    };
+
+    CommonDanmakuFormat.XMLParser.prototype.parseMany = function (comments) {
+    
+    };
+
+    return CommonDanmakuFormat;
+})();

@@ -1,4 +1,5 @@
 // Debugger for demo
+$ = function(a){return document.getElementById(a);};
 var tests = {
 	"test-1":"test/test.xml",
 	"test-2":"test/test2.xml",
@@ -270,29 +271,61 @@ function bind(){
 	
 	/** Load **/
 	window.loadDM = function(dmf,provider){
-		if(provider == null)
-			provider = 'bilibili';
+		if (window._provider && window._provider instanceof CommentProvider) {
+			window._provider.destroy();
+		}
+		window._provider = new CommentProvider();
 		cm.clear();
+		dmf = "/" + dmf;
+		window._provider.addTarget(cm);
 		start = 0;
+		
 		try{
 			clearTimeout(tmr);
-		}catch(e){}
-		if(trace){
+		} catch(e) {}
+		if (trace) {
 			trace("Loading " + dmf + " : " + provider);
 		}
-		CommentLoader('../' + dmf, cm, provider);
+		switch (provider) {
+			case "acfun":
+				window._provider.addStaticSource(
+					CommentProvider.JSONProvider('GET', dmf),
+					CommentProvider.SOURCE_JSON).addParser(
+					    new AcfunFormat.JSONParser(),
+					    CommentProvider.SOURCE_JSON);
+				break;
+			case "cdf":
+				window._provider.addStaticSource(
+					CommentProvider.JSONProvider('GET', dmf),
+					CommentProvider.SOURCE_JSON).addParser(
+					    new CommonDanmakuFormat.JSONParser(), 
+					    CommentProvider.SOURCE_JSON);
+				break;
+			case "bilibili":
+			default:
+				window._provider.addStaticSource(
+					CommentProvider.XMLProvider('GET', dmf),
+					CommentProvider.SOURCE_XML).addParser(
+					    new BilibiliFormat.XMLParser(), 
+					    CommentProvider.SOURCE_XML);
+				break;
+		}
+		window._provider.start().then(function (){
 		cm.startTimer();
 		$("control-status").className = "status active";
-		if(state.mode !== "timer"){
-			$("abpVideo").play();
-			return;
-		}
-		start = new Date().getTime();
-		tmr = setInterval(function(){
-			playhead = new Date().getTime() - start;
-			cm.time(playhead);
-			displayTime(playhead);
-		},42);
+			if(state.mode !== "timer"){
+				$("abpVideo").play();
+				return;
+			}
+			start = new Date().getTime();
+			tmr = setInterval(function(){
+				playhead = new Date().getTime() - start;
+				cm.time(playhead);
+				displayTime(playhead);
+			},42);
+		}).catch(function (e) {
+			alert(e);
+		});
 	};
 	
 	var isWindowedFullscreen = false;
