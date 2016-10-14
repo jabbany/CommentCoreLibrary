@@ -49,7 +49,11 @@ var BilibiliFormat = (function () {
     }
 
     BilibiliFormat.XMLParser.prototype.parseOne = function (elem) {
-        var params = elem.getAttribute('p').split(',');
+        try {
+            var params = elem.getAttribute('p').split(',');
+        } catch (e) {
+            throw new Error("Unsupported object type or could not decompose.");
+        }
         if (!elem.childNodes[0]) {
             // Not a comment or nested comment, skip
             return null;
@@ -232,7 +236,7 @@ var BilibiliFormat = (function () {
         for (var i = 0; i < elements.length; i++) {
             var comment = this.parseOne(elements[i]);
             if (comment !== null) {
-                commentList.push();
+                commentList.push(comment);
             }
         }
         return commentList;
@@ -241,6 +245,7 @@ var BilibiliFormat = (function () {
     BilibiliFormat.TextParser = function (params) {
         this._allowInsecureDomParsing = true;
         this._attemptEscaping = true;
+        this._canSecureParse = false;
         if (typeof params === 'object') {
             this._allowInsecureDomParsing = params.allowInsecureDomParsing === false ? false : true;
             this._attemptEscaping = params.attemptEscaping === false ? false : true;
@@ -249,7 +254,10 @@ var BilibiliFormat = (function () {
             // We can't rely on innerHTML anyways. Maybe we're in a restricted context (i.e. node).
             this._allowInsecureDomParsing = false;
         }
-        if (this._allowInsecureDomParsing) {
+        if (typeof DOMParser !== 'undefined' && DOMParser !== null) {
+            this._canSecureNativeParse = true;
+        }
+        if (this._allowInsecureDomParsing || this._canSecureNativeParse) {
             this._xmlParser = new BilibiliFormat.XMLParser(params);
         }
     };
@@ -269,8 +277,12 @@ var BilibiliFormat = (function () {
             } else {
                 return this._xmlParser.parseOne(tags[0]);
             }
-        } else {
-            throw new Error('Secure parsing not implemented yet.');
+        } else if (this._canSecureNativeParse) {
+            var domParser = new DOMParser();
+            return this._xmlParser.parseOne(
+                domParser.parseFromString(comment, 'application/xml'));
+        } else{
+            throw new Error('Secure native js parsing not implemented yet.');
         }
     };
 
@@ -285,8 +297,13 @@ var BilibiliFormat = (function () {
             temp.innerHTML = source;
             var tags = temp.getElementsByTagName('d');
             return this._xmlParser.parseMany(tags);
+        } else if (this._canSecureNativeParse) {
+            var domParser = new DOMParser();
+            return this._xmlParser.parseMany(
+                domParser.parseFromString(comment, 'application/xml'));
+            
         } else {
-            throw new Error('Secure parsing not implemented yet.');
+            throw new Error('Secure native js parsing not implemented yet.');
         }
     };
 

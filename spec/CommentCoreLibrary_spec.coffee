@@ -53,7 +53,8 @@ describe 'CommentManager', ->
 
       it 'smoking test', ->
         jasmine.getFixtures().fixturesPath = "test/"
-        comments = AcfunParser(readFixtures 'ac940133.json')
+        json = JSON.parse readFixtures 'ac940133.json'
+        comments = (new AcfunFormat.JSONParser()).parseMany json
         # TODO: Construct a json that cover all types of comments
         # and use it for smoking test
         manager.load comments

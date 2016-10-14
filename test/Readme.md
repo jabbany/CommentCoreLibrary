@@ -91,3 +91,7 @@
 * `scripting/*.biliscript`
     
     测试代码弹幕的各种小脚本
+    
+* `synthetic/*`
+
+    人造弹幕文件，目标是测试到所有的属性的解析
