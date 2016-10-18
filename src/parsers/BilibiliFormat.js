@@ -52,13 +52,14 @@ var BilibiliFormat = (function () {
         try {
             var params = elem.getAttribute('p').split(',');
         } catch (e) {
-            throw new Error("Unsupported object type or could not decompose.");
+            // Probably not XML
+            return null;
         }
         if (!elem.childNodes[0]) {
             // Not a comment or nested comment, skip
             return null;
         }
-        var text = elem.childNodes[0].nodeValue;
+        var text = elem.textContent;
         var comment = {};
         comment.stime = Math.round(parseFloat(params[0])*1000);
         comment.size = parseInt(params[2]);
@@ -123,13 +124,7 @@ var BilibiliFormat = (function () {
                             motion.y.delay = parseInt(extendedParams[10], 10);
                         }
                         if (extendedParams.length > 11) {
-                            comment.shadow = extendedParams[11];
-                            if (comment.shadow === 'true') {
-                                comment.shadow = true;
-                            }
-                            if (comment.shadow === 'false') {
-                                comment.shadow = false;
-                            }
+                            comment.shadow = (extendedParams[11] !== 'false');
                             if (extendedParams[12] != null) {
                                 comment.font = extendedParams[12];
                             }
@@ -151,7 +146,7 @@ var BilibiliFormat = (function () {
                                 var counts = path.split(/[a-zA-Z]/).length - 1;
                                 var m = regex.exec(path);
                                 while (m !== null) {
-                                    switch( m[1]) {
+                                    switch (m[1]) {
                                         case 'M': {
                                             lastPoint.x = parseInt(m[2],10);
                                             lastPoint.y = parseInt(m[3],10);
@@ -281,7 +276,7 @@ var BilibiliFormat = (function () {
             var domParser = new DOMParser();
             return this._xmlParser.parseOne(
                 domParser.parseFromString(comment, 'application/xml'));
-        } else{
+        } else {
             throw new Error('Secure native js parsing not implemented yet.');
         }
     };
@@ -295,13 +290,11 @@ var BilibiliFormat = (function () {
             }
             var temp = document.createElement('div');
             temp.innerHTML = source;
-            var tags = temp.getElementsByTagName('d');
-            return this._xmlParser.parseMany(tags);
+            return this._xmlParser.parseMany(temp);
         } else if (this._canSecureNativeParse) {
             var domParser = new DOMParser();
             return this._xmlParser.parseMany(
                 domParser.parseFromString(comment, 'application/xml'));
-            
         } else {
             throw new Error('Secure native js parsing not implemented yet.');
         }

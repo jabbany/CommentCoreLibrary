@@ -6,11 +6,11 @@
 ### options &lt;Object&gt;
 此处用于放置弹幕默认参数等.
 
-* global
+* `global`
   * `opacity` 透明度
   * `scale` 生命时间加成（TTL Scale）
   * `className` CSS类名（非CSS呈现模式下也可能会参考此项进行呈现）
-* scroll
+* `scroll`
   * `opacity` 透明度
   * `scale` 生命时间加成（TTL Scale）
 * `limit` 最大显示弹幕数量，0或以下表示不限制同屏弹幕数量
@@ -63,6 +63,8 @@ runline（运行列表）里，至于这些弹幕是否在移动，则要根据�
 动态更改弹幕列表可以采取更加安全的 `insert`和`remove`函数
 
 ### insert(data:ICommentData)
+把弹幕插入弹幕列表（时间轴）。插入会动态调整目前的位置。`insert` 不会立刻输出弹幕而是按照`stime`
+把弹幕放到正确的位置。如果希望立刻输出弹幕，请使用`send`。
 
 ### remove(data:ICommentData)
 从弹幕列表中删除弹幕。注意参数data必须是同一个实例引用，否则即使参数都一样也不会导致弹幕被删除。

@@ -7,14 +7,17 @@ var AcfunFormat = (function () {
     var AcfunFormat = {};
 
     AcfunFormat.JSONParser = function (params) {
-        // No parameters currently needed
+        this._logBadComments = true;
+        if (typeof params === 'object') {
+            this._logBadComments = params.logBadComments === false ? false : true;
+        }
     };
 
     AcfunFormat.JSONParser.prototype.parseOne = function (comment) {
         // Read a comment and generate a correct comment object
         var data = {};
         if (typeof comment !== 'object' || comment == null || !comment.hasOwnProperty('c')) {
-            // This is not parseable. The comment contains no config data
+            // This cannot be parsed. The comment contains no config data
             return null;
         }
         var config = comment['c'].split(',');
@@ -35,8 +38,10 @@ var AcfunFormat = (function () {
                 try { 
                     var x = JSON.parse(comment.m);
                 } catch (e) {
-                    console.warn('Error parsing internal data for comment');
-                    console.log('[Dbg] ' + data.text);
+                    if (this._logBadComments) {
+                        console.warn('Error parsing internal data for comment');
+                        console.log('[Dbg] ' + data.text);
+                    }
                     return null; // Can't actually parse this!
                 }
                 data.position = "relative";
@@ -95,7 +100,10 @@ var AcfunFormat = (function () {
             return data;
         } else {
             // Not enough arguments.
-            console.warn('Dropping this comment due to insufficient parameters. Got: ' + config.length);
+            if (this._logBadComments) {
+                console.warn('Dropping this comment due to insufficient parameters. Got: ' + config.length);
+                console.log('[Dbg] ' + comment['c']);
+            }
             return null;
         }
     };
@@ -113,6 +121,28 @@ var AcfunFormat = (function () {
         }
         return list;
     };
+
+    AcfunFormat.TextParser = function (param) {
+        this._jsonParser = new AcfunFormat.JSONParser(param);
+    }
+
+    AcfunFormat.TextParser.prototype.parseOne = function (comment) {
+        try {
+            return this._jsonParser.parseOne(JSON.parse(comment));
+        } catch (e) {
+            console.warn(e);
+            return null;
+        }
+    }
+
+    AcfunFormat.TextParser.prototype.parseMany = function (comment) {
+        try {
+            return this._jsonParser.parseMany(JSON.parse(comment));
+        } catch (e) {
+            console.warn(e);
+            return null;
+        }
+    }
 
     return AcfunFormat;
 })();

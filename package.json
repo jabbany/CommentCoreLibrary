@@ -1,6 +1,7 @@
 {
   "name": "comment-core-library",
-  "description": "Extendable library for displaying danmaku comments.",
+  "title": "CommentCoreLibrary",
+  "description": "Javascript library for organizing and displaying danmaku comments",
   "bugs": {
     "url": "https://github.com/jabbany/CommentCoreLibrary/issues",
     "email": "knh.jabbany@gmail.com"
@@ -14,10 +15,12 @@
     "danmaku",
     "video",
     "comments",
-    "CommentCoreLibrary"
+    "browser",
+    "danmu"
   ],
+  "main": "dist/CommentCoreLibrary.js",
   "license": "MIT",
-  "version": "0.9.3",
+  "version": "0.10.0",
   "devDependencies": {
     "coveralls": "~2.11.0",
     "grunt": "^1.0.1",

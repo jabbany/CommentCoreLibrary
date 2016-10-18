@@ -3,7 +3,7 @@
  * @license MIT
  * @author Jim Chen
  */
-function CommentFilter(){
+function CommentFilter() {
 	this.modifiers = [];
 	this.runtime = null;
 	this.allowTypes = {

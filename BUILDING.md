@@ -31,10 +31,10 @@ CommentCoreLibrary在库外提供了很多可扩展的空间，你可以相对�
 
 即可按照默认模板编译。除此之外，你还可以改变编译目标：
 
-- build ： 只编译项目，不会clean掉build文件夹下的产物
-- build-core ： 只编译弹幕核心，不包括Acfun和Bilibili的解析器。这个更加适用各种二次开发不需要
-    已有的弹幕格式的
-- build-scripting ： 只编译代码弹幕支持
+- `build` ： 只编译项目，不会clean掉build文件夹下的产物
+- `build:core_only` ： 只编译弹幕核心，不包括CommentProvider和parsers里面的解析器。
+    这个更加适用不需要已有的弹幕格式的各种二次开发
+- `build:scripting` ： 只编译代码弹幕支持
 
 默认模式会自动看管 `src` 源码文件夹，并且在产生变化的时候自动生成新版。
 

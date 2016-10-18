@@ -63,9 +63,12 @@ Absolute Coordinates: 是否使用绝对坐标。当 `absolute === false` 时，
 
 注意：width, height 总会以绝对坐标返回，所以如果需要叠加则必须手动转换到相对坐标。
 
-### width/height/bottom/right &lt;Num&gt;
-Bounding Box: 定义弹幕的宽高和下部右部位置，前两个定义了 top left 顶点，后两个定义了bottom 
-right顶点。
+### x/y/bottom/right &lt;Num&gt;
+Bounding Box: 定义弹幕的四角位置，前两个定义了 top left 顶点，后两个定义了bottom right
+顶点。注意：只有 x/y 是主参数，bottom/right 是计算出的属性。
+
+### width/height &lt;Num&gt;
+Bounding Box: 定义了弹幕的“宽高”。注意：width/height是主参数，用于计算 bottom/right。
 
 ### size &lt;Num&gt; = 25
 Font Size: 弹幕的文字大小，请参考 [弹幕大小 Comment Sizes](CommentSizes.md)。更改会更新视图。

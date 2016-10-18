@@ -3,45 +3,71 @@
  * @license MIT
  * @author Jim Chen
  */
-var BinArray = (function(){
-	var BinArray = {};
-	BinArray.bsearch = function(arr, what, how){
-		if(arr.length === 0) {
-			return 0;
-		}
-		if(how(what,arr[0]) < 0) {
-			return 0;
-		}
-		if(how(what,arr[arr.length - 1]) >=0) {
-			return arr.length;
-		}
-		var low =0;
-		var i = 0;
-		var count = 0;
-		var high = arr.length - 1;
-		while(low<=high){
-			i = Math.floor((high + low + 1)/2);
-			count++;
-			if(how(what,arr[i-1])>=0 && how(what,arr[i])<0){
-				return i;
-			}
-			if(how(what,arr[i-1])<0){
-				high = i-1;
-			}else if(how(what,arr[i])>=0){
-				low = i;
-			}else {
-				console.error('Program Error');
-			}
-			if(count > 1500) { console.error('Too many run cycles.'); }
-		}
-		return -1; // Never actually run
-	};
-	BinArray.binsert = function(arr, what, how){
-		var index = BinArray.bsearch(arr,what,how);
-		arr.splice(index,0,what);
-		return index;
-	};
-	return BinArray;
+var BinArray = (function( ) {
+
+    var BinArray = {};
+
+    /**
+     * Performs binary search on the array
+     * Note: The array MUST ALREADY BE SORTED. Some cases will fail but we don't
+     * guarantee that we can catch all cases.
+     * 
+     * @param arr - array to search on
+     * @param what - element to search for (may not be present)
+     * @param how - function comparator (a, b). Returns positive value if a > b
+     * @return index of the element (or index of the element if it were in the array)
+     **/
+    BinArray.bsearch = function (arr, what, how) {
+        if (!Array.isArray(arr)) {
+            throw new Error('Bsearch can only be run on arrays');
+        }
+        if (arr.length === 0) {
+            return 0;
+        }
+        if (how(what,arr[0]) < 0) {
+            return 0;
+        }
+        if (how(what,arr[arr.length - 1]) >= 0) {
+            return arr.length;
+        }
+        var low = 0;
+        var i = 0;
+        var count = 0;
+        var high = arr.length - 1;
+        while (low <= high) {
+            i = Math.floor((high + low + 1)/2);
+            count++;
+            if (how(what,arr[i-1]) >= 0 && how(what,arr[i]) < 0) {
+                return i;
+            } else if (how(what,arr[i-1]) < 0) {
+                high = i-1;
+            } else if (how(what,arr[i]) >= 0) {
+                low = i;
+            } else {
+                throw new Error('Program Error. Inconsistent comparator or unsorted array!');
+            }
+            if (count > 1500) {
+                throw new Error('Iteration depth exceeded. Inconsistent comparator or astronomical dataset!');
+            }
+        }
+        return -1; 
+    };
+
+    /**
+     * Insert an element into its position in the array signified by bsearch
+     *
+     * @param arr - array to insert into
+     * @param what - element to insert
+     * @param how - comparator (see bsearch)
+     * @return index that the element was inserted to.
+     **/
+    BinArray.binsert = function (arr, what, how) {
+        var index = BinArray.bsearch(arr,what,how);
+        arr.splice(index,0,what);
+        return index;
+    };
+
+    return BinArray;
 })();
 
 var __extends = (this && this.__extends) || function (d, b) {
@@ -589,53 +615,6 @@ var ScrollComment = (function (_super) {
     return ScrollComment;
 }(CoreComment));
 //# sourceMappingURL=Comment.js.map
-/** 
- * Comment Filters Module Simplified (only supports modifiers & types)
- * @license MIT
- * @author Jim Chen
- */
-function CommentFilter(){
-	this.modifiers = [];
-	this.runtime = null;
-	this.allowTypes = {
-		"1":true,
-		"4":true,
-		"5":true,
-		"6":true,
-		"7":true,
-		"8":true,
-		"17":true
-	};
-	this.doModify = function(cmt){
-		for(var k=0;k<this.modifiers.length;k++){
-			cmt = this.modifiers[k](cmt);
-		}
-		return cmt;
-	};
-	this.beforeSend = function(cmt){
-		return cmt;
-	}
-	this.doValidate = function(cmtData){
-		if(!this.allowTypes[cmtData.mode])
-			return false;
-		return true;
-	};
-	this.addRule = function(rule){
-		
-	};
-	this.addModifier = function(f){
-		this.modifiers.push(f);
-	};
-	this.runtimeFilter = function(cmt){
-		if(this.runtime == null)
-			return cmt;
-		return this.runtime(cmt);
-	};
-	this.setRuntimeFilter = function(f){
-		this.runtime = f;
-	}
-}
-
 /*!
  * Comment Core Library CommentManager
  * @license MIT
@@ -799,9 +778,9 @@ var CommentManager = (function() {
 		this.stage.style.perspective = this.width * Math.tan(40 * Math.PI/180) / 2 + "px";
 		this.stage.style.webkitPerspective = this.width * Math.tan(40 * Math.PI/180) / 2 + "px";
 	};
-	CommentManager.prototype.init = function(){
+	CommentManager.prototype.init = function () {
 		this.setBounds();
-		if(this.filter == null) {
+		if (this.filter == null) {
 			this.filter = new CommentFilter(); //Only create a filter if none exist
 		}
 	};
@@ -931,6 +910,53 @@ var CommentManager = (function() {
 	};
 	return CommentManager;
 })();
+
+/** 
+ * Comment Filters Module Simplified (only supports modifiers & types)
+ * @license MIT
+ * @author Jim Chen
+ */
+function CommentFilter() {
+	this.modifiers = [];
+	this.runtime = null;
+	this.allowTypes = {
+		"1":true,
+		"4":true,
+		"5":true,
+		"6":true,
+		"7":true,
+		"8":true,
+		"17":true
+	};
+	this.doModify = function(cmt){
+		for(var k=0;k<this.modifiers.length;k++){
+			cmt = this.modifiers[k](cmt);
+		}
+		return cmt;
+	};
+	this.beforeSend = function(cmt){
+		return cmt;
+	}
+	this.doValidate = function(cmtData){
+		if(!this.allowTypes[cmtData.mode])
+			return false;
+		return true;
+	};
+	this.addRule = function(rule){
+		
+	};
+	this.addModifier = function(f){
+		this.modifiers.push(f);
+	};
+	this.runtimeFilter = function(cmt){
+		if(this.runtime == null)
+			return cmt;
+		return this.runtime(cmt);
+	};
+	this.setRuntimeFilter = function(f){
+		this.runtime = f;
+	}
+}
 
 /**
  * Comment Provider
@@ -1260,125 +1286,6 @@ var CommentProvider = (function () {
     return CommentProvider;
 })();
 
-/**
- * AcFun Format Parser
- * Takes in JSON and parses it based on current documentation for AcFun comments
- * @license MIT License
- **/
-var AcfunFormat = (function () {
-    var AcfunFormat = {};
-
-    AcfunFormat.JSONParser = function (params) {
-        // No parameters currently needed
-    };
-
-    AcfunFormat.JSONParser.prototype.parseOne = function (comment) {
-        // Read a comment and generate a correct comment object
-        var data = {};
-        if (typeof comment !== 'object' || comment == null || !comment.hasOwnProperty('c')) {
-            // This is not parseable. The comment contains no config data
-            return null;
-        }
-        var config = comment['c'].split(',');
-        if (config.length >= 6) {
-            data.stime = parseFloat(config[0]) * 1000;
-            data.color = parseInt(config[1])
-            data.mode = parseInt(config[2]);
-            data.size = parseInt(config[3]);
-            data.hash = config[4];
-            data.date = parseInt(config[5]);
-            data.position = "absolute";
-            if (data.mode !== 7) {
-                // Do some text normalization on low complexity comments
-                data.text = comment.m.replace(/(\/n|\\n|\n|\r\n|\\r)/g,"\n");
-                data.text = data.text.replace(/\r/g,"\n");
-                data.text = data.text.replace(/\s/g,"\u00a0");
-            } else {
-                try { 
-                    var x = JSON.parse(comment.m);
-                } catch (e) {
-                    console.warn('Error parsing internal data for comment');
-                    console.log('[Dbg] ' + data.text);
-                    return null; // Can't actually parse this!
-                }
-                data.position = "relative";
-                data.text = x.n; /*.replace(/\r/g,"\n");*/
-                data.text = data.text.replace(/\ /g,"\u00a0");
-                if (x.a != null) {
-                    data.opacity = x.a;
-                } else {
-                    data.opacity = 1;
-                }
-                if (x.p != null) {
-                    // Relative position
-                    data.x = x.p.x / 1000;
-                    data.y = x.p.y / 1000;
-                } else {
-                    data.x = 0;
-                    data.y = 0;
-                }
-                data.shadow = x.b;
-                data.dur = 4000;
-                if (x.l != null) {
-                    data.moveDelay = x.l * 1000;
-                }
-                if (x.z != null && x.z.length > 0) {
-                    data.movable = true;
-                    data.motion = [];
-                    var moveDuration = 0;
-                    var last = {x:data.x, y:data.y, alpha:data.opacity, color:data.color};
-                    for (var m = 0; m < x.z.length; m++) {
-                        var dur = x.z[m].l != null ? (x.z[m].l * 1000) : 500;
-                        moveDuration += dur;
-                        var motion = {
-                            x:{from:last.x, to:x.z[m].x/1000, dur: dur, delay: 0},
-                            y:{from:last.y, to:x.z[m].y/1000, dur: dur, delay: 0}
-                        };
-                        last.x = motion.x.to;
-                        last.y = motion.y.to;
-                        if (x.z[m].t !== last.alpha) {
-                            motion.alpha = {from:last.alpha, to:x.z[m].t, dur: dur, delay: 0};
-                            last.alpha = motion.alpha.to;
-                        }
-                        if (x.z[m].c != null && x.z[m].c !== last.color) {
-                            motion.color = {from:last.color, to:x.z[m].c, dur: dur, delay: 0};
-                            last.color = motion.color.to;
-                        }
-                        data.motion.push(motion);
-                    }
-                    data.dur = moveDuration + (data.moveDelay ? data.moveDelay : 0);
-                }
-                if (x.r != null && x.k != null) {
-                    data.rX = x.r;
-                    data.rY = x.k;
-                }
-                
-            }
-            return data;
-        } else {
-            // Not enough arguments.
-            console.warn('Dropping this comment due to insufficient parameters. Got: ' + config.length);
-            return null;
-        }
-    };
-
-    AcfunFormat.JSONParser.prototype.parseMany = function (comments) {
-        if (!Array.isArray(comments)) {
-            return null;
-        }
-        var list = [];
-        for (var i = 0; i < comments.length; i++) {
-            var comment = this.parseOne(comments[i]);
-            if (comment !== null) {
-                list.push(comment);
-            }
-        }
-        return list;
-    };
-
-    return AcfunFormat;
-})();
-
 /** 
  * Bilibili Format Parser
  * Takes in an XMLDoc/LooseXMLDoc and parses that into a Generic Comment List
@@ -1433,13 +1340,14 @@ var BilibiliFormat = (function () {
         try {
             var params = elem.getAttribute('p').split(',');
         } catch (e) {
-            throw new Error("Unsupported object type or could not decompose.");
+            // Probably not XML
+            return null;
         }
         if (!elem.childNodes[0]) {
             // Not a comment or nested comment, skip
             return null;
         }
-        var text = elem.childNodes[0].nodeValue;
+        var text = elem.textContent;
         var comment = {};
         comment.stime = Math.round(parseFloat(params[0])*1000);
         comment.size = parseInt(params[2]);
@@ -1504,13 +1412,7 @@ var BilibiliFormat = (function () {
                             motion.y.delay = parseInt(extendedParams[10], 10);
                         }
                         if (extendedParams.length > 11) {
-                            comment.shadow = extendedParams[11];
-                            if (comment.shadow === 'true') {
-                                comment.shadow = true;
-                            }
-                            if (comment.shadow === 'false') {
-                                comment.shadow = false;
-                            }
+                            comment.shadow = (extendedParams[11] !== 'false');
                             if (extendedParams[12] != null) {
                                 comment.font = extendedParams[12];
                             }
@@ -1532,7 +1434,7 @@ var BilibiliFormat = (function () {
                                 var counts = path.split(/[a-zA-Z]/).length - 1;
                                 var m = regex.exec(path);
                                 while (m !== null) {
-                                    switch( m[1]) {
+                                    switch (m[1]) {
                                         case 'M': {
                                             lastPoint.x = parseInt(m[2],10);
                                             lastPoint.y = parseInt(m[3],10);
@@ -1662,7 +1564,7 @@ var BilibiliFormat = (function () {
             var domParser = new DOMParser();
             return this._xmlParser.parseOne(
                 domParser.parseFromString(comment, 'application/xml'));
-        } else{
+        } else {
             throw new Error('Secure native js parsing not implemented yet.');
         }
     };
@@ -1676,19 +1578,166 @@ var BilibiliFormat = (function () {
             }
             var temp = document.createElement('div');
             temp.innerHTML = source;
-            var tags = temp.getElementsByTagName('d');
-            return this._xmlParser.parseMany(tags);
+            return this._xmlParser.parseMany(temp);
         } else if (this._canSecureNativeParse) {
             var domParser = new DOMParser();
             return this._xmlParser.parseMany(
                 domParser.parseFromString(comment, 'application/xml'));
-            
         } else {
             throw new Error('Secure native js parsing not implemented yet.');
         }
     };
 
     return BilibiliFormat;
+})();
+
+/**
+ * AcFun Format Parser
+ * Takes in JSON and parses it based on current documentation for AcFun comments
+ * @license MIT License
+ **/
+var AcfunFormat = (function () {
+    var AcfunFormat = {};
+
+    AcfunFormat.JSONParser = function (params) {
+        this._logBadComments = true;
+        if (typeof params === 'object') {
+            this._logBadComments = params.logBadComments === false ? false : true;
+        }
+    };
+
+    AcfunFormat.JSONParser.prototype.parseOne = function (comment) {
+        // Read a comment and generate a correct comment object
+        var data = {};
+        if (typeof comment !== 'object' || comment == null || !comment.hasOwnProperty('c')) {
+            // This cannot be parsed. The comment contains no config data
+            return null;
+        }
+        var config = comment['c'].split(',');
+        if (config.length >= 6) {
+            data.stime = parseFloat(config[0]) * 1000;
+            data.color = parseInt(config[1])
+            data.mode = parseInt(config[2]);
+            data.size = parseInt(config[3]);
+            data.hash = config[4];
+            data.date = parseInt(config[5]);
+            data.position = "absolute";
+            if (data.mode !== 7) {
+                // Do some text normalization on low complexity comments
+                data.text = comment.m.replace(/(\/n|\\n|\n|\r\n|\\r)/g,"\n");
+                data.text = data.text.replace(/\r/g,"\n");
+                data.text = data.text.replace(/\s/g,"\u00a0");
+            } else {
+                try { 
+                    var x = JSON.parse(comment.m);
+                } catch (e) {
+                    if (this._logBadComments) {
+                        console.warn('Error parsing internal data for comment');
+                        console.log('[Dbg] ' + data.text);
+                    }
+                    return null; // Can't actually parse this!
+                }
+                data.position = "relative";
+                data.text = x.n; /*.replace(/\r/g,"\n");*/
+                data.text = data.text.replace(/\ /g,"\u00a0");
+                if (x.a != null) {
+                    data.opacity = x.a;
+                } else {
+                    data.opacity = 1;
+                }
+                if (x.p != null) {
+                    // Relative position
+                    data.x = x.p.x / 1000;
+                    data.y = x.p.y / 1000;
+                } else {
+                    data.x = 0;
+                    data.y = 0;
+                }
+                data.shadow = x.b;
+                data.dur = 4000;
+                if (x.l != null) {
+                    data.moveDelay = x.l * 1000;
+                }
+                if (x.z != null && x.z.length > 0) {
+                    data.movable = true;
+                    data.motion = [];
+                    var moveDuration = 0;
+                    var last = {x:data.x, y:data.y, alpha:data.opacity, color:data.color};
+                    for (var m = 0; m < x.z.length; m++) {
+                        var dur = x.z[m].l != null ? (x.z[m].l * 1000) : 500;
+                        moveDuration += dur;
+                        var motion = {
+                            x:{from:last.x, to:x.z[m].x/1000, dur: dur, delay: 0},
+                            y:{from:last.y, to:x.z[m].y/1000, dur: dur, delay: 0}
+                        };
+                        last.x = motion.x.to;
+                        last.y = motion.y.to;
+                        if (x.z[m].t !== last.alpha) {
+                            motion.alpha = {from:last.alpha, to:x.z[m].t, dur: dur, delay: 0};
+                            last.alpha = motion.alpha.to;
+                        }
+                        if (x.z[m].c != null && x.z[m].c !== last.color) {
+                            motion.color = {from:last.color, to:x.z[m].c, dur: dur, delay: 0};
+                            last.color = motion.color.to;
+                        }
+                        data.motion.push(motion);
+                    }
+                    data.dur = moveDuration + (data.moveDelay ? data.moveDelay : 0);
+                }
+                if (x.r != null && x.k != null) {
+                    data.rX = x.r;
+                    data.rY = x.k;
+                }
+                
+            }
+            return data;
+        } else {
+            // Not enough arguments.
+            if (this._logBadComments) {
+                console.warn('Dropping this comment due to insufficient parameters. Got: ' + config.length);
+                console.log('[Dbg] ' + comment['c']);
+            }
+            return null;
+        }
+    };
+
+    AcfunFormat.JSONParser.prototype.parseMany = function (comments) {
+        if (!Array.isArray(comments)) {
+            return null;
+        }
+        var list = [];
+        for (var i = 0; i < comments.length; i++) {
+            var comment = this.parseOne(comments[i]);
+            if (comment !== null) {
+                list.push(comment);
+            }
+        }
+        return list;
+    };
+
+    AcfunFormat.TextParser = function (param) {
+        this._jsonParser = new AcfunFormat.JSONParser(param);
+    }
+
+    AcfunFormat.TextParser.prototype.parseOne = function (comment) {
+        try {
+            return this._jsonParser.parseOne(JSON.parse(comment));
+        } catch (e) {
+            console.warn(e);
+            return null;
+        }
+    }
+
+    AcfunFormat.TextParser.prototype.parseMany = function (comment) {
+        try {
+            return this._jsonParser.parseMany(JSON.parse(comment));
+        } catch (e) {
+            console.warn(e);
+            return null;
+        }
+    }
+
+    return AcfunFormat;
 })();
 
 /**

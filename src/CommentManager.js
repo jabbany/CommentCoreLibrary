@@ -161,9 +161,9 @@ var CommentManager = (function() {
 		this.stage.style.perspective = this.width * Math.tan(40 * Math.PI/180) / 2 + "px";
 		this.stage.style.webkitPerspective = this.width * Math.tan(40 * Math.PI/180) / 2 + "px";
 	};
-	CommentManager.prototype.init = function(){
+	CommentManager.prototype.init = function () {
 		this.setBounds();
-		if(this.filter == null) {
+		if (this.filter == null) {
 			this.filter = new CommentFilter(); //Only create a filter if none exist
 		}
 	};
@@ -285,9 +285,6 @@ var CommentManager = (function() {
 	CommentManager.prototype.onTimerEvent = function(timePassed,cmObj){
 		for(var i= 0;i < cmObj.runline.length; i++){
 			var cmt = cmObj.runline[i];
-			if(cmt.hold){
-				continue;
-			}
 			cmt.time(timePassed);
 		}
 	};

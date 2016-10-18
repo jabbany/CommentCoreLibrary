@@ -10,7 +10,11 @@ describe 'BilibiliFormat', ->
 
   describe '.XMLParser', ->
     parser = null
+    document = null
 
+    beforeAll ->
+      xmltext = readFixtures 'av207527.xml'
+      document = (new DOMParser()).parseFromString xmltext, "application/xml"
     beforeEach ->
       parser = new BilibiliFormat.XMLParser()
 
@@ -26,12 +30,11 @@ describe 'BilibiliFormat', ->
       expect(parser._logBadComments).toBe false
 
     it 'only accepts xml documents', ->
-      expect( => parser.parseOne "foo").toThrow()
+      expect(parser.parseOne "foo").toBe null
+      expect(parser.parseMany "foo").toBe null
 
     it 'can parse one', ->
-      xmltext = readFixtures 'av207527.xml'
-      dom = (new DOMParser()).parseFromString xmltext, "application/xml"
-      expect(parser.parseOne dom.getElementsByTagName('d')[0]).toEqual
+      expect(parser.parseOne document.getElementsByTagName('d')[0]).toEqual
         stime:    15105
         size:     25
         color:    16777215
@@ -45,9 +48,7 @@ describe 'BilibiliFormat', ->
         text:     '关了弹幕瞬间好多了'
 
     it 'can parse many', ->
-      xmltext = readFixtures 'av207527.xml'
-      dom = (new DOMParser()).parseFromString xmltext, "application/xml"
-      comments = parser.parseMany dom
+      comments = parser.parseMany document
       expect(comments.length).toBe 12546
       expect(comments[0]).toEqual
         stime:    15105
@@ -62,9 +63,26 @@ describe 'BilibiliFormat', ->
         border:   false
         text:     '关了弹幕瞬间好多了'
 
+    it 'can parse scripting', ->
+      xmltext = readFixtures 'scripting/tsubasa.xml'
+      comments = parser.parseMany (new DOMParser()).parseFromString xmltext, 'application/xml'
+      expect(comments.length).toBe 654
+      expect(comments[0].mode).toEqual 7
+      expect(comments[653].mode).toEqual 8
+
+    it 'can parse advanced', ->
+      xmltext = readFixtures 'boss.xml'
+      comments = parser.parseMany (new DOMParser()).parseFromString xmltext, 'application/xml'
+      expect(comments.length).toBe 1000
+      expect(comments[0].mode).toEqual 7
+      expect(comments[0].motion).not.toBe null
+
   describe '.TextParser', ->
     parser = null
+    xmltext = null
 
+    beforeAll ->
+      xmltext = readFixtures 'av207527.xml'
     beforeEach ->
       parser = new BilibiliFormat.TextParser()
 
@@ -88,16 +106,19 @@ describe 'BilibiliFormat', ->
       expect(parser._xmlParser._attemptFix).toBe false
       expect(parser._xmlParser._logBadComments).toBe false
 
-#  it 'parses scripting comments', ->
-#    xml_text = readFixtures 'scripting/tsubasa.xml'
-#    comments = BilibiliParser(null, xml_text)
-#    expect(comments.length).toBe 654
-#    expect(comments[0].mode).toEqual 7
-#    expect(comments[653].mode).toEqual 8
+    it 'can parse many (insecure dom parsing)', ->
+      comments = parser.parseMany xmltext
+      expect(comments.length).toBe 12546
+      expect(comments[0]).toEqual
+        stime:    15105
+        size:     25
+        color:    16777215
+        mode:     1
+        date:     1388314569
+        pool:     0
+        position: 'absolute'
+        dbid:     364586099
+        hash:     '1a87dd40'
+        border:   false
+        text:     '关了弹幕瞬间好多了'
 
-#  it 'parses advanced comments', ->
-#    xml_text = readFixtures 'boss.xml'
-#    comments = BilibiliParser(null, xml_text)
-#    expect(comments.length).toBe 1000
-#    expect(comments[0].mode).toEqual 7
-#    expect(comments[0].motion).not.toBe null
