@@ -167,8 +167,10 @@ module.exports = (grunt) ->
           specs: 'compiled_spec/*spec.js'
           helpers: 'spec/*helper.js'
           vendor: [
-            'node_modules/jasmine-jquery/vendor/jquery/jquery.js'
+            'node_modules/jquery/dist/jquery.js'
             'node_modules/jasmine-jquery/lib/jasmine-jquery.js'
+            'node_modules/sinon/pkg/sinon.js'
+            'node_modules/jasmine-sinon/lib/jasmine-sinon.js'
           ]
           template: require('grunt-template-jasmine-istanbul')
           templateOptions:
@@ -180,8 +182,10 @@ module.exports = (grunt) ->
           specs: 'compiled_spec/*spec.js'
           helpers: 'spec/*helper.js'
           vendor: [
-            'node_modules/jasmine-jquery/vendor/jquery/jquery.js'
+            'node_modules/jquery/dist/jquery.js'
             'node_modules/jasmine-jquery/lib/jasmine-jquery.js'
+            'node_modules/sinon/pkg/sinon.js'
+            'node_modules/jasmine-sinon/lib/jasmine-sinon.js'
           ]
           template: require('grunt-template-jasmine-istanbul')
           templateOptions:
