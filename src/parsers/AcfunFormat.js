@@ -8,8 +8,10 @@ var AcfunFormat = (function () {
 
     AcfunFormat.JSONParser = function (params) {
         this._logBadComments = true;
+        this._logNotImplemented = false;
         if (typeof params === 'object') {
             this._logBadComments = params.logBadComments === false ? false : true;
+            this._logNotImplemented = params.logNotImplemented === true ? true : false;
         }
     };
 
@@ -67,7 +69,9 @@ var AcfunFormat = (function () {
                         case 6: data.align = 2; break;
                         case 8: data.align = 3; break;
                         default:
-                            console.log('Cannot handle aligning to center! AlignMode=' + x.c);
+                            if (this._logNotImplemented) {
+                                console.log('Cannot handle aligning to center! AlignMode=' + x.c);
+                            }
                     }
                 }
                 // Use default axis
@@ -93,15 +97,21 @@ var AcfunFormat = (function () {
                         var motion = {};
                         if (x.z[m].hasOwnProperty('rx') && typeof x.z[m].rx === 'number') {
                             // TODO: Support this
-                            console.log('Encountered animated x-axis rotation. Ignoring.');
+                            if (this._logNotImplemented) {
+                                console.log('Encountered animated x-axis rotation. Ignoring.');
+                            }
                         }
                         if (x.z[m].hasOwnProperty('e') && typeof x.z[m].e === 'number') {
                             // TODO: Support this
-                            console.log('Encountered animated y-axis rotation. Ignoring.');
+                            if (this._logNotImplemented) {
+                                console.log('Encountered animated y-axis rotation. Ignoring.');
+                            }
                         }
                         if (x.z[m].hasOwnProperty('d') && typeof x.z[m].d === 'number') {
                             // TODO: Support this
-                            console.log('Encountered animated z-axis rotation. Ignoring.');
+                            if (this._logNotImplemented) {
+                                console.log('Encountered animated z-axis rotation. Ignoring.');
+                            }
                         }
                         if (x.z[m].hasOwnProperty('x') && typeof x.z[m].x === 'number') {
                             motion.x = {
@@ -154,8 +164,10 @@ var AcfunFormat = (function () {
                     if (x.w.hasOwnProperty('l') && Array.isArray(x.w.l)) {
                         if (x.w.l.length > 0) {
                             // Filters
-                            console.log('[Dbg] Filters not supported! ' + 
-                                JSON.stringify(x.w.l));
+                            if (this._logNotImplemented) {
+                                console.log('[Dbg] Filters not supported! ' + 
+                                    JSON.stringify(x.w.l));
+                            }
                         }
                     }
                 }

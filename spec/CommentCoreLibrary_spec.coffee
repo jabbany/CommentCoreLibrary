@@ -58,7 +58,7 @@ describe 'CommentManager', ->
         # TODO: Construct a json that cover all types of comments
         # and use it for smoking test
         manager.load comments
-        expect(manager.timeline.length).toBe 1962
+        expect(manager.timeline.length).toBe 2146
 
     describe '.send', ->
       it 'sends to runline' , ->

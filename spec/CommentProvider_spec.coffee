@@ -7,6 +7,7 @@ describe 'CommentProvider', ->
       # Don't actually call f
     window.Promise.prototype.then = (f) -> this
     window.Promise.prototype.catch = (f) -> this
+    window.Promise.resolve = (f) -> new Promise()
 
   it 'has constants', ->
     expect(CommentProvider.SOURCE_XML).toBe 'XML'
