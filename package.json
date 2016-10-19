@@ -20,7 +20,7 @@
   ],
   "main": "dist/CommentCoreLibrary.js",
   "license": "MIT",
-  "version": "0.10.0",
+  "version": "0.11.0",
   "devDependencies": {
     "coveralls": "~2.11.0",
     "grunt": "^1.0.1",
