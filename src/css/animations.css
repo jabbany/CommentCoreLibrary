@@ -1,0 +1,13 @@
+/** CSS3 keyframe animations. From @WhiteBlue with modifications */
+
+@keyframes cmt-move {
+  100% {
+    right: 100%;
+  }
+}
+
+@keyframes cmt-move-reverse {
+  100% {
+    left: 100%;
+  }
+}
