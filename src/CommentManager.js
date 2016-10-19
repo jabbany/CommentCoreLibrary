@@ -238,7 +238,8 @@ var CommentManager = (function() {
             case 17:
             case 7:{
                 if (data.rY !== 0 || data.rZ !== 0) {
-                    /** TODO: revise when browser manufacturers make up their mind on Transform APIs **/
+                    /** TODO: Move this logic into CoreComment instead! **/
+					/** TODO: revise when browser manufacturers make up their mind on Transform APIs **/
                     cmt.dom.style.transform = getRotMatrix(data.rY, data.rZ);
                     cmt.dom.style.webkitTransform = getRotMatrix(data.rY, data.rZ);
                     cmt.dom.style.OTransform = getRotMatrix(data.rY, data.rZ);
@@ -299,4 +300,5 @@ var CommentManager = (function() {
     };
 
     return CommentManager;
+
 })();

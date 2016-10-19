@@ -17,6 +17,7 @@ var CoreComment = (function () {
         this._alphaMotion = null;
         this.absolute = true;
         this.align = 0;
+        this.axis = 0;
         this._alpha = 1;
         this._size = 25;
         this._color = 0xffffff;
@@ -94,6 +95,12 @@ var CoreComment = (function () {
         if (init.hasOwnProperty("shadow")) {
             this._shadow = init["shadow"];
         }
+        if (init.hasOwnProperty("align")) {
+            this.align = init["align"];
+        }
+        if (init.hasOwnProperty("axis")) {
+            this.axis = init["axis"];
+        }
         if (init.hasOwnProperty("position")) {
             if (init["position"] === "relative") {
                 this.absolute = false;
@@ -142,11 +149,21 @@ var CoreComment = (function () {
     Object.defineProperty(CoreComment.prototype, "x", {
         get: function () {
             if (this._x === null || this._x === undefined) {
-                if (this.align % 2 === 0) {
-                    this._x = this.dom.offsetLeft;
+                if (this.axis % 2 === 0) {
+                    if (this.align % 2 === 0) {
+                        this._x = this.dom.offsetLeft;
+                    }
+                    else {
+                        this._x = this.dom.offsetLeft + this.width;
+                    }
                 }
                 else {
-                    this._x = this.parent.width - this.dom.offsetLeft - this.width;
+                    if (this.align % 2 === 0) {
+                        this._x = this.parent.width - this.dom.offsetLeft;
+                    }
+                    else {
+                        this._x = this.parent.width - this.dom.offsetLeft - this.width;
+                    }
                 }
             }
             if (!this.absolute) {
@@ -159,11 +176,11 @@ var CoreComment = (function () {
             if (!this.absolute) {
                 this._x *= this.parent.width;
             }
-            if (this.align % 2 === 0) {
-                this.dom.style.left = this._x + "px";
+            if (this.axis % 2 === 0) {
+                this.dom.style.left = (this._x + (this.align % 2 === 0 ? 0 : -this.width)) + "px";
             }
             else {
-                this.dom.style.right = this._x + "px";
+                this.dom.style.right = (this._x + (this.align % 2 === 0 ? -this.width : 0)) + "px";
             }
         },
         enumerable: true,
@@ -172,11 +189,21 @@ var CoreComment = (function () {
     Object.defineProperty(CoreComment.prototype, "y", {
         get: function () {
             if (this._y === null || this._y === undefined) {
-                if (this.align < 2) {
-                    this._y = this.dom.offsetTop;
+                if (this.axis < 2) {
+                    if (this.align < 2) {
+                        this._y = this.dom.offsetTop;
+                    }
+                    else {
+                        this._y = this.dom.offsetTop + this.height;
+                    }
                 }
                 else {
-                    this._y = this.parent.height - this.dom.offsetTop - this.height;
+                    if (this.align < 2) {
+                        this._y = this.parent.height - this.dom.offsetTop;
+                    }
+                    else {
+                        this._y = this.parent.height - this.dom.offsetTop - this.height;
+                    }
                 }
             }
             if (!this.absolute) {
@@ -189,11 +216,11 @@ var CoreComment = (function () {
             if (!this.absolute) {
                 this._y *= this.parent.height;
             }
-            if (this.align < 2) {
-                this.dom.style.top = this._y + "px";
+            if (this.axis < 2) {
+                this.dom.style.top = (this._y + (this.align < 2 ? 0 : -this.height)) + "px";
             }
             else {
-                this.dom.style.bottom = this._y + "px";
+                this.dom.style.bottom = (this._y + (this.align < 2 ? -this.height : 0)) + "px";
             }
         },
         enumerable: true,
@@ -201,14 +228,16 @@ var CoreComment = (function () {
     });
     Object.defineProperty(CoreComment.prototype, "bottom", {
         get: function () {
-            return this.y + this.height;
+            var sameDirection = Math.floor(this.axis / 2) === Math.floor(this.align / 2);
+            return this.y + (sameDirection ? this.height : 0);
         },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(CoreComment.prototype, "right", {
         get: function () {
-            return this.x + this.width;
+            var sameDirection = this.axis % 2 === this.align % 2;
+            return this.x + (sameDirection ? this.width : 0);
         },
         enumerable: true,
         configurable: true

@@ -1,6 +1,6 @@
 var $ = function(e){return window.document.getElementById(e);}
 window.addEventListener('load',function(){
-	window.bscripter = new CCLScripting("../../build/scripting/Worker.js");
+	window.bscripter = new CCLScripting("../../dist/scripting/Worker.js");
 	bscripter.logger = new function(){
 		this.log = function(t){
 			$("output").innerHTML = "<pre>" + t.toString() + "</pre>" + $("output").innerHTML;

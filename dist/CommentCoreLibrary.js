@@ -220,6 +220,7 @@ var CoreComment = (function () {
         this._alphaMotion = null;
         this.absolute = true;
         this.align = 0;
+        this.axis = 0;
         this._alpha = 1;
         this._size = 25;
         this._color = 0xffffff;
@@ -297,6 +298,12 @@ var CoreComment = (function () {
         if (init.hasOwnProperty("shadow")) {
             this._shadow = init["shadow"];
         }
+        if (init.hasOwnProperty("align")) {
+            this.align = init["align"];
+        }
+        if (init.hasOwnProperty("axis")) {
+            this.axis = init["axis"];
+        }
         if (init.hasOwnProperty("position")) {
             if (init["position"] === "relative") {
                 this.absolute = false;
@@ -345,11 +352,21 @@ var CoreComment = (function () {
     Object.defineProperty(CoreComment.prototype, "x", {
         get: function () {
             if (this._x === null || this._x === undefined) {
-                if (this.align % 2 === 0) {
-                    this._x = this.dom.offsetLeft;
+                if (this.axis % 2 === 0) {
+                    if (this.align % 2 === 0) {
+                        this._x = this.dom.offsetLeft;
+                    }
+                    else {
+                        this._x = this.dom.offsetLeft + this.width;
+                    }
                 }
                 else {
-                    this._x = this.parent.width - this.dom.offsetLeft - this.width;
+                    if (this.align % 2 === 0) {
+                        this._x = this.parent.width - this.dom.offsetLeft;
+                    }
+                    else {
+                        this._x = this.parent.width - this.dom.offsetLeft - this.width;
+                    }
                 }
             }
             if (!this.absolute) {
@@ -362,11 +379,11 @@ var CoreComment = (function () {
             if (!this.absolute) {
                 this._x *= this.parent.width;
             }
-            if (this.align % 2 === 0) {
-                this.dom.style.left = this._x + "px";
+            if (this.axis % 2 === 0) {
+                this.dom.style.left = (this._x + (this.align % 2 === 0 ? 0 : -this.width)) + "px";
             }
             else {
-                this.dom.style.right = this._x + "px";
+                this.dom.style.right = (this._x + (this.align % 2 === 0 ? -this.width : 0)) + "px";
             }
         },
         enumerable: true,
@@ -375,11 +392,21 @@ var CoreComment = (function () {
     Object.defineProperty(CoreComment.prototype, "y", {
         get: function () {
             if (this._y === null || this._y === undefined) {
-                if (this.align < 2) {
-                    this._y = this.dom.offsetTop;
+                if (this.axis < 2) {
+                    if (this.align < 2) {
+                        this._y = this.dom.offsetTop;
+                    }
+                    else {
+                        this._y = this.dom.offsetTop + this.height;
+                    }
                 }
                 else {
-                    this._y = this.parent.height - this.dom.offsetTop - this.height;
+                    if (this.align < 2) {
+                        this._y = this.parent.height - this.dom.offsetTop;
+                    }
+                    else {
+                        this._y = this.parent.height - this.dom.offsetTop - this.height;
+                    }
                 }
             }
             if (!this.absolute) {
@@ -392,11 +419,11 @@ var CoreComment = (function () {
             if (!this.absolute) {
                 this._y *= this.parent.height;
             }
-            if (this.align < 2) {
-                this.dom.style.top = this._y + "px";
+            if (this.axis < 2) {
+                this.dom.style.top = (this._y + (this.align < 2 ? 0 : -this.height)) + "px";
             }
             else {
-                this.dom.style.bottom = this._y + "px";
+                this.dom.style.bottom = (this._y + (this.align < 2 ? -this.height : 0)) + "px";
             }
         },
         enumerable: true,
@@ -404,14 +431,16 @@ var CoreComment = (function () {
     });
     Object.defineProperty(CoreComment.prototype, "bottom", {
         get: function () {
-            return this.y + this.height;
+            var sameDirection = Math.floor(this.axis / 2) === Math.floor(this.align / 2);
+            return this.y + (sameDirection ? this.height : 0);
         },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(CoreComment.prototype, "right", {
         get: function () {
-            return this.x + this.width;
+            var sameDirection = this.axis % 2 === this.align % 2;
+            return this.x + (sameDirection ? this.width : 0);
         },
         enumerable: true,
         configurable: true
@@ -855,7 +884,8 @@ var CommentManager = (function() {
             case 17:
             case 7:{
                 if (data.rY !== 0 || data.rZ !== 0) {
-                    /** TODO: revise when browser manufacturers make up their mind on Transform APIs **/
+                    /** TODO: Move this logic into CoreComment instead! **/
+					/** TODO: revise when browser manufacturers make up their mind on Transform APIs **/
                     cmt.dom.style.transform = getRotMatrix(data.rY, data.rZ);
                     cmt.dom.style.webkitTransform = getRotMatrix(data.rY, data.rZ);
                     cmt.dom.style.OTransform = getRotMatrix(data.rY, data.rZ);
@@ -916,6 +946,7 @@ var CommentManager = (function() {
     };
 
     return CommentManager;
+
 })();
 
 /** 
@@ -1008,13 +1039,15 @@ var CommentProvider = (function () {
                 var argsArray = [];
                 for (var key in args) {
                     if (args.hasOwnProperty(key)) {
-                        argsArray.push(encodeURIComponent(key) + '=' + encodeURIComponent(args[key]));
+                        argsArray.push(encodeURIComponent(key) + 
+                            '=' + encodeURIComponent(args[key]));
                     }
                 }
                 uri += argsArray.join('&');
             }
 
-            xhr.responseType = typeof responseType === "string" ? responseType : "";
+            xhr.responseType = typeof responseType === "string" ? 
+                responseType : "";
             xhr.onload = function () {
                 if (this.status >= 200 && this.status < 300) {
                     resolve(this.response);
@@ -1048,7 +1081,8 @@ var CommentProvider = (function () {
      *         of the request
      **/
     CommentProvider.JSONProvider = function (method, url, args, body) {
-        return CommentProvider.BaseHttpProvider(method, url, "json", args, body).then(function (response) {
+        return CommentProvider.BaseHttpProvider(
+            method, url, "json", args, body).then(function (response) {
             return response;
         });
     };
@@ -1065,7 +1099,8 @@ var CommentProvider = (function () {
      *         of the request
      **/
     CommentProvider.XMLProvider = function (method, url, args, body) {
-        return CommentProvider.BaseHttpProvider(method, url, "document", args, body).then(function (response) {
+        return CommentProvider.BaseHttpProvider(
+            method, url, "document", args, body).then(function (response) {
             return response;
         });
     };
@@ -1082,7 +1117,8 @@ var CommentProvider = (function () {
      *         of the request
      **/
     CommentProvider.TextProvider = function (method, url, args, body) {
-        return CommentProvider.BaseHttpProvider(method, url, "text", args, body).then(function (response) {
+        return CommentProvider.BaseHttpProvider(
+            method, url, "text", args, body).then(function (response) {
             return response.text;
         });
     };
@@ -1098,7 +1134,9 @@ var CommentProvider = (function () {
      **/
     CommentProvider.prototype.addStaticSource = function (source, type) {
         if (this._destroyed) {
-            throw new Error('Comment provider has been destroyed, cannot attach more sources.');
+            throw new Error(
+                'Comment provider has been destroyed, ' + 
+                'cannot attach more sources.');
         }
         if (!(type in this._staticSources)) {
             this._staticSources[type] = [];
@@ -1117,7 +1155,9 @@ var CommentProvider = (function () {
      **/
     CommentProvider.prototype.addDynamicSource = function (source, type) {
         if (this._destroyed) {
-            throw new Error('Comment provider has been destroyed, cannot attach more sources.');
+            throw new Error(
+                'Comment provider has been destroyed, ' + 
+                'cannot attach more sources.');
         }
         if (!(type in this._dynamicSources)) {
             this._dynamicSources[type] = [];
@@ -1134,10 +1174,13 @@ var CommentProvider = (function () {
      **/
     CommentProvider.prototype.addTarget = function (commentManager) {
         if (this._destroyed) {
-            throw new Error('Comment provider has been destroyed, cannot attach more targets.');
+            throw new Error(
+                'Comment provider has been destroyed, '
+                +'cannot attach more targets.');
         }
         if (!(commentManager instanceof CommentManager)) {
-            throw new Error('Expected the target to be an instance of CommentManager.');
+            throw new Error(
+                'Expected the target to be an instance of CommentManager.');
         }
         this._targets.push(commentManager);
         return this;
@@ -1153,7 +1196,9 @@ var CommentProvider = (function () {
      **/
     CommentProvider.prototype.addParser = function (parser, type) {
         if (this._destroyed) {
-            throw new Error('Comment provider has been destroyed, cannot attach more parsers.');
+            throw new Error(
+                'Comment provider has been destroyed, ' + 
+                'cannot attach more parsers.');
         }
         if (!(type in this._parsers)) {
             this._parsers[type] = [];
@@ -1219,6 +1264,7 @@ var CommentProvider = (function () {
             throw new Error('Cannot load sources on a destroyed provider.');
         }
         var promises = [];
+        // TODO: This race logic needs to be rethought to provide redundancy
         for (var type in this._staticSources) {
             promises.push(Promise.race(this._staticSources[type])
                 .then(function (data) {
@@ -1250,7 +1296,8 @@ var CommentProvider = (function () {
                 this._dynamicSources[type].foreach(function (source) {
                     source.addEventListener('receive', function (data) {
                         for (var i = 0; i < this._targets.length; i++) {
-                            this._targets[i].send(this.applyParserOne(data, type));
+                            this._targets[i].send(
+                                this.applyParserOne(data, type));
                         }
                     }.bind(this));
                 s}.bind(this));
@@ -1273,7 +1320,7 @@ var CommentProvider = (function () {
      *         HTTP response code.
      **/
     CommentProvider.prototype.send = function (commentData, requireAll) {
-    
+        throw new Error('Not implemented');
     };
 
     /**
@@ -1284,10 +1331,11 @@ var CommentProvider = (function () {
      **/
     CommentProvider.prototype.destroy = function () {
         if (this._destroyed) {
-            return;
+            return Promise.resolve();
         }
         // TODO: implement debinding for sources
         this._destroyed = true;
+        return Promise.resolve();
     };
 
     return CommentProvider;
@@ -1608,8 +1656,10 @@ var AcfunFormat = (function () {
 
     AcfunFormat.JSONParser = function (params) {
         this._logBadComments = true;
+        this._logNotImplemented = false;
         if (typeof params === 'object') {
             this._logBadComments = params.logBadComments === false ? false : true;
+            this._logNotImplemented = params.logNotImplemented === true ? true : false;
         }
     };
 
@@ -1647,12 +1697,12 @@ var AcfunFormat = (function () {
                 data.position = "relative";
                 data.text = x.n; /*.replace(/\r/g,"\n");*/
                 data.text = data.text.replace(/\ /g,"\u00a0");
-                if (x.a != null) {
+                if (typeof x.a === 'number') {
                     data.opacity = x.a;
                 } else {
                     data.opacity = 1;
                 }
-                if (x.p != null) {
+                if (typeof x.p === 'object') {
                     // Relative position
                     data.x = x.p.x / 1000;
                     data.y = x.p.y / 1000;
@@ -1660,36 +1710,114 @@ var AcfunFormat = (function () {
                     data.x = 0;
                     data.y = 0;
                 }
+                if (typeof x.c === 'number') {
+                    switch (x.c) {
+                        case 0: data.align = 0; break;
+                        case 2: data.align = 1; break;
+                        case 6: data.align = 2; break;
+                        case 8: data.align = 3; break;
+                        default:
+                            if (this._logNotImplemented) {
+                                console.log('Cannot handle aligning to center! AlignMode=' + x.c);
+                            }
+                    }
+                }
+                // Use default axis
+                data.axis = 0;
                 data.shadow = x.b;
                 data.dur = 4000;
-                if (x.l != null) {
-                    data.moveDelay = x.l * 1000;
+                if (typeof x.l === 'number') {
+                    data.dur = x.l * 1000;
                 }
                 if (x.z != null && x.z.length > 0) {
                     data.movable = true;
                     data.motion = [];
                     var moveDuration = 0;
-                    var last = {x:data.x, y:data.y, alpha:data.opacity, color:data.color};
+                    var last = {
+                        x: data.x, 
+                        y: data.y, 
+                        alpha: data.opacity,
+                        color: data.color
+                    };
                     for (var m = 0; m < x.z.length; m++) {
                         var dur = x.z[m].l != null ? (x.z[m].l * 1000) : 500;
                         moveDuration += dur;
-                        var motion = {
-                            x:{from:last.x, to:x.z[m].x/1000, dur: dur, delay: 0},
-                            y:{from:last.y, to:x.z[m].y/1000, dur: dur, delay: 0}
-                        };
-                        last.x = motion.x.to;
-                        last.y = motion.y.to;
-                        if (x.z[m].t !== last.alpha) {
-                            motion.alpha = {from:last.alpha, to:x.z[m].t, dur: dur, delay: 0};
+                        var motion = {};
+                        if (x.z[m].hasOwnProperty('rx') && typeof x.z[m].rx === 'number') {
+                            // TODO: Support this
+                            if (this._logNotImplemented) {
+                                console.log('Encountered animated x-axis rotation. Ignoring.');
+                            }
+                        }
+                        if (x.z[m].hasOwnProperty('e') && typeof x.z[m].e === 'number') {
+                            // TODO: Support this
+                            if (this._logNotImplemented) {
+                                console.log('Encountered animated y-axis rotation. Ignoring.');
+                            }
+                        }
+                        if (x.z[m].hasOwnProperty('d') && typeof x.z[m].d === 'number') {
+                            // TODO: Support this
+                            if (this._logNotImplemented) {
+                                console.log('Encountered animated z-axis rotation. Ignoring.');
+                            }
+                        }
+                        if (x.z[m].hasOwnProperty('x') && typeof x.z[m].x === 'number') {
+                            motion.x = {
+                                from: last.x, 
+                                to: x.z[m].x / 1000, 
+                                dur: dur, 
+                                delay: 0
+                            };
+                        }
+                        if (x.z[m].hasOwnProperty('y') && typeof x.z[m].y === 'number') {
+                            motion.y = {
+                                from: last.y, 
+                                to: x.z[m].y / 1000, 
+                                dur: dur, 
+                                delay: 0
+                            };
+                        }
+                        last.x = motion.hasOwnProperty('x') ? motion.x.to : last.x;
+                        last.y = motion.hasOwnProperty('y') ? motion.y.to : last.y;
+                        if (x.z[m].hasOwnProperty('t') &&
+                            typeof x.z[m].t === 'number' &&
+                            x.z[m].t !== last.alpha) {
+                            motion.alpha = {
+                                from: last.alpha, 
+                                to: x.z[m].t, 
+                                dur: dur, 
+                                delay: 0
+                            };
                             last.alpha = motion.alpha.to;
                         }
-                        if (x.z[m].c != null && x.z[m].c !== last.color) {
-                            motion.color = {from:last.color, to:x.z[m].c, dur: dur, delay: 0};
+                        if (x.z[m].hasOwnProperty('c') &&
+                            typeof x.z[m].c === 'number' &&
+                            x.z[m].c !== last.color) {
+                            motion.color = {
+                                from: last.color, 
+                                to:x.z[m].c, 
+                                dur: dur, 
+                                delay: 0
+                            };
                             last.color = motion.color.to;
                         }
                         data.motion.push(motion);
                     }
                     data.dur = moveDuration + (data.moveDelay ? data.moveDelay : 0);
+                }
+                if (x.hasOwnProperty('w')) {
+                    if (x.w.hasOwnProperty('f')) {
+                        data.font = x.w.f;
+                    }
+                    if (x.w.hasOwnProperty('l') && Array.isArray(x.w.l)) {
+                        if (x.w.l.length > 0) {
+                            // Filters
+                            if (this._logNotImplemented) {
+                                console.log('[Dbg] Filters not supported! ' + 
+                                    JSON.stringify(x.w.l));
+                            }
+                        }
+                    }
                 }
                 if (x.r != null && x.k != null) {
                     data.rX = x.r;
@@ -1783,11 +1911,25 @@ var CommonDanmakuFormat = (function () {
 
     CommonDanmakuFormat.XMLParser = function () { };
     CommonDanmakuFormat.XMLParser.prototype.parseOne = function (comment) {
-        
+        var data = {}
+        data.stime = parseInt(comment.getAttribute('stime'));
+        data.mode = parseInt(comment.getAttribute('mode'));
+        data.size = parseInt(comment.getAttribute('size'));
+        data.color = parseInt(comment.getAttribute('color'));
+        data.text = comment.textContent;
+        return data;
     };
 
     CommonDanmakuFormat.XMLParser.prototype.parseMany = function (comments) {
-    
+        var comments = comments.getElementsByTagName('comment');
+        var commentList = [];
+        for (var i = 0; i < comments.length; i++) {
+            var comment = this.parseOne(comments[i]);
+            if (comment !== null) {
+                commentList.push(comment);
+            }
+        }
+        return commentList;
     };
 
     return CommonDanmakuFormat;

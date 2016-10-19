@@ -276,7 +276,7 @@ function bind(){
 		}
 		window._provider = new CommentProvider();
 		cm.clear();
-		dmf = "/" + dmf;
+		dmf = "../" + dmf;
 		window._provider.addTarget(cm);
 		start = 0;
 		

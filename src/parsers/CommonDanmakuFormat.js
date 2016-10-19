@@ -34,11 +34,25 @@ var CommonDanmakuFormat = (function () {
 
     CommonDanmakuFormat.XMLParser = function () { };
     CommonDanmakuFormat.XMLParser.prototype.parseOne = function (comment) {
-        
+        var data = {}
+        data.stime = parseInt(comment.getAttribute('stime'));
+        data.mode = parseInt(comment.getAttribute('mode'));
+        data.size = parseInt(comment.getAttribute('size'));
+        data.color = parseInt(comment.getAttribute('color'));
+        data.text = comment.textContent;
+        return data;
     };
 
     CommonDanmakuFormat.XMLParser.prototype.parseMany = function (comments) {
-    
+        var comments = comments.getElementsByTagName('comment');
+        var commentList = [];
+        for (var i = 0; i < comments.length; i++) {
+            var comment = this.parseOne(comments[i]);
+            if (comment !== null) {
+                commentList.push(comment);
+            }
+        }
+        return commentList;
     };
 
     return CommonDanmakuFormat;
