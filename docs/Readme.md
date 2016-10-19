@@ -1,12 +1,15 @@
-# Readme 文档
+# Documentation 文档 ドキュメント
 
 CCL包括一套尽可能完备的文档来帮助二次开发。文档主要针对两个部分：各种东西都是什么，各种东西都应该
 怎么用。如果想看看现实里使用了 CCL 的项目，可以参考 [Powered By CCL](PoweredByCCL.md) 里面
 的不完全收录。
 
-## 入门文档（Introduction）
+## 入门文档（Tutorial）
 想开始对 CCL 的开发却还不太了解 CommentCoreLibrary？希望在自己的项目里使用 CCL 却不熟悉接口？
-赶紧来看[入门文档](Intro.md)
+赶紧来看:
+- [入门文档](Tutorial.zh_CN.md)
+- [チュートリアル](Tutorial.ja_JP.md)
+- [Quick Tutorial](Tutorial.md)
 
 ### 部件参考（Individual Parts）
 
@@ -39,13 +42,13 @@ CommentCore 主体即可。** CommentCore主体可以进行：弹幕呈现和空
 对于希望进行完整还原的，可以参考合体配置方法。
 
 ### 架设 CommentCore 主体
-CommentCore主体分为两个重要部分：CSS和JS。在编译后，分别位于`build/style.css` 和 
-`build/CommentCoreLibrary.js`。使用时必须保证引用了两个文件（或者在项目中已经合并入两个文件的
+CommentCore主体分为两个重要部分：CSS和JS。在编译后，分别位于`dist/css/style.css` 和 
+`dist/CommentCoreLibrary.js`。使用时必须保证引用了两个文件（或者在项目中已经合并入两个文件的
 代码），尤其要注意CSS不能没有。
 
 ### 架设 KagerouEngine 引擎
 KagerouEngine分为两个部分：JS Host和Worker Client。在编译后，分别位于 
-`build/scripting/Host.js` 和 `build/scripting/Worker.js`。架设时，只需在外部引入 
+`dist/scripting/Host.js` 和 `dist/scripting/Worker.js`。架设时，只需在外部引入 
 `Host.js` 然后把 `Worker.js` 的位置，在初始化 `Host` 时传递进入即可。`scripting/` 目录的
 结构关系需要保护，以免Worker无法载入相应的需要的运行时库。
 

@@ -32,7 +32,7 @@ describe 'CommentManager', ->
       manager.init()
 
     'addEventListener clear dispatchEvent finish init
-    insert load onTimerEvent rescale seek send sendComment
+    insert load onTimerEvent rescale seek send
     setBounds start stop time validate'.split(/\s/).forEach (method)->
 
       it "has method: '#{method}'", ->

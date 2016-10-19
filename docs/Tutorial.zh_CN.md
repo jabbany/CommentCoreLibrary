@@ -8,7 +8,7 @@
 
     http://localhost/
     
-来测试连同性。
+来测试连通性。
 
 **注意：** 请注意确保你在服务器环境下开发 CCL ，在开发时如果遇到各种资源无法载入，请确保您的地址栏
 是以 `http:` 或者 `https:` 开头的而不是 `file:` 等等。
@@ -21,7 +21,7 @@ Github 有提供以 Zip 方式下载CCL的选项，但是我们不推荐你这�
 的方法：
 
 - 作为外部库通过 npm 或者 bower 引入： 只需运行 `npm install comment-core-library --save`
-    即可获取最新版的稳定CCL库。通过 `node_modules/comment-core-library/build/`
+    即可获取最新版的稳定CCL库。通过 `node_modules/comment-core-library/dist/`
     可以引用需要的文件。
 - 直接 Clone 下 Git 代码仓库： 通过 `git clone https://github.com/jabbany/CommentCoreLibrary.git`
     即可 Clone下 CCL 的全代码库。建议把工作目录放到 Web 开发服务器下的子文件夹内，如 `/var/www/`
@@ -32,7 +32,7 @@ Github 有提供以 Zip 方式下载CCL的选项，但是我们不推荐你这�
 第一个方式主要用于希望直接挂载 CCL 功能的二次开发，而第二种方式则面向对 CCL 本生的开发有兴趣的人。
 
 ### 正确的引用库 （Embedding CCL）
-CCL编译好的代码在 `build/` 目录下。有两个文件非常重要： `CommentCoreLibrary.js` 和 `style.css`。
+CCL编译好的代码在 `dist/` 目录下。有两个文件非常重要： `CommentCoreLibrary.js` 和 `style.css`。
 这两个分别负责CCL的JS引擎部分和CSS呈现部分，不能省略。相对的还有俩 `.min.js`和 `.min.css` 文件
 是上述文件的压缩版。压缩版代码都在一行，较不方便对行号调试，建议开发时采用未压缩版，架设时则可以采取
 压缩版。
@@ -41,8 +41,8 @@ CCL编译好的代码在 `build/` 目录下。有两个文件非常重要： `Co
 
     <head>
         ... 其他头部信息 ...
-        <link rel="stylesheet" href="build/style.css" />
-        <script src="build/CommentCoreLibrary.js"></script>
+        <link rel="stylesheet" href="dist/css/style.css" />
+        <script src="dist/CommentCoreLibrary.js"></script>
         ... 其他头部信息 ...
     </head>
     
@@ -97,7 +97,7 @@ CCL编译好的代码在 `build/` 目录下。有两个文件非常重要： `Co
     CM.time(500);
     CM.time(1000);
     
-具体使用的参考可以参考 `demo/intro`。内有大部分此示例的代码。
+具体使用的参考可以参考 `demo/tutorial`。内有大部分此示例的代码。
 
 ### 发送弹幕 （Sending Comments）
 CCL自己没有发送弹幕的内建支持，不过实现起来非常轻松。具体实现需要根据自己服务器的需求决定。

@@ -28,7 +28,7 @@ var CommentManager = (function() {
         return "matrix3d(" + matrix.join(",") + ")";
     };
 
-    var defaultComparator = function (a,b) {
+    var _defaultComparator = function (a,b) {
         if (a.stime > b.stime) {
             return 2;
         } else if (a.stime < b.stime) {
