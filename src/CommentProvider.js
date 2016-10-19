@@ -41,13 +41,15 @@ var CommentProvider = (function () {
                 var argsArray = [];
                 for (var key in args) {
                     if (args.hasOwnProperty(key)) {
-                        argsArray.push(encodeURIComponent(key) + '=' + encodeURIComponent(args[key]));
+                        argsArray.push(encodeURIComponent(key) + 
+                            '=' + encodeURIComponent(args[key]));
                     }
                 }
                 uri += argsArray.join('&');
             }
 
-            xhr.responseType = typeof responseType === "string" ? responseType : "";
+            xhr.responseType = typeof responseType === "string" ? 
+                responseType : "";
             xhr.onload = function () {
                 if (this.status >= 200 && this.status < 300) {
                     resolve(this.response);
@@ -81,7 +83,8 @@ var CommentProvider = (function () {
      *         of the request
      **/
     CommentProvider.JSONProvider = function (method, url, args, body) {
-        return CommentProvider.BaseHttpProvider(method, url, "json", args, body).then(function (response) {
+        return CommentProvider.BaseHttpProvider(
+            method, url, "json", args, body).then(function (response) {
             return response;
         });
     };
@@ -98,7 +101,8 @@ var CommentProvider = (function () {
      *         of the request
      **/
     CommentProvider.XMLProvider = function (method, url, args, body) {
-        return CommentProvider.BaseHttpProvider(method, url, "document", args, body).then(function (response) {
+        return CommentProvider.BaseHttpProvider(
+            method, url, "document", args, body).then(function (response) {
             return response;
         });
     };
@@ -115,7 +119,8 @@ var CommentProvider = (function () {
      *         of the request
      **/
     CommentProvider.TextProvider = function (method, url, args, body) {
-        return CommentProvider.BaseHttpProvider(method, url, "text", args, body).then(function (response) {
+        return CommentProvider.BaseHttpProvider(
+            method, url, "text", args, body).then(function (response) {
             return response.text;
         });
     };
@@ -131,7 +136,9 @@ var CommentProvider = (function () {
      **/
     CommentProvider.prototype.addStaticSource = function (source, type) {
         if (this._destroyed) {
-            throw new Error('Comment provider has been destroyed, cannot attach more sources.');
+            throw new Error(
+                'Comment provider has been destroyed, ' + 
+                'cannot attach more sources.');
         }
         if (!(type in this._staticSources)) {
             this._staticSources[type] = [];
@@ -150,7 +157,9 @@ var CommentProvider = (function () {
      **/
     CommentProvider.prototype.addDynamicSource = function (source, type) {
         if (this._destroyed) {
-            throw new Error('Comment provider has been destroyed, cannot attach more sources.');
+            throw new Error(
+                'Comment provider has been destroyed, ' + 
+                'cannot attach more sources.');
         }
         if (!(type in this._dynamicSources)) {
             this._dynamicSources[type] = [];
@@ -167,10 +176,13 @@ var CommentProvider = (function () {
      **/
     CommentProvider.prototype.addTarget = function (commentManager) {
         if (this._destroyed) {
-            throw new Error('Comment provider has been destroyed, cannot attach more targets.');
+            throw new Error(
+                'Comment provider has been destroyed, '
+                +'cannot attach more targets.');
         }
         if (!(commentManager instanceof CommentManager)) {
-            throw new Error('Expected the target to be an instance of CommentManager.');
+            throw new Error(
+                'Expected the target to be an instance of CommentManager.');
         }
         this._targets.push(commentManager);
         return this;
@@ -186,7 +198,9 @@ var CommentProvider = (function () {
      **/
     CommentProvider.prototype.addParser = function (parser, type) {
         if (this._destroyed) {
-            throw new Error('Comment provider has been destroyed, cannot attach more parsers.');
+            throw new Error(
+                'Comment provider has been destroyed, ' + 
+                'cannot attach more parsers.');
         }
         if (!(type in this._parsers)) {
             this._parsers[type] = [];
@@ -252,6 +266,7 @@ var CommentProvider = (function () {
             throw new Error('Cannot load sources on a destroyed provider.');
         }
         var promises = [];
+        // TODO: This race logic needs to be rethought to provide redundancy
         for (var type in this._staticSources) {
             promises.push(Promise.race(this._staticSources[type])
                 .then(function (data) {
@@ -283,7 +298,8 @@ var CommentProvider = (function () {
                 this._dynamicSources[type].foreach(function (source) {
                     source.addEventListener('receive', function (data) {
                         for (var i = 0; i < this._targets.length; i++) {
-                            this._targets[i].send(this.applyParserOne(data, type));
+                            this._targets[i].send(
+                                this.applyParserOne(data, type));
                         }
                     }.bind(this));
                 s}.bind(this));
@@ -306,7 +322,7 @@ var CommentProvider = (function () {
      *         HTTP response code.
      **/
     CommentProvider.prototype.send = function (commentData, requireAll) {
-    
+        throw new Error('Not implemented');
     };
 
     /**
@@ -317,10 +333,11 @@ var CommentProvider = (function () {
      **/
     CommentProvider.prototype.destroy = function () {
         if (this._destroyed) {
-            return;
+            return Promise.resolve();
         }
         // TODO: implement debinding for sources
         this._destroyed = true;
+        return Promise.resolve();
     };
 
     return CommentProvider;

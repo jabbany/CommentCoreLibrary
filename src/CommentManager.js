@@ -211,11 +211,26 @@ var CommentManager = (function() {
 			var cmt = new CoreComment(this, data);
 		}
 		switch(cmt.mode){
-			case 1:cmt.align = 0;break;
-			case 2:cmt.align = 2;break;
-			case 4:cmt.align = 2;break;
-			case 5:cmt.align = 0;break;
-			case 6:cmt.align = 1;break;
+			case 1:
+			    cmt.align = 0;
+			    cmt.axis = 0;
+			    break;
+			case 2:
+			    cmt.align = 2;
+			    cmt.axis = 2;
+			    break;
+			case 4:
+			    cmt.align = 2;
+			    cmt.axis = 2;
+			    break;
+			case 5:
+			    cmt.align = 0;
+			    cmt.axix = 0;
+			    break;
+			case 6:
+			    cmt.align = 1;
+			    cmt.axis = 1;
+			    break;
 		}
 		cmt.init();
 		this.stage.appendChild(cmt.dom);
@@ -229,6 +244,7 @@ var CommentManager = (function() {
 			case 17:
 			case 7:{
 				if(data.rY !== 0 || data.rZ !== 0){
+				    /** TODO: Move this logic into CoreComment instead! **/
 					/** TODO: revise when browser manufacturers make up their mind on Transform APIs **/
 					cmt.dom.style.transform = getRotMatrix(data.rY, data.rZ);
 					cmt.dom.style.webkitTransform = getRotMatrix(data.rY, data.rZ);

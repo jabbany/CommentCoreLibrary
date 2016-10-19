@@ -36,6 +36,11 @@ class CoreComment implements IComment {
      * @type {number} 0=tl, 2=bl, 1=tr, 3=br
      */
     public align:number = 0;
+    /**
+     * Axis
+     * @type {number} 0=dr, 1=dl, 2=ur, 3=ul
+     */
+    public axis:number = 0;
     public _alpha:number = 1;
     public _size:number = 25;
     private _width:number;
@@ -118,6 +123,12 @@ class CoreComment implements IComment {
         if (init.hasOwnProperty("shadow")) {
             this._shadow = init["shadow"];
         }
+        if (init.hasOwnProperty("align")) {
+            this.align = init["align"];
+        }
+        if (init.hasOwnProperty("axis")) {
+            this.axis = init["axis"];
+        }
         if (init.hasOwnProperty("position")) {
             if (init["position"] === "relative") {
                 this.absolute = false;
@@ -170,10 +181,18 @@ class CoreComment implements IComment {
 
     get x():number {
         if (this._x === null || this._x === undefined) {
-            if (this.align % 2 === 0) {
-                this._x = this.dom.offsetLeft;
+            if (this.axis % 2 === 0) {
+                if (this.align % 2 === 0) {
+                    this._x = this.dom.offsetLeft;
+                } else {
+                    this._x = this.dom.offsetLeft + this.width;
+                }
             } else {
-                this._x = this.parent.width - this.dom.offsetLeft - this.width;
+                if (this.align % 2 === 0) {
+                    this._x = this.parent.width - this.dom.offsetLeft;
+                } else {
+                    this._x = this.parent.width - this.dom.offsetLeft - this.width;
+                }
             }
         }
         if (!this.absolute) {
@@ -184,10 +203,18 @@ class CoreComment implements IComment {
 
     get y():number {
         if (this._y === null || this._y === undefined) {
-            if (this.align < 2) {
-                this._y = this.dom.offsetTop;
+            if (this.axis < 2) {
+                if (this.align < 2) {
+                    this._y = this.dom.offsetTop;
+                } else {
+                    this._y = this.dom.offsetTop + this.height;
+                }
             } else {
-                this._y = this.parent.height - this.dom.offsetTop - this.height;
+                if (this.align < 2) {
+                    this._y = this.parent.height - this.dom.offsetTop;
+                } else {
+                    this._y = this.parent.height - this.dom.offsetTop - this.height;
+                }
             }
         }
         if (!this.absolute) {
@@ -197,11 +224,13 @@ class CoreComment implements IComment {
     }
 
     get bottom():number {
-        return this.y + this.height;
+        var sameDirection = Math.floor(this.axis / 2) === Math.floor(this.align / 2);
+        return this.y + (sameDirection ? this.height : 0);
     }
 
     get right():number {
-        return this.x + this.width;
+        var sameDirection = this.axis % 2 === this.align % 2;
+        return this.x + (sameDirection ? this.width : 0);
     }
 
     get width():number {
@@ -247,10 +276,10 @@ class CoreComment implements IComment {
         if (!this.absolute) {
             this._x *= this.parent.width;
         }
-        if (this.align % 2 === 0) {
-            this.dom.style.left = this._x + "px";
+        if (this.axis % 2 === 0) {
+            this.dom.style.left = (this._x + (this.align % 2 === 0 ? 0 : -this.width)) + "px";
         } else {
-            this.dom.style.right = this._x + "px";
+            this.dom.style.right = (this._x + (this.align % 2 === 0 ? -this.width : 0)) + "px";
         }
     }
 
@@ -259,10 +288,10 @@ class CoreComment implements IComment {
         if (!this.absolute) {
             this._y *= this.parent.height;
         }
-        if (this.align < 2) {
-            this.dom.style.top = this._y + "px";
+        if (this.axis < 2) {
+            this.dom.style.top = (this._y + (this.align < 2 ? 0 : -this.height)) + "px";
         } else {
-            this.dom.style.bottom = this._y + "px";
+            this.dom.style.bottom = (this._y + (this.align < 2 ? -this.height : 0)) + "px";
         }
     }
 
