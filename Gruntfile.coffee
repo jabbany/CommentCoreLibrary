@@ -174,6 +174,7 @@ module.exports = (grunt) ->
             'node_modules/jasmine-jquery/lib/jasmine-jquery.js'
             'node_modules/sinon/pkg/sinon.js'
             'node_modules/jasmine-sinon/lib/jasmine-sinon.js'
+            'node_modules/promise-polyfill/promise.js' # TODO: remove when phantomjs supports promises
           ]
           template: require('grunt-template-jasmine-istanbul')
           templateOptions:
@@ -189,6 +190,7 @@ module.exports = (grunt) ->
             'node_modules/jasmine-jquery/lib/jasmine-jquery.js'
             'node_modules/sinon/pkg/sinon.js'
             'node_modules/jasmine-sinon/lib/jasmine-sinon.js'
+            'node_modules/promise-polyfill/promise.js' # TODO: remove when phantomjs supports promises
           ]
           template: require('grunt-template-jasmine-istanbul')
           templateOptions:

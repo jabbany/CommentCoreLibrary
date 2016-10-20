@@ -55,10 +55,6 @@ var BilibiliFormat = (function () {
             // Probably not XML
             return null;
         }
-        if (!elem.childNodes[0]) {
-            // Not a comment or nested comment, skip
-            return null;
-        }
         var text = elem.textContent;
         var comment = {};
         comment.stime = Math.round(parseFloat(params[0])*1000);

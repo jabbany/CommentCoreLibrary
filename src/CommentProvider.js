@@ -273,6 +273,10 @@ var CommentProvider = (function () {
                     return this.applyParsersList(data, type);
                 }.bind(this)));
         }
+        if (promises.length === 0) {
+            // No static loaders
+            return Promise.resolve([]);
+        }
         return Promise.race(promises).then(function (commentList) {
             for (var i = 0; i < this._targets.length; i++) {
                 this._targets[i].load(commentList);
@@ -295,14 +299,14 @@ var CommentProvider = (function () {
         return this.load().then(function (commentList) {
             // Bind the dynamic sources
             for (var type in this._dynamicSources) {
-                this._dynamicSources[type].foreach(function (source) {
+                this._dynamicSources[type].forEach(function (source) {
                     source.addEventListener('receive', function (data) {
                         for (var i = 0; i < this._targets.length; i++) {
                             this._targets[i].send(
                                 this.applyParserOne(data, type));
                         }
                     }.bind(this));
-                s}.bind(this));
+                }.bind(this));
             }
             return Promise.resolve(commentList);
         }.bind(this));

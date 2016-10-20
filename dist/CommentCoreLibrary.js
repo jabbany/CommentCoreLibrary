@@ -1271,6 +1271,10 @@ var CommentProvider = (function () {
                     return this.applyParsersList(data, type);
                 }.bind(this)));
         }
+        if (promises.length === 0) {
+            // No static loaders
+            return Promise.resolve([]);
+        }
         return Promise.race(promises).then(function (commentList) {
             for (var i = 0; i < this._targets.length; i++) {
                 this._targets[i].load(commentList);
@@ -1293,14 +1297,14 @@ var CommentProvider = (function () {
         return this.load().then(function (commentList) {
             // Bind the dynamic sources
             for (var type in this._dynamicSources) {
-                this._dynamicSources[type].foreach(function (source) {
+                this._dynamicSources[type].forEach(function (source) {
                     source.addEventListener('receive', function (data) {
                         for (var i = 0; i < this._targets.length; i++) {
                             this._targets[i].send(
                                 this.applyParserOne(data, type));
                         }
                     }.bind(this));
-                s}.bind(this));
+                }.bind(this));
             }
             return Promise.resolve(commentList);
         }.bind(this));
@@ -1396,10 +1400,6 @@ var BilibiliFormat = (function () {
             var params = elem.getAttribute('p').split(',');
         } catch (e) {
             // Probably not XML
-            return null;
-        }
-        if (!elem.childNodes[0]) {
-            // Not a comment or nested comment, skip
             return null;
         }
         var text = elem.textContent;
@@ -1884,15 +1884,15 @@ var AcfunFormat = (function () {
 
 var CommonDanmakuFormat = (function () {
     var CommonDanmakuFormat = {};
-    var _check = function () {
+    var _check = function (comment) {
         // Sanity check to see if we should be parsing these comments or not
-        if (comment.mode !== "number"|| typeof comment.stime !== "number") {
+        if (typeof comment.mode !== 'number' || typeof comment.stime !== 'number') {
             return false;
         }
-        if (comment.mode === 8 && !(typeof comment.code === "string")) {
+        if (comment.mode === 8 && !(typeof comment.code === 'string')) {
             return false;
         }
-        if (typeof comment.text !== "string") {
+        if (typeof comment.text !== 'string') {
             return false;
         }
         return true;
@@ -1912,16 +1912,24 @@ var CommonDanmakuFormat = (function () {
     CommonDanmakuFormat.XMLParser = function () { };
     CommonDanmakuFormat.XMLParser.prototype.parseOne = function (comment) {
         var data = {}
-        data.stime = parseInt(comment.getAttribute('stime'));
-        data.mode = parseInt(comment.getAttribute('mode'));
-        data.size = parseInt(comment.getAttribute('size'));
-        data.color = parseInt(comment.getAttribute('color'));
-        data.text = comment.textContent;
+        try {
+            data.stime = parseInt(comment.getAttribute('stime'));
+            data.mode = parseInt(comment.getAttribute('mode'));
+            data.size = parseInt(comment.getAttribute('size'));
+            data.color = parseInt(comment.getAttribute('color'));
+            data.text = comment.textContent;
+        } catch (e) {
+            return null;
+        }
         return data;
     };
 
-    CommonDanmakuFormat.XMLParser.prototype.parseMany = function (comments) {
-        var comments = comments.getElementsByTagName('comment');
+    CommonDanmakuFormat.XMLParser.prototype.parseMany = function (commentsElem) {
+        try {
+            var comments = commentsElem.getElementsByTagName('comment');
+        } catch (e) {
+            return null;
+        }
         var commentList = [];
         for (var i = 0; i < comments.length; i++) {
             var comment = this.parseOne(comments[i]);
