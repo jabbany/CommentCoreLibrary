@@ -1058,7 +1058,7 @@ var CommentProvider = (function () {
 
             xhr.onerror = function () {
                 reject(new Error(this.status + " " + this.statusText));
-            }
+            };
 
             xhr.open(method, uri);
             if (typeof body !== 'undefined') {
@@ -1119,7 +1119,7 @@ var CommentProvider = (function () {
     CommentProvider.TextProvider = function (method, url, args, body) {
         return CommentProvider.BaseHttpProvider(
             method, url, "text", args, body).then(function (response) {
-            return response.text;
+            return response;
         });
     };
 
@@ -1211,7 +1211,7 @@ var CommentProvider = (function () {
         return new Promise(function (resolve, reject) {
             if (!(type in this._parsers)) {
                 reject(new Error('No parsers defined for "' + type + '"'));
-                return;s
+                return;
             }
             for (var i = 0; i < this._parsers[type].length; i++) {
                 var output = null;

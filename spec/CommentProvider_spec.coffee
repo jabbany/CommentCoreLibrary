@@ -110,6 +110,62 @@ describe 'CommentProvider', ->
         provider.destroy()
         expect( => provider.addTarget(commentManager)).toThrow()
 
+    describe '.applyParsersOne', ->
+      rejectingParser =
+        parseOne: () -> null
+        parseMany: () -> null
+      resolvingParser =
+        parseOne: (t) -> t
+        parseMany: (t) -> t
+
+      it 'rejects if no parsers for type', (done) ->
+        promise = provider.applyParsersOne {}, CommentProvider.SOURCE_JSON
+        promise.catch (e) ->
+          expect(e instanceof Error).toBe true
+          done()
+
+      it 'rejects if no parser accepts', (done) ->
+        provider.addParser rejectingParser, CommentProvider.SOURCE_JSON
+        promise = provider.applyParsersOne {}, CommentProvider.SOURCE_JSON
+        promise.catch (e) ->
+          expect(e instanceof Error).toBe true
+          done()
+
+      it 'accepts if parser accepts', (done) ->
+        provider.addParser resolvingParser, CommentProvider.SOURCE_JSON
+        promise = provider.applyParsersOne {}, CommentProvider.SOURCE_JSON
+        promise.then (item) ->
+          expect(item).toEqual {}
+          done()
+
+    describe '.applyParsersList', ->
+      rejectingParser =
+        parseOne: () -> null
+        parseMany: () -> null
+      resolvingParser =
+        parseOne: (t) -> t
+        parseMany: (t) -> t
+
+      it 'rejects if no parsers for type', (done) ->
+        promise = provider.applyParsersList [], CommentProvider.SOURCE_JSON
+        promise.catch (e) ->
+          expect(e instanceof Error).toBe true
+          done()
+
+      it 'rejects if no parser accepts', (done) ->
+        provider.addParser rejectingParser, CommentProvider.SOURCE_JSON
+        promise = provider.applyParsersList [], CommentProvider.SOURCE_JSON
+        promise.catch (e) ->
+          expect(e instanceof Error).toBe true
+          done()
+
+      it 'accepts if parser accepts', (done) ->
+        provider.addParser resolvingParser, CommentProvider.SOURCE_JSON
+        promise = provider.applyParsersList [], CommentProvider.SOURCE_JSON
+        promise.then (items) ->
+          expect(items).toEqual []
+          done()
+
     describe '.load', ->
       it 'requests static sources', (done) ->
         provider.addStaticSource (Promise.resolve 'Foo'), CommentProvider.SOURCE_TEXT
@@ -139,6 +195,11 @@ describe 'CommentProvider', ->
           addEventListener: () ->
         spy = sinon.spy dynamicSource, "addEventListener"
 
+      it 'fails if called on destroyed object', ->
+        p = new CommentProvider()
+        p.destroy()
+        expect( => p.start()).toThrow()
+
       it 'calls load', ->
         loadspy = sinon.spy provider, 'load'
         provider.start()
@@ -159,5 +220,10 @@ describe 'CommentProvider', ->
 
     describe '.destory', ->
       it 'sets destroyed flag', ->
+        provider.destroy()
+        expect(provider._destroyed).toBe true
+
+      it 'destroy can be called multiple times', ->
+        provider.destroy()
         provider.destroy()
         expect(provider._destroyed).toBe true

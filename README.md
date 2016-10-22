@@ -44,7 +44,6 @@ gem 'rails-assets-comment-core-library'
 
 ## Examples and Documentation
 - [Documentation](docs/) can be found inside the `docs/` folder.
-- Some sample extension modules may be found in `src/extend/`.
 - Experimental modules are in `experimental/`.
 - You may test using test data found in `test/`.
 
@@ -77,7 +76,6 @@ implementation of a video player with CommentCoreLibrary.
 
 ## 使用
 - 有关本项目的[文档](docs/) 可以在 `docs/` 文件夹里面找到。
-- 一些功能性扩展模块会出现在 `src/extend/` 中。
 - 一些实验性模块在 `experimental/` 里。
 - 测试数据在 `test/` 里。
 
