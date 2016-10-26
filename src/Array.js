@@ -3,7 +3,7 @@
  * @license MIT
  * @author Jim Chen
  */
-var BinArray = (function( ) {
+var BinArray = (function () {
 
     var BinArray = {};
 

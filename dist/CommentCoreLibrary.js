@@ -3,7 +3,7 @@
  * @license MIT
  * @author Jim Chen
  */
-var BinArray = (function( ) {
+var BinArray = (function () {
 
     var BinArray = {};
 
@@ -1266,7 +1266,7 @@ var CommentProvider = (function () {
         var promises = [];
         // TODO: This race logic needs to be rethought to provide redundancy
         for (var type in this._staticSources) {
-            promises.push(Promise.race(this._staticSources[type])
+            promises.push(Promises.any(this._staticSources[type])
                 .then(function (data) {
                     return this.applyParsersList(data, type);
                 }.bind(this)));
@@ -1275,7 +1275,7 @@ var CommentProvider = (function () {
             // No static loaders
             return Promise.resolve([]);
         }
-        return Promise.race(promises).then(function (commentList) {
+        return Promises.any(promises).then(function (commentList) {
             for (var i = 0; i < this._targets.length; i++) {
                 this._targets[i].load(commentList);
             }
@@ -1343,6 +1343,61 @@ var CommentProvider = (function () {
     };
 
     return CommentProvider;
+})();
+
+/**
+ * Promises extra functionality
+ * @license MIT
+ * @author Jim Chen
+ */
+var Promises = (function( ) {
+
+    var Promises = {};
+
+    /**
+     * Resolves as soon as any promise resolves in the order of the input array
+     * 
+     * @param arr - array of promises
+     * @return promise that resolves if any one promise resolves and rejects
+     *         if otherwise
+     **/
+    Promises.any = function (promises) {
+        if (!Array.isArray(promises)) {
+            // Is raw object or promise, resolve it directly
+            return Promise.resolve(promises);
+        }
+        if (promises.length === 0) {
+            // No promises to resolve so we think it failed
+            return Promise.reject();
+        }
+        return new Promise(function (resolve, reject) {
+            var hasResolved = false;
+            var hasCompleted = 0;
+            var errors = [];
+            for (var i = 0; i < promises.length; i++) {
+                promises[i].then(function (value) {
+                    hasCompleted++;
+                    if (!hasResolved) {
+                        hasResolved = true;
+                        resolve(value);
+                    }
+                }).catch((function (i) {
+                    return function (e) {
+                        hasCompleted++;
+                        errors[i] = e;
+                        if (hasCompleted === promises.length) {
+                            // All promises have completed and we are in rejecting case
+                            if (!hasResolved) {
+                                reject(errors);
+                            }
+                        }
+                    }
+                })(i));
+            }
+        });
+    };
+
+    return Promises;
 })();
 
 /** 

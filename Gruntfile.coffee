@@ -22,7 +22,7 @@ module.exports = (grunt) ->
   
   SRC_MODULES = 
     'filter': ['src/filter/SimpleFilter.js']
-    'provider': ['src/CommentProvider.js']
+    'provider': ['src/CommentProvider.js', 'src/Promises.js']
     'format-bilibili': ['src/parsers/BilibiliFormat.js']
     'format-acfun': ['src/parsers/AcfunFormat.js']
     'format-common': ['src/parsers/CommonDanmakuFormat.js']

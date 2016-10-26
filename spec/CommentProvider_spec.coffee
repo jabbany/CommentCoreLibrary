@@ -183,7 +183,7 @@ describe 'CommentProvider', ->
       it 'fails if no sources are available', (done) ->
         provider.addStaticSource (Promise.reject 'Error'), CommentProvider.SOURCE_TEXT
         provider.load().catch (e) ->
-          expect(e).toBe 'Error'
+          expect(e).toBeTruthy()
           done()
 
     describe '.start', ->

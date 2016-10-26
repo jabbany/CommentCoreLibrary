@@ -268,7 +268,7 @@ var CommentProvider = (function () {
         var promises = [];
         // TODO: This race logic needs to be rethought to provide redundancy
         for (var type in this._staticSources) {
-            promises.push(Promise.race(this._staticSources[type])
+            promises.push(Promises.any(this._staticSources[type])
                 .then(function (data) {
                     return this.applyParsersList(data, type);
                 }.bind(this)));
@@ -277,7 +277,7 @@ var CommentProvider = (function () {
             // No static loaders
             return Promise.resolve([]);
         }
-        return Promise.race(promises).then(function (commentList) {
+        return Promises.any(promises).then(function (commentList) {
             for (var i = 0; i < this._targets.length; i++) {
                 this._targets[i].load(commentList);
             }
