@@ -7,10 +7,7 @@
  *              different underlying abstractions.
  */
 /// <reference path="Core.d.ts" />
-interface ICommentFactory {
-    (comment:Object):IComment;
-}
-class CommentFactory {
+class CommentFactory implements ICommentFactory {
     private _bindings:{[key:number]:ICommentFactory;} = {};
 
     public bind (mode:number, factory:ICommentFactory):void {

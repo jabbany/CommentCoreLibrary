@@ -19,8 +19,8 @@ module.exports = (grunt) ->
     'src/core/Comment.js'
     'src/CommentManager.js'
   ]
-  
-  SRC_MODULES = 
+
+  SRC_MODULES =
     'filter': ['src/filter/SimpleFilter.js']
     'provider': ['src/CommentProvider.js', 'src/Promises.js']
     'format-bilibili': ['src/parsers/BilibiliFormat.js']
@@ -68,7 +68,7 @@ module.exports = (grunt) ->
       out: 'dist/scripting/api/' + src.split('/').pop().split('.')[0] + '.js'
 
   # Append Typescript Tasks
-  ts_config = 
+  ts_config =
     options:
       target: 'es5'
   for key,value of CMP_CORE_TS
@@ -128,7 +128,7 @@ module.exports = (grunt) ->
 
     # Minify JS
     uglify:
-      options: 
+      options:
         banner: LICENSE
       all:
         files:

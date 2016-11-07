@@ -5,6 +5,9 @@
  * @description Definitions file for interfaces used in CCL
  */
 
+/**
+ * Definintions for binary array tools
+ */
 interface IBinArray {
     /**
      * Binary insert into array
@@ -35,6 +38,10 @@ interface CCLOptions {
     }
 }
 
+interface ICommentFactory {
+    (comment:Object):IComment;
+}
+
 interface ICommentManager {
     width:number;
     height:number;
@@ -46,6 +53,9 @@ interface ICommentManager {
     finish(c:IComment):void;
 }
 
+/**
+ * Easable motion on a certain parameter
+ */
 interface IMotion {
     from:number;
     to:number;
@@ -62,6 +72,7 @@ interface IComment {
     ttl:number;
     cindex:number;
     align:number;
+    axis:number;
     x:number;
     y:number;
     bottom:number;
