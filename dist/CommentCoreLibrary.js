@@ -1578,6 +1578,10 @@ var CommentManager = (function() {
             case 6:
                 this.csa.reverse.add(cmt);
                 break;
+            case 7:
+            case 17:
+                /* Do NOT manage these comments! */
+                break;
         }
         cmt.y = cmt.y;
         this.dispatchEvent("enterComment", cmt);
