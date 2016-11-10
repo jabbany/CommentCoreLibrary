@@ -6,28 +6,6 @@
  * Copyright (c) 2014 Jim Chen
  */
 var CommentManager = (function() {
-    var getRotMatrix = function (yrot, zrot) {
-        // Courtesy of @StarBrilliant, re-adapted to look better
-        var DEG2RAD = Math.PI/180;
-        var yr = yrot * DEG2RAD;
-        var zr = zrot * DEG2RAD;
-        var COS = Math.cos;
-        var SIN = Math.sin;
-        var matrix = [
-            COS(yr) * COS(zr)    , COS(yr) * SIN(zr)     , SIN(yr)  , 0,
-            (-SIN(zr))           , COS(zr)               , 0        , 0,
-            (-SIN(yr) * COS(zr)) , (-SIN(yr) * SIN(zr))  , COS(yr)  , 0,
-            0                    , 0                     , 0        , 1
-        ];
-        // CSS does not recognize scientific notation (e.g. 1e-6), truncating it.
-        for (var i = 0; i < matrix.length;i++) {
-            if (Math.abs(matrix[i]) < 0.000001) {
-                matrix[i] = 0;
-            }
-        }
-        return "matrix3d(" + matrix.join(",") + ")";
-    };
-
     var _defaultComparator = function (a,b) {
         if (a.stime > b.stime) {
             return 2;
@@ -74,6 +52,8 @@ var CommentManager = (function() {
         this.runline = [];
         this.position = 0;
         this.limiter = 0;
+        
+        this.factory = null;
         this.filter = null;
         this.csa = {
             scroll: new CommentSpaceAllocator(0,0),
@@ -170,6 +150,9 @@ var CommentManager = (function() {
         if (this.filter == null) {
             this.filter = new CommentFilter(); //Only create a filter if none exist
         }
+        if (this.factory == null) {
+            this.factory = CommentFactory.defaultFactory();
+        }
     };
 
     CommentManager.prototype.time = function (time) {
@@ -214,39 +197,24 @@ var CommentManager = (function() {
                 return;
             }
         }
-        if (data.mode === 1 || data.mode === 2 || data.mode === 6) {
-            var cmt = new ScrollComment(this, data);
-        } else {
-            var cmt = new CoreComment(this, data);
-        }
-        switch (cmt.mode) {
-            case 1:cmt.align = 0;break;
-            case 2:cmt.align = 2;break;
-            case 4:cmt.align = 2;break;
-            case 5:cmt.align = 0;break;
-            case 6:cmt.align = 1;break;
-        }
-        cmt.init();
-        this.stage.appendChild(cmt.dom);
+        var cmt = this.factory.create(this, data);
         switch (cmt.mode) {
             default:
-            case 1:{this.csa.scroll.add(cmt);}break;
-            case 2:{this.csa.scrollbtm.add(cmt);}break;
-            case 4:{this.csa.bottom.add(cmt);}break;
-            case 5:{this.csa.top.add(cmt);}break;
-            case 6:{this.csa.reverse.add(cmt);}break;
-            case 17:
-            case 7:{
-                if (data.rY !== 0 || data.rZ !== 0) {
-                    /** TODO: Move this logic into CoreComment instead! **/
-					/** TODO: revise when browser manufacturers make up their mind on Transform APIs **/
-                    cmt.dom.style.transform = getRotMatrix(data.rY, data.rZ);
-                    cmt.dom.style.webkitTransform = getRotMatrix(data.rY, data.rZ);
-                    cmt.dom.style.OTransform = getRotMatrix(data.rY, data.rZ);
-                    cmt.dom.style.MozTransform = getRotMatrix(data.rY, data.rZ);
-                    cmt.dom.style.MSTransform = getRotMatrix(data.rY, data.rZ);
-                }
-            }break;
+            case 1:
+                this.csa.scroll.add(cmt);
+                break;
+            case 2:
+                this.csa.scrollbtm.add(cmt);
+                break;
+            case 4:
+                this.csa.bottom.add(cmt);
+                break;
+            case 5:
+                this.csa.top.add(cmt);
+                break;
+            case 6:
+                this.csa.reverse.add(cmt);
+                break;
         }
         cmt.y = cmt.y;
         this.dispatchEvent("enterComment", cmt);

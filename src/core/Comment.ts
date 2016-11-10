@@ -6,10 +6,12 @@
  * @description Comment abstraction based on DOM implementation
  */
 /// <reference path="Core.d.ts" />
+/// <reference path="Utils.ts" />
 class CoreComment implements IComment {
     public static LINEAR:Function = function (t:number, b:number, c:number, d:number):number {
         return t * c / d + b;
     };
+
     public mode:number = 1;
     public stime:number = 0;
     public text:string = "";
@@ -19,6 +21,7 @@ class CoreComment implements IComment {
 
     public motion:Array<Object> = [];
     public movable:boolean = true;
+
     private _curMotion:number;
     private _motionStart:Array<number>;
     private _motionEnd:Array<number>;
@@ -26,6 +29,7 @@ class CoreComment implements IComment {
 
     public _x:number;
     public _y:number;
+
     /**
      * Absolute coordinates. Use absolute coordinates if true otherwise use percentages.
      * @type {boolean} use absolute coordinates or not (default true)
@@ -41,6 +45,7 @@ class CoreComment implements IComment {
      * @type {number} 0=dr, 1=dl, 2=ur, 3=ul
      */
     public axis:number = 0;
+
     public _alpha:number = 1;
     public _size:number = 25;
     private _width:number;
@@ -49,6 +54,7 @@ class CoreComment implements IComment {
     private _border:boolean = false;
     private _shadow:boolean = true;
     private _font:string = "";
+    private _transform:CommentUtils.Matrix3D = null;
 
     public parent:ICommentManager;
     public dom:HTMLDivElement;
@@ -81,14 +87,14 @@ class CoreComment implements IComment {
             this._motionEnd = [];
             this.motion = init["motion"];
             var head = 0;
-            for (var i = 0; i < init["motion"].length; i++) {
+            for (var i = 0; i < init['motion'].length; i++) {
                 this._motionStart.push(head);
                 var maxDur = 0;
-                for (var k in init["motion"][i]) {
-                    var m = <IMotion> init["motion"][i][k];
+                for (var k in init['motion'][i]) {
+                    var m = <IMotion> init['motion'][i][k];
                     maxDur = Math.max(m.dur, maxDur);
                     if (m.easing === null || m.easing === undefined) {
-                        init["motion"][i][k]["easing"] = CoreComment.LINEAR;
+                        init['motion'][i][k]['easing'] = CoreComment.LINEAR;
                     }
                 }
                 head += maxDur;
@@ -96,11 +102,11 @@ class CoreComment implements IComment {
             }
             this._curMotion = 0;
         }
-        if (init.hasOwnProperty("color")) {
-            this._color = init["color"];
+        if (init.hasOwnProperty('color')) {
+            this._color = init['color'];
         }
-        if (init.hasOwnProperty("size")) {
-            this._size = init["size"];
+        if (init.hasOwnProperty('size')) {
+            this._size = init['size'];
         }
         if (init.hasOwnProperty("border")) {
             this._border = init["border"];
@@ -126,14 +132,17 @@ class CoreComment implements IComment {
         if (init.hasOwnProperty("align")) {
             this.align = init["align"];
         }
-        if (init.hasOwnProperty("axis")) {
-            this.axis = init["axis"];
+        if (init.hasOwnProperty('axis')) {
+            this.axis = init['axis'];
         }
-        if (init.hasOwnProperty("position")) {
-            if (init["position"] === "relative") {
+        if (init.hasOwnProperty('transform')) {
+            this._transform = new CommentUtils.Matrix3D(init['transform']);
+        }
+        if (init.hasOwnProperty('position')) {
+            if (init['position'] === 'relative') {
                 this.absolute = false;
                 if (this.mode < 7) {
-                    console.warn("Using relative position for CSA comment.");
+                    console.warn('Using relative position for CSA comment.');
                 }
             }
         }
@@ -147,7 +156,7 @@ class CoreComment implements IComment {
         if (recycle !== null) {
             this.dom = <HTMLDivElement> recycle.dom;
         } else {
-            this.dom = document.createElement("div");
+            this.dom = document.createElement('div');
         }
         this.dom.className = this.parent.options.global.className;
         this.dom.appendChild(document.createTextNode(this.text));
@@ -161,7 +170,7 @@ class CoreComment implements IComment {
         if (this._border) {
             this.border = this._border;
         }
-        if (this._font !== "") {
+        if (this._font !== '') {
             this.font = this._font;
         }
         if (this._x !== undefined) {
@@ -172,6 +181,9 @@ class CoreComment implements IComment {
         }
         if (this._alpha !== 1 || this.parent.options.global.opacity < 1) {
             this.alpha = this._alpha;
+        }
+        if (this._transform !== null && ! this._transform.isIdentity()) {
+            this.transform = this._transform.flatArray;
         }
         if (this.motion.length > 0) {
             // Force a position update before doing anything
@@ -271,15 +283,19 @@ class CoreComment implements IComment {
         return this._font;
     }
 
+    get transform():Array<number> {
+        return this._transform.flatArray;
+    }
+
     set x(x:number) {
         this._x = x;
         if (!this.absolute) {
             this._x *= this.parent.width;
         }
         if (this.axis % 2 === 0) {
-            this.dom.style.left = (this._x + (this.align % 2 === 0 ? 0 : -this.width)) + "px";
+            this.dom.style.left = (this._x + (this.align % 2 === 0 ? 0 : -this.width)) + 'px';
         } else {
-            this.dom.style.right = (this._x + (this.align % 2 === 0 ? -this.width : 0)) + "px";
+            this.dom.style.right = (this._x + (this.align % 2 === 0 ? -this.width : 0)) + 'px';
         }
     }
 
@@ -289,48 +305,48 @@ class CoreComment implements IComment {
             this._y *= this.parent.height;
         }
         if (this.axis < 2) {
-            this.dom.style.top = (this._y + (this.align < 2 ? 0 : -this.height)) + "px";
+            this.dom.style.top = (this._y + (this.align < 2 ? 0 : -this.height)) + 'px';
         } else {
-            this.dom.style.bottom = (this._y + (this.align < 2 ? -this.height : 0)) + "px";
+            this.dom.style.bottom = (this._y + (this.align < 2 ? -this.height : 0)) + 'px';
         }
     }
 
     set width(w:number) {
         this._width = w;
-        this.dom.style.width = this._width + "px";
+        this.dom.style.width = this._width + 'px';
     }
 
     set height(h:number) {
         this._height = h;
-        this.dom.style.height = this._height + "px";
+        this.dom.style.height = this._height + 'px';
     }
 
     set size(s:number) {
         this._size = s;
-        this.dom.style.fontSize = this._size + "px";
+        this.dom.style.fontSize = this._size + 'px';
     }
 
     set color(c:number) {
         this._color = c;
         var color:string = c.toString(16);
-        color = color.length >= 6 ? color : new Array(6 - color.length + 1).join("0") + color;
-        this.dom.style.color = "#" + color;
+        color = color.length >= 6 ? color : new Array(6 - color.length + 1).join('0') + color;
+        this.dom.style.color = '#' + color;
         if (this._color === 0) {
-            this.dom.className = this.parent.options.global.className + " rshadow";
+            this.dom.className = this.parent.options.global.className + ' rshadow';
         }
     }
 
     set alpha(a:number) {
         this._alpha = a;
-        this.dom.style.opacity = Math.min(this._alpha, this.parent.options.global.opacity) + "";
+        this.dom.style.opacity = Math.min(this._alpha, this.parent.options.global.opacity) + '';
     }
 
     set border(b:boolean) {
         this._border = b;
         if (this._border) {
-            this.dom.style.border = "1px solid #00ffff";
+            this.dom.style.border = '1px solid #00ffff';
         } else {
-            this.dom.style.border = "none";
+            this.dom.style.border = 'none';
         }
     }
 
@@ -346,7 +362,14 @@ class CoreComment implements IComment {
         if (this._font.length > 0) {
             this.dom.style.fontFamily = this._font;
         } else {
-            this.dom.style.fontFamily = "";
+            this.dom.style.fontFamily = '';
+        }
+    }
+
+    set transform(array:Array<number>) {
+        this._transform = new CommentUtils.Matrix3D(array);
+        if (this.dom !== null) {
+            this.dom.style.transform = this._transform.toCss();
         }
     }
 
@@ -407,7 +430,7 @@ class CoreComment implements IComment {
      */
     public animate():void {
         if (this._alphaMotion) {
-            this.alpha = (this.dur - this.ttl) * (this._alphaMotion["to"] - this._alphaMotion["from"]) / this.dur + this._alphaMotion["from"];
+            this.alpha = (this.dur - this.ttl) * (this._alphaMotion['to'] - this._alphaMotion['from']) / this.dur + this._alphaMotion['from'];
         }
         if (this.motion.length === 0) {
             return;
@@ -436,7 +459,7 @@ class CoreComment implements IComment {
      * @returns {string}
      */
     public toString():string {
-        return ["[", this.stime, "|", this.ttl, "/", this.dur, "]", "(", this.mode, ")", this.text].join("");
+        return ['[', this.stime, '|', this.ttl, '/', this.dur, ']', '(', this.mode, ')', this.text].join('');
     }
 }
 
@@ -450,7 +473,7 @@ class ScrollComment extends CoreComment {
     set alpha(a:number) {
         this._alpha = a;
         this.dom.style.opacity = Math.min(Math.min(this._alpha, this.parent.options.global.opacity),
-            this.parent.options.scroll.opacity) + "";
+            this.parent.options.scroll.opacity) + '';
     }
 
     public init(recycle:IComment = null):void {

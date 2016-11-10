@@ -38,11 +38,8 @@ interface CCLOptions {
     }
 }
 
-interface ICommentFactory {
-    (comment:Object):IComment;
-}
-
 interface ICommentManager {
+    stage:any;
     width:number;
     height:number;
     options:CCLOptions;
@@ -51,6 +48,10 @@ interface ICommentManager {
      * @param c - IComment
      */
     finish(c:IComment):void;
+}
+
+interface ICommentFactory {
+    create(manager:ICommentManager, comment:Object):IComment;
 }
 
 /**
