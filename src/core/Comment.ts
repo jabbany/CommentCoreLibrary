@@ -6,7 +6,7 @@
  * @description Comment abstraction based on DOM implementation
  */
 /// <reference path="Core.d.ts" />
-/// <reference path="Utils.ts" />
+/// <reference path="CommentUtils.ts" />
 class CoreComment implements IComment {
     public static LINEAR:Function = function (t:number, b:number, c:number, d:number):number {
         return t * c / d + b;

@@ -2,6 +2,7 @@ module.exports = (grunt) ->
   require('load-grunt-tasks') grunt , {
     pattern: ['grunt-*', '!grunt-template-jasmine-istanbul']
   }
+  # Read package.json to make sure it's there
   grunt.file.readJSON('package.json')
 
   # !! Compile configurations
@@ -15,9 +16,10 @@ module.exports = (grunt) ->
 
   SRC_CORE = [
     'src/Array.js'
-    'src/core/CommentSpaceAllocator.js'
-    'src/core/Comment.js'
-    'src/core/CommentFactory.js'
+    'src/core/js/CommentUtils.js'
+    'src/core/js/Comment.js'
+    'src/core/js/CommentFactory.js'
+    'src/core/js/CommentSpaceAllocator.js'
     'src/CommentManager.js'
   ]
 
@@ -30,17 +32,18 @@ module.exports = (grunt) ->
 
   # Typescript targets
   SRC_TS_CORE = [
-    'Comment'
-    'CommentFactory'
-    'CommentSpaceAllocator'
+    'src/core/Comment.ts'
+    'src/core/CommentFactory.ts'
+    'src/core/CommentSpaceAllocator.ts'
+    'src/core/CommentUtils.ts'
   ]
 
   SRC_TS_SCRIPTING_KAGEROU =
-    'display': 'src/scripting/api/Display/Display.ts'
-    'runtime': 'src/scripting/api/Runtime/Runtime.ts'
-    'player': 'src/scripting/api/Player/Player.ts'
-    'utils': 'src/scripting/api/Utils/Utils.ts'
-    'tween': 'src/scripting/api/Tween/Tween.ts'
+    'Display': ['src/scripting/api/Display/Display.ts']
+    'Runtime': ['src/scripting/api/Runtime/Runtime.ts']
+    'Player': ['src/scripting/api/Player/Player.ts']
+    'Utils': ['src/scripting/api/Utils/Utils.ts']
+    'Tween': ['src/scripting/api/Tween/Tween.ts']
 
   # ==== Below this point is logic to generate compile configurations ====
   # You probably do not need to edit anything below here
@@ -51,23 +54,21 @@ module.exports = (grunt) ->
   for name, source of SRC_MODULES
     CMP_ALL = CMP_ALL.concat source
 
-  # Dynamically generate the core ts targets
-  CMP_CORE_TS = {}
-  CMP_CORE_NAME = []
-  for target in SRC_TS_CORE
-    CMP_CORE_NAME.push ("ts:core_" + target)
-    CMP_CORE_TS["core_" + target] =
-      src: ["src/core/" + target + ".ts"]
-      out: "src/core/" + target + ".js"
+  # Generate the core ts targets
+  CMP_CORE_TS = 
+    'core': 
+      src: SRC_TS_CORE
+      outDir: 'src/core/js/'
+  CMP_CORE_NAME = ['ts:core']
 
   # Dynamically generate the kagerou ts targets
   CMP_KAGEROU_TS = {}
   CMP_KAGEROU_NAME = []
-  for target,src of SRC_TS_SCRIPTING_KAGEROU
-    CMP_KAGEROU_NAME.push ('ts:kagerou_engine_' + target)
-    CMP_KAGEROU_TS['kagerou_engine_' + target] =
+  for target, src of SRC_TS_SCRIPTING_KAGEROU
+    CMP_KAGEROU_NAME.push ('ts:kagerou_engine_' + target.toLowerCase())
+    CMP_KAGEROU_TS['kagerou_engine_' + target.toLowerCase()] =
       src: src
-      out: 'dist/scripting/api/' + src.split('/').pop().split('.')[0] + '.js'
+      out: 'dist/scripting/api/' + target + '.js'
 
   # Append Typescript Tasks
   ts_config =
