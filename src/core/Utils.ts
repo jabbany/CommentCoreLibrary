@@ -13,6 +13,10 @@ module CommentUtils {
             return new Matrix3D([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
         };
 
+        public static createScaleMatrix:Function = function (xscale:number, yscale:number, zscale:number):Matrix3D {
+            return new Matrix3D([xscale, 0, 0, 0, 0, yscale, 0, 0, 0, 0, zscale, 0, 0, 0, 0, 1]);
+        };
+
         public static createRotationMatrix:Function = function (xrot:number, yrot:number, zrot:number):Matrix3D {
             // Courtesy of @StarBrilliant, re-adapted for general case
             var DEG2RAD = Math.PI/180;
@@ -26,7 +30,10 @@ module CommentUtils {
                 (-SIN(yr) * COS(zr)) , (-SIN(yr) * SIN(zr))  , COS(yr)  , 0,
                 0                    , 0                     , 0        , 1
             ];
-            return new Matrix3D(matrix);
+            // Do some rounding
+            return new Matrix3D(matrix.map(function (v) {
+                return Math.round(v * 1e10) * 1e-10;
+            }));
         };
 
         /**

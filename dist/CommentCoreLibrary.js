@@ -265,6 +265,9 @@ var CommentUtils;
         Matrix3D.identity = function () {
             return new Matrix3D([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
         };
+        Matrix3D.createScaleMatrix = function (xscale, yscale, zscale) {
+            return new Matrix3D([xscale, 0, 0, 0, 0, yscale, 0, 0, 0, 0, zscale, 0, 0, 0, 0, 1]);
+        };
         Matrix3D.createRotationMatrix = function (xrot, yrot, zrot) {
             var DEG2RAD = Math.PI / 180;
             var yr = yrot * DEG2RAD;
@@ -277,7 +280,9 @@ var CommentUtils;
                 (-SIN(yr) * COS(zr)), (-SIN(yr) * SIN(zr)), COS(yr), 0,
                 0, 0, 0, 1
             ];
-            return new Matrix3D(matrix);
+            return new Matrix3D(matrix.map(function (v) {
+                return Math.round(v * 1e10) * 1e-10;
+            }));
         };
         return Matrix3D;
     }());
@@ -805,6 +810,9 @@ var CommentUtils;
         Matrix3D.identity = function () {
             return new Matrix3D([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
         };
+        Matrix3D.createScaleMatrix = function (xscale, yscale, zscale) {
+            return new Matrix3D([xscale, 0, 0, 0, 0, yscale, 0, 0, 0, 0, zscale, 0, 0, 0, 0, 1]);
+        };
         Matrix3D.createRotationMatrix = function (xrot, yrot, zrot) {
             var DEG2RAD = Math.PI / 180;
             var yr = yrot * DEG2RAD;
@@ -817,7 +825,9 @@ var CommentUtils;
                 (-SIN(yr) * COS(zr)), (-SIN(yr) * SIN(zr)), COS(yr), 0,
                 0, 0, 0, 1
             ];
-            return new Matrix3D(matrix);
+            return new Matrix3D(matrix.map(function (v) {
+                return Math.round(v * 1e10) * 1e-10;
+            }));
         };
         return Matrix3D;
     }());
