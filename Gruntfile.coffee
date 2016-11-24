@@ -141,7 +141,7 @@ module.exports = (grunt) ->
     watch:
       scripting:
         files: ['src/scripting/**/*', '!node_modules']
-        tasks: ['build-scripting']
+        tasks: ['build:scripting']
       core:
         files: ['src/**/*', '!node_modules', '!src/scripting/**/*']
         tasks: ['build']

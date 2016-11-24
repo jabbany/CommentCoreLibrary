@@ -8,7 +8,7 @@ var __OOAPI = new function () {
     var channels = {};
 
     function dispatchMessage (msg) {
-        if (channels[msg.channel]) {
+        if (channels.hasOwnProperty(msg.channel)) {
             for(var i = 0; i < channels[msg.channel].listeners.length; i++) {
                 try {
                     channels[msg.channel].listeners[i](msg.payload);
@@ -20,6 +20,9 @@ var __OOAPI = new function () {
                     }
                 }
             }
+        } else {
+            __trace('Got message on channel "' + msg.channel +
+                '" but channel does not exist.', 'warn');
         }
     };
 
@@ -33,10 +36,11 @@ var __OOAPI = new function () {
             __trace(e, 'err');
             return;
         }
-        if (msg && msg.channel) {
+        if (msg !== null && msg.hasOwnProperty('channel') &&
+            typeof msg.channel === 'string') {
             dispatchMessage(msg);
         } else {
-            _trace(msg, 'warn');
+            __trace(msg, 'warn');
         }
     });
 
@@ -111,7 +115,7 @@ function __channel (id, payload, callback) {
         'payload': payload,
         'callback': true
     }));
-    __OOAPI.addListenerChannel(id, callback, true);
+    __OOAPI.addListenerChannel(id, callback);
 };
 
 function __schannel (id, callback) {

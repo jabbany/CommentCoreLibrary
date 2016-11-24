@@ -171,8 +171,12 @@ var CCLScripting = function(workerUrl){
 		var WorkerHook = function(event){
 			try{
 				var resp = JSON.parse(event.data);	
-			}catch(e){
-				console.log(e);
+			} catch(e) {
+			    if (e.stack) {
+			        scripter.logger.error(e.stack);
+			    } else {
+			        scripter.logger.error(e);
+			    }
 				return;
 			}
 			if(resp.channel === ""){
@@ -209,8 +213,12 @@ var CCLScripting = function(workerUrl){
 						}
 						break;
 					}
+					case ':debug':{
+					    scripter.logger.log(JSON.stringify(resp.payload));
+					    break;
+					}
 					default:{
-						console.log(resp);
+					    scripter.logger.log(JSON.stringify(resp));
 						break;
 					}
 				}
