@@ -1211,6 +1211,8 @@ var CommentFilter = (function () {
     CommentFilter.prototype.addModifier = function (f) {
         this.modifiers.push(f);
     };
+
+    return CommentFilter;
 })();
 
 /**
