@@ -5,6 +5,14 @@
  */
 var CommentFilter = (function () {
 
+    /**
+     * Matches a rule against an input that could be the full or a subset of 
+     * the comment data.
+     *
+     * @param rule - rule object to match
+     * @param cmtData - full or portion of comment data
+     * @return boolean indicator of match
+     */
     function _match (rule, cmtData) {
         var path = rule.subject.split('.');
         var extracted = cmtData;
@@ -26,18 +34,24 @@ var CommentFilter = (function () {
             return true;
         }
         switch (rule.op) {
+            case '<':
+                return extracted < rule.value;
+            case '>':
+                return extracted > rule.value;
             case '~':
             case 'regexp':
                 return (new RegExp(rule.value)).test(extracted.toString());
             case '=':
             case 'eq':
-                return rule.value === extracted.toString();
+                return rule.value ===
+                    ((typeof extracted === 'number') ? 
+                        extracted : extracted.toString());
             case 'NOT':
-                return !_match(rule.value, cmtData);
+                return !_match(rule.value, extracted);
             case 'AND':
                 if (Array.isArray(rule.value)) {
                     return rule.value.every(function (r) {
-                        return _match(r, cmtData);
+                        return _match(r, extracted);
                     });
                 } else {
                     return false;
@@ -45,7 +59,7 @@ var CommentFilter = (function () {
             case 'OR':
                 if (Array.isArray(rule.value)) {
                     return rule.value.some(function (r) {
-                        return _match(r, cmtData);
+                        return _match(r, extracted);
                     });
                 } else {
                     return false;
@@ -71,25 +85,48 @@ var CommentFilter = (function () {
         };
     }
 
+    /**
+     * Runs all modifiers against current comment
+     *
+     * @param cmt - comment to run modifiers on
+     * @return modified comment
+     */
     CommentFilter.prototype.doModify = function (cmt) {
-        for (var k=0; k < this.modifiers.length; k++) {
-            cmt = this.modifiers[k](cmt);
-        }
+        return this.modifiers.reduce(function (c, f) {
+            return f(c);
+        }, cmt);
+    };
+
+    /**
+     * Executes a method defined to be executed right before the comment object
+     * (built from commentData) is placed onto the runline.
+     * 
+     * @deprecated
+     * @param cmt - comment data
+     * @return cmt
+     */
+    CommentFilter.prototype.beforeSend = function (cmt) {
         return cmt;
     };
 
-    CommentFilter.prototype.beforeSend = function (cmt) {
-        return cmt;
-    }
-
+    /**
+     * Performs validation of the comment data before it is allowed to get sent
+     *
+     * @param cmtData - comment data
+     */
     CommentFilter.prototype.doValidate = function (cmtData) {
-        if (cmtData.mode.toString() in this.allowTypes &&
+        if ((!this.allowUnknownTypes || 
+                cmtData.mode.toString() in this.allowTypes) &&
             !this.allowTypes[cmtData.mode.toString()]) {
             return false;
         }
         return this.rules.every(function (rule) {
             // Decide if matched
-            var matched = _match(rule, cmtData);
+            try {
+              var matched = _match(rule, cmtData);
+            } catch (e) {
+              var matched = false;
+            }
             return rule.mode === 'accept' ? matched : !matched;
         });
     };
@@ -102,6 +139,9 @@ var CommentFilter = (function () {
     };
 
     CommentFilter.prototype.addModifier = function (f) {
+        if (typeof f !== 'function') {
+            throw new Error('Modifiers need to be functions.');
+        }
         this.modifiers.push(f);
     };
 
