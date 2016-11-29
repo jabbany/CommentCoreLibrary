@@ -3,10 +3,11 @@ module.exports = (grunt) ->
     pattern: ['grunt-*', '!grunt-template-jasmine-istanbul']
   }
   # Read package.json to make sure it's there
-  grunt.file.readJSON('package.json')
+  pkg = grunt.file.readJSON('package.json')
 
   # !! Compile configurations
-  LICENSE = '/*!Copyright(c) CommentCoreLibrary (//github.com/jabbany/CommentCoreLibrary) - Licensed under the MIT License */'
+  LICENSE = '/*!Copyright(c) CommentCoreLibrary v' + pkg.version + 
+    ' (//github.com/jabbany/CommentCoreLibrary) - Licensed under the MIT License */'
   # !! End of config area
 
   CSS = [
@@ -24,7 +25,7 @@ module.exports = (grunt) ->
   ]
 
   SRC_MODULES =
-    'filter': ['src/filter/SimpleFilter.js']
+    'filter': ['src/filter/CommentFilter.js']
     'provider': ['src/CommentProvider.js', 'src/Promises.js']
     'format-bilibili': ['src/parsers/BilibiliFormat.js']
     'format-acfun': ['src/parsers/AcfunFormat.js']
