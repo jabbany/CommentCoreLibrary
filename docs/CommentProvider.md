@@ -2,6 +2,9 @@
 弹幕源管理器提供了一套简单的绑定静态或者动态弹幕的系统。使用CommentCoreLibrary并不需要使用
 CommentProvider不过CommentProvider提供了一套更好的载入弹幕的方法。
 
+CommentProvider提供了一个方便控制解析器的组件，本身并不解析弹幕格式。具体的格式解析接口和
+实现请参考 [data-formats 章节](data-formats/Readme.md)
+
 ## Properties 属性
 
 ### SOURCE_JSON &lt;String&gt; = "JSON" [静态]

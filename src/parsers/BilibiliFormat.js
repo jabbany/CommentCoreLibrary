@@ -236,7 +236,7 @@ var BilibiliFormat = (function () {
     BilibiliFormat.TextParser = function (params) {
         this._allowInsecureDomParsing = true;
         this._attemptEscaping = true;
-        this._canSecureParse = false;
+        this._canSecureNativeParse = false;
         if (typeof params === 'object') {
             this._allowInsecureDomParsing = params.allowInsecureDomParsing === false ? false : true;
             this._attemptEscaping = params.attemptEscaping === false ? false : true;

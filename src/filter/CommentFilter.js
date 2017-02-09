@@ -69,6 +69,10 @@ var CommentFilter = (function () {
         }
     }
 
+    /**
+     * Constructor for CommentFilter
+     * @constructor
+     */
     function CommentFilter() {
         this.rules = [];
         this.modifiers = [];
@@ -100,7 +104,7 @@ var CommentFilter = (function () {
     /**
      * Executes a method defined to be executed right before the comment object
      * (built from commentData) is placed onto the runline.
-     * 
+     *
      * @deprecated
      * @param cmt - comment data
      * @return cmt
@@ -111,8 +115,10 @@ var CommentFilter = (function () {
 
     /**
      * Performs validation of the comment data before it is allowed to get sent
+     * by applying type constraints and rules
      *
      * @param cmtData - comment data
+     * @return boolean indicator of whether this commentData should be shown
      */
     CommentFilter.prototype.doValidate = function (cmtData) {
         if ((!this.allowUnknownTypes || 
@@ -131,6 +137,12 @@ var CommentFilter = (function () {
         });
     };
 
+    /**
+     * Adds a rule for use with validation
+     *
+     * @param rule - object containing rule definitions
+     * @throws Exception when rule mode is incorrect
+     */
     CommentFilter.prototype.addRule = function (rule) {
         if (rule.mode !== 'accept' && rule.mode !== 'reject') {
             throw new Error('Rule must be of accept type or reject type.');
@@ -138,6 +150,13 @@ var CommentFilter = (function () {
         this.rules.push(rule);
     };
 
+    /**
+     * Adds a modifier to be used
+     *
+     * @param modifier - modifier function that takes in comment data and
+     *                   returns modified comment data
+     * @throws Exception when modifier is not a function
+     */
     CommentFilter.prototype.addModifier = function (f) {
         if (typeof f !== 'function') {
             throw new Error('Modifiers need to be functions.');

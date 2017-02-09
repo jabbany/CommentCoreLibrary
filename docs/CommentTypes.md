@@ -1,18 +1,19 @@
 # 弹幕类型说明 Types
 弹幕播放器自主支持以下类型的弹幕模式：
-* 1 - 上端滚动弹幕
-* 2 - 下端滚动弹幕
-* 4 - 底部弹幕
-* 5 - 顶部弹幕
-* 6 - 逆向弹幕
-* 7 - 定位弹幕
-* 8 - 代码高级弹幕
-* 9 - 预留 Zoome弹幕兼容性
-* 17 - 图片定位弹幕
-* 18 - Canvas/SVG定位弹幕（未完成）
-* 19 - 绘图弹幕（未完成）
-* 20 - 高阶定位混合弹幕组（实验性）
-* 21 - 字幕弹幕
+* 1 - 上端滚动弹幕 / Top-anchored scrolling
+* 2 - 下端滚动弹幕 / Bottom-anchored scrolling
+* 4 - 底部弹幕 / Bottom-anchored static
+* 5 - 顶部弹幕 / Top-anchored static
+* 6 - 逆向弹幕 / Top-anchored reverse
+* 7 - 定位弹幕 / Animated positioned
+* 8 - 代码高级弹幕 / Code comments
+* 9 - 预留 Zoome弹幕兼容性 / Reserved: Zoome-type 
+* 17 - 图片定位弹幕 / Reserved: Image
+* 18 - Canvas/SVG定位弹幕（未完成） / Reserved: Canvas or SVG
+* 19 - 绘图弹幕（未完成） / Reserved: Draw-command
+* 20 - 高阶定位混合弹幕组（实验性）/ Reserved: Motion spec
+* 21 - 字幕弹幕 / Subtitles
+
 默认情况下，弹幕都必须包含：开始时间、字体大小、字体字号、颜色。
 
 ## 滚动弹幕
@@ -89,12 +90,23 @@ toScale为形如"[Int]x[Int]"的参数，标记了缩放末位置的大小。缩
 高阶定位将支撑一个“定位体”（Position Effect Element），在可能的情况下最大限度的允许用户进行发挥。
 
     {
-        "start":[0,0],
-        "object":{"value":"This is only a Test Run","mode":"text"},
-        "ttl":5000,
-        "effects":[
-            {en:}
-        ],
+        "properties": {
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "color": 0xffffff,
+          "effect-classes": "",
+          "rX": 0,
+          "rY": 0,
+          "rZ": 0
+        },
+        "object": {
+          "value": "This is only a Test Run",
+          "mode": "text"
+        },
+        "ttl": 5000,
+        "effects": [],
+        "motions": [],
     }
     
 说明如下：

@@ -379,7 +379,7 @@ module Display {
 			set: function (value) {
 			}
 		});
-		return array;
+		return array.map(Math.floor);
 	}
 
 	/**
