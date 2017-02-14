@@ -7,6 +7,24 @@
 /// <reference path="ISerializable.ts" />
 /// <reference path="Filter.ts" />
 module Display {
+	class BlendMode {
+		static ADD:string = "add";
+		static ALPHA:string = "alpha";
+		static DARKEN:string = "darken";
+		static DIFFERENCE:string = "difference";
+		static ERASE:string = "erase";
+		static HARDLIGHT:string = "hardlight";
+		static INVERT:string = "invert";
+		static LAYER:string = "layer";
+		static LIGHTEN:string = "lighten";
+		static MULTIPLY:string = "multiply";
+		static NORMAL:string = "normal";
+		static OVERLAY:string = "overlay";
+		static SCREEN:string = "screen";
+		static SHADER:string = "shader";
+		static SUBTRACT:string = "subtract";
+	}
+
 	class ColorTransform implements ISerializable {
 		public serialize():Object {
 			return {};
@@ -332,6 +350,7 @@ module Display {
 		private _rotationZ:number = 0;
 		private _filters:Array<Filter> = [];
 		private _visible:boolean = false;
+		private _blendMode:string = "normal";
 		private _listeners:Object = {};
 		private _parent:DisplayObject = null;
 		private _name:string = "";
@@ -621,11 +640,12 @@ module Display {
 		}
 
 		set blendMode(blendMode:string) {
-			__trace("DisplayObject.blendMode not supported.", "warn");
+			this._blendMode = blendMode;
+			this.propertyUpdate("blendMode", blendMode);
 		}
 
 		get blendMode():string {
-			return "normal";
+			return this._blendMode;
 		}
 
 		set transform(t:any) {
