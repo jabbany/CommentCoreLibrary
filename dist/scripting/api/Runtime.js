@@ -49,20 +49,20 @@ var Runtime;
                                     timer.callback();
                                 }
                                 catch (e) {
-                                    __trace(e.stack.toString(), "err");
+                                    __trace(e.stack.toString(), 'err');
                                 }
                                 _self._timers.splice(i, 1);
                                 i--;
                             }
                         }
-                        else if (timer.type === "interval") {
+                        else if (timer.type === 'interval') {
                             timer.ttl -= elapsed;
                             if (timer.ttl <= 0) {
                                 try {
                                     timer.callback();
                                 }
                                 catch (e) {
-                                    __trace(e.stack.toString(), "err");
+                                    __trace(e.stack.toString(), 'err');
                                 }
                                 timer.ttl += timer.dur;
                             }
@@ -82,17 +82,17 @@ var Runtime;
         };
         TimerRuntime.prototype.setInterval = function (f, interval) {
             var myKey = this._key++;
-            this._timers.push(new RuntimeTimer("interval", interval, myKey, f));
+            this._timers.push(new RuntimeTimer('interval', interval, myKey, f));
             return myKey;
         };
         TimerRuntime.prototype.setTimeout = function (f, timeout) {
             var myKey = this._key++;
-            this._timers.push(new RuntimeTimer("timeout", timeout, myKey, f));
+            this._timers.push(new RuntimeTimer('timeout', timeout, myKey, f));
             return myKey;
         };
         TimerRuntime.prototype.clearInterval = function (id) {
             for (var i = 0; i < this._timers.length; i++) {
-                if (this._timers[i].type === "interval" &&
+                if (this._timers[i].type === 'interval' &&
                     this._timers[i].key === id) {
                     this._timers.splice(i, 1);
                     return;
@@ -101,15 +101,24 @@ var Runtime;
         };
         TimerRuntime.prototype.clearTimeout = function (id) {
             for (var i = 0; i < this._timers.length; i++) {
-                if (this._timers[i].type === "timeout" &&
+                if (this._timers[i].type === 'timeout' &&
                     this._timers[i].key === id) {
                     this._timers.splice(i, 1);
                     return;
                 }
             }
         };
-        TimerRuntime.prototype.clearAll = function () {
-            this._timers = [];
+        TimerRuntime.prototype.clearAll = function (type) {
+            if (type === void 0) { type = 'all'; }
+            if (type === 'timer') {
+                this._timers = this._timers.filter(function (t) { return t.type !== 'timer'; });
+            }
+            else if (type === 'interval') {
+                this._timers = this._timers.filter(function (t) { return t.type !== 'interval'; });
+            }
+            else {
+                this._timers = [];
+            }
         };
         return TimerRuntime;
     }());
@@ -131,7 +140,7 @@ var Runtime;
                 return this._timer >= 0;
             },
             set: function (b) {
-                __trace("Timer.isRunning is read-only", "warn");
+                __trace('Timer.isRunning is read-only', 'warn');
             },
             enumerable: true,
             configurable: true
@@ -146,13 +155,13 @@ var Runtime;
                     if (self._microtime > self._delay) {
                         self._microtime -= self._delay;
                         self.currentCount++;
-                        self.dispatchEvent("timer");
+                        self.dispatchEvent('timer');
                     }
                     lastTime = Date.now();
                     if (self._repeatCount > 0 &&
                         self._repeatCount <= self.currentCount) {
                         self.stop();
-                        self.dispatchEvent("timerComplete");
+                        self.dispatchEvent('timerComplete');
                     }
                 }, 20);
             }
@@ -169,20 +178,20 @@ var Runtime;
             this._microtime = 0;
         };
         Timer.prototype.addEventListener = function (type, listener) {
-            if (type === "timer") {
+            if (type === 'timer') {
                 this._listeners.push(listener);
             }
-            else if (type === "timerComplete") {
+            else if (type === 'timerComplete') {
                 this._complete.push(listener);
             }
         };
         Timer.prototype.dispatchEvent = function (event) {
-            if (event === "timer") {
+            if (event === 'timer') {
                 for (var i = 0; i < this._listeners.length; i++) {
                     this._listeners[i]();
                 }
             }
-            else if (event === "timerComplete") {
+            else if (event === 'timerComplete') {
                 for (var i = 0; i < this._complete.length; i++) {
                     this._complete[i]();
                 }
@@ -195,15 +204,15 @@ var Runtime;
     var internalTimer = new Timer(50);
     var enterFrameDispatcher = function () {
         for (var object in Runtime.registeredObjects) {
-            if (object.substring(0, 2) === "__") {
+            if (object.substring(0, 2) === '__') {
                 continue;
             }
-            Runtime.registeredObjects[object].dispatchEvent("enterFrame");
+            Runtime.registeredObjects[object].dispatchEvent('enterFrame');
         }
     };
     masterTimer.start();
     internalTimer.start();
-    internalTimer.addEventListener("timer", enterFrameDispatcher);
+    internalTimer.addEventListener('timer', enterFrameDispatcher);
     function getTimer() {
         return masterTimer;
     }
@@ -214,10 +223,42 @@ var Runtime;
         }
         internalTimer.stop();
         internalTimer = new Timer(Math.floor(1000 / frameRate));
-        internalTimer.addEventListener("timer", enterFrameDispatcher);
+        internalTimer.addEventListener('timer', enterFrameDispatcher);
+        internalTimer.start();
     }
     Runtime.updateFrameRate = updateFrameRate;
 })(Runtime || (Runtime = {}));
+var Runtime;
+(function (Runtime) {
+    var ScriptManagerImpl = (function () {
+        function ScriptManagerImpl() {
+        }
+        ScriptManagerImpl.prototype.clearTimer = function () {
+            Runtime.getTimer().clearAll('interval');
+        };
+        ScriptManagerImpl.prototype.clearEl = function () {
+            __trace("ScriptManager.clearEl not implemented.", "warn");
+        };
+        ScriptManagerImpl.prototype.clearTrigger = function () {
+            __trace("ScriptManager.clearTrigger not implemented.", "warn");
+        };
+        ScriptManagerImpl.prototype.pushEl = function (el) {
+            __trace("ScriptManager.pushEl not implemented.", "warn");
+        };
+        ScriptManagerImpl.prototype.popEl = function (el) {
+            __trace("ScriptManager.popEl not implemented.", "warn");
+        };
+        ScriptManagerImpl.prototype.pushTimer = function (t) {
+            __trace("ScriptManager.pushTimer not implemented.", "warn");
+        };
+        ScriptManagerImpl.prototype.popTimer = function (t) {
+            __trace("ScriptManager.popTimer not implemented.", "warn");
+        };
+        return ScriptManagerImpl;
+    }());
+    Runtime._defaultScriptManager = new ScriptManagerImpl();
+})(Runtime || (Runtime = {}));
+var ScriptManager = Runtime._defaultScriptManager;
 var Runtime;
 (function (Runtime) {
     var permissions = {};
@@ -336,8 +377,9 @@ var Runtime;
     function _dispatchEvent(objectId, event, payload) {
         var obj = _registeredObjects[objectId];
         if (typeof obj === "object") {
-            if (obj.dispatchEvent)
+            if (obj.dispatchEvent) {
                 obj.dispatchEvent(event, payload);
+            }
         }
     }
     function hasObject(objectId) {
@@ -417,8 +459,9 @@ var Runtime;
     Runtime.reset = reset;
     function clear() {
         for (var i in _registeredObjects) {
-            if (i.substr(0, 2) === "__")
+            if (i.substr(0, 2) === "__") {
                 continue;
+            }
             if (_registeredObjects[i].unload) {
                 _registeredObjects[i].unload();
             }
@@ -430,6 +473,7 @@ var Runtime;
     }
     Runtime.crash = crash;
     function exit() {
+        __achannel("::worker:state", "worker", "terminated");
         self.close();
     }
     Runtime.exit = exit;

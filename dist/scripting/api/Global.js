@@ -1,12 +1,17 @@
+/**
+ * Global Key-Value Store
+ * @description Key-value store in the global namespace
+ */
+
 var Global = new function () {
-    var kvstore = {};
+    var _store = {};
 
     this._set = function (key, val) {
-        kvstore[key] = val;
+        _store[key] = val;
     };
 
     this._get = function (key) {
-        return kvstore[key];
+        return _store[key];
     };
 
     this._ = function (key) {

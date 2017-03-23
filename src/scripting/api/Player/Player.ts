@@ -57,7 +57,8 @@ module Player{
 			return _refreshRate;
 		},
 		set: function(value) {
-
+			__trace("Player.refreshRate deprecated. Please use Display.refreshRate.",
+				"warn");
 		}
 	});
 	Object.defineProperty(Player, 'width', {

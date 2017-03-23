@@ -1112,6 +1112,14 @@ var CommentManager = (function() {
  */
 var CommentFilter = (function () {
 
+    /**
+     * Matches a rule against an input that could be the full or a subset of 
+     * the comment data.
+     *
+     * @param rule - rule object to match
+     * @param cmtData - full or portion of comment data
+     * @return boolean indicator of match
+     */
     function _match (rule, cmtData) {
         var path = rule.subject.split('.');
         var extracted = cmtData;
@@ -1168,6 +1176,10 @@ var CommentFilter = (function () {
         }
     }
 
+    /**
+     * Constructor for CommentFilter
+     * @constructor
+     */
     function CommentFilter() {
         this.rules = [];
         this.modifiers = [];
@@ -1184,16 +1196,37 @@ var CommentFilter = (function () {
         };
     }
 
+    /**
+     * Runs all modifiers against current comment
+     *
+     * @param cmt - comment to run modifiers on
+     * @return modified comment
+     */
     CommentFilter.prototype.doModify = function (cmt) {
         return this.modifiers.reduce(function (c, f) {
             return f(c);
         }, cmt);
     };
 
+    /**
+     * Executes a method defined to be executed right before the comment object
+     * (built from commentData) is placed onto the runline.
+     *
+     * @deprecated
+     * @param cmt - comment data
+     * @return cmt
+     */
     CommentFilter.prototype.beforeSend = function (cmt) {
         return cmt;
     };
 
+    /**
+     * Performs validation of the comment data before it is allowed to get sent
+     * by applying type constraints and rules
+     *
+     * @param cmtData - comment data
+     * @return boolean indicator of whether this commentData should be shown
+     */
     CommentFilter.prototype.doValidate = function (cmtData) {
         if ((!this.allowUnknownTypes || 
                 cmtData.mode.toString() in this.allowTypes) &&
@@ -1211,6 +1244,12 @@ var CommentFilter = (function () {
         });
     };
 
+    /**
+     * Adds a rule for use with validation
+     *
+     * @param rule - object containing rule definitions
+     * @throws Exception when rule mode is incorrect
+     */
     CommentFilter.prototype.addRule = function (rule) {
         if (rule.mode !== 'accept' && rule.mode !== 'reject') {
             throw new Error('Rule must be of accept type or reject type.');
@@ -1218,6 +1257,13 @@ var CommentFilter = (function () {
         this.rules.push(rule);
     };
 
+    /**
+     * Adds a modifier to be used
+     *
+     * @param modifier - modifier function that takes in comment data and
+     *                   returns modified comment data
+     * @throws Exception when modifier is not a function
+     */
     CommentFilter.prototype.addModifier = function (f) {
         if (typeof f !== 'function') {
             throw new Error('Modifiers need to be functions.');
@@ -1870,7 +1916,7 @@ var BilibiliFormat = (function () {
     BilibiliFormat.TextParser = function (params) {
         this._allowInsecureDomParsing = true;
         this._attemptEscaping = true;
-        this._canSecureParse = false;
+        this._canSecureNativeParse = false;
         if (typeof params === 'object') {
             this._allowInsecureDomParsing = params.allowInsecureDomParsing === false ? false : true;
             this._attemptEscaping = params.attemptEscaping === false ? false : true;

@@ -32,6 +32,9 @@ module Display {
 		}
 
 		public initStyle(style:Object):void {
+			if (typeof style === 'undefined' || style === null) {
+				style = {};
+			}
 			if (style["lifeTime"]) {
 				this._mM.dur = style["lifeTime"] * 1000;
 			}

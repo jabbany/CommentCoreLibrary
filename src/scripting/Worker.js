@@ -5,7 +5,7 @@ importScripts("OOAPI.js");
 if (!__OOAPI) {
     console.log("Error: OOAPI Not Loaded");
     self.close();
-};
+}
 
 // Hook independent channels that cannot be removed
 __OOAPI.createChannel("::eval", 1, Math.round(Math.random() * 100000));
@@ -13,7 +13,6 @@ __OOAPI.createChannel("::debug", 1, Math.round(Math.random() * 100000));
 
 // Load the BSE Abstraction Runtime
 importScripts('api/Runtime.js',
-    'api/ScriptManager.js',
     'api/Player.js',
     'api/Display.js',
     'api/Tween.js',

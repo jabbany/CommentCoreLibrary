@@ -42,7 +42,7 @@ module Display {
 		}
 
 		public initStyle(style:Object):void {
-			if (style["lifeTime"]) {
+			if ("lifeTime" in style) {
 				this._mM.dur = style["lifeTime"] * 1000;
 			}
 			if (style.hasOwnProperty("text")) {

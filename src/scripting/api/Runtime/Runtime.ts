@@ -5,6 +5,7 @@
 /// <reference path="../OOAPI.d.ts" />
 
 /// <reference path="Timer.ts" />
+/// <reference path="ScriptManager.ts" />
 /// <reference path="Permissions.ts" />
 module Runtime {
 	export interface RegisterableObject {
@@ -49,10 +50,10 @@ module Runtime {
 
 	export var registeredObjects:Object;
 	Object.defineProperty(Runtime, 'registeredObjects', {
-		get: function() {
+		get: function () {
 			return _registeredObjects;
 		},
-		set: function(value) {
+		set: function (value) {
 			__trace("Runtime.registeredObjects is read-only", "warn");
 		}
 	});
@@ -66,9 +67,10 @@ module Runtime {
 	 */
 	function _dispatchEvent(objectId:string, event:string, payload:any){
 		var obj:RegisterableObject = _registeredObjects[objectId];
-		if(typeof obj === "object"){
-			if(obj.dispatchEvent)
+		if (typeof obj === "object") {
+			if (obj.dispatchEvent) {
 				obj.dispatchEvent(event, payload);
+			}
 		}
 	}
 
@@ -97,11 +99,11 @@ module Runtime {
 	 * @param object - object to be registered. Must have getId method.
 	 */
 	export function registerObject(object:RegisterableObject):void{
-		if(!object.getId){
+		if (!object.getId) {
 			__trace("Attempted to register unnamed object", "warn");
 			return;
 		}
-		if(!Runtime.hasObject(object.getId())){
+		if (!Runtime.hasObject(object.getId())) {
 			_registeredObjects[object.getId()] = object;
 			__pchannel("Runtime:RegisterObject", {
 				"id": object.getId(),
@@ -115,7 +117,7 @@ module Runtime {
 			});
 			objCount++;
 			return;
-		}else{
+		} else {
 			__trace("Attempted to re-register object or id collision", "warn");
 			return;
 		}
@@ -129,8 +131,8 @@ module Runtime {
 	 * @param objectId - objectid to remove
 	 */
 	export function deregisterObject(objectId:string):void{
-		if(Runtime.hasObject(objectId)){
-			if(objectId.substr(0,2) === "__"){
+		if (Runtime.hasObject(objectId)) {
+			if (objectId.substr(0,2) === "__") {
 				__trace("Runtime.deregisterObject cannot de-register a MetaObject","warn");
 				return;
 			}
@@ -169,8 +171,8 @@ module Runtime {
 	 * will not receive any more events
 	 */
 	export function reset():void{
-		for(var i in _registeredObjects){
-			if(i.substr(0,2) !== "__"){
+		for (var i in _registeredObjects) {
+			if (i.substr(0,2) !== "__") {
 				Runtime.deregisterObject(i);
 			}
 		}
@@ -181,9 +183,10 @@ module Runtime {
 	 * still receive events.
 	 */
 	export function clear():void{
-		for(var i in _registeredObjects) {
-			if(i.substr(0,2) === "__")
+		for (var i in _registeredObjects) {
+			if (i.substr(0,2) === "__") {
 				continue;
+			}
 			if (_registeredObjects[i].unload) {
 				_registeredObjects[i].unload();
 			}
@@ -198,9 +201,10 @@ module Runtime {
 	}
 
 	/**
-	 * Invoke exit of script engine
+	 * Invoke graceful exit of script engine
 	 */
 	export function exit():void{
+		__achannel("::worker:state", "worker", "terminated");
 		self.close();
 	}
 

@@ -244,7 +244,7 @@ var Display;
         };
         Matrix3D.prototype.transformVectors = function (vin, vout) {
             if (vin.length % 3 !== 0) {
-                __trace("Matrix3D.transformVectors expects input size to be multiple of 3.", "err");
+                __trace('Matrix3D.transformVectors expects input size to be multiple of 3.', 'err');
                 return;
             }
             for (var i = 0; i < vin.length / 3; i++) {
@@ -301,6 +301,7 @@ var Display;
     }
     Display.createMatrix3D = createMatrix3D;
     function createColorTransform() {
+        __trace('Display.createColorTransform not implemented.', 'warn');
         return null;
     }
     Display.createColorTransform = createColorTransform;
@@ -350,17 +351,19 @@ var Display;
                 return "Vector<int>";
             },
             set: function (value) {
+                __trace('as3Type should not be set.', 'warn');
             }
         });
-        return array;
+        return array.map(Math.floor);
     }
     Display.toIntVector = toIntVector;
     function toNumberVector(array) {
         Object.defineProperty(array, 'as3Type', {
             get: function () {
-                return "Vector<number>";
+                return 'Vector<number>';
             },
             set: function (value) {
+                __trace('as3Type should not be set.', 'warn');
             }
         });
         return array;
@@ -513,6 +516,27 @@ var Display;
 })(Display || (Display = {}));
 var Display;
 (function (Display) {
+    var BlendMode = (function () {
+        function BlendMode() {
+        }
+        BlendMode.ADD = "add";
+        BlendMode.ALPHA = "alpha";
+        BlendMode.DARKEN = "darken";
+        BlendMode.DIFFERENCE = "difference";
+        BlendMode.ERASE = "erase";
+        BlendMode.HARDLIGHT = "hardlight";
+        BlendMode.INVERT = "invert";
+        BlendMode.LAYER = "layer";
+        BlendMode.LIGHTEN = "lighten";
+        BlendMode.MULTIPLY = "multiply";
+        BlendMode.NORMAL = "normal";
+        BlendMode.OVERLAY = "overlay";
+        BlendMode.SCREEN = "screen";
+        BlendMode.SHADER = "shader";
+        BlendMode.SUBTRACT = "subtract";
+        return BlendMode;
+    }());
+    Display.BlendMode = BlendMode;
     var ColorTransform = (function () {
         function ColorTransform() {
         }
@@ -848,6 +872,7 @@ var Display;
             this._rotationZ = 0;
             this._filters = [];
             this._visible = false;
+            this._blendMode = "normal";
             this._listeners = {};
             this._parent = null;
             this._name = "";
@@ -1136,7 +1161,7 @@ var Display;
             },
             set: function (w) {
                 this._boundingBox.width = w;
-                this.propertyUpdate("width", w);
+                this.propertyUpdate('width', w);
             },
             enumerable: true,
             configurable: true
@@ -1147,7 +1172,7 @@ var Display;
             },
             set: function (h) {
                 this._boundingBox.height = h;
-                this.propertyUpdate("height", h);
+                this.propertyUpdate('height', h);
             },
             enumerable: true,
             configurable: true
@@ -1158,17 +1183,18 @@ var Display;
             },
             set: function (visible) {
                 this._visible = visible;
-                this.propertyUpdate("visible", visible);
+                this.propertyUpdate('visible', visible);
             },
             enumerable: true,
             configurable: true
         });
         Object.defineProperty(DisplayObject.prototype, "blendMode", {
             get: function () {
-                return "normal";
+                return this._blendMode;
             },
             set: function (blendMode) {
-                __trace("DisplayObject.blendMode not supported.", "warn");
+                this._blendMode = blendMode;
+                this.propertyUpdate('blendMode', blendMode);
             },
             enumerable: true,
             configurable: true
@@ -1182,7 +1208,7 @@ var Display;
                 if (this._transform.parent !== this) {
                     this._transform.parent = this;
                 }
-                this.propertyUpdate("transform", this._transform.serialize());
+                this.propertyUpdate('transform', this._transform.serialize());
             },
             enumerable: true,
             configurable: true
@@ -1193,7 +1219,7 @@ var Display;
             },
             set: function (name) {
                 this._name = name;
-                this.propertyUpdate("name", name);
+                this.propertyUpdate('name', name);
             },
             enumerable: true,
             configurable: true
@@ -1227,7 +1253,7 @@ var Display;
                             this._listeners[event][i](data);
                         }
                         catch (e) {
-                            if (e.hasOwnProperty("stack")) {
+                            if (e.hasOwnProperty('stack')) {
                                 __trace(e.stack.toString(), 'err');
                             }
                             else {
@@ -1244,12 +1270,12 @@ var Display;
             }
             this._listeners[event].push(listener);
             if (this._listeners[event].length === 1) {
-                this.eventToggle(event, "enable");
+                this.eventToggle(event, 'enable');
             }
         };
         DisplayObject.prototype.removeEventListener = function (event, listener) {
             if (!this._listeners.hasOwnProperty(event) ||
-                this._listeners["event"].length === 0) {
+                this._listeners[event].length === 0) {
                 return;
             }
             var index = this._listeners[event].indexOf(listener);
@@ -1257,7 +1283,7 @@ var Display;
                 this._listeners[event].splice(index, 1);
             }
             if (this._listeners[event].length === 1) {
-                this.eventToggle(event, "disable");
+                this.eventToggle(event, 'disable');
             }
         };
         Object.defineProperty(DisplayObject.prototype, "numChildren", {
@@ -1272,7 +1298,7 @@ var Display;
             this._boundingBox.unionCoord(o._anchor.x + o._boundingBox.left, o._anchor.y + o._boundingBox.top);
             this._boundingBox.unionCoord(o._anchor.x + o._boundingBox.right, o._anchor.y + o._boundingBox.bottom);
             o._parent = this;
-            this.methodCall("addChild", o._id);
+            this.methodCall('addChild', o._id);
         };
         DisplayObject.prototype.removeChild = function (o) {
             var index = this._children.indexOf(o);
@@ -1282,7 +1308,7 @@ var Display;
         };
         DisplayObject.prototype.getChildAt = function (index) {
             if (index < 0 || index > this._children.length) {
-                throw new RangeError("No child at index " + index);
+                throw new RangeError('No child at index ' + index);
             }
             return this._children[index];
         };
@@ -1293,7 +1319,7 @@ var Display;
             var o = this.getChildAt(index);
             this._children.splice(index, 1);
             o._parent = null;
-            this.methodCall("removeChild", o._id);
+            this.methodCall('removeChild', o._id);
         };
         DisplayObject.prototype.removeChildren = function (begin, end) {
             if (end === void 0) { end = this._children.length; }
@@ -1303,7 +1329,7 @@ var Display;
                 removed[i]._parent = null;
                 ids.push(removed[i]._id);
             }
-            this.methodCall("removeChildren", ids);
+            this.methodCall('removeChildren', ids);
         };
         DisplayObject.prototype.remove = function () {
             if (this._parent !== null) {
@@ -1314,7 +1340,7 @@ var Display;
             }
         };
         DisplayObject.prototype.toString = function () {
-            return "[" + (this._name.length > 0 ? this._name : "displayObject") + " DisplayObject]@" + this._id;
+            return '[' + (this._name.length > 0 ? this._name : 'displayObject') + ' DisplayObject]@' + this._id;
         };
         DisplayObject.prototype.clone = function () {
             var alternate = new DisplayObject();
@@ -1326,7 +1352,7 @@ var Display;
             return alternate;
         };
         DisplayObject.prototype.hasOwnProperty = function (prop) {
-            if (prop === "clone") {
+            if (prop === 'clone') {
                 return true;
             }
             else {
@@ -1340,21 +1366,17 @@ var Display;
                 filters.push(this._filters[i].serialize());
             }
             return {
-                "class": "DisplayObject",
-                "x": this._anchor.x,
-                "y": this._anchor.y,
-                "alpha": this._alpha,
-                "filters": filters
+                'class': 'DisplayObject',
+                'x': this._anchor.x,
+                'y': this._anchor.y,
+                'alpha': this._alpha,
+                'filters': filters
             };
         };
         DisplayObject.prototype.unload = function () {
             this._visible = false;
             this.remove();
-            __pchannel("Runtime:CallMethod", {
-                "id": this._id,
-                "method": "unload",
-                "params": null
-            });
+            this.methodCall('unload', null);
         };
         DisplayObject.prototype.getId = function () {
             return this._id;
@@ -1547,9 +1569,9 @@ var Display;
                 return this._dur;
             },
             set: function (dur) {
-                this._dur = dur;
-                this._ttl = dur;
                 this._timer.stop();
+                this._ttl = dur;
+                this._dur = dur;
                 this._timer = new Runtime.Timer(41, 0);
             },
             enumerable: true,
@@ -1566,17 +1588,22 @@ var Display;
             this._ttl = this._dur;
         };
         MotionManager.prototype.play = function () {
-            if (this._isRunning)
+            if (this._isRunning) {
                 return;
-            if (this._dur === 0)
+            }
+            if (this._dur === 0) {
                 return;
+            }
+            if (this._ttl <= 0) {
+                return;
+            }
             this._isRunning = true;
             var self = this;
             var _lastTime = Date.now();
             this._timer.addEventListener("timer", function () {
-                var dur = Date.now() - _lastTime;
-                self._dur -= dur;
-                if (self._dur <= 0) {
+                var elapsed = Date.now() - _lastTime;
+                self._ttl -= elapsed;
+                if (self._ttl <= 0) {
                     self.stop();
                     if (self.oncomplete) {
                         self.oncomplete();
@@ -1591,8 +1618,9 @@ var Display;
             }
         };
         MotionManager.prototype.stop = function () {
-            if (!this._isRunning)
+            if (!this._isRunning) {
                 return;
+            }
             this._isRunning = false;
             this._timer.stop();
             if (this._tween) {
@@ -1694,7 +1722,7 @@ var Display;
             }
         };
         CommentButton.prototype.initStyle = function (style) {
-            if (style["lifeTime"]) {
+            if ("lifeTime" in style) {
                 this._mM.dur = style["lifeTime"] * 1000;
             }
             if (style.hasOwnProperty("text")) {
@@ -1819,6 +1847,9 @@ var Display;
             }
         };
         CommentShape.prototype.initStyle = function (style) {
+            if (typeof style === 'undefined' || style === null) {
+                style = {};
+            }
             if (style["lifeTime"]) {
                 this._mM.dur = style["lifeTime"] * 1000;
             }
@@ -2052,19 +2083,22 @@ var Display;
             }
         };
         CommentField.prototype.initStyle = function (style) {
-            if (style["lifeTime"]) {
+            if (typeof style === 'undefined' || style === null) {
+                style = {};
+            }
+            if ("lifeTime" in style) {
                 this._mM.dur = style["lifeTime"] * 1000;
             }
-            if (style["fontsize"]) {
+            if ("fontsize" in style) {
                 this.getTextFormat().size = style["fontsize"];
             }
-            if (style["font"]) {
+            if ("font" in style) {
                 this.getTextFormat().font = style["font"];
             }
-            if (style["color"]) {
+            if ("color" in style) {
                 this.getTextFormat().color = style["color"];
             }
-            if (style["bold"]) {
+            if ("bold" in style) {
                 this.getTextFormat().bold = style["bold"];
             }
             if (style.hasOwnProperty("motionGroup")) {

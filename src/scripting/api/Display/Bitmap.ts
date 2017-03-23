@@ -8,7 +8,7 @@ module Display{
 
 	}
 
-	export class BitmapData{
+	export class BitmapData {
 
 	}
 }

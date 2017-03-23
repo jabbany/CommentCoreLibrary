@@ -7,7 +7,7 @@
 /// <reference path="ISerializable.ts" />
 /// <reference path="Filter.ts" />
 module Display {
-	class BlendMode {
+	export class BlendMode {
 		static ADD:string = "add";
 		static ALPHA:string = "alpha";
 		static DARKEN:string = "darken";
@@ -614,7 +614,7 @@ module Display {
 
 		set width(w:number) {
 			this._boundingBox.width = w;
-			this.propertyUpdate("width", w);
+			this.propertyUpdate('width', w);
 		}
 
 		get width():number {
@@ -623,7 +623,7 @@ module Display {
 
 		set height(h:number) {
 			this._boundingBox.height = h;
-			this.propertyUpdate("height", h);
+			this.propertyUpdate('height', h);
 		}
 
 		get height():number {
@@ -632,7 +632,7 @@ module Display {
 
 		set visible(visible:boolean) {
 			this._visible = visible;
-			this.propertyUpdate("visible", visible);
+			this.propertyUpdate('visible', visible);
 		}
 
 		get visible():boolean {
@@ -641,7 +641,7 @@ module Display {
 
 		set blendMode(blendMode:string) {
 			this._blendMode = blendMode;
-			this.propertyUpdate("blendMode", blendMode);
+			this.propertyUpdate('blendMode', blendMode);
 		}
 
 		get blendMode():string {
@@ -653,7 +653,7 @@ module Display {
 			if(this._transform.parent !== this){
 				this._transform.parent = this;
 			}
-			this.propertyUpdate("transform", this._transform.serialize());
+			this.propertyUpdate('transform', this._transform.serialize());
 		}
 
 		get transform():any {
@@ -662,7 +662,7 @@ module Display {
 
 		set name(name:string) {
 			this._name = name;
-			this.propertyUpdate("name", name);
+			this.propertyUpdate('name', name);
 		}
 
 		get name():string {
@@ -694,7 +694,7 @@ module Display {
 						try {
 							this._listeners[event][i](data);
 						} catch (e) {
-							if (e.hasOwnProperty("stack")) {
+							if (e.hasOwnProperty('stack')) {
 								__trace(e.stack.toString(), 'err');
 							} else {
 								__trace(e.toString(), 'err');
@@ -711,13 +711,13 @@ module Display {
 			}
 			this._listeners[event].push(listener);
 			if (this._listeners[event].length === 1) {
-				this.eventToggle(event, "enable");
+				this.eventToggle(event, 'enable');
 			}
 		}
 
 		public removeEventListener(event:string, listener:Function):void {
 			if (!this._listeners.hasOwnProperty(event) ||
-				this._listeners["event"].length === 0) {
+				this._listeners[event].length === 0) {
 				return;
 			}
 			var index = this._listeners[event].indexOf(listener);
@@ -725,7 +725,7 @@ module Display {
 				this._listeners[event].splice(index, 1);
 			}
 			if (this._listeners[event].length === 1) {
-				this.eventToggle(event, "disable");
+				this.eventToggle(event, 'disable');
 			}
 		}
 
@@ -739,7 +739,7 @@ module Display {
 			this._boundingBox.unionCoord(o._anchor.x + o._boundingBox.left, o._anchor.y + o._boundingBox.top);
 			this._boundingBox.unionCoord(o._anchor.x + o._boundingBox.right, o._anchor.y + o._boundingBox.bottom);
 			o._parent = this;
-			this.methodCall("addChild", o._id);
+			this.methodCall('addChild', o._id);
 		}
 
 		public removeChild(o:DisplayObject):void {
@@ -751,7 +751,7 @@ module Display {
 
 		public getChildAt(index:number):DisplayObject{
 			if(index < 0 || index > this._children.length){
-				throw new RangeError("No child at index " + index);
+				throw new RangeError('No child at index ' + index);
 			}
 			return this._children[index];
 		}
@@ -764,7 +764,7 @@ module Display {
 			var o:DisplayObject = this.getChildAt(index);
 			this._children.splice(index, 1);
 			o._parent = null;
-			this.methodCall("removeChild", o._id);
+			this.methodCall('removeChild', o._id);
 		}
 
 		public removeChildren(begin:number, end:number = this._children.length):void{
@@ -774,7 +774,7 @@ module Display {
 				removed[i]._parent = null;
 				ids.push(removed[i]._id);
 			}
-			this.methodCall("removeChildren", ids);
+			this.methodCall('removeChildren', ids);
 		}
 
 		/**
@@ -790,7 +790,7 @@ module Display {
 		}
 
 		public toString():string{
-			return "[" + (this._name.length > 0 ? this._name : "displayObject") + " DisplayObject]@" + this._id;
+			return '[' + (this._name.length > 0 ? this._name : 'displayObject') + ' DisplayObject]@' + this._id;
 		}
 
 		/**
@@ -807,7 +807,7 @@ module Display {
 		}
 
 		public hasOwnProperty(prop:string):boolean{
-			if(prop === "clone") {
+			if(prop === 'clone') {
 				return true;
 			}else{
 				return Object.prototype.hasOwnProperty.call(this, prop);
@@ -822,22 +822,18 @@ module Display {
 				filters.push(this._filters[i].serialize());
 			}
 			return {
-				"class": "DisplayObject",
-				"x": this._anchor.x,
-				"y": this._anchor.y,
-				"alpha": this._alpha,
-				"filters": filters
+				'class': 'DisplayObject',
+				'x': this._anchor.x,
+				'y': this._anchor.y,
+				'alpha': this._alpha,
+				'filters': filters
 			};
 		}
 
 		public unload():void {
 			this._visible = false;
 			this.remove();
-			__pchannel("Runtime:CallMethod", {
-				"id": this._id,
-				"method": "unload",
-				"params": null
-			});
+			this.methodCall('unload', null);
 		}
 
 		public getId():string {

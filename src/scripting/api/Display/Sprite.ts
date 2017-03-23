@@ -26,11 +26,11 @@ module Display {
 	}
 
 	export class RootSprite extends Sprite{
-		constructor(){
+		constructor() {
 			super("__root");
 		}
 
-		get parent():DisplayObject{
+		get parent():DisplayObject {
 			__trace("SecurityError: No access above root sprite.","err");
 			return null;
 		}

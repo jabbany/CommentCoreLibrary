@@ -1,4 +1,8 @@
-/** These are all defined in the global namespace **/
+/** 
+ * Global Functions
+ * @description Functions defined in the global namespace.
+ **/
+
 function trace (msg) {
     if (typeof msg === 'object') {
         __trace(JSON.stringify(msg), 'log');
@@ -74,7 +78,7 @@ function foreach (enumerable, f) {
     }
 
     for (var x in enumerable) {
-        if (enumerbale.hasOwnProperty(x)) {
+        if (enumerable.hasOwnProperty(x)) {
             f(x, enumerable[x]);
         }
     }

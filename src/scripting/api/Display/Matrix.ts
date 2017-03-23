@@ -266,7 +266,7 @@ module Display {
 		 */
 		public transformVectors(vin:Array<number>, vout:Array<number>):void {
 			if (vin.length % 3 !== 0) {
-				__trace("Matrix3D.transformVectors expects input size to be multiple of 3.", "err");
+				__trace('Matrix3D.transformVectors expects input size to be multiple of 3.', 'err');
 				return;
 			}
 			for (var i = 0; i < vin.length / 3; i++) {
@@ -326,6 +326,7 @@ module Display {
 	}
 
 	export function createColorTransform():any {
+		__trace('Display.createColorTransform not implemented.', 'warn');
 		return null;
 	}
 
@@ -377,6 +378,7 @@ module Display {
 				return "Vector<int>";
 			},
 			set: function (value) {
+				__trace('as3Type should not be set.', 'warn');
 			}
 		});
 		return array.map(Math.floor);
@@ -392,9 +394,10 @@ module Display {
 	export function toNumberVector(array:Array<number>):Array<number> {
 		Object.defineProperty(array, 'as3Type', {
 			get: function () {
-				return "Vector<number>";
+				return 'Vector<number>';
 			},
 			set: function (value) {
+				__trace('as3Type should not be set.', 'warn');
 			}
 		});
 		return array;

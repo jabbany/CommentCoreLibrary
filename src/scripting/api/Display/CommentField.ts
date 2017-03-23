@@ -72,19 +72,22 @@ module Display {
 		}
 
 		public initStyle(style:Object):void {
-			if (style["lifeTime"]) {
+		  if (typeof style === 'undefined' || style === null) {
+				style = {};
+			}
+			if ("lifeTime" in style) {
 				this._mM.dur = style["lifeTime"] * 1000;
 			}
-			if (style["fontsize"]) {
+			if ("fontsize" in style) {
 				this.getTextFormat().size = style["fontsize"];
 			}
-			if (style["font"]) {
+			if ("font" in style) {
 				this.getTextFormat().font = style["font"];
 			}
-			if (style["color"]) {
+			if ("color" in style) {
 				this.getTextFormat().color = style["color"];
 			}
-			if (style["bold"]) {
+			if ("bold" in style) {
 				this.getTextFormat().bold = style["bold"];
 			}
 			if (style.hasOwnProperty("motionGroup")) {

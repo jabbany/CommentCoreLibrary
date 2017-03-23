@@ -88,9 +88,9 @@ function launchWindowFull(element){
 	cm.getBounds();
 	isWindowedFullscreen = !isWindowedFullscreen;
 }
-
+var $ = function (e) { return document.getElementById(e); }
 var cm = new CommentManager($('commentCanvas'));
-var bscripter = new CCLScripting("../../build/scripting/Worker.js");
+var bscripter = new CCLScripting("../../dist/scripting/Worker.js");
 bscripter.logger = new function(){
 	this.log = function(t){
 		var pre = document.createElement("pre");

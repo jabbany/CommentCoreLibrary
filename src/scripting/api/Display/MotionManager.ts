@@ -25,9 +25,9 @@ module Display {
 		}
 
 		set dur(dur:number) {
-			this._dur = dur;
-			this._ttl = dur;
 			this._timer.stop();
+			this._ttl = dur;
+			this._dur = dur;
 			this._timer = new Runtime.Timer(41, 0);
 		}
 
@@ -44,17 +44,22 @@ module Display {
 		}
 
 		public play():void {
-			if (this._isRunning)
+			if (this._isRunning) {
 				return;
-			if (this._dur === 0)
+			}
+			if (this._dur === 0) {
 				return;
+			}
+			if (this._ttl <= 0) {
+				return;
+			}
 			this._isRunning = true;
 			var self:MotionManager = this;
 			var _lastTime:number = Date.now();
 			this._timer.addEventListener("timer", function () {
-				var dur:number = Date.now() - _lastTime;
-				self._dur -= dur;
-				if (self._dur <= 0) {
+				var elapsed:number = Date.now() - _lastTime;
+				self._ttl -= elapsed;
+				if (self._ttl <= 0) {
 					self.stop();
 					if (self.oncomplete) {
 						self.oncomplete();
@@ -70,8 +75,9 @@ module Display {
 		}
 
 		public stop():void {
-			if (!this._isRunning)
+			if (!this._isRunning) {
 				return;
+			}
 			this._isRunning = false;
 			this._timer.stop();
 			if (this._tween) {

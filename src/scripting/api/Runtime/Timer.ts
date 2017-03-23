@@ -55,18 +55,18 @@ module Runtime{
 								try {
 									timer.callback();
 								}catch(e){
-									__trace(e.stack.toString(),"err");
+									__trace(e.stack.toString(), 'err');
 								}
 								_self._timers.splice(i, 1);
 								i--;
 							}
-						} else if (timer.type === "interval") {
+						} else if (timer.type === 'interval') {
 							timer.ttl -= elapsed;
 							if (timer.ttl <= 0) {
 								try {
 									timer.callback();
 								}catch(e){
-									__trace(e.stack.toString(),"err");
+									__trace(e.stack.toString(), 'err');
 								}
 								timer.ttl += timer.dur;
 							}
@@ -88,19 +88,19 @@ module Runtime{
 
 		public setInterval(f:Function, interval:number):number {
 			var myKey = this._key++;
-			this._timers.push(new RuntimeTimer("interval", interval, myKey, f));
+			this._timers.push(new RuntimeTimer('interval', interval, myKey, f));
 			return myKey;
 		}
 
 		public setTimeout(f:Function, timeout:number):number {
 			var myKey = this._key++;
-			this._timers.push(new RuntimeTimer("timeout", timeout, myKey, f));
+			this._timers.push(new RuntimeTimer('timeout', timeout, myKey, f));
 			return myKey;
 		}
 
 		public clearInterval(id:number):void {
 			for (var i = 0; i < this._timers.length; i++) {
-				if (this._timers[i].type === "interval" &&
+				if (this._timers[i].type === 'interval' &&
 					this._timers[i].key === id) {
 					this._timers.splice(i, 1);
 					return;
@@ -110,7 +110,7 @@ module Runtime{
 
 		public clearTimeout(id:number):void {
 			for (var i = 0; i < this._timers.length; i++) {
-				if (this._timers[i].type === "timeout" &&
+				if (this._timers[i].type === 'timeout' &&
 					this._timers[i].key === id) {
 					this._timers.splice(i, 1);
 					return;
@@ -118,8 +118,14 @@ module Runtime{
 			}
 		}
 
-		public clearAll():void {
-			this._timers = [];
+		public clearAll(type:String = 'all'):void {
+			if (type === 'timer') {
+				this._timers = this._timers.filter(t => t.type !== 'timer');
+			} else if (type === 'interval') {
+				this._timers = this._timers.filter(t => t.type !== 'interval');
+			} else {
+				this._timers = [];
+			}
 		}
 	}
 	/**
@@ -140,7 +146,7 @@ module Runtime{
 		}
 
 		set isRunning(b:boolean){
-			__trace("Timer.isRunning is read-only","warn");
+			__trace('Timer.isRunning is read-only', 'warn');
 		}
 
 		get isRunning():boolean{
@@ -157,13 +163,13 @@ module Runtime{
 					if(self._microtime > self._delay){
 						self._microtime -= self._delay;
 						self.currentCount++;
-						self.dispatchEvent("timer");
+						self.dispatchEvent('timer');
 					}
 					lastTime = Date.now();
 					if(self._repeatCount > 0 &&
 						self._repeatCount <= self.currentCount){
 						self.stop();
-						self.dispatchEvent("timerComplete");
+						self.dispatchEvent('timerComplete');
 					}
 				}, 20);
 			}
@@ -183,19 +189,19 @@ module Runtime{
 		}
 
 		public addEventListener(type:string, listener:Function):void{
-			if(type === "timer"){
+			if(type === 'timer'){
 				this._listeners.push(listener);
-			}else if(type === "timerComplete"){
+			}else if(type === 'timerComplete'){
 				this._complete.push(listener);
 			}
 		}
 
 		public dispatchEvent(event:string){
-			if(event === "timer"){
+			if(event === 'timer'){
 				for(var i = 0; i < this._listeners.length; i++){
 					this._listeners[i]();
 				}
-			}else if(event === "timerComplete"){
+			}else if(event === 'timerComplete'){
 				for(var i = 0; i < this._complete.length; i++){
 					this._complete[i]();
 				}
@@ -208,15 +214,15 @@ module Runtime{
 	var internalTimer:Timer = new Timer(50);
 	var enterFrameDispatcher:Function = function () {
 		for (var object in Runtime.registeredObjects) {
-			if (object.substring(0, 2) === "__") {
+			if (object.substring(0, 2) === '__') {
 				continue;
 			}
-			Runtime.registeredObjects[object].dispatchEvent("enterFrame");
+			Runtime.registeredObjects[object].dispatchEvent('enterFrame');
 		}
 	};
 	masterTimer.start();
 	internalTimer.start();
-	internalTimer.addEventListener("timer", enterFrameDispatcher);
+	internalTimer.addEventListener('timer', enterFrameDispatcher);
 	/**
 	 *  Get the master timer instance
 	 */
@@ -235,6 +241,7 @@ module Runtime{
 		}
 		internalTimer.stop();
 		internalTimer = new Timer(Math.floor(1000 / frameRate));
-		internalTimer.addEventListener("timer", enterFrameDispatcher);
+		internalTimer.addEventListener('timer', enterFrameDispatcher);
+		internalTimer.start();
 	}
 }

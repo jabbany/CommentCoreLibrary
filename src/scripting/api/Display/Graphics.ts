@@ -13,7 +13,7 @@ module Display {
 			this._parent = parent;
 		}
 
-		private _evaluateBoundingBox(x:number, y:number):void{
+		private _evaluateBoundingBox(x:number, y:number):void {
 			this._parent.boundingBox.unionCoord(x + this._lineWidth / 2,y + this._lineWidth / 2);
 		}
 
