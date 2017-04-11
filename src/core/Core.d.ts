@@ -26,13 +26,16 @@ interface IBinArray {
 }
 declare var BinArray:IBinArray;
 
+/**
+ * Options for CommentCoreLibrary
+ */
 interface CCLOptions {
-    global:{
+    global: {
         scale: number;
         opacity: number;
         className: string;
     }
-    scroll:{
+    scroll: {
         scale:number;
         opacity:number;
     }

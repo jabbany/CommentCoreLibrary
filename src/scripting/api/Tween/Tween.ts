@@ -21,7 +21,7 @@ module Tween {
 			/** Set timer **/
 			var timer:Runtime.Timer = this._timer;
 			var tween:ITween = this;
-			this._timer.addEventListener("timer", function () {
+			this._timer.addEventListener("timer", () => {
 				if (timer.hasOwnProperty("wallTime")) {
 					var elapsed = Date.now() - timer["wallTime"];
 					tween._currentTime += elapsed;
@@ -64,7 +64,8 @@ module Tween {
 		}
 
 		set target(a:any) {
-			__trace("Deprecated: You should not set a new target for an old tween.", "warn");
+			__trace("Deprecated: You should not set a new target for an old tween.",
+				"warn");
 			this._target = a;
 		}
 
@@ -139,12 +140,20 @@ module Tween {
 			for (var property in src) {
 				if (!src.hasOwnProperty(property))
 					continue;
-				object[property] = tween.easing(currentTime, src[property], dest[property] - src[property], totalTime);
+				object[property] = tween.easing(currentTime,
+						src[property],
+						dest[property] - src[property],
+						totalTime);
 			}
 		};
 	}
 
-	export function tween(object:any, dest:Object = {}, src:Object = {}, duration:number = 0, easing:Function = null):ITween {
+	export function tween(object:any,
+			dest:Object = {},
+			src:Object = {},
+			duration:number = 0,
+			easing:Function = null):ITween {
+
 		var t:ITween = new ITween(object, duration * 1000);
 		t.step = createStepFunction(object, dest, src, t);
 		if (easing !== null) {
@@ -153,7 +162,11 @@ module Tween {
 		return t;
 	}
 
-	export function to(object:any, dest:Object = {}, duration:number = 0, easing:Function = null):ITween {
+	export function to(object:any,
+			dest:Object = {},
+			duration:number = 0,
+			easing:Function = null):ITween {
+
 		var src:Object = {};
 		for (var x in dest) {
 			if (dest.hasOwnProperty(x)) {
@@ -167,7 +180,13 @@ module Tween {
 		return Tween.tween(object, dest, src, duration, easing);
 	}
 
-	export function beizer(object:any, dest:Object, src:Object, control:Object):ITween {
+	export function beizer(object:any,
+			dest:Object,
+			src:Object,
+			control:Object):ITween {
+
+		// TODO: implement beizer tween
+	  __trace('Bezier tween not implemented yet', 'warn');
 		return Tween.tween(object, dest, src);
 	}
 

@@ -23,6 +23,16 @@ declare module Runtime {
         public dispatchEvent(event: string): void;
     }
     /**
+  	 * Internal class to help other methods keep time
+  	 */
+    class TimeKeeper {
+  		private _clock;
+  		private _lastTime;
+  		constructor(clock?:Function);
+  		public elapsed:number;
+  		public reset():void;
+  	}
+    /**
     *  Get the master timer instance
     */
     function getTimer(): any;

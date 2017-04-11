@@ -19,6 +19,7 @@ module CommentUtils {
 
         public static createRotationMatrix:Function = function (xrot:number, yrot:number, zrot:number):Matrix3D {
             // Courtesy of @StarBrilliant, re-adapted for general case
+            // TODO: add support for xrot
             var DEG2RAD = Math.PI/180;
             var yr = yrot * DEG2RAD;
             var zr = zrot * DEG2RAD;
@@ -31,9 +32,7 @@ module CommentUtils {
                 0                    , 0                     , 0        , 1
             ];
             // Do some rounding
-            return new Matrix3D(matrix.map(function (v) {
-                return Math.round(v * 1e10) * 1e-10;
-            }));
+            return new Matrix3D(matrix.map(v => Math.round(v * 1e10) * 1e-10));
         };
 
         /**
@@ -54,7 +53,7 @@ module CommentUtils {
         get flatArray():Array<number> {
             return this._internalArray.slice(0);
         }
-        
+
         set flatArray(array:Array<number>) {
             throw new Error('Not permitted. Matrices are immutable.');
         }

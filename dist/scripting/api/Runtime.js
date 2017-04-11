@@ -200,6 +200,24 @@ var Runtime;
         return Timer;
     }());
     Runtime.Timer = Timer;
+    var TimeKeeper = (function () {
+        function TimeKeeper(clock) {
+            if (clock === void 0) { clock = function () { return Date.now(); }; }
+            this._clock = clock;
+        }
+        Object.defineProperty(TimeKeeper.prototype, "elapsed", {
+            get: function () {
+                return this._clock() - this._lastTime;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        TimeKeeper.prototype.reset = function () {
+            this._lastTime = this._clock();
+        };
+        return TimeKeeper;
+    }());
+    Runtime.TimeKeeper = TimeKeeper;
     var masterTimer = new TimerRuntime();
     var internalTimer = new Timer(50);
     var enterFrameDispatcher = function () {
@@ -207,7 +225,10 @@ var Runtime;
             if (object.substring(0, 2) === '__') {
                 continue;
             }
-            Runtime.registeredObjects[object].dispatchEvent('enterFrame');
+            try {
+                Runtime.registeredObjects[object].dispatchEvent('enterFrame');
+            }
+            catch (e) { }
         }
     };
     masterTimer.start();
@@ -218,7 +239,11 @@ var Runtime;
     }
     Runtime.getTimer = getTimer;
     function updateFrameRate(frameRate) {
-        if (frameRate > 60) {
+        if (frameRate > 60 || frameRate < 0) {
+            return;
+        }
+        if (frameRate === 0) {
+            internalTimer.stop();
             return;
         }
         internalTimer.stop();
@@ -253,6 +278,9 @@ var Runtime;
         };
         ScriptManagerImpl.prototype.popTimer = function (t) {
             __trace("ScriptManager.popTimer not implemented.", "warn");
+        };
+        ScriptManagerImpl.prototype.toString = function () {
+            return '[scriptManager ScriptManager]';
         };
         return ScriptManagerImpl;
     }());
@@ -332,7 +360,7 @@ var Runtime;
     }
     Runtime.injectStyle = injectStyle;
     function privilegedCode() {
-        __trace("Runtime.privilegedCode not available.", "warn");
+        __trace('Runtime.privilegedCode not available.', 'warn');
     }
     Runtime.privilegedCode = privilegedCode;
 })(Runtime || (Runtime = {}));

@@ -126,38 +126,41 @@ var CommentUtils;
             }
             return 'matrix3d(' + matrix.join(',') + ')';
         };
-        Matrix3D.identity = function () {
-            return new Matrix3D([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
-        };
-        Matrix3D.createScaleMatrix = function (xscale, yscale, zscale) {
-            return new Matrix3D([xscale, 0, 0, 0, 0, yscale, 0, 0, 0, 0, zscale, 0, 0, 0, 0, 1]);
-        };
-        Matrix3D.createRotationMatrix = function (xrot, yrot, zrot) {
-            var DEG2RAD = Math.PI / 180;
-            var yr = yrot * DEG2RAD;
-            var zr = zrot * DEG2RAD;
-            var COS = Math.cos;
-            var SIN = Math.sin;
-            var matrix = [
-                COS(yr) * COS(zr), COS(yr) * SIN(zr), SIN(yr), 0,
-                (-SIN(zr)), COS(zr), 0, 0,
-                (-SIN(yr) * COS(zr)), (-SIN(yr) * SIN(zr)), COS(yr), 0,
-                0, 0, 0, 1
-            ];
-            return new Matrix3D(matrix.map(function (v) {
-                return Math.round(v * 1e10) * 1e-10;
-            }));
-        };
         return Matrix3D;
     }());
+    Matrix3D.identity = function () {
+        return new Matrix3D([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
+    };
+    Matrix3D.createScaleMatrix = function (xscale, yscale, zscale) {
+        return new Matrix3D([xscale, 0, 0, 0, 0, yscale, 0, 0, 0, 0, zscale, 0, 0, 0, 0, 1]);
+    };
+    Matrix3D.createRotationMatrix = function (xrot, yrot, zrot) {
+        var DEG2RAD = Math.PI / 180;
+        var yr = yrot * DEG2RAD;
+        var zr = zrot * DEG2RAD;
+        var COS = Math.cos;
+        var SIN = Math.sin;
+        var matrix = [
+            COS(yr) * COS(zr), COS(yr) * SIN(zr), SIN(yr), 0,
+            (-SIN(zr)), COS(zr), 0, 0,
+            (-SIN(yr) * COS(zr)), (-SIN(yr) * SIN(zr)), COS(yr), 0,
+            0, 0, 0, 1
+        ];
+        return new Matrix3D(matrix.map(function (v) { return Math.round(v * 1e10) * 1e-10; }));
+    };
     CommentUtils.Matrix3D = Matrix3D;
 })(CommentUtils || (CommentUtils = {}));
 //# sourceMappingURL=CommentUtils.js.map
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var CoreComment = (function () {
     function CoreComment(parent, init) {
         if (init === void 0) { init = {}; }
@@ -581,17 +584,18 @@ var CoreComment = (function () {
     CoreComment.prototype.toString = function () {
         return ['[', this.stime, '|', this.ttl, '/', this.dur, ']', '(', this.mode, ')', this.text].join('');
     };
-    CoreComment.LINEAR = function (t, b, c, d) {
-        return t * c / d + b;
-    };
     return CoreComment;
 }());
+CoreComment.LINEAR = function (t, b, c, d) {
+    return t * c / d + b;
+};
 var ScrollComment = (function (_super) {
     __extends(ScrollComment, _super);
     function ScrollComment(parent, data) {
-        _super.call(this, parent, data);
-        this.dur *= this.parent.options.scroll.scale;
-        this.ttl *= this.parent.options.scroll.scale;
+        var _this = _super.call(this, parent, data) || this;
+        _this.dur *= _this.parent.options.scroll.scale;
+        _this.ttl *= _this.parent.options.scroll.scale;
+        return _this;
     }
     Object.defineProperty(ScrollComment.prototype, "alpha", {
         set: function (a) {
@@ -697,11 +701,16 @@ var CommentFactory = (function () {
     return CommentFactory;
 }());
 //# sourceMappingURL=CommentFactory.js.map
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var CommentSpaceAllocator = (function () {
     function CommentSpaceAllocator(width, height) {
         if (width === void 0) { width = 0; }
@@ -804,7 +813,7 @@ var CommentSpaceAllocator = (function () {
 var AnchorCommentSpaceAllocator = (function (_super) {
     __extends(AnchorCommentSpaceAllocator, _super);
     function AnchorCommentSpaceAllocator() {
-        _super.apply(this, arguments);
+        return _super !== null && _super.apply(this, arguments) || this;
     }
     AnchorCommentSpaceAllocator.prototype.add = function (comment) {
         _super.prototype.add.call(this, comment);

@@ -10,19 +10,33 @@ module Display {
 		private _lineWidth:number = 1;
 
 		constructor(parent:DisplayObject) {
+			if (typeof parent === 'undefined' || parent === null) {
+				throw new Error('Cannot initialize a display not bound to an element.');
+			}
 			this._parent = parent;
 		}
 
+		/**
+		 * Private method to re-evaluate a bounding box for the parent
+		 * @param x - x coordinate of point
+		 * @param y - y coordinate of point
+		 */
 		private _evaluateBoundingBox(x:number, y:number):void {
-			this._parent.boundingBox.unionCoord(x + this._lineWidth / 2,y + this._lineWidth / 2);
+			this._parent.boundingBox.unionCoord(x + this._lineWidth / 2,
+				y + this._lineWidth / 2);
 		}
 
-		private _callDrawMethod(method:string, params):void {
-			__pchannel("Runtime:CallMethod", {
-				"id": this._parent.getId(),
-				"context": "graphics",
-				"method": method,
-				"params": params
+		/**
+		 * Private method to call a drawing method
+		 * @param method name - method name
+		 * @param params - parameters to the method
+		 */
+		private _callDrawMethod(method:string, params:any):void {
+			__pchannel('Runtime:CallMethod', {
+				'id': this._parent.getId(),
+				'context': 'graphics',
+				'method': method,
+				'params': params
 			});
 		}
 
@@ -33,7 +47,7 @@ module Display {
 		 */
 		public lineTo(x:number, y:number):void {
 			this._evaluateBoundingBox(x,y);
-			this._callDrawMethod("lineTo", [x, y]);
+			this._callDrawMethod('lineTo', [x, y]);
 		}
 
 		/**
@@ -43,7 +57,7 @@ module Display {
 		 */
 		public moveTo(x:number, y:number):void {
 			this._evaluateBoundingBox(x,y);
-			this._callDrawMethod("moveTo", [x, y]);
+			this._callDrawMethod('moveTo', [x, y]);
 		}
 
 		/**
@@ -56,7 +70,7 @@ module Display {
 		public curveTo(cx:number, cy:number, ax:number, ay:number):void {
 			this._evaluateBoundingBox(ax,ay);
 			this._evaluateBoundingBox(cx,cy);
-			this._callDrawMethod("curveTo", [cx, cy, ax, ay]);
+			this._callDrawMethod('curveTo', [cx, cy, ax, ay]);
 		}
 
 		/**
@@ -68,11 +82,17 @@ module Display {
 		 * @param ax - Anchor x
 		 * @param ay - Anchor y
 		 */
-		public cubicCurveTo(cax:number, cay:number, cbx:number, cby:number, ax:number, ay:number):void {
+		public cubicCurveTo(cax:number,
+			cay:number,
+			cbx:number,
+			cby:number,
+			ax:number,
+			ay:number):void {
+
 			this._evaluateBoundingBox(cax,cay);
 			this._evaluateBoundingBox(cbx,cby);
 			this._evaluateBoundingBox(ax,ay);
-			this._callDrawMethod("cubicCurveTo", [cax, cay, cbx, cby, ax, ay]);
+			this._callDrawMethod('cubicCurveTo', [cax, cay, cbx, cby, ax, ay]);
 		}
 
 		/**
@@ -86,9 +106,17 @@ module Display {
 		 * @param joints - line joint mode (default "round")
 		 * @param miterlim - miter limit (default 3)
 		 */
-		public lineStyle(thickness:number, color:number = 0, alpha:number = 1.0, hinting:boolean = false, scale:string = "normal", caps:string = "none", joints:string = "round", miter:number = 3):void {
+		public lineStyle(thickness:number,
+			color:number = 0,
+			alpha:number = 1.0,
+			hinting:boolean = false,
+			scale:string = 'normal',
+			caps:string = 'none',
+			joints:string = 'round',
+			miter:number = 3):void {
+
 			this._lineWidth = thickness;
-			this._callDrawMethod("lineStyle", [thickness, color, alpha, caps, joints, miter]);
+			this._callDrawMethod('lineStyle', [thickness, color, alpha, caps, joints, miter]);
 		}
 
 		/**
@@ -101,7 +129,7 @@ module Display {
 		public drawRect(x:number, y:number, w:number, h:number):void {
 			this._evaluateBoundingBox(x,y);
 			this._evaluateBoundingBox(x + w,y + h);
-			this._callDrawMethod("drawRect", [x, y, w, h]);
+			this._callDrawMethod('drawRect', [x, y, w, h]);
 		}
 
 		/**
@@ -113,7 +141,7 @@ module Display {
 		public drawCircle(x:number, y:number, r:number):void {
 			this._evaluateBoundingBox(x - r,y - r);
 			this._evaluateBoundingBox(x + r,y + r);
-			this._callDrawMethod("drawCircle", [x, y , r]);
+			this._callDrawMethod('drawCircle', [x, y , r]);
 		}
 
 		/**
@@ -126,7 +154,7 @@ module Display {
 		public drawEllipse(cx:number, cy:number, w:number, h:number):void {
 			this._evaluateBoundingBox(cx - w/2,cy - h/2);
 			this._evaluateBoundingBox(cx + w/2,cy + h/2);
-			this._callDrawMethod("drawEllipse", [cx + w / 2, cy + h / 2, w / 2, h / 2]);
+			this._callDrawMethod('drawEllipse', [cx + w / 2, cy + h / 2, w / 2, h / 2]);
 		}
 
 		/**
@@ -138,10 +166,16 @@ module Display {
 		 * @param elw - ellipse corner width
 		 * @param elh - ellipse corner height
 		 */
-		public drawRoundRect(x:number, y:number, w:number, h:number, elw:number, elh:number):void {
+		public drawRoundRect(x:number,
+			y:number,
+			w:number,
+			h:number,
+			elw:number,
+			elh:number):void {
+
 			this._evaluateBoundingBox(x,y);
 			this._evaluateBoundingBox(x+w,y+h);
-			this._callDrawMethod("drawRoundRect", [x, y, w, h, elw, elh]);
+			this._callDrawMethod('drawRoundRect', [x, y, w, h, elw, elh]);
 		}
 
 		/**
@@ -152,7 +186,7 @@ module Display {
 		 */
 		public drawPath(commands:Array<number>, data:Array<number>, winding:string = "evenOdd"):void {
 			/** TODO: Evaluate bounding box **/
-			this._callDrawMethod("drawPath", [commands, data, winding]);
+			this._callDrawMethod('drawPath', [commands, data, winding]);
 		}
 
 		/**
@@ -161,28 +195,28 @@ module Display {
 		 * @param alpha
 		 */
 		public beginFill(color:number, alpha:number = 1.0):void {
-			this._callDrawMethod("beginFill", [color, alpha]);
+			this._callDrawMethod('beginFill', [color, alpha]);
 		}
 
 		/**
 		 * Gradient Fill Not Supported yet
 		 */
 		public beginGradientFill():void {
-			__trace("Graphics: Gradients not supported yet.", 'warn');
+			__trace('Graphics: Gradients not supported yet.', 'warn');
 		}
 
 		/**
 		 * Shader Fill Not Supported yet
 		 */
 		public beginShaderFill():void {
-			__trace("Graphics: Shaders not supported yet.", 'warn');
+			__trace('Graphics: Shaders not supported yet.', 'warn');
 		}
 
 		/**
 		 * Stop and finalize fill
 		 */
 		public endFill():void {
-			this._callDrawMethod("endFill", []);
+			this._callDrawMethod('endFill', []);
 		}
 
 		/**
@@ -192,7 +226,11 @@ module Display {
 		 * @param uvtData - Texture mapping stuff. Not supported any time soon.
 		 * @param culling - "none" shows all triangles, "positive"/"negative" will cull triangles by normal along z-axis
 		 */
-		public drawTriangles(verts:Array<number>, indices:Array<number> = null, uvtData:Array<number> = null, culling:String = "none"):void {
+		public drawTriangles(verts:Array<number>,
+			indices:Array<number> = null,
+			uvtData:Array<number> = null,
+			culling:String = 'none'):void {
+
 			if (indices === null) {
 				indices = [];
 				for (var i = 0; i < verts.length; i += 2) {
@@ -202,19 +240,19 @@ module Display {
 				indices = indices.slice(0);
 			}
 			if (indices.length % 3 !== 0) {
-				__trace("Graphics.drawTriangles malformed indices count. Must be multiple of 3.", "err");
+				__trace('Graphics.drawTriangles malformed indices count. Must be multiple of 3.', 'err');
 				return;
 			}
 			/** Do culling of triangles here to lessen work later **/
-			if (culling !== "none") {
+			if (culling !== 'none') {
 				for (var i = 0; i < indices.length / 3; i++) {
 					var ux = verts[2 * indices[i * 3 + 1]] - verts[2 * indices[i * 3]],
 						uy = verts[2 * indices[i * 3 + 1] + 1] - verts[2 * indices[i * 3] + 1],
 						vx = verts[2 * indices[i * 3 + 2]] - verts[2 * indices[i * 3 + 1]],
 						vy = verts[2 * indices[i * 3 + 2] + 1] - verts[2 * indices[i * 3 + 1] + 1];
 					var zcomp = ux * vy - vx * uy;
-					if (zcomp < 0 && culling === "positive" ||
-						zcomp > 0 && culling === "negative") {
+					if (zcomp < 0 && culling === 'positive' ||
+						zcomp > 0 && culling === 'negative') {
 						/** Remove the indices. Leave the vertices. **/
 						indices.splice(i * 3, 3);
 						i--;
@@ -225,7 +263,7 @@ module Display {
 			for(var i = 0; i < indices.length; i++){
 				this._evaluateBoundingBox(verts[2 * indices[i]], verts[2 * indices[i] + 1]);
 			}
-			this._callDrawMethod("drawTriangles", [verts, indices, culling]);
+			this._callDrawMethod('drawTriangles', [verts, indices, culling]);
 		}
 
 		/**
@@ -233,7 +271,7 @@ module Display {
 		 */
 		public clear():void {
 			this._parent.boundingBox.setEmpty();
-			this._callDrawMethod("clear", []);
+			this._callDrawMethod('clear', []);
 		}
 	}
 }

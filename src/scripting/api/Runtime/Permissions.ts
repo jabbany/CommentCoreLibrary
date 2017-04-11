@@ -6,7 +6,7 @@ module Runtime{
 	export function requestPermission(name:string, callback?:Function):void{
 		__channel("Runtime:RequestPermission", {
 			"name":name
-		}, function(result:boolean){
+		}, (result:boolean) => {
 			if(result === true){
 				permissions[name] = true;
 			}else{
@@ -19,7 +19,7 @@ module Runtime{
 	}
 
 	export function hasPermission(name:string):boolean{
-		if(permissions.hasOwnProperty(name) &&
+		if (permissions.hasOwnProperty(name) &&
 			permissions[name]){
 			return true;
 		}
@@ -66,12 +66,12 @@ module Runtime{
 
 	export function injectStyle(referenceObject:string, style:Object):void{
 		__pchannel("Runtime:PrivilegedAPI",{
-			"method":"injectStyle",
-			"params":[referenceObject, style]
+			"method": "injectStyle",
+			"params": [referenceObject, style]
 		});
 	}
 
 	export function privilegedCode():void{
-		__trace("Runtime.privilegedCode not available.","warn");
+		__trace('Runtime.privilegedCode not available.','warn');
 	}
 }

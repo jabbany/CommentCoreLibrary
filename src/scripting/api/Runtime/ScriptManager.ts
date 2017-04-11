@@ -14,7 +14,7 @@ module Runtime {
     popTimer(t:Timer):void;
   }
 
-  class ScriptManagerImpl implements ScriptManager{
+  class ScriptManagerImpl implements ScriptManager {
     constructor() { }
     public clearTimer():void {
       Runtime.getTimer().clearAll('interval');
@@ -42,6 +42,10 @@ module Runtime {
 
     public popTimer(t:Timer):void {
       __trace("ScriptManager.popTimer not implemented.", "warn");
+    }
+
+    public toString():string {
+      return '[scriptManager ScriptManager]';
     }
   }
 

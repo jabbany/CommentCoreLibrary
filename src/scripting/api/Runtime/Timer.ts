@@ -3,13 +3,14 @@
  */
 
 module Runtime{
+
 	class RuntimeTimer{
 		public ttl:number;
 		public dur:number;
 		public key:number;
 		public type:string;
 		public callback:Function;
-		constructor(type:string, dur:number, key:number, callback:Function){
+		constructor (type:string, dur:number, key:number, callback:Function){
 			this.ttl = dur;
 			this.dur = dur;
 			this.key = key;
@@ -45,7 +46,7 @@ module Runtime{
 			if (this._timer < 0) {
 				this._lastToken = Date.now();
 				var _self:TimerRuntime = this;
-				this._timer = setInterval(function () {
+				this._timer = setInterval( () => {
 					var elapsed:number = Date.now() - _self._lastToken;
 					for (var i = 0; i < _self._timers.length; i++) {
 						var timer:RuntimeTimer = _self._timers[i];
@@ -140,34 +141,34 @@ module Runtime{
 		private _complete:Array<Function> = [];
 		public currentCount:number = 0;
 
-		constructor(delay:number, repeatCount:number = 0){
+		constructor(delay:number, repeatCount:number = 0) {
 			this._delay = delay;
 			this._repeatCount = repeatCount;
 		}
 
-		set isRunning(b:boolean){
+		set isRunning(b:boolean) {
 			__trace('Timer.isRunning is read-only', 'warn');
 		}
 
-		get isRunning():boolean{
+		get isRunning():boolean {
 			return this._timer >= 0;
 		}
 
-		public start():void{
-			if(!this.isRunning){
+		public start():void {
+			if (!this.isRunning) {
 				var lastTime = Date.now();
 				var self = this;
-				this._timer = setInterval(function(){
+				this._timer = setInterval( () => {
 					var elapsed = Date.now() - lastTime;
 					self._microtime += elapsed;
-					if(self._microtime > self._delay){
+					if (self._microtime > self._delay) {
 						self._microtime -= self._delay;
 						self.currentCount++;
 						self.dispatchEvent('timer');
 					}
 					lastTime = Date.now();
-					if(self._repeatCount > 0 &&
-						self._repeatCount <= self.currentCount){
+					if (self._repeatCount > 0 &&
+						self._repeatCount <= self.currentCount) {
 						self.stop();
 						self.dispatchEvent('timerComplete');
 					}
@@ -175,37 +176,57 @@ module Runtime{
 			}
 		}
 
-		public stop():void{
-			if(this.isRunning){
+		public stop():void {
+			if (this.isRunning) {
 				clearInterval(this._timer);
 				this._timer = -1;
 			}
 		}
 
-		public reset():void{
+		public reset():void {
 			this.stop();
 			this.currentCount = 0;
 			this._microtime = 0;
 		}
 
-		public addEventListener(type:string, listener:Function):void{
-			if(type === 'timer'){
+		public addEventListener(type:string, listener:Function):void {
+			if (type === 'timer') {
 				this._listeners.push(listener);
-			}else if(type === 'timerComplete'){
+			} else if (type === 'timerComplete') {
 				this._complete.push(listener);
 			}
 		}
 
 		public dispatchEvent(event:string){
-			if(event === 'timer'){
-				for(var i = 0; i < this._listeners.length; i++){
+			if (event === 'timer') {
+				for (var i = 0; i < this._listeners.length; i++) {
 					this._listeners[i]();
 				}
-			}else if(event === 'timerComplete'){
-				for(var i = 0; i < this._complete.length; i++){
+			} else if(event === 'timerComplete') {
+				for (var i = 0; i < this._complete.length; i++) {
 					this._complete[i]();
 				}
 			}
+		}
+	}
+
+	/**
+	 * Internal class to help other methods keep time
+	 */
+	export class TimeKeeper {
+		private _clock:Function;
+		private _lastTime:number;
+
+		constructor(clock:Function = () => Date.now()) {
+			this._clock = clock;
+		}
+
+		get elapsed():number {
+			return this._clock() - this._lastTime;
+		}
+
+		public reset():void {
+			this._lastTime = this._clock();
 		}
 	}
 
@@ -217,7 +238,9 @@ module Runtime{
 			if (object.substring(0, 2) === '__') {
 				continue;
 			}
-			Runtime.registeredObjects[object].dispatchEvent('enterFrame');
+			try {
+				Runtime.registeredObjects[object].dispatchEvent('enterFrame');
+			} catch (e) { }
 		}
 	};
 	masterTimer.start();
@@ -234,9 +257,15 @@ module Runtime{
 	 * Update the rate in which the enterFrame event is broadcasted
 	 * This synchronizes the frameRate value of the Display object.
 	 * By default, the frame rate is 24fps.
+	 * @param frameRate - number indicating frame rate
 	 */
 	export function updateFrameRate(frameRate:number):void {
-		if(frameRate > 60){
+		if (frameRate > 60 || frameRate < 0){
+			return;
+		}
+		if (frameRate === 0) {
+			// Stop broadcasting of enterFrame
+			internalTimer.stop();
 			return;
 		}
 		internalTimer.stop();

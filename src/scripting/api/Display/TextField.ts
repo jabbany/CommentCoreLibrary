@@ -13,7 +13,20 @@ module Display {
 		public italic:boolean;
 		public underline:boolean;
 
-		constructor(font:string = "SimHei", size:number = 25, color:number = 0xFFFFFF, bold:boolean = false, italic:boolean = false, underline:boolean = false, url:string = "", target:string = "", align:string = "left", leftMargin:number = 0, rightMargin:number = 0, indent:number = 0, leading:number = 0) {
+		constructor(font:string = "SimHei",
+			size:number = 25,
+			color:number = 0xFFFFFF,
+			bold:boolean = false,
+			italic:boolean = false,
+			underline:boolean = false,
+			url:string = "",
+			target:string = "",
+			align:string = "left",
+			leftMargin:number = 0,
+			rightMargin:number = 0,
+			indent:number = 0,
+			leading:number = 0) {
+
 			this.font = font;
 			this.size = size;
 			this.color = color;
@@ -38,6 +51,10 @@ module Display {
 	export class TextField extends DisplayObject {
 		private _text:string;
 		private _textFormat:TextFormat;
+		private _background:boolean = false;
+		private _backgroundColor:number = 0xffffff;
+		private _border:boolean = false;
+		private _borderColor:number = 0;
 
 		constructor(text:string = "", color:number = 0) {
 			super();
@@ -101,6 +118,42 @@ module Display {
 		set color(c:number) {
 			this._textFormat.color = c;
 			this.setTextFormat(this._textFormat);
+		}
+
+		get background():boolean {
+			return this._background;
+		}
+
+		set background(enabled:boolean) {
+			this._background = enabled;
+			this.propertyUpdate("background", enabled);
+		}
+
+		get backgroundColor():number {
+			return this._backgroundColor;
+		}
+
+		set backgroundColor(color:number) {
+			this._backgroundColor = color;
+			this.propertyUpdate("backgroundColor", color);
+		}
+
+		get border():boolean {
+			return this._border;
+		}
+
+		set border(enabled:boolean) {
+			this._border = enabled;
+			this.propertyUpdate('border', enabled);
+		}
+
+		get borderColor():number {
+			return this._borderColor;
+		}
+
+		set borderColor(color:number) {
+			this._borderColor = color;
+			this.propertyUpdate('borderColor', color);
 		}
 
 		public getTextFormat():any {

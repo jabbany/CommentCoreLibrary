@@ -12,10 +12,10 @@ module Runtime{
 		"Utils":["*"]
 	};
 	export function supports(featureName:string, subfeature:string = "*"):boolean{
-		if(!supported.hasOwnProperty(featureName)){
+		if (!supported.hasOwnProperty(featureName)) {
 			return false;
-		}else{
-			if(supported[featureName].indexOf(subfeature) >= 0){
+		} else {
+			if (supported[featureName].indexOf(subfeature) >= 0) {
 				return true;
 			}
 		}

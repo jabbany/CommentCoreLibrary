@@ -42,8 +42,13 @@ module Display {
 		}
 
 		public initStyle(style:Object):void {
+		  if (typeof style === 'undefined' || style === null) {
+				style = {};
+			}
 			if ("lifeTime" in style) {
 				this._mM.dur = style["lifeTime"] * 1000;
+			} else {
+				this._mM.dur = 4000;
 			}
 			if (style.hasOwnProperty("text")) {
 				this._label = style["text"];

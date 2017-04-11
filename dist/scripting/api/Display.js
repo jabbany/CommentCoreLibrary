@@ -1,8 +1,13 @@
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var Display;
 (function (Display) {
     var Point = (function () {
@@ -286,11 +291,11 @@ var Display;
         Vector3D.prototype.toString = function () {
             return "(x=" + this.x + ", y=" + this.y + ", z=" + this.z + ", w=" + this.w + ")";
         };
-        Vector3D.X_AXIS = new Vector3D(1, 0, 0);
-        Vector3D.Y_AXIS = new Vector3D(0, 1, 0);
-        Vector3D.Z_AXIS = new Vector3D(0, 0, 1);
         return Vector3D;
     }());
+    Vector3D.X_AXIS = new Vector3D(1, 0, 0);
+    Vector3D.Y_AXIS = new Vector3D(0, 1, 0);
+    Vector3D.Z_AXIS = new Vector3D(0, 0, 1);
     Display.Vector3D = Vector3D;
     function createMatrix(a, b, c, d, tx, ty) {
         return new Matrix(a, b, c, d, tx, ty);
@@ -389,9 +394,10 @@ var Display;
         function BlurFilter(blurX, blurY) {
             if (blurX === void 0) { blurX = 4.0; }
             if (blurY === void 0) { blurY = 4.0; }
-            _super.call(this);
-            this._blurX = blurX;
-            this._blurY = blurY;
+            var _this = _super.call(this) || this;
+            _this._blurX = blurX;
+            _this._blurY = blurY;
+            return _this;
         }
         BlurFilter.prototype.serialize = function () {
             var s = _super.prototype.serialize.call(this);
@@ -415,15 +421,16 @@ var Display;
             if (quality === void 0) { quality = null; }
             if (inner === void 0) { inner = false; }
             if (knockout === void 0) { knockout = false; }
-            _super.call(this);
-            this._color = color;
-            this._alpha = alpha;
-            this._blurX = blurX;
-            this._blurY = blurY;
-            this._strength = strength;
-            this._quality = quality;
-            this._inner = inner;
-            this._knockout = knockout;
+            var _this = _super.call(this) || this;
+            _this._color = color;
+            _this._alpha = alpha;
+            _this._blurX = blurX;
+            _this._blurY = blurY;
+            _this._strength = strength;
+            _this._quality = quality;
+            _this._inner = inner;
+            _this._knockout = knockout;
+            return _this;
         }
         GlowFilter.prototype.serialize = function () {
             var s = _super.prototype.serialize.call(this);
@@ -452,17 +459,18 @@ var Display;
             if (blurY === void 0) { blurY = 4.0; }
             if (strength === void 0) { strength = 1.0; }
             if (quality === void 0) { quality = 1; }
-            _super.call(this);
-            this._color = color;
-            this._alpha = alpha;
-            this._blurX = blurX;
-            this._blurY = blurY;
-            this._strength = strength;
-            this._quality = quality;
-            this._inner = false;
-            this._knockout = false;
-            this._distance = distance;
-            this._angle = angle;
+            var _this = _super.call(this) || this;
+            _this._color = color;
+            _this._alpha = alpha;
+            _this._blurX = blurX;
+            _this._blurY = blurY;
+            _this._strength = strength;
+            _this._quality = quality;
+            _this._inner = false;
+            _this._knockout = false;
+            _this._distance = distance;
+            _this._angle = angle;
+            return _this;
         }
         DropShadowFilter.prototype.serialize = function () {
             var s = _super.prototype.serialize.call(this);
@@ -519,23 +527,23 @@ var Display;
     var BlendMode = (function () {
         function BlendMode() {
         }
-        BlendMode.ADD = "add";
-        BlendMode.ALPHA = "alpha";
-        BlendMode.DARKEN = "darken";
-        BlendMode.DIFFERENCE = "difference";
-        BlendMode.ERASE = "erase";
-        BlendMode.HARDLIGHT = "hardlight";
-        BlendMode.INVERT = "invert";
-        BlendMode.LAYER = "layer";
-        BlendMode.LIGHTEN = "lighten";
-        BlendMode.MULTIPLY = "multiply";
-        BlendMode.NORMAL = "normal";
-        BlendMode.OVERLAY = "overlay";
-        BlendMode.SCREEN = "screen";
-        BlendMode.SHADER = "shader";
-        BlendMode.SUBTRACT = "subtract";
         return BlendMode;
     }());
+    BlendMode.ADD = "add";
+    BlendMode.ALPHA = "alpha";
+    BlendMode.DARKEN = "darken";
+    BlendMode.DIFFERENCE = "difference";
+    BlendMode.ERASE = "erase";
+    BlendMode.HARDLIGHT = "hardlight";
+    BlendMode.INVERT = "invert";
+    BlendMode.LAYER = "layer";
+    BlendMode.LIGHTEN = "lighten";
+    BlendMode.MULTIPLY = "multiply";
+    BlendMode.NORMAL = "normal";
+    BlendMode.OVERLAY = "overlay";
+    BlendMode.SCREEN = "screen";
+    BlendMode.SHADER = "shader";
+    BlendMode.SUBTRACT = "subtract";
     Display.BlendMode = BlendMode;
     var ColorTransform = (function () {
         function ColorTransform() {
@@ -760,7 +768,10 @@ var Display;
             configurable: true
         });
         Rectangle.prototype.contains = function (x, y) {
-            return x >= this.left && y >= this.top && x <= this.right && y <= this.bottom;
+            return x >= this.left &&
+                y >= this.top &&
+                x <= this.right &&
+                y <= this.bottom;
         };
         Rectangle.prototype.containsPoint = function (p) {
             return this.contains(p.x, p.y);
@@ -775,7 +786,10 @@ var Display;
             this._height = source._height;
         };
         Rectangle.prototype.equals = function (other) {
-            return this._x === other._x && this._y === other._y && this._width === other._width && this._height === other._height;
+            return this._x === other._x &&
+                this._y === other._y &&
+                this._width === other._width &&
+                this._height === other._height;
         };
         Rectangle.prototype.inflate = function (dx, dy) {
             if (dx === void 0) { dx = 0; }
@@ -841,7 +855,8 @@ var Display;
             return n;
         };
         Rectangle.prototype.toString = function () {
-            return "(x=" + this._x + ", y=" + this._y + ", width=" + this._width + ", height=" + this._height + ")";
+            return "(x=" + this._x + ", y=" + this._y + ", width=" + this._width +
+                ", height=" + this._height + ")";
         };
         Rectangle.prototype.clone = function () {
             return new Rectangle(this._x, this._y, this._width, this._height);
@@ -1340,7 +1355,8 @@ var Display;
             }
         };
         DisplayObject.prototype.toString = function () {
-            return '[' + (this._name.length > 0 ? this._name : 'displayObject') + ' DisplayObject]@' + this._id;
+            return '[' + (this._name.length > 0 ? this._name : 'displayObject') +
+                ' DisplayObject]@' + this._id;
         };
         DisplayObject.prototype.clone = function () {
             var alternate = new DisplayObject();
@@ -1381,9 +1397,9 @@ var Display;
         DisplayObject.prototype.getId = function () {
             return this._id;
         };
-        DisplayObject.SANDBOX_EVENTS = ["enterFrame"];
         return DisplayObject;
     }());
+    DisplayObject.SANDBOX_EVENTS = ["enterFrame"];
     Display.DisplayObject = DisplayObject;
 })(Display || (Display = {}));
 var Display;
@@ -1391,90 +1407,93 @@ var Display;
     var Graphics = (function () {
         function Graphics(parent) {
             this._lineWidth = 1;
+            if (typeof parent === 'undefined' || parent === null) {
+                throw new Error('Cannot initialize a display not bound to an element.');
+            }
             this._parent = parent;
         }
         Graphics.prototype._evaluateBoundingBox = function (x, y) {
             this._parent.boundingBox.unionCoord(x + this._lineWidth / 2, y + this._lineWidth / 2);
         };
         Graphics.prototype._callDrawMethod = function (method, params) {
-            __pchannel("Runtime:CallMethod", {
-                "id": this._parent.getId(),
-                "context": "graphics",
-                "method": method,
-                "params": params
+            __pchannel('Runtime:CallMethod', {
+                'id': this._parent.getId(),
+                'context': 'graphics',
+                'method': method,
+                'params': params
             });
         };
         Graphics.prototype.lineTo = function (x, y) {
             this._evaluateBoundingBox(x, y);
-            this._callDrawMethod("lineTo", [x, y]);
+            this._callDrawMethod('lineTo', [x, y]);
         };
         Graphics.prototype.moveTo = function (x, y) {
             this._evaluateBoundingBox(x, y);
-            this._callDrawMethod("moveTo", [x, y]);
+            this._callDrawMethod('moveTo', [x, y]);
         };
         Graphics.prototype.curveTo = function (cx, cy, ax, ay) {
             this._evaluateBoundingBox(ax, ay);
             this._evaluateBoundingBox(cx, cy);
-            this._callDrawMethod("curveTo", [cx, cy, ax, ay]);
+            this._callDrawMethod('curveTo', [cx, cy, ax, ay]);
         };
         Graphics.prototype.cubicCurveTo = function (cax, cay, cbx, cby, ax, ay) {
             this._evaluateBoundingBox(cax, cay);
             this._evaluateBoundingBox(cbx, cby);
             this._evaluateBoundingBox(ax, ay);
-            this._callDrawMethod("cubicCurveTo", [cax, cay, cbx, cby, ax, ay]);
+            this._callDrawMethod('cubicCurveTo', [cax, cay, cbx, cby, ax, ay]);
         };
         Graphics.prototype.lineStyle = function (thickness, color, alpha, hinting, scale, caps, joints, miter) {
             if (color === void 0) { color = 0; }
             if (alpha === void 0) { alpha = 1.0; }
             if (hinting === void 0) { hinting = false; }
-            if (scale === void 0) { scale = "normal"; }
-            if (caps === void 0) { caps = "none"; }
-            if (joints === void 0) { joints = "round"; }
+            if (scale === void 0) { scale = 'normal'; }
+            if (caps === void 0) { caps = 'none'; }
+            if (joints === void 0) { joints = 'round'; }
             if (miter === void 0) { miter = 3; }
             this._lineWidth = thickness;
-            this._callDrawMethod("lineStyle", [thickness, color, alpha, caps, joints, miter]);
+            this._callDrawMethod('lineStyle', [thickness, color, alpha, caps, joints, miter]);
         };
         Graphics.prototype.drawRect = function (x, y, w, h) {
             this._evaluateBoundingBox(x, y);
             this._evaluateBoundingBox(x + w, y + h);
-            this._callDrawMethod("drawRect", [x, y, w, h]);
+            this._callDrawMethod('drawRect', [x, y, w, h]);
         };
         Graphics.prototype.drawCircle = function (x, y, r) {
             this._evaluateBoundingBox(x - r, y - r);
             this._evaluateBoundingBox(x + r, y + r);
-            this._callDrawMethod("drawCircle", [x, y, r]);
+            this._callDrawMethod('drawCircle', [x, y, r]);
         };
         Graphics.prototype.drawEllipse = function (cx, cy, w, h) {
             this._evaluateBoundingBox(cx - w / 2, cy - h / 2);
             this._evaluateBoundingBox(cx + w / 2, cy + h / 2);
-            this._callDrawMethod("drawEllipse", [cx + w / 2, cy + h / 2, w / 2, h / 2]);
+            this._callDrawMethod('drawEllipse', [cx + w / 2, cy + h / 2, w / 2, h / 2]);
         };
         Graphics.prototype.drawRoundRect = function (x, y, w, h, elw, elh) {
             this._evaluateBoundingBox(x, y);
             this._evaluateBoundingBox(x + w, y + h);
-            this._callDrawMethod("drawRoundRect", [x, y, w, h, elw, elh]);
+            this._callDrawMethod('drawRoundRect', [x, y, w, h, elw, elh]);
         };
         Graphics.prototype.drawPath = function (commands, data, winding) {
             if (winding === void 0) { winding = "evenOdd"; }
-            this._callDrawMethod("drawPath", [commands, data, winding]);
+            this._callDrawMethod('drawPath', [commands, data, winding]);
         };
         Graphics.prototype.beginFill = function (color, alpha) {
             if (alpha === void 0) { alpha = 1.0; }
-            this._callDrawMethod("beginFill", [color, alpha]);
+            this._callDrawMethod('beginFill', [color, alpha]);
         };
         Graphics.prototype.beginGradientFill = function () {
-            __trace("Graphics: Gradients not supported yet.", 'warn');
+            __trace('Graphics: Gradients not supported yet.', 'warn');
         };
         Graphics.prototype.beginShaderFill = function () {
-            __trace("Graphics: Shaders not supported yet.", 'warn');
+            __trace('Graphics: Shaders not supported yet.', 'warn');
         };
         Graphics.prototype.endFill = function () {
-            this._callDrawMethod("endFill", []);
+            this._callDrawMethod('endFill', []);
         };
         Graphics.prototype.drawTriangles = function (verts, indices, uvtData, culling) {
             if (indices === void 0) { indices = null; }
             if (uvtData === void 0) { uvtData = null; }
-            if (culling === void 0) { culling = "none"; }
+            if (culling === void 0) { culling = 'none'; }
             if (indices === null) {
                 indices = [];
                 for (var i = 0; i < verts.length; i += 2) {
@@ -1485,15 +1504,15 @@ var Display;
                 indices = indices.slice(0);
             }
             if (indices.length % 3 !== 0) {
-                __trace("Graphics.drawTriangles malformed indices count. Must be multiple of 3.", "err");
+                __trace('Graphics.drawTriangles malformed indices count. Must be multiple of 3.', 'err');
                 return;
             }
-            if (culling !== "none") {
+            if (culling !== 'none') {
                 for (var i = 0; i < indices.length / 3; i++) {
                     var ux = verts[2 * indices[i * 3 + 1]] - verts[2 * indices[i * 3]], uy = verts[2 * indices[i * 3 + 1] + 1] - verts[2 * indices[i * 3] + 1], vx = verts[2 * indices[i * 3 + 2]] - verts[2 * indices[i * 3 + 1]], vy = verts[2 * indices[i * 3 + 2] + 1] - verts[2 * indices[i * 3 + 1] + 1];
                     var zcomp = ux * vy - vx * uy;
-                    if (zcomp < 0 && culling === "positive" ||
-                        zcomp > 0 && culling === "negative") {
+                    if (zcomp < 0 && culling === 'positive' ||
+                        zcomp > 0 && culling === 'negative') {
                         indices.splice(i * 3, 3);
                         i--;
                     }
@@ -1502,11 +1521,11 @@ var Display;
             for (var i = 0; i < indices.length; i++) {
                 this._evaluateBoundingBox(verts[2 * indices[i]], verts[2 * indices[i] + 1]);
             }
-            this._callDrawMethod("drawTriangles", [verts, indices, culling]);
+            this._callDrawMethod('drawTriangles', [verts, indices, culling]);
         };
         Graphics.prototype.clear = function () {
             this._parent.boundingBox.setEmpty();
-            this._callDrawMethod("clear", []);
+            this._callDrawMethod('clear', []);
         };
         return Graphics;
     }());
@@ -1517,19 +1536,48 @@ var Display;
     var Sprite = (function (_super) {
         __extends(Sprite, _super);
         function Sprite(id) {
-            _super.call(this, id);
-            this._graphics = new Display.Graphics(this);
+            var _this = _super.call(this, id) || this;
+            _this._mouseEnabled = true;
+            _this._mousePosition = new Display.Point(0, 0);
+            _this._useHandCursor = false;
+            _this._graphics = new Display.Graphics(_this);
+            return _this;
         }
         Object.defineProperty(Sprite.prototype, "graphics", {
             get: function () {
                 return this._graphics;
+            },
+            set: function (g) {
+                __trace('Sprite.graphics is read-only.', 'warn');
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(Sprite.prototype, "mouseEnabled", {
+            get: function () {
+                return this._mouseEnabled;
+            },
+            set: function (enabled) {
+                this._mouseEnabled = enabled;
+                this.propertyUpdate('mouseEnabled', enabled);
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(Sprite.prototype, "useHandCursor", {
+            get: function () {
+                return this._useHandCursor;
+            },
+            set: function (use) {
+                this._useHandCursor = use;
+                this.propertyUpdate('useHandCursor', use);
             },
             enumerable: true,
             configurable: true
         });
         Sprite.prototype.serialize = function () {
             var serialized = _super.prototype.serialize.call(this);
-            serialized["class"] = "Sprite";
+            serialized['class'] = 'Sprite';
             return serialized;
         };
         return Sprite;
@@ -1538,11 +1586,11 @@ var Display;
     var RootSprite = (function (_super) {
         __extends(RootSprite, _super);
         function RootSprite() {
-            _super.call(this, "__root");
+            return _super.call(this, '__root') || this;
         }
         Object.defineProperty(RootSprite.prototype, "parent", {
             get: function () {
-                __trace("SecurityError: No access above root sprite.", "err");
+                __trace('SecurityError: No access above root sprite.', 'err');
                 return null;
             },
             enumerable: true,
@@ -1555,14 +1603,19 @@ var Display;
 var Display;
 (function (Display) {
     var MotionManager = (function () {
-        function MotionManager(o, dur) {
+        function MotionManager(o, dur, independentTimer) {
             if (dur === void 0) { dur = 1000; }
+            if (independentTimer === void 0) { independentTimer = false; }
             this._isRunning = false;
             this.oncomplete = null;
+            if (typeof o === 'undefined' || o === null) {
+                throw new Error('MotionManager must be bound to a DisplayObject.');
+            }
             this._ttl = dur;
             this._dur = dur;
             this._parent = o;
-            this._timer = new Runtime.Timer(41, 0);
+            this._independentTimer = independentTimer;
+            this._timer = this._independentTimer ? new Runtime.Timer(41, 0) : null;
         }
         Object.defineProperty(MotionManager.prototype, "dur", {
             get: function () {
@@ -1572,7 +1625,6 @@ var Display;
                 this._timer.stop();
                 this._ttl = dur;
                 this._dur = dur;
-                this._timer = new Runtime.Timer(41, 0);
             },
             enumerable: true,
             configurable: true
@@ -1584,6 +1636,8 @@ var Display;
             enumerable: true,
             configurable: true
         });
+        MotionManager.prototype._onTimerEvent = function () {
+        };
         MotionManager.prototype.reset = function () {
             this._ttl = this._dur;
         };
@@ -1591,14 +1645,12 @@ var Display;
             if (this._isRunning) {
                 return;
             }
-            if (this._dur === 0) {
-                return;
-            }
-            if (this._ttl <= 0) {
+            if (this._dur === 0 || this._ttl <= 0) {
                 return;
             }
             this._isRunning = true;
             var self = this;
+            var _lastTime = Date.now();
             var _lastTime = Date.now();
             this._timer.addEventListener("timer", function () {
                 var elapsed = Date.now() - _lastTime;
@@ -1694,14 +1746,15 @@ var Display;
     var CommentButton = (function (_super) {
         __extends(CommentButton, _super);
         function CommentButton(params) {
-            _super.call(this);
-            this._mM = new Display.MotionManager(this);
-            this._label = "";
-            this.setDefaults(params);
-            this.initStyle(params);
-            Runtime.registerObject(this);
-            this.bindParent(params);
-            this._mM.play();
+            var _this = _super.call(this) || this;
+            _this._mM = new Display.MotionManager(_this);
+            _this._label = "";
+            _this.setDefaults(params);
+            _this.initStyle(params);
+            Runtime.registerObject(_this);
+            _this.bindParent(params);
+            _this._mM.play();
+            return _this;
         }
         CommentButton.prototype.setStyle = function (styleProp, value) {
             __trace("UIComponent.setStyle not implemented", "warn");
@@ -1722,8 +1775,14 @@ var Display;
             }
         };
         CommentButton.prototype.initStyle = function (style) {
+            if (typeof style === 'undefined' || style === null) {
+                style = {};
+            }
             if ("lifeTime" in style) {
                 this._mM.dur = style["lifeTime"] * 1000;
+            }
+            else {
+                this._mM.dur = 4000;
             }
             if (style.hasOwnProperty("text")) {
                 this._label = style["text"];
@@ -1753,13 +1812,14 @@ var Display;
     var CommentCanvas = (function (_super) {
         __extends(CommentCanvas, _super);
         function CommentCanvas(params) {
-            _super.call(this);
-            this._mM = new Display.MotionManager(this);
-            this.setDefaults(params);
-            this.initStyle(params);
-            Runtime.registerObject(this);
-            this.bindParent(params);
-            this._mM.play();
+            var _this = _super.call(this) || this;
+            _this._mM = new Display.MotionManager(_this);
+            _this.setDefaults(params);
+            _this.initStyle(params);
+            Runtime.registerObject(_this);
+            _this.bindParent(params);
+            _this._mM.play();
+            return _this;
         }
         Object.defineProperty(CommentCanvas.prototype, "motionManager", {
             get: function () {
@@ -1799,8 +1859,9 @@ var Display;
     var Shape = (function (_super) {
         __extends(Shape, _super);
         function Shape() {
-            _super.call(this);
-            this._graphics = new Display.Graphics(this);
+            var _this = _super.call(this) || this;
+            _this._graphics = new Display.Graphics(_this);
+            return _this;
         }
         Object.defineProperty(Shape.prototype, "graphics", {
             get: function () {
@@ -1823,13 +1884,14 @@ var Display;
     var CommentShape = (function (_super) {
         __extends(CommentShape, _super);
         function CommentShape(params) {
-            _super.call(this);
-            this._mM = new Display.MotionManager(this);
-            this.setDefaults(params);
-            this.initStyle(params);
-            Runtime.registerObject(this);
-            this.bindParent(params);
-            this._mM.play();
+            var _this = _super.call(this) || this;
+            _this._mM = new Display.MotionManager(_this);
+            _this.setDefaults(params);
+            _this.initStyle(params);
+            Runtime.registerObject(_this);
+            _this.bindParent(params);
+            _this._mM.play();
+            return _this;
         }
         Object.defineProperty(CommentShape.prototype, "motionManager", {
             get: function () {
@@ -1909,12 +1971,17 @@ var Display;
         function TextField(text, color) {
             if (text === void 0) { text = ""; }
             if (color === void 0) { color = 0; }
-            _super.call(this);
-            this._text = text;
-            this._textFormat = new TextFormat();
-            this._textFormat.color = color;
-            this.boundingBox.width = this.textWidth;
-            this.boundingBox.height = this.textHeight;
+            var _this = _super.call(this) || this;
+            _this._background = false;
+            _this._backgroundColor = 0xffffff;
+            _this._border = false;
+            _this._borderColor = 0;
+            _this._text = text;
+            _this._textFormat = new TextFormat();
+            _this._textFormat.color = color;
+            _this.boundingBox.width = _this.textWidth;
+            _this.boundingBox.height = _this.textHeight;
+            return _this;
         }
         Object.defineProperty(TextField.prototype, "text", {
             get: function () {
@@ -1981,6 +2048,50 @@ var Display;
             enumerable: true,
             configurable: true
         });
+        Object.defineProperty(TextField.prototype, "background", {
+            get: function () {
+                return this._background;
+            },
+            set: function (enabled) {
+                this._background = enabled;
+                this.propertyUpdate("background", enabled);
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(TextField.prototype, "backgroundColor", {
+            get: function () {
+                return this._backgroundColor;
+            },
+            set: function (color) {
+                this._backgroundColor = color;
+                this.propertyUpdate("backgroundColor", color);
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(TextField.prototype, "border", {
+            get: function () {
+                return this._border;
+            },
+            set: function (enabled) {
+                this._border = enabled;
+                this.propertyUpdate('border', enabled);
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(TextField.prototype, "borderColor", {
+            get: function () {
+                return this._borderColor;
+            },
+            set: function (color) {
+                this._borderColor = color;
+                this.propertyUpdate('borderColor', color);
+            },
+            enumerable: true,
+            configurable: true
+        });
         TextField.prototype.getTextFormat = function () {
             return this._textFormat;
         };
@@ -2011,13 +2122,14 @@ var Display;
     var CommentField = (function (_super) {
         __extends(CommentField, _super);
         function CommentField(text, params) {
-            _super.call(this, text, 0xffffff);
-            this._mM = new Display.MotionManager(this);
-            this.setDefaults(params);
-            this.initStyle(params);
-            Runtime.registerObject(this);
-            this.bindParent(params);
-            this._mM.play();
+            var _this = _super.call(this, text, 0xffffff) || this;
+            _this._mM = new Display.MotionManager(_this);
+            _this.setDefaults(params);
+            _this.initStyle(params);
+            Runtime.registerObject(_this);
+            _this.bindParent(params);
+            _this._mM.play();
+            return _this;
         }
         Object.defineProperty(CommentField.prototype, "fontsize", {
             get: function () {

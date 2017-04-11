@@ -49,7 +49,7 @@ class CommentManager implements ICommentManager {
         this._stage = stage;
     }
 
-    public static getCommentType(data:Object):string{
+    public static getCommentType(data:Object):string {
         return "";
     }
 

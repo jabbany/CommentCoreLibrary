@@ -1,8 +1,13 @@
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var CoreComment = (function () {
     function CoreComment(parent, init) {
         if (init === void 0) { init = {}; }
@@ -426,17 +431,18 @@ var CoreComment = (function () {
     CoreComment.prototype.toString = function () {
         return ['[', this.stime, '|', this.ttl, '/', this.dur, ']', '(', this.mode, ')', this.text].join('');
     };
-    CoreComment.LINEAR = function (t, b, c, d) {
-        return t * c / d + b;
-    };
     return CoreComment;
 }());
+CoreComment.LINEAR = function (t, b, c, d) {
+    return t * c / d + b;
+};
 var ScrollComment = (function (_super) {
     __extends(ScrollComment, _super);
     function ScrollComment(parent, data) {
-        _super.call(this, parent, data);
-        this.dur *= this.parent.options.scroll.scale;
-        this.ttl *= this.parent.options.scroll.scale;
+        var _this = _super.call(this, parent, data) || this;
+        _this.dur *= _this.parent.options.scroll.scale;
+        _this.ttl *= _this.parent.options.scroll.scale;
+        return _this;
     }
     Object.defineProperty(ScrollComment.prototype, "alpha", {
         set: function (a) {

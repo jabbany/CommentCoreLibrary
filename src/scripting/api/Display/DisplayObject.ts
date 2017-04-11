@@ -82,7 +82,16 @@ module Display {
 			return this._matrix;
 		}
 
-		public box3d(sX:number = 1, sY:number = 1, sZ:number = 1, rotX:number = 0, rotY:number = 0, rotZ:number = 0, tX:number = 0, tY:number = 0, tZ:number = 0):void {
+		public box3d(sX:number = 1,
+			sY:number = 1,
+			sZ:number = 1,
+			rotX:number = 0,
+			rotY:number = 0,
+			rotZ:number = 0,
+			tX:number = 0,
+			tY:number = 0,
+			tZ:number = 0):void {
+
 			if(this._matrix !== null || this._matrix3d === null){
 				this._matrix = null;
 				this._matrix3d = new Matrix3D();
@@ -158,128 +167,142 @@ module Display {
 		private _y:number;
 		private _width:number;
 		private _height:number;
-		constructor(x:number = 0, y:number = 0, width:number = 0, height:number = 0){
+		constructor(x:number = 0,
+			y:number = 0,
+			width:number = 0,
+			height:number = 0) {
+
 			this._x = x;
 			this._y = y;
 			this._width = width;
 			this._height= height;
 		}
 
-		set x(v:number){
-			if(v !== null){
+		set x(v:number) {
+			if (v !== null) {
 				this._x = v;
 			}
 		}
 
-		set y(v:number){
-			if(v !== null){
+		set y(v:number) {
+			if (v !== null) {
 				this._y = v;
 			}
 		}
 
-		set width(v:number){
-			if(v !== null){
+		set width(v:number) {
+			if (v !== null) {
 				this._width = v;
 			}
 		}
 
-		set height(v:number){
-			if(v !== null){
+		set height(v:number) {
+			if (v !== null) {
 				this._height = v;
 			}
 		}
 
-		get x():number{
+		get x():number {
 			return this._x;
 		}
 
-		get y():number{
+		get y():number {
 			return this._y;
 		}
 
-		get width():number{
+		get width():number {
 			return this._width;
 		}
 
-		get height():number{
+		get height():number {
 			return this._height;
 		}
 
-		get left():number{
+		get left():number {
 			return this._x;
 		}
 
-		get right():number{
+		get right():number {
 			return this._x + this._width;
 		}
 
-		get top():number{
+		get top():number {
 			return this._y;
 		}
 
-		get bottom():number{
+		get bottom():number {
 			return this._y + this._height;
 		}
 
-		get size():any{
+		get size():any {
 			return Display.createPoint(this._width, this._height);
 		}
 
-		public contains(x:number, y:number):boolean{
-			return x >= this.left && y >= this.top && x <= this.right && y <= this.bottom;
+		public contains(x:number, y:number):boolean {
+			return x >= this.left &&
+				y >= this.top &&
+				x <= this.right &&
+				y <= this.bottom;
 		}
 
-		public containsPoint(p:Display.Point):boolean{
+		public containsPoint(p:Display.Point):boolean {
 			return this.contains(p.x, p.y);
 		}
 
-		public containsRect(r:Rectangle):boolean{
+		public containsRect(r:Rectangle):boolean {
 			return this.contains(r.left, r.top) && this.contains(r.right, r.bottom);
 		}
 
-		public copyFrom(source:Rectangle):void{
+		public copyFrom(source:Rectangle):void {
 			this._x = source._x;
 			this._y = source._y;
 			this._width = source._width;
 			this._height = source._height;
 		}
 
-		public equals(other:Rectangle):boolean{
-			return this._x === other._x && this._y === other._y && this._width === other._width && this._height === other._height;
+		public equals(other:Rectangle):boolean {
+			return this._x === other._x &&
+				this._y === other._y &&
+				this._width === other._width &&
+				this._height === other._height;
 		}
 
-		public inflate(dx:number = 0, dy:number = 0):void{
+		public inflate(dx:number = 0, dy:number = 0):void {
 			this._x -= dx;
 			this._width += 2 * dx;
 			this._y -= dy;
 			this._height += 2 * dy;
 		}
 
-		public inflatePoint(p:Display.Point):void{
+		public inflatePoint(p:Display.Point):void {
 			this.inflate(p.x, p.y);
 		}
 
-		public isEmpty():boolean{
+		public isEmpty():boolean {
 			return this._width <= 0 || this.height <= 0;
 		}
 
-		public setTo(x:number = 0, y:number = 0, width:number = 0, height:number = 0):void{
+		public setTo(x:number = 0,
+			y:number = 0,
+			width:number = 0,
+			height:number = 0):void {
+
 			this._x = x;
 			this._y = y;
 			this._width = width;
 			this._height = height;
 		}
 
-		public offset(x:number = 0, y:number = 0):void{
+		public offset(x:number = 0, y:number = 0):void {
 			this._x += x;
 			this._y += y;
 		}
 
-		public offsetPoint(p:Point):void{
+		public offsetPoint(p:Point):void {
 			this.offset(p.x, p.y);
 		}
 
-		public setEmpty():void{
+		public setEmpty():void {
 			this.setTo(0,0,0,0);
 		}
 
@@ -288,49 +311,50 @@ module Display {
 		 * @param x - x coordinate
 		 * @param y - y coordinate
 		 */
-		public unionCoord(x:number, y:number):void{
+		public unionCoord(x:number, y:number):void {
 			var dx:number = x - this._x;
 			var dy:number = y - this._y;
-			if(dx >= 0) {
+			if (dx >= 0) {
 				this._width = Math.max(this._width, dx);
-			}else{
+			} else {
 				this._x += dx;
 				this._width -= dx;
 			}
-			if(dy >= 0) {
+			if (dy >= 0) {
 				this._height = Math.max(this._height, dy);
-			}else{
+			} else {
 				this._y += dy;
 				this._height -= dy;
 			}
 		}
 
-		public unionPoint(p:Display.Point):void{
+		public unionPoint(p:Display.Point):void {
 			this.unionCoord(p.x,p.y);
 		}
 
-		public union(r:Rectangle):Rectangle{
+		public union(r:Rectangle):Rectangle {
 			var n = this.clone();
 			n.unionCoord(r.left, r.top);
 			n.unionCoord(r.right, r.bottom);
 			return n;
 		}
 
-		public toString():string{
-			return "(x=" + this._x + ", y=" + this._y + ", width=" + this._width + ", height=" + this._height + ")";
+		public toString():string {
+			return "(x=" + this._x + ", y=" + this._y + ", width=" + this._width +
+				", height=" + this._height + ")";
 		}
 
-		public clone():Rectangle{
+		public clone():Rectangle {
 			return new Rectangle(this._x, this._y, this._width, this._height);
 		}
 
-		public serialize():Object{
+		public serialize():Object {
 			return {
 				x: this._x,
 				y: this._y,
 				width: this._width,
 				height: this._height
-			}
+			};
 		}
 	}
 
@@ -452,22 +476,22 @@ module Display {
 			return this._alpha;
 		}
 
-		set anchor(p:Point){
+		set anchor(p:Point) {
 			this._anchor = p;
 			this.propertyUpdate("x", p.x);
 			this.propertyUpdate("y", p.y);
 		}
 
-		get anchor():Point{
+		get anchor():Point {
 			return this._anchor;
 		}
 
-		set boundingBox(r:Rectangle){
+		set boundingBox(r:Rectangle) {
 			this._boundingBox = r;
 			this.propertyUpdate("boundingBox", r.serialize());
 		}
 
-		get boundingBox():Rectangle{
+		get boundingBox():Rectangle {
 			return this._boundingBox;
 		}
 
@@ -499,44 +523,54 @@ module Display {
 			return Display.root;
 		}
 
-		set root(s:DisplayObject){
+		set root(s:DisplayObject) {
 			__trace("DisplayObject.root is read-only.","warn");
 		}
 
-		get stage():DisplayObject{
+		get stage():DisplayObject {
 			return Display.root;
 		}
 
-		set stage(s:DisplayObject){
+		set stage(s:DisplayObject) {
 			__trace("DisplayObject.stage is read-only.","warn");
 		}
 
 		/** Start Transform Area **/
-		private _updateBox(mode:string = this._transform.getMatrixType()):void{
-			if(mode === "3d"){
-				this._transform.box3d(this._scaleX, this._scaleY, this._scaleZ, this._rotationX, this._rotationY, this._rotationZ, 0, 0, this._z);
-			}else{
-				this._transform.box(this._scaleX, this._scaleY, this._rotationZ * Math.PI / 180);
+		private _updateBox(mode:string = this._transform.getMatrixType()):void {
+			if (mode === "3d") {
+				this._transform.box3d(this._scaleX,
+					this._scaleY,
+					this._scaleZ,
+					this._rotationX,
+					this._rotationY,
+					this._rotationZ,
+					0,
+					0,
+					this._z);
+			} else {
+				this._transform.box(this._scaleX,
+					this._scaleY,
+					this._rotationZ * Math.PI / 180);
 			}
 			this.transform = this._transform;
 		}
 
-		set rotationX(x:number){
+		set rotationX(x:number) {
 			this._rotationX = x;
 			this._updateBox("3d");
 		}
 
-		set rotationY(y:number){
+		set rotationY(y:number) {
 			this._rotationY = y;
 			this._updateBox("3d");
 		}
 
-		set rotationZ(z:number){
+		set rotationZ(z:number) {
 			this._rotationZ = z;
 			this._updateBox();
 		}
 
-		set rotation(r:number){
+		set rotation(r:number) {
 			this._rotationZ = r;
 			this._updateBox();
 		}
@@ -571,19 +605,19 @@ module Display {
 			this._updateBox("3d");
 		}
 
-		get rotationX():number{
+		get rotationX():number {
 			return this._rotationX;
 		}
 
-		get rotationY():number{
+		get rotationY():number {
 			return this._rotationY;
 		}
 
-		get rotationZ():number{
+		get rotationZ():number {
 			return this._rotationZ;
 		}
 
-		get rotation():number{
+		get rotation():number {
 			return this._rotationZ;
 		}
 
@@ -650,7 +684,7 @@ module Display {
 
 		set transform(t:any) {
 			this._transform = t;
-			if(this._transform.parent !== this){
+			if (this._transform.parent !== this) {
 				this._transform.parent = this;
 			}
 			this.propertyUpdate('transform', this._transform.serialize());
@@ -730,7 +764,7 @@ module Display {
 		}
 
 		/** DisplayObjectContainer **/
-		get numChildren():number{
+		get numChildren():number {
 			return this._children.length;
 		}
 
@@ -749,28 +783,28 @@ module Display {
 			}
 		}
 
-		public getChildAt(index:number):DisplayObject{
-			if(index < 0 || index > this._children.length){
+		public getChildAt(index:number):DisplayObject {
+			if (index < 0 || index > this._children.length) {
 				throw new RangeError('No child at index ' + index);
 			}
 			return this._children[index];
 		}
 
-		public getChildIndex(o:DisplayObject):number{
+		public getChildIndex(o:DisplayObject):number {
 			return this._children.indexOf(o);
 		}
 
-		public removeChildAt(index:number):void{
+		public removeChildAt(index:number):void {
 			var o:DisplayObject = this.getChildAt(index);
 			this._children.splice(index, 1);
 			o._parent = null;
 			this.methodCall('removeChild', o._id);
 		}
 
-		public removeChildren(begin:number, end:number = this._children.length):void{
+		public removeChildren(begin:number, end:number = this._children.length):void {
 			var removed:Array<DisplayObject> = this._children.splice(begin, end - begin);
 			var ids:Array<string> = [];
-			for(var i = 0; i < removed.length; i++){
+			for (var i = 0; i < removed.length; i++) {
 				removed[i]._parent = null;
 				ids.push(removed[i]._id);
 			}
@@ -789,8 +823,9 @@ module Display {
 			}
 		}
 
-		public toString():string{
-			return '[' + (this._name.length > 0 ? this._name : 'displayObject') + ' DisplayObject]@' + this._id;
+		public toString():string {
+			return '[' + (this._name.length > 0 ? this._name : 'displayObject') +
+				' DisplayObject]@' + this._id;
 		}
 
 		/**
@@ -806,8 +841,8 @@ module Display {
 			return alternate;
 		}
 
-		public hasOwnProperty(prop:string):boolean{
-			if(prop === 'clone') {
+		public hasOwnProperty(prop:string):boolean {
+			if (prop === 'clone') {
 				return true;
 			}else{
 				return Object.prototype.hasOwnProperty.call(this, prop);

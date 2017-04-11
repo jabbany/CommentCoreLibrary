@@ -8,27 +8,37 @@
 
 /// <reference path="DisplayObject.ts" />
 module Display {
+
+
 	export class MotionManager {
 		private _isRunning:boolean = false;
 		private _ttl:number;
 		private _dur:number;
 		private _parent:Display.DisplayObject;
 		private _timer:Runtime.Timer;
+		private _independentTimer:boolean;
 		private _tween:Tween.ITween;
 		public oncomplete:Function = null;
 
-		constructor(o:Display.DisplayObject, dur:number = 1000) {
+		constructor(o:Display.DisplayObject,
+			dur:number = 1000,
+			independentTimer:boolean = false) {
+
+			if (typeof o === 'undefined' || o === null) {
+				throw new Error('MotionManager must be bound to a DisplayObject.');
+			}
+
 			this._ttl = dur;
 			this._dur = dur;
 			this._parent = o;
-			this._timer = new Runtime.Timer(41, 0);
+			this._independentTimer = independentTimer;
+			this._timer = this._independentTimer ? new Runtime.Timer(41, 0) : null;
 		}
 
 		set dur(dur:number) {
 			this._timer.stop();
 			this._ttl = dur;
 			this._dur = dur;
-			this._timer = new Runtime.Timer(41, 0);
 		}
 
 		get dur():number {
@@ -39,6 +49,13 @@ module Display {
 			return this._isRunning;
 		}
 
+		/**
+		 * Private method invoked every time a timer event is fired
+		 */
+		private _onTimerEvent():void {
+
+		}
+
 		public reset():void {
 			this._ttl = this._dur;
 		}
@@ -47,14 +64,14 @@ module Display {
 			if (this._isRunning) {
 				return;
 			}
-			if (this._dur === 0) {
-				return;
-			}
-			if (this._ttl <= 0) {
+			if (this._dur === 0 || this._ttl <= 0) {
 				return;
 			}
 			this._isRunning = true;
 			var self:MotionManager = this;
+			var _lastTime:number = Date.now();
+
+
 			var _lastTime:number = Date.now();
 			this._timer.addEventListener("timer", function () {
 				var elapsed:number = Date.now() - _lastTime;

@@ -109,7 +109,7 @@ module Runtime {
 				"id": object.getId(),
 				"data": object.serialize()
 			});
-			__schannel("object::(" + object.getId() + ")", function (payload:any) {
+			__schannel("object::(" + object.getId() + ")",  (payload:any) => {
 				if (payload.hasOwnProperty("type") &&
 					payload.type === "event") {
 					_dispatchEvent(object.getId(), payload.event, payload.data);
