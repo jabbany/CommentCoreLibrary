@@ -1297,7 +1297,7 @@ var Display;
             if (index >= 0) {
                 this._listeners[event].splice(index, 1);
             }
-            if (this._listeners[event].length === 1) {
+            if (this._listeners[event].length === 0) {
                 this.eventToggle(event, 'disable');
             }
         };
@@ -1615,14 +1615,29 @@ var Display;
             this._dur = dur;
             this._parent = o;
             this._independentTimer = independentTimer;
-            this._timer = this._independentTimer ? new Runtime.Timer(41, 0) : null;
+            this._timeKeeper = new Runtime.TimeKeeper();
+            var self = this;
+            if (this._independentTimer) {
+                this._timer = new Runtime.Timer(41, 0);
+                this._timer.addEventListener('timer', function () {
+                    self._onTimerEvent();
+                });
+                this._timer.start();
+            }
+            else {
+                this._parent.addEventListener('enterFrame', function () {
+                    self._onTimerEvent();
+                });
+            }
         }
         Object.defineProperty(MotionManager.prototype, "dur", {
             get: function () {
                 return this._dur;
             },
             set: function (dur) {
-                this._timer.stop();
+                if (this._independentTimer) {
+                    this._timer.stop();
+                }
                 this._ttl = dur;
                 this._dur = dur;
             },
@@ -1637,6 +1652,18 @@ var Display;
             configurable: true
         });
         MotionManager.prototype._onTimerEvent = function () {
+            if (!this._isRunning) {
+                return;
+            }
+            this._ttl -= this._timeKeeper.elapsed;
+            this._timeKeeper.reset();
+            if (this._ttl <= 0) {
+                this.stop();
+                if (typeof this.oncomplete === 'function') {
+                    this.oncomplete();
+                }
+                this._parent.unload();
+            }
         };
         MotionManager.prototype.reset = function () {
             this._ttl = this._dur;
@@ -1649,22 +1676,6 @@ var Display;
                 return;
             }
             this._isRunning = true;
-            var self = this;
-            var _lastTime = Date.now();
-            var _lastTime = Date.now();
-            this._timer.addEventListener("timer", function () {
-                var elapsed = Date.now() - _lastTime;
-                self._ttl -= elapsed;
-                if (self._ttl <= 0) {
-                    self.stop();
-                    if (self.oncomplete) {
-                        self.oncomplete();
-                    }
-                    self._parent.unload();
-                }
-                _lastTime = Date.now();
-            });
-            this._timer.start();
             if (this._tween) {
                 this._tween.play();
             }
@@ -1674,7 +1685,6 @@ var Display;
                 return;
             }
             this._isRunning = false;
-            this._timer.stop();
             if (this._tween) {
                 this._tween.stop();
             }

@@ -19,6 +19,7 @@ module.exports = (grunt) ->
     'src/Array.js'
     'src/core/js/CommentUtils.js'
     'src/core/js/Comment.js'
+    'src/core/js/css-renderer/CssComment.js'
     'src/core/js/CommentFactory.js'
     'src/core/js/CommentSpaceAllocator.js'
     'src/CommentManager.js'
@@ -34,6 +35,7 @@ module.exports = (grunt) ->
   # Typescript targets
   SRC_TS_CORE = [
     'src/core/Comment.ts'
+    'src/core/css-renderer/CssComment.ts'
     'src/core/CommentFactory.ts'
     'src/core/CommentSpaceAllocator.ts'
     'src/core/CommentUtils.ts'

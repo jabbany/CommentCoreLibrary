@@ -578,6 +578,8 @@ var CoreComment = (function () {
             return;
         }
     };
+    CoreComment.prototype.stop = function () {
+    };
     CoreComment.prototype.finish = function () {
         this.parent.finish(this);
     };
@@ -620,10 +622,108 @@ var ScrollComment = (function (_super) {
     return ScrollComment;
 }(CoreComment));
 //# sourceMappingURL=Comment.js.map
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var CssCompatLayer = (function () {
+    function CssCompatLayer() {
+    }
+    CssCompatLayer.transform = function (dom, trans) {
+        dom.style.transform = trans;
+        dom.style["webkitTransform"] = trans;
+        dom.style["msTransform"] = trans;
+        dom.style["oTransform"] = trans;
+    };
+    return CssCompatLayer;
+}());
+var CssScrollComment = (function (_super) {
+    __extends(CssScrollComment, _super);
+    function CssScrollComment() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this._dirtyCSS = true;
+        return _this;
+    }
+    Object.defineProperty(CssScrollComment.prototype, "x", {
+        get: function () {
+            return (this.ttl / this.dur) * (this.parent.width + this.width) - this.width;
+        },
+        set: function (x) {
+            if (typeof this._x === "number") {
+                var dx = x - this._x;
+                this._x = x;
+                CssCompatLayer.transform(this.dom, "translateX(" + dx + "px)");
+            }
+            else {
+                this._x = x;
+                if (!this.absolute) {
+                    this._x *= this.parent.width;
+                }
+                if (this.align % 2 === 0) {
+                    this.dom.style.left = this._x + "px";
+                }
+                else {
+                    this.dom.style.right = this._x + "px";
+                }
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    CssScrollComment.prototype.update = function () {
+        if (this._dirtyCSS) {
+            this.dom.style.transition = "transform " + this.ttl + "ms linear";
+            this.x = -this.width;
+            this._dirtyCSS = false;
+        }
+    };
+    CssScrollComment.prototype.invalidate = function () {
+        _super.prototype.invalidate.call(this);
+        this._dirtyCSS = true;
+    };
+    CssScrollComment.prototype.stop = function () {
+        this.dom.style.transition = "";
+        this.x = this._x;
+        this._x = null;
+        this.x = (this.ttl / this.dur) * (this.parent.width + this.width) - this.width;
+        this._dirtyCSS = true;
+    };
+    return CssScrollComment;
+}(ScrollComment));
+//# sourceMappingURL=CssComment.js.map
 var CommentFactory = (function () {
     function CommentFactory() {
         this._bindings = {};
     }
+    CommentFactory._simpleCssScrollingInitializer = function (manager, data) {
+        var cmt = new CssScrollComment(manager, data);
+        switch (cmt.mode) {
+            case 1: {
+                cmt.align = 0;
+                cmt.axis = 0;
+                break;
+            }
+            case 2: {
+                cmt.align = 2;
+                cmt.axis = 2;
+                break;
+            }
+            case 6: {
+                cmt.align = 1;
+                cmt.axis = 1;
+                break;
+            }
+        }
+        cmt.init();
+        manager.stage.appendChild(cmt.dom);
+        return cmt;
+    };
     CommentFactory._simpleScrollingInitializer = function (manager, data) {
         var cmt = new ScrollComment(manager, data);
         switch (cmt.mode) {
@@ -647,7 +747,6 @@ var CommentFactory = (function () {
         manager.stage.appendChild(cmt.dom);
         return cmt;
     };
-    ;
     CommentFactory._simpleAnchoredInitializer = function (manager, data) {
         var cmt = new CoreComment(manager, data);
         switch (cmt.mode) {
@@ -674,12 +773,22 @@ var CommentFactory = (function () {
         manager.stage.appendChild(cmt.dom);
         return cmt;
     };
-    ;
     CommentFactory.defaultFactory = function () {
         var factory = new CommentFactory();
         factory.bind(1, CommentFactory._simpleScrollingInitializer);
         factory.bind(2, CommentFactory._simpleScrollingInitializer);
         factory.bind(6, CommentFactory._simpleScrollingInitializer);
+        factory.bind(4, CommentFactory._simpleAnchoredInitializer);
+        factory.bind(5, CommentFactory._simpleAnchoredInitializer);
+        factory.bind(7, CommentFactory._advancedCoreInitializer);
+        factory.bind(17, CommentFactory._advancedCoreInitializer);
+        return factory;
+    };
+    CommentFactory.defaultCssRenderFactory = function () {
+        var factory = new CommentFactory();
+        factory.bind(1, CommentFactory._simpleCssScrollingInitializer);
+        factory.bind(2, CommentFactory._simpleCssScrollingInitializer);
+        factory.bind(6, CommentFactory._simpleCssScrollingInitializer);
         factory.bind(4, CommentFactory._simpleAnchoredInitializer);
         factory.bind(5, CommentFactory._simpleAnchoredInitializer);
         factory.bind(7, CommentFactory._advancedCoreInitializer);
@@ -926,6 +1035,8 @@ var CommentManager = (function() {
     /** Public **/
     CommentManager.prototype.stop = function(){
         this.stopTimer();
+        // Send stop signal to all comments
+        this.runline.forEach(function (c) { c.stop(); });
     };
 
     CommentManager.prototype.start = function(){
@@ -984,13 +1095,21 @@ var CommentManager = (function() {
         this.stage.style.webkitPerspective = this.width * Math.tan(40 * Math.PI/180) / 2 + "px";
     };
 
-    CommentManager.prototype.init = function () {
+    CommentManager.prototype.init = function (renderer) {
         this.setBounds();
         if (this.filter == null) {
             this.filter = new CommentFilter(); //Only create a filter if none exist
         }
         if (this.factory == null) {
-            this.factory = CommentFactory.defaultFactory();
+            switch (renderer) {
+                case 'legacy':
+                    this.factory = CommentFactory.defaultFactory();
+                    break;
+                default:
+                case 'css':
+                    this.factory = CommentFactory.defaultCssRenderFactory();
+                    break;
+            }
         }
     };
 

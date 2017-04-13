@@ -11,32 +11,41 @@ module Tween {
 		private _isPlaying:boolean = false;
 		private _currentTime:number = 0;
 		private _repeats:number = 0;
-		private _timer:Runtime.Timer = new Runtime.Timer(40);
+		private _timeKeeper:Runtime.TimeKeeper;
+		private _timer:Runtime.Timer;
 		public easing:Function = Tween.linear;
 		public step:Function;
 
 		constructor(target:any, duration:number = 0) {
 			this._target = target;
 			this._duration = duration;
-			/** Set timer **/
-			var timer:Runtime.Timer = this._timer;
-			var tween:ITween = this;
+			this._timeKeeper = new Runtime.TimeKeeper();
+			this._timer = new Runtime.Timer(40);
+
+			// Timer related
+			var self:ITween = this;
 			this._timer.addEventListener("timer", () => {
-				if (timer.hasOwnProperty("wallTime")) {
-					var elapsed = Date.now() - timer["wallTime"];
-					tween._currentTime += elapsed;
-					timer["wallTime"] = Date.now();
-					tween.step(tween._target, tween._currentTime, tween._duration);
-					if (tween._currentTime >= tween._duration) {
-						tween._repeats--;
-						if (tween._repeats < 0) {
-							tween.stop();
-							tween._currentTime = tween._duration;
-							tween.step(tween._target, tween._currentTime, tween._duration);
-						}
+				self._onTimerEvent();
+			});
+		}
+
+		private _onTimerEvent():void {
+			// Ignore all the timer events if we're not playing
+			if (this._isPlaying) {
+				this._currentTime += this._timeKeeper.elapsed;
+				this._timeKeeper.reset();
+				this.step(this._target, this._currentTime, this._duration);
+				if (this._currentTime >= this._duration) {
+					this._repeats--;
+					if (this._repeats < 0) {
+						this.stop();
+						this._currentTime = this._duration;
+					} else {
+						this._currentTime = 0;
 					}
+					this.step(this._target, this._currentTime, this._duration);
 				}
-			})
+			}
 		}
 
 		set duration(dur:number) {
@@ -86,22 +95,24 @@ module Tween {
 		}
 
 		public play():void {
-			if (this._isPlaying)
+			if (this._isPlaying) {
 				return;
+			}
 			this.gotoAndPlay(this._currentTime);
 		}
 
 		public stop():void {
-			if (!this._isPlaying)
+			if (!this._isPlaying) {
 				return;
+			}
 			this.gotoAndStop(this._currentTime);
 		}
 
 		public gotoAndStop(position:number):void {
 			this._currentTime = position;
 			if (this._isPlaying) {
-				this._timer.stop();
 				this._isPlaying = false;
+				this._timer.stop();
 			}
 			this.step(this._target, this._currentTime, this._duration);
 		}
@@ -109,9 +120,8 @@ module Tween {
 		public gotoAndPlay(position:number):void {
 			this._currentTime = position;
 			if (!this._isPlaying) {
-				this._timer["wallTime"] = Date.now();
-				this._timer.start();
 				this._isPlaying = true;
+				this._timer.start();
 			}
 			this.step(this._target, this._currentTime, this._duration);
 		}
@@ -138,8 +148,9 @@ module Tween {
 		}
 		return function (object:any, currentTime:number, totalTime:number) {
 			for (var property in src) {
-				if (!src.hasOwnProperty(property))
+				if (!src.hasOwnProperty(property)) {
 					continue;
+				}
 				object[property] = tween.easing(currentTime,
 						src[property],
 						dest[property] - src[property],

@@ -425,6 +425,8 @@ var CoreComment = (function () {
             return;
         }
     };
+    CoreComment.prototype.stop = function () {
+    };
     CoreComment.prototype.finish = function () {
         this.parent.finish(this);
     };

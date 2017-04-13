@@ -204,6 +204,7 @@ var Runtime;
         function TimeKeeper(clock) {
             if (clock === void 0) { clock = function () { return Date.now(); }; }
             this._clock = clock;
+            this.reset();
         }
         Object.defineProperty(TimeKeeper.prototype, "elapsed", {
             get: function () {
@@ -219,7 +220,7 @@ var Runtime;
     }());
     Runtime.TimeKeeper = TimeKeeper;
     var masterTimer = new TimerRuntime();
-    var internalTimer = new Timer(50);
+    var internalTimer = new Timer(40);
     var enterFrameDispatcher = function () {
         for (var object in Runtime.registeredObjects) {
             if (object.substring(0, 2) === '__') {
@@ -240,6 +241,7 @@ var Runtime;
     Runtime.getTimer = getTimer;
     function updateFrameRate(frameRate) {
         if (frameRate > 60 || frameRate < 0) {
+            __trace('Frame rate should be in the range (0, 60]', 'warn');
             return;
         }
         if (frameRate === 0) {
@@ -367,15 +369,37 @@ var Runtime;
 var Runtime;
 (function (Runtime) {
     var MetaObject = (function () {
-        function MetaObject(name, callback) {
-            if (callback === void 0) { callback = null; }
-            this._oncallback = null;
+        function MetaObject(name) {
+            this._listeners = {};
             this._name = name;
-            this._oncallback = callback;
         }
+        MetaObject.prototype.addEventListener = function (event, listener, useCapture, priority) {
+            if (useCapture === void 0) { useCapture = false; }
+            if (priority === void 0) { priority = 0; }
+            if (!(event in this._listeners)) {
+                this._listeners[event] = [];
+            }
+            this._listeners[event].push(listener);
+        };
+        MetaObject.prototype.removeEventListener = function (event, listener, useCapture) {
+            if (useCapture === void 0) { useCapture = false; }
+            if (!(event in this._listeners)) {
+                return;
+            }
+            var index = this._listeners[event].indexOf(listener);
+            if (index >= 0) {
+                this._listeners[event].splice(index, 1);
+            }
+        };
+        MetaObject.prototype.hasEventListener = function (event) {
+            return event in this._listeners && this._listeners[event].length > 0;
+        };
         MetaObject.prototype.dispatchEvent = function (event, data) {
-            if (this._oncallback !== null) {
-                this._oncallback(event, data);
+            if (!(event in this._listeners)) {
+                return;
+            }
+            for (var i = 0; i < this._listeners[event].length; i++) {
+                this._listeners[event][i](data);
             }
         };
         MetaObject.prototype.getId = function () {
@@ -390,16 +414,16 @@ var Runtime;
     }());
     var objCount = 0;
     var _registeredObjects = {
-        "__self": new MetaObject("__self"),
-        "__player": new MetaObject("__player"),
-        "__root": new MetaObject("__root")
+        '__self': new MetaObject('__self'),
+        '__player': new MetaObject('__player'),
+        '__root': new MetaObject('__root')
     };
     Object.defineProperty(Runtime, 'registeredObjects', {
         get: function () {
             return _registeredObjects;
         },
         set: function (value) {
-            __trace("Runtime.registeredObjects is read-only", "warn");
+            __trace('Runtime.registeredObjects is read-only', 'warn');
         }
     });
     function _dispatchEvent(objectId, event, payload) {
@@ -440,7 +464,7 @@ var Runtime;
             return;
         }
         else {
-            __trace("Attempted to re-register object or id collision", "warn");
+            __trace('Attempted to re-register object or id collision', 'warn');
             return;
         }
     }
@@ -454,10 +478,8 @@ var Runtime;
             __pchannel("Runtime:DeregisterObject", {
                 "id": objectId
             });
-            if (_registeredObjects[objectId].unload != null) {
-                if (typeof _registeredObjects[objectId].unload === "function") {
-                    _registeredObjects[objectId].unload();
-                }
+            if (typeof _registeredObjects[objectId].unload === "function") {
+                _registeredObjects[objectId].unload();
             }
             _registeredObjects[objectId] = null;
             delete _registeredObjects[objectId];

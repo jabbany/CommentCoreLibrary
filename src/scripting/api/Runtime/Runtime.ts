@@ -8,24 +8,78 @@
 /// <reference path="ScriptManager.ts" />
 /// <reference path="Permissions.ts" />
 module Runtime {
+
+	/**
+	 * Global interface for Listenable objects
+	 */
+	export interface Listenable {
+		addEventListener(
+			event:string,
+			listener:Function,
+			useCapture:boolean,
+			priority:number):void;
+		removeEventListener(
+			event:string,
+			listener:Function,
+			useCapture:boolean
+		):void;
+		hasEventListener(event:string):boolean;
+	}
+
+	/**
+	 * Interface to define an object that can be registered to the runtime
+	 */
 	export interface RegisterableObject {
 		getId():string;
 		dispatchEvent(event:string, data?:any):void;
 		serialize():Object;
 	}
 
-	class MetaObject implements RegisterableObject {
+	/**
+	 * Meta object that serves only to receive and send events
+	 */
+	class MetaObject implements RegisterableObject, Listenable {
 		private _name:string;
-		private _oncallback:Function = null;
+		private _listeners:{[name:string]: Array<Function>} = {};
 
-		constructor(name:string, callback:Function = null) {
+		constructor(name:string) {
 			this._name = name;
-			this._oncallback = callback;
+		}
+
+		public addEventListener(event:string,
+			listener:Function,
+			useCapture:boolean = false,
+			priority:number = 0):void {
+
+  		if (!(event in this._listeners)) {
+				this._listeners[event] = [];
+			}
+			this._listeners[event].push(listener);
+		}
+
+		public removeEventListener(event:string,
+			listener:Function,
+			useCapture:boolean = false):void {
+
+		  if (!(event in this._listeners)) {
+				return;
+			}
+			var index = this._listeners[event].indexOf(listener)
+			if (index >= 0) {
+				this._listeners[event].splice(index, 1);
+			}
+		}
+
+		public hasEventListener(event:string):boolean {
+			return event in this._listeners && this._listeners[event].length > 0;
 		}
 
 		public dispatchEvent(event:string, data?:any):void {
-			if (this._oncallback !== null) {
-				this._oncallback(event, data);
+			if (!(event in this._listeners)) {
+				return; // Ignore
+			}
+			for (var i:number = 0; i < this._listeners[event].length; i++) {
+				this._listeners[event][i](data);
 			}
 		}
 
@@ -43,9 +97,9 @@ module Runtime {
 	/** Variables **/
 	var objCount:number = 0;
 	var _registeredObjects:Object = {
-		"__self": new MetaObject("__self"),
-		"__player": new MetaObject("__player"),
-		"__root": new MetaObject("__root")
+		'__self': new MetaObject('__self'),
+		'__player': new MetaObject('__player'),
+		'__root': new MetaObject('__root')
 	};
 
 	export var registeredObjects:Object;
@@ -54,7 +108,7 @@ module Runtime {
 			return _registeredObjects;
 		},
 		set: function (value) {
-			__trace("Runtime.registeredObjects is read-only", "warn");
+			__trace('Runtime.registeredObjects is read-only', 'warn');
 		}
 	});
 
@@ -118,7 +172,7 @@ module Runtime {
 			objCount++;
 			return;
 		} else {
-			__trace("Attempted to re-register object or id collision", "warn");
+			__trace('Attempted to re-register object or id collision', 'warn');
 			return;
 		}
 	}
@@ -130,7 +184,7 @@ module Runtime {
 	 *
 	 * @param objectId - objectid to remove
 	 */
-	export function deregisterObject(objectId:string):void{
+	export function deregisterObject(objectId:string):void {
 		if (Runtime.hasObject(objectId)) {
 			if (objectId.substr(0,2) === "__") {
 				__trace("Runtime.deregisterObject cannot de-register a MetaObject","warn");
@@ -139,11 +193,9 @@ module Runtime {
 			__pchannel("Runtime:DeregisterObject", {
 				"id": objectId
 			});
-			if (_registeredObjects[objectId].unload != null) {
-				if (typeof _registeredObjects[objectId].unload === "function") {
-					// Gracefully unload first
-					_registeredObjects[objectId].unload();
-				}
+			if (typeof _registeredObjects[objectId].unload === "function") {
+			  // Gracefully unload first
+				_registeredObjects[objectId].unload();
 			}
 			_registeredObjects[objectId] = null;
 			delete _registeredObjects[objectId];
@@ -170,7 +222,7 @@ module Runtime {
 	 * De-registers all objects. This also unloads them. Objects
 	 * will not receive any more events
 	 */
-	export function reset():void{
+	export function reset():void {
 		for (var i in _registeredObjects) {
 			if (i.substr(0,2) !== "__") {
 				Runtime.deregisterObject(i);
@@ -182,7 +234,7 @@ module Runtime {
 	 * Unloads all objects. Does not deregister them, so they may
 	 * still receive events.
 	 */
-	export function clear():void{
+	export function clear():void {
 		for (var i in _registeredObjects) {
 			if (i.substr(0,2) === "__") {
 				continue;
@@ -210,7 +262,7 @@ module Runtime {
 
 	/**
 	 * Attempts to invoke an alert dialog.
-	 * Note that this may not work if the Host policy does not allow it
+	 * Note: that this may not work if the Host policy does not allow it
 	 * @param msg - message for alert
 	 */
 	export function alert(msg:string):void {

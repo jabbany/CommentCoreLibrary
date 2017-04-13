@@ -109,29 +109,34 @@ var Tween;
             this._isPlaying = false;
             this._currentTime = 0;
             this._repeats = 0;
-            this._timer = new Runtime.Timer(40);
             this.easing = Tween.linear;
             this._target = target;
             this._duration = duration;
-            var timer = this._timer;
-            var tween = this;
+            this._timeKeeper = new Runtime.TimeKeeper();
+            this._timer = new Runtime.Timer(40);
+            var self = this;
             this._timer.addEventListener("timer", function () {
-                if (timer.hasOwnProperty("wallTime")) {
-                    var elapsed = Date.now() - timer["wallTime"];
-                    tween._currentTime += elapsed;
-                    timer["wallTime"] = Date.now();
-                    tween.step(tween._target, tween._currentTime, tween._duration);
-                    if (tween._currentTime >= tween._duration) {
-                        tween._repeats--;
-                        if (tween._repeats < 0) {
-                            tween.stop();
-                            tween._currentTime = tween._duration;
-                            tween.step(tween._target, tween._currentTime, tween._duration);
-                        }
-                    }
-                }
+                self._onTimerEvent();
             });
         }
+        ITween.prototype._onTimerEvent = function () {
+            if (this._isPlaying) {
+                this._currentTime += this._timeKeeper.elapsed;
+                this._timeKeeper.reset();
+                this.step(this._target, this._currentTime, this._duration);
+                if (this._currentTime >= this._duration) {
+                    this._repeats--;
+                    if (this._repeats < 0) {
+                        this.stop();
+                        this._currentTime = this._duration;
+                    }
+                    else {
+                        this._currentTime = 0;
+                    }
+                    this.step(this._target, this._currentTime, this._duration);
+                }
+            }
+        };
         Object.defineProperty(ITween.prototype, "duration", {
             get: function () {
                 return this._duration;
@@ -184,29 +189,30 @@ var Tween;
             this._duration *= factor;
         };
         ITween.prototype.play = function () {
-            if (this._isPlaying)
+            if (this._isPlaying) {
                 return;
+            }
             this.gotoAndPlay(this._currentTime);
         };
         ITween.prototype.stop = function () {
-            if (!this._isPlaying)
+            if (!this._isPlaying) {
                 return;
+            }
             this.gotoAndStop(this._currentTime);
         };
         ITween.prototype.gotoAndStop = function (position) {
             this._currentTime = position;
             if (this._isPlaying) {
-                this._timer.stop();
                 this._isPlaying = false;
+                this._timer.stop();
             }
             this.step(this._target, this._currentTime, this._duration);
         };
         ITween.prototype.gotoAndPlay = function (position) {
             this._currentTime = position;
             if (!this._isPlaying) {
-                this._timer["wallTime"] = Date.now();
-                this._timer.start();
                 this._isPlaying = true;
+                this._timer.start();
             }
             this.step(this._target, this._currentTime, this._duration);
         };
@@ -234,8 +240,9 @@ var Tween;
         }
         return function (object, currentTime, totalTime) {
             for (var property in src) {
-                if (!src.hasOwnProperty(property))
+                if (!src.hasOwnProperty(property)) {
                     continue;
+                }
                 object[property] = tween.easing(currentTime, src[property], dest[property] - src[property], totalTime);
             }
         };

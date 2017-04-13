@@ -1,5 +1,6 @@
 /**
- * AS3 Like Timer Control for Runtime
+ * AS3-Like Timer Control for Runtime
+ * @author Jim Chen
  */
 
 module Runtime{
@@ -31,9 +32,9 @@ module Runtime{
 		}
 
 		set isRunning(state:boolean){
-			if(state == false){
+			if (state == false) {
 				this.stop();
-			}else{
+			} else {
 				this.start();
 			}
 		}
@@ -211,7 +212,8 @@ module Runtime{
 	}
 
 	/**
-	 * Internal class to help other methods keep time
+	 * Internal class to help other methods keep time without incurring processing
+	 * costs.
 	 */
 	export class TimeKeeper {
 		private _clock:Function;
@@ -219,6 +221,7 @@ module Runtime{
 
 		constructor(clock:Function = () => Date.now()) {
 			this._clock = clock;
+			this.reset();
 		}
 
 		get elapsed():number {
@@ -232,7 +235,7 @@ module Runtime{
 
 	/** Timer Related **/
 	var masterTimer:TimerRuntime = new TimerRuntime();
-	var internalTimer:Timer = new Timer(50);
+	var internalTimer:Timer = new Timer(40);
 	var enterFrameDispatcher:Function = function () {
 		for (var object in Runtime.registeredObjects) {
 			if (object.substring(0, 2) === '__') {
@@ -246,6 +249,7 @@ module Runtime{
 	masterTimer.start();
 	internalTimer.start();
 	internalTimer.addEventListener('timer', enterFrameDispatcher);
+
 	/**
 	 *  Get the master timer instance
 	 */
@@ -256,11 +260,12 @@ module Runtime{
 	/**
 	 * Update the rate in which the enterFrame event is broadcasted
 	 * This synchronizes the frameRate value of the Display object.
-	 * By default, the frame rate is 24fps.
+	 * By default, the frame rate is around 24fps.
 	 * @param frameRate - number indicating frame rate
 	 */
 	export function updateFrameRate(frameRate:number):void {
-		if (frameRate > 60 || frameRate < 0){
+		if (frameRate > 60 || frameRate < 0) {
+			__trace('Frame rate should be in the range (0, 60]', 'warn');
 			return;
 		}
 		if (frameRate === 0) {

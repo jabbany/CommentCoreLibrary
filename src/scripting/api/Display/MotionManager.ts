@@ -16,6 +16,7 @@ module Display {
 		private _dur:number;
 		private _parent:Display.DisplayObject;
 		private _timer:Runtime.Timer;
+		private _timeKeeper:Runtime.TimeKeeper;
 		private _independentTimer:boolean;
 		private _tween:Tween.ITween;
 		public oncomplete:Function = null;
@@ -32,11 +33,26 @@ module Display {
 			this._dur = dur;
 			this._parent = o;
 			this._independentTimer = independentTimer;
-			this._timer = this._independentTimer ? new Runtime.Timer(41, 0) : null;
+			this._timeKeeper = new Runtime.TimeKeeper();
+
+			var self = this;
+			if (this._independentTimer) {
+				this._timer = new Runtime.Timer(41, 0);
+				this._timer.addEventListener('timer', () => {
+					self._onTimerEvent();
+				});
+				this._timer.start();
+			} else {
+				this._parent.addEventListener('enterFrame', () => {
+					self._onTimerEvent();
+				});
+			}
 		}
 
 		set dur(dur:number) {
-			this._timer.stop();
+			if (this._independentTimer) {
+				this._timer.stop();
+			}
 			this._ttl = dur;
 			this._dur = dur;
 		}
@@ -53,7 +69,19 @@ module Display {
 		 * Private method invoked every time a timer event is fired
 		 */
 		private _onTimerEvent():void {
-
+			// Ignore timer events if this is not running
+			if (!this._isRunning) {
+				return;
+			}
+			this._ttl -= this._timeKeeper.elapsed;
+			this._timeKeeper.reset();
+			if (this._ttl <= 0) {
+				this.stop();
+				if (typeof this.oncomplete === 'function') {
+					this.oncomplete();
+				}
+				this._parent.unload();
+			}
 		}
 
 		public reset():void {
@@ -68,24 +96,6 @@ module Display {
 				return;
 			}
 			this._isRunning = true;
-			var self:MotionManager = this;
-			var _lastTime:number = Date.now();
-
-
-			var _lastTime:number = Date.now();
-			this._timer.addEventListener("timer", function () {
-				var elapsed:number = Date.now() - _lastTime;
-				self._ttl -= elapsed;
-				if (self._ttl <= 0) {
-					self.stop();
-					if (self.oncomplete) {
-						self.oncomplete();
-					}
-					self._parent.unload();
-				}
-				_lastTime = Date.now();
-			});
-			this._timer.start();
 			if (this._tween) {
 				this._tween.play();
 			}
@@ -96,7 +106,6 @@ module Display {
 				return;
 			}
 			this._isRunning = false;
-			this._timer.stop();
 			if (this._tween) {
 				this._tween.stop();
 			}
@@ -140,9 +149,22 @@ module Display {
 					mProp["easing"] = Tween.getEasingFuncByName(mProp["easing"]);
 				}
 				if(mProp.hasOwnProperty("startDelay")){
-					tweens.push(Tween.delay(Tween.tween(this._parent, dst, src, mProp["lifeTime"], mProp["easing"]), mProp["startDelay"] / 1000));
+					tweens.push(Tween.delay(
+						Tween.tween(
+							this._parent,
+							dst,
+							src,
+							mProp["lifeTime"],
+							mProp["easing"]),
+							mProp["startDelay"] / 1000));
 				}else {
-					tweens.push(Tween.tween(this._parent, dst, src, mProp["lifeTime"], mProp["easing"]));
+					tweens.push(
+						Tween.tween(
+							this._parent,
+							dst,
+							src,
+							mProp["lifeTime"],
+							mProp["easing"]));
 				}
 			}
 			return Tween.parallel.apply(Tween, tweens);

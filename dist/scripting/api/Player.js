@@ -29,7 +29,7 @@ var Player;
 })(Player || (Player = {}));
 var Player;
 (function (Player) {
-    var _state = "";
+    var _state = '';
     var _time;
     var _commentList;
     var _refreshRate;
@@ -37,24 +37,24 @@ var Player;
     var _height;
     var _videoWidth;
     var _videoHeight;
-    var _lastUpdate;
+    var _lastUpdate = new Runtime.TimeKeeper();
     Object.defineProperty(Player, 'state', {
         get: function () { return _state; },
         set: function (value) {
-            __trace("Player.state is read-only", "warn");
+            __trace('Player.state is read-only', 'warn');
         }
     });
     Object.defineProperty(Player, 'time', {
         get: function () {
-            if (_state !== "playing") {
+            if (_state !== 'playing') {
                 return _time;
             }
             else {
-                return _time + (Date.now() - _lastUpdate);
+                return _time + _lastUpdate.elapsed;
             }
         },
         set: function (value) {
-            __trace("Player.time is read-only", "warn");
+            __trace('Player.time is read-only', 'warn');
         }
     });
     Object.defineProperty(Player, 'commentList', {
@@ -137,17 +137,21 @@ var Player;
     }
     Player.jump = jump;
     function commentTrigger(callback, timeout) {
+        if (!Runtime.hasObject('__player')) {
+            __trace('Your environment does not support player triggers.', 'warn');
+            return;
+        }
     }
     Player.commentTrigger = commentTrigger;
     function keyTrigger(callback, timeout) {
     }
     Player.keyTrigger = keyTrigger;
     function setMask(mask) {
-        __trace("Masking not supported yet", 'warn');
+        __trace('Masking not supported yet', 'warn');
     }
     Player.setMask = setMask;
     function toString() {
-        return "[player Player]";
+        return '[player Player]';
     }
     Player.toString = toString;
     __schannel("Update:DimensionUpdate", function (payload) {
@@ -161,7 +165,7 @@ var Player;
     __schannel("Update:TimeUpdate", function (payload) {
         _state = payload["state"];
         _time = payload["time"];
-        _lastUpdate = Date.now();
+        _lastUpdate.reset();
     });
 })(Player || (Player = {}));
 //# sourceMappingURL=Player.js.map

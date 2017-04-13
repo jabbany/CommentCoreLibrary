@@ -758,7 +758,7 @@ module Display {
 			if (index >= 0) {
 				this._listeners[event].splice(index, 1);
 			}
-			if (this._listeners[event].length === 1) {
+			if (this._listeners[event].length === 0) {
 				this.eventToggle(event, 'disable');
 			}
 		}

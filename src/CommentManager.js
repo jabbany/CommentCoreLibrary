@@ -87,6 +87,8 @@ var CommentManager = (function() {
     /** Public **/
     CommentManager.prototype.stop = function(){
         this.stopTimer();
+        // Send stop signal to all comments
+        this.runline.forEach(function (c) { c.stop(); });
     };
 
     CommentManager.prototype.start = function(){
@@ -145,13 +147,21 @@ var CommentManager = (function() {
         this.stage.style.webkitPerspective = this.width * Math.tan(40 * Math.PI/180) / 2 + "px";
     };
 
-    CommentManager.prototype.init = function () {
+    CommentManager.prototype.init = function (renderer) {
         this.setBounds();
         if (this.filter == null) {
             this.filter = new CommentFilter(); //Only create a filter if none exist
         }
         if (this.factory == null) {
-            this.factory = CommentFactory.defaultFactory();
+            switch (renderer) {
+                case 'legacy':
+                    this.factory = CommentFactory.defaultFactory();
+                    break;
+                default:
+                case 'css':
+                    this.factory = CommentFactory.defaultCssRenderFactory();
+                    break;
+            }
         }
     };
 

@@ -3,10 +3,11 @@
  * Author: Jim Chen
  */
 /// <reference path="../OOAPI.d.ts" />
+/// <reference path="../Runtime.d.ts"/>
 
 /// <reference path="Sound.ts" />
 module Player{
-	var _state:string = "";
+	var _state:string = '';
 	var _time:string;
 	var _commentList:string;
 	var _refreshRate:number;
@@ -14,7 +15,7 @@ module Player{
 	var _height:number;
 	var _videoWidth:number;
 	var _videoHeight:number;
-	var _lastUpdate:number;
+	var _lastUpdate:Runtime.TimeKeeper = new Runtime.TimeKeeper();
 
 	export var state:string;
 	export var time:string;
@@ -29,19 +30,19 @@ module Player{
 	Object.defineProperty(Player, 'state', {
 		get: function() { return _state; },
 		set: function(value) {
-			__trace("Player.state is read-only", "warn");
+			__trace('Player.state is read-only', 'warn');
 		}
 	});
 	Object.defineProperty(Player, 'time', {
 		get: function() {
-			if(_state !== "playing") {
+			if (_state !== 'playing') {
 				return _time;
 			}else{
-				return _time + (Date.now() - _lastUpdate);
+				return _time + _lastUpdate.elapsed;
 			}
 		},
 		set: function(value) {
-			__trace("Player.time is read-only", "warn");
+			__trace('Player.time is read-only', 'warn');
 		}
 	});
 	Object.defineProperty(Player, 'commentList', {
@@ -130,7 +131,11 @@ module Player{
 	 * @param page - video page (defaults to 1)
 	 * @param newWindow - open the video in a new window or not
 	 */
-	export function jump(video:string, page:number = 1, newWindow:boolean = false):void{
+	export function jump(
+		video:string,
+		page:number = 1,
+		newWindow:boolean = false):void {
+
 		__pchannel("Player::action", {
 			"action":"jump",
 			"params":{
@@ -142,7 +147,10 @@ module Player{
 	}
 
 	export function commentTrigger(callback:Function, timeout:number):void{
-
+		if (!Runtime.hasObject('__player')) {
+			__trace('Your environment does not support player triggers.','warn');
+			return;
+		}
 	}
 
 	export function keyTrigger(callback:Function, timeout:number):void{
@@ -150,11 +158,11 @@ module Player{
 	}
 
 	export function setMask(mask:any):void{
-		__trace("Masking not supported yet", 'warn');
+		__trace('Masking not supported yet', 'warn');
 	}
 
 	export function toString(){
-		return "[player Player]";
+		return '[player Player]';
 	}
 
 	/** Update Listeners **/
@@ -170,6 +178,6 @@ module Player{
 	__schannel("Update:TimeUpdate", function(payload){
 		_state = payload["state"];
 		_time = payload["time"];
-		_lastUpdate = Date.now();
+		_lastUpdate.reset();
 	});
 }

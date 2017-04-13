@@ -26,6 +26,10 @@ interface IBinArray {
 }
 declare var BinArray:IBinArray;
 
+interface IScriptingEngine {
+    eval(code:String);
+}
+
 /**
  * Options for CommentCoreLibrary
  */
@@ -38,6 +42,11 @@ interface CCLOptions {
     scroll: {
         scale:number;
         opacity:number;
+        factory:ICommentFactory;
+    }
+    scripting:{
+        mode:Array<number>;
+        engine:IScriptingEngine;
     }
 }
 
@@ -46,6 +55,24 @@ interface ICommentManager {
     width:number;
     height:number;
     options:CCLOptions;
+    /**
+     * Start the comment manager comments
+     */
+    start():void;
+    /**
+     * Stop the running comments
+     */
+    stop():void;
+    /**
+     * Remove all current running comments
+     */
+    clear():void;
+    /**
+     * Set the bounds for the CommentManager stage
+     * @param w width
+     * @param h height
+     */
+    setBounds(w?:number, h?:number):void;
     /**
      * Cleanup the given comment since it has finished
      * @param c - IComment
@@ -90,8 +117,27 @@ interface IComment {
     color:number;
     alpha:number;
     size:number;
+    /**
+     * Updates the comment life by subtracting t from ttl
+     * @param t - difference in time
+     */
     time(t:number):void;
+    /**
+     * Update the comment's position based on the time.
+     * This is called by time()
+     */
     update():void;
+    /**
+     * Invalidate the coordinates and dimensions of the
+     * current comment object
+     */
     invalidate():void;
+    /**
+     * Perform an animation alongside the update
+     */
     animate():void;
+    /**
+     * Remove the comment from display
+     */
+    finish():void;
 }
