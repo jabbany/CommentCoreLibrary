@@ -6,7 +6,6 @@ module Display {
 		private _mM:MotionManager = new MotionManager(this);
 
 		constructor(params:Object) {
-			//this.initStyle(params);
 			Runtime.registerObject(this);
 			this.bindParent(params);
 		}
@@ -28,6 +27,5 @@ module Display {
 		public initStyle(style:Object):void {
 			__trace("CommentBitmap.initStyle not available", "warn");
 		}
-
 	}
 }

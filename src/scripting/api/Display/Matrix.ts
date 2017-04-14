@@ -14,7 +14,7 @@ module Display {
 		}
 
 		set length(l:number){
-			__trace("Point.length is read-only","err");
+			__trace('Point.length is read-only', 'err');
 		}
 
 		get length():number{
@@ -60,7 +60,7 @@ module Display {
 		}
 
 		public toString():string{
-			return "(x=" + this.x + ", y=" + this.y + ")";
+			return '(x=' + this.x + ', y=' + this.y + ')';
 		}
 
 		public clone():Point{
@@ -76,7 +76,7 @@ module Display {
 
 		private dotProduct(o:Array<number>):Array<number> {
 			if (o.length < 9) {
-				throw new Error("Matrix dot product expects a matrix");
+				throw new Error('Matrix dot product expects a matrix');
 			}
 			var res:Array<number> = [0, 0, 0, 0, 0, 0, 0, 0, 0];
 			for (var i = 0; i < 3; i++) {
@@ -153,14 +153,14 @@ module Display {
 			} else if (iv.length === 0){
 				this.identity();
 			}else {
-				__trace("Matrix3D initialization vector invalid", "warn");
+				__trace('Matrix3D initialization vector invalid', 'warn');
 				this.identity();
 			}
 		}
 
 		private dotProduct(a:Array<number>, b:Array<number>):Array<number> {
 			if (a.length !== 16 || b.length !== 16) {
-				throw new Error("Matrix3D dot product expects a matrix3d");
+				throw new Error('Matrix3D dot product expects a matrix3d');
 			}
 			var res:Array<number> = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 			for (var i = 0; i < 4; i++) {
@@ -176,9 +176,9 @@ module Display {
 		private rotationMatrix(angle:number, axis:Vector3D):Array<number> {
 			var sT:number = Math.sin(angle), cT:number = Math.cos(angle);
 			return [
-					cT + axis.x * axis.x * (1 - cT), axis.x * axis.y * (1 - cT) - axis.z * sT, axis.x * axis.z * (1 - cT) + axis.y * sT, 0,
-					axis.x * axis.y * (1 - cT) + axis.z * sT, cT + axis.y * axis.y * (1 - cT), axis.y * axis.z * (1 - cT) - axis.x * sT, 0,
-					axis.z * axis.x * (1 - cT) - axis.y * sT, axis.z * axis.y * (1 - cT) + axis.x * sT, cT + axis.z * axis.z * (1 - cT), 0,
+				cT + axis.x * axis.x * (1 - cT), axis.x * axis.y * (1 - cT) - axis.z * sT, axis.x * axis.z * (1 - cT) + axis.y * sT, 0,
+				axis.x * axis.y * (1 - cT) + axis.z * sT, cT + axis.y * axis.y * (1 - cT), axis.y * axis.z * (1 - cT) - axis.x * sT, 0,
+				axis.z * axis.x * (1 - cT) - axis.y * sT, axis.z * axis.y * (1 - cT) + axis.x * sT, cT + axis.z * axis.z * (1 - cT), 0,
 				0, 0, 0, 1
 			];
 		}
@@ -252,10 +252,14 @@ module Display {
 		}
 
 		public transformVector(v:Vector3D):Vector3D {
-			var rx = this._data[0] * v.x + this._data[1] * v.y + this._data[2] * v.z + this._data[3] * v.w;
-			var ry = this._data[4] * v.x + this._data[5] * v.y + this._data[6] * v.z + this._data[7] * v.w;
-			var rz = this._data[8] * v.x + this._data[9] * v.y + this._data[10] * v.z + this._data[11] * v.w;
-			var rw = this._data[12] * v.x + this._data[13] * v.y + this._data[14] * v.z + this._data[15] * v.w;
+			var rx = this._data[0] * v.x + this._data[1] * v.y +
+				this._data[2] * v.z + this._data[3] * v.w;
+			var ry = this._data[4] * v.x + this._data[5] * v.y +
+				this._data[6] * v.z + this._data[7] * v.w;
+			var rz = this._data[8] * v.x + this._data[9] * v.y +
+				this._data[10] * v.z + this._data[11] * v.w;
+			var rw = this._data[12] * v.x + this._data[13] * v.y +
+				this._data[14] * v.z + this._data[15] * v.w;
 			return new Vector3D(rx, ry, rz, rw);
 		}
 
@@ -313,7 +317,7 @@ module Display {
 		}
 
 		public toString():string {
-			return "(x=" + this.x + ", y=" + this.y + ", z=" + this.z + ", w=" + this.w + ")";
+			return '(x=' + this.x + ', y=' + this.y + ', z=' + this.z + ', w=' + this.w + ')';
 		}
 	}
 
@@ -350,7 +354,9 @@ module Display {
 			projectedVerts.pop();
 		}
 		if (verts.length % 3 !== 0) {
-			__trace("Display.projectVectors input vertex Vector must be a multiple of 3.", "err");
+			__trace(
+				'Display.projectVectors input vertex Vector must be a multiple of 3.',
+				'err');
 			return;
 		}
 		var transformed:Array<number> = [];
@@ -375,7 +381,7 @@ module Display {
 	export function toIntVector(array:Array<number>):Array<number> {
 		Object.defineProperty(array, 'as3Type', {
 			get: function () {
-				return "Vector<int>";
+				return 'Vector<int>';
 			},
 			set: function (value) {
 				__trace('as3Type should not be set.', 'warn');

@@ -20,7 +20,7 @@ module Display {
 
 		public serialize():Object {
 			var serialized:Object = super.serialize();
-			serialized["class"] = "Shape";
+			serialized['class'] = 'Shape';
 			return serialized;
 		}
 	}

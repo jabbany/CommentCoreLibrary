@@ -8,8 +8,6 @@
 
 /// <reference path="DisplayObject.ts" />
 module Display {
-
-
 	export class MotionManager {
 		private _isRunning:boolean = false;
 		private _ttl:number;
@@ -50,9 +48,7 @@ module Display {
 		}
 
 		set dur(dur:number) {
-			if (this._independentTimer) {
-				this._timer.stop();
-			}
+			this._timeKeeper.reset();
 			this._ttl = dur;
 			this._dur = dur;
 		}
@@ -86,6 +82,7 @@ module Display {
 
 		public reset():void {
 			this._ttl = this._dur;
+			this._timeKeeper.reset();
 		}
 
 		public play():void {
@@ -96,6 +93,7 @@ module Display {
 				return;
 			}
 			this._isRunning = true;
+			this._timeKeeper.reset();
 			if (this._tween) {
 				this._tween.play();
 			}
@@ -106,6 +104,7 @@ module Display {
 				return;
 			}
 			this._isRunning = false;
+			this._timeKeeper.reset();
 			if (this._tween) {
 				this._tween.stop();
 			}
