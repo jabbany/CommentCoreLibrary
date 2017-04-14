@@ -31,21 +31,24 @@ var CssScrollComment = (function (_super) {
             return (this.ttl / this.dur) * (this.parent.width + this.width) - this.width;
         },
         set: function (x) {
-            if (typeof this._x === "number") {
+            if (this._x !== null && typeof this._x === "number") {
                 var dx = x - this._x;
                 this._x = x;
-                CssCompatLayer.transform(this.dom, "translateX(" + dx + "px)");
+                CssCompatLayer.transform(this.dom, "translateX(" +
+                    (this.axis % 2 === 0 ? dx : -dx) + "px)");
             }
             else {
                 this._x = x;
                 if (!this.absolute) {
                     this._x *= this.parent.width;
                 }
-                if (this.align % 2 === 0) {
-                    this.dom.style.left = this._x + "px";
+                if (this.axis % 2 === 0) {
+                    this.dom.style.left =
+                        (this._x + (this.align % 2 === 0 ? 0 : -this.width)) + 'px';
                 }
                 else {
-                    this.dom.style.right = this._x + "px";
+                    this.dom.style.right =
+                        (this._x + (this.align % 2 === 0 ? -this.width : 0)) + 'px';
                 }
             }
         },
@@ -64,10 +67,11 @@ var CssScrollComment = (function (_super) {
         this._dirtyCSS = true;
     };
     CssScrollComment.prototype.stop = function () {
-        this.dom.style.transition = "";
+        _super.prototype.stop.call(this);
+        this.dom.style.transition = '';
         this.x = this._x;
         this._x = null;
-        this.x = (this.ttl / this.dur) * (this.parent.width + this.width) - this.width;
+        this.x = this.x;
         this._dirtyCSS = true;
     };
     return CssScrollComment;
