@@ -110,4 +110,3 @@ var CommentFactory = (function () {
     };
     return CommentFactory;
 }());
-//# sourceMappingURL=CommentFactory.js.map

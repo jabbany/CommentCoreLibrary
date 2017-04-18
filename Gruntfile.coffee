@@ -6,7 +6,7 @@ module.exports = (grunt) ->
   pkg = grunt.file.readJSON('package.json')
 
   # !! Compile configurations
-  LICENSE = '/*!Copyright(c) CommentCoreLibrary v' + pkg.version + 
+  LICENSE = '/*!Copyright(c) CommentCoreLibrary v' + pkg.version +
     ' (//github.com/jabbany/CommentCoreLibrary) - Licensed under the MIT License */'
   # !! End of config area
 
@@ -58,8 +58,8 @@ module.exports = (grunt) ->
     CMP_ALL = CMP_ALL.concat source
 
   # Generate the core ts targets
-  CMP_CORE_TS = 
-    'core': 
+  CMP_CORE_TS =
+    'core':
       src: SRC_TS_CORE
       outDir: 'src/core/js/'
   CMP_CORE_NAME = ['ts:core']
@@ -77,6 +77,7 @@ module.exports = (grunt) ->
   ts_config =
     options:
       target: 'es5'
+      sourceMap: false
   for key,value of CMP_CORE_TS
     ts_config[key] = value
   for key,value of CMP_KAGEROU_TS

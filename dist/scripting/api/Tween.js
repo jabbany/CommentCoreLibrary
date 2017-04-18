@@ -335,7 +335,7 @@ var Tween;
     function serial() {
         var args = [];
         for (var _i = 0; _i < arguments.length; _i++) {
-            args[_i] = arguments[_i];
+            args[_i - 0] = arguments[_i];
         }
         var totalTime = 0;
         var end = [];
@@ -372,7 +372,7 @@ var Tween;
     function parallel() {
         var args = [];
         for (var _i = 0; _i < arguments.length; _i++) {
-            args[_i] = arguments[_i];
+            args[_i - 0] = arguments[_i];
         }
         var totalTime = 0;
         for (var i = 0; i < args.length; i++) {
@@ -389,4 +389,3 @@ var Tween;
     }
     Tween.parallel = parallel;
 })(Tween || (Tween = {}));
-//# sourceMappingURL=Tween.js.map

@@ -1,13 +1,8 @@
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
 var Display;
 (function (Display) {
     var Point = (function () {
@@ -295,11 +290,11 @@ var Display;
         Vector3D.prototype.toString = function () {
             return '(x=' + this.x + ', y=' + this.y + ', z=' + this.z + ', w=' + this.w + ')';
         };
+        Vector3D.X_AXIS = new Vector3D(1, 0, 0);
+        Vector3D.Y_AXIS = new Vector3D(0, 1, 0);
+        Vector3D.Z_AXIS = new Vector3D(0, 0, 1);
         return Vector3D;
     }());
-    Vector3D.X_AXIS = new Vector3D(1, 0, 0);
-    Vector3D.Y_AXIS = new Vector3D(0, 1, 0);
-    Vector3D.Z_AXIS = new Vector3D(0, 0, 1);
     Display.Vector3D = Vector3D;
     function createMatrix(a, b, c, d, tx, ty) {
         return new Matrix(a, b, c, d, tx, ty);
@@ -398,10 +393,9 @@ var Display;
         function BlurFilter(blurX, blurY) {
             if (blurX === void 0) { blurX = 4.0; }
             if (blurY === void 0) { blurY = 4.0; }
-            var _this = _super.call(this) || this;
-            _this._blurX = blurX;
-            _this._blurY = blurY;
-            return _this;
+            _super.call(this);
+            this._blurX = blurX;
+            this._blurY = blurY;
         }
         BlurFilter.prototype.serialize = function () {
             var s = _super.prototype.serialize.call(this);
@@ -425,16 +419,15 @@ var Display;
             if (quality === void 0) { quality = null; }
             if (inner === void 0) { inner = false; }
             if (knockout === void 0) { knockout = false; }
-            var _this = _super.call(this) || this;
-            _this._color = color;
-            _this._alpha = alpha;
-            _this._blurX = blurX;
-            _this._blurY = blurY;
-            _this._strength = strength;
-            _this._quality = quality;
-            _this._inner = inner;
-            _this._knockout = knockout;
-            return _this;
+            _super.call(this);
+            this._color = color;
+            this._alpha = alpha;
+            this._blurX = blurX;
+            this._blurY = blurY;
+            this._strength = strength;
+            this._quality = quality;
+            this._inner = inner;
+            this._knockout = knockout;
         }
         GlowFilter.prototype.serialize = function () {
             var s = _super.prototype.serialize.call(this);
@@ -463,18 +456,17 @@ var Display;
             if (blurY === void 0) { blurY = 4.0; }
             if (strength === void 0) { strength = 1.0; }
             if (quality === void 0) { quality = 1; }
-            var _this = _super.call(this) || this;
-            _this._color = color;
-            _this._alpha = alpha;
-            _this._blurX = blurX;
-            _this._blurY = blurY;
-            _this._strength = strength;
-            _this._quality = quality;
-            _this._inner = false;
-            _this._knockout = false;
-            _this._distance = distance;
-            _this._angle = angle;
-            return _this;
+            _super.call(this);
+            this._color = color;
+            this._alpha = alpha;
+            this._blurX = blurX;
+            this._blurY = blurY;
+            this._strength = strength;
+            this._quality = quality;
+            this._inner = false;
+            this._knockout = false;
+            this._distance = distance;
+            this._angle = angle;
         }
         DropShadowFilter.prototype.serialize = function () {
             var s = _super.prototype.serialize.call(this);
@@ -531,23 +523,23 @@ var Display;
     var BlendMode = (function () {
         function BlendMode() {
         }
+        BlendMode.ADD = "add";
+        BlendMode.ALPHA = "alpha";
+        BlendMode.DARKEN = "darken";
+        BlendMode.DIFFERENCE = "difference";
+        BlendMode.ERASE = "erase";
+        BlendMode.HARDLIGHT = "hardlight";
+        BlendMode.INVERT = "invert";
+        BlendMode.LAYER = "layer";
+        BlendMode.LIGHTEN = "lighten";
+        BlendMode.MULTIPLY = "multiply";
+        BlendMode.NORMAL = "normal";
+        BlendMode.OVERLAY = "overlay";
+        BlendMode.SCREEN = "screen";
+        BlendMode.SHADER = "shader";
+        BlendMode.SUBTRACT = "subtract";
         return BlendMode;
     }());
-    BlendMode.ADD = "add";
-    BlendMode.ALPHA = "alpha";
-    BlendMode.DARKEN = "darken";
-    BlendMode.DIFFERENCE = "difference";
-    BlendMode.ERASE = "erase";
-    BlendMode.HARDLIGHT = "hardlight";
-    BlendMode.INVERT = "invert";
-    BlendMode.LAYER = "layer";
-    BlendMode.LIGHTEN = "lighten";
-    BlendMode.MULTIPLY = "multiply";
-    BlendMode.NORMAL = "normal";
-    BlendMode.OVERLAY = "overlay";
-    BlendMode.SCREEN = "screen";
-    BlendMode.SHADER = "shader";
-    BlendMode.SUBTRACT = "subtract";
     Display.BlendMode = BlendMode;
     var ColorTransform = (function () {
         function ColorTransform() {
@@ -1401,9 +1393,9 @@ var Display;
         DisplayObject.prototype.getId = function () {
             return this._id;
         };
+        DisplayObject.SANDBOX_EVENTS = ["enterFrame"];
         return DisplayObject;
     }());
-    DisplayObject.SANDBOX_EVENTS = ["enterFrame"];
     Display.DisplayObject = DisplayObject;
 })(Display || (Display = {}));
 var Display;
@@ -1540,12 +1532,11 @@ var Display;
     var Sprite = (function (_super) {
         __extends(Sprite, _super);
         function Sprite(id) {
-            var _this = _super.call(this, id) || this;
-            _this._mouseEnabled = true;
-            _this._mousePosition = new Display.Point(0, 0);
-            _this._useHandCursor = false;
-            _this._graphics = new Display.Graphics(_this);
-            return _this;
+            _super.call(this, id);
+            this._mouseEnabled = true;
+            this._mousePosition = new Display.Point(0, 0);
+            this._useHandCursor = false;
+            this._graphics = new Display.Graphics(this);
         }
         Object.defineProperty(Sprite.prototype, "graphics", {
             get: function () {
@@ -1590,7 +1581,7 @@ var Display;
     var RootSprite = (function (_super) {
         __extends(RootSprite, _super);
         function RootSprite() {
-            return _super.call(this, '__root') || this;
+            _super.call(this, '__root');
         }
         Object.defineProperty(RootSprite.prototype, "parent", {
             get: function () {
@@ -1761,15 +1752,14 @@ var Display;
     var CommentButton = (function (_super) {
         __extends(CommentButton, _super);
         function CommentButton(params) {
-            var _this = _super.call(this) || this;
-            _this._mM = new Display.MotionManager(_this);
-            _this._label = "";
-            _this.setDefaults(params);
-            _this.initStyle(params);
-            Runtime.registerObject(_this);
-            _this.bindParent(params);
-            _this._mM.play();
-            return _this;
+            _super.call(this);
+            this._mM = new Display.MotionManager(this);
+            this._label = "";
+            this.setDefaults(params);
+            this.initStyle(params);
+            Runtime.registerObject(this);
+            this.bindParent(params);
+            this._mM.play();
         }
         CommentButton.prototype.setStyle = function (styleProp, value) {
             __trace("UIComponent.setStyle not implemented", "warn");
@@ -1827,14 +1817,13 @@ var Display;
     var CommentCanvas = (function (_super) {
         __extends(CommentCanvas, _super);
         function CommentCanvas(params) {
-            var _this = _super.call(this) || this;
-            _this._mM = new Display.MotionManager(_this);
-            _this.setDefaults(params);
-            _this.initStyle(params);
-            Runtime.registerObject(_this);
-            _this.bindParent(params);
-            _this._mM.play();
-            return _this;
+            _super.call(this);
+            this._mM = new Display.MotionManager(this);
+            this.setDefaults(params);
+            this.initStyle(params);
+            Runtime.registerObject(this);
+            this.bindParent(params);
+            this._mM.play();
         }
         Object.defineProperty(CommentCanvas.prototype, "motionManager", {
             get: function () {
@@ -1874,9 +1863,8 @@ var Display;
     var Shape = (function (_super) {
         __extends(Shape, _super);
         function Shape() {
-            var _this = _super.call(this) || this;
-            _this._graphics = new Display.Graphics(_this);
-            return _this;
+            _super.call(this);
+            this._graphics = new Display.Graphics(this);
         }
         Object.defineProperty(Shape.prototype, "graphics", {
             get: function () {
@@ -1899,14 +1887,13 @@ var Display;
     var CommentShape = (function (_super) {
         __extends(CommentShape, _super);
         function CommentShape(params) {
-            var _this = _super.call(this) || this;
-            _this._mM = new Display.MotionManager(_this);
-            _this.setDefaults(params);
-            _this.initStyle(params);
-            Runtime.registerObject(_this);
-            _this.bindParent(params);
-            _this._mM.play();
-            return _this;
+            _super.call(this);
+            this._mM = new Display.MotionManager(this);
+            this.setDefaults(params);
+            this.initStyle(params);
+            Runtime.registerObject(this);
+            this.bindParent(params);
+            this._mM.play();
         }
         Object.defineProperty(CommentShape.prototype, "motionManager", {
             get: function () {
@@ -1986,17 +1973,16 @@ var Display;
         function TextField(text, color) {
             if (text === void 0) { text = ""; }
             if (color === void 0) { color = 0; }
-            var _this = _super.call(this) || this;
-            _this._background = false;
-            _this._backgroundColor = 0xffffff;
-            _this._border = false;
-            _this._borderColor = 0;
-            _this._text = text;
-            _this._textFormat = new TextFormat();
-            _this._textFormat.color = color;
-            _this.boundingBox.width = _this.textWidth;
-            _this.boundingBox.height = _this.textHeight;
-            return _this;
+            _super.call(this);
+            this._background = false;
+            this._backgroundColor = 0xffffff;
+            this._border = false;
+            this._borderColor = 0;
+            this._text = text;
+            this._textFormat = new TextFormat();
+            this._textFormat.color = color;
+            this.boundingBox.width = this.textWidth;
+            this.boundingBox.height = this.textHeight;
         }
         Object.defineProperty(TextField.prototype, "text", {
             get: function () {
@@ -2137,14 +2123,13 @@ var Display;
     var CommentField = (function (_super) {
         __extends(CommentField, _super);
         function CommentField(text, params) {
-            var _this = _super.call(this, text, 0xffffff) || this;
-            _this._mM = new Display.MotionManager(_this);
-            _this.setDefaults(params);
-            _this.initStyle(params);
-            Runtime.registerObject(_this);
-            _this.bindParent(params);
-            _this._mM.play();
-            return _this;
+            _super.call(this, text, 0xffffff);
+            this._mM = new Display.MotionManager(this);
+            this.setDefaults(params);
+            this.initStyle(params);
+            Runtime.registerObject(this);
+            this.bindParent(params);
+            this._mM.play();
         }
         Object.defineProperty(CommentField.prototype, "fontsize", {
             get: function () {
@@ -2341,4 +2326,3 @@ var Display;
     });
 })(Display || (Display = {}));
 var $ = Display;
-//# sourceMappingURL=Display.js.map

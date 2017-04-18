@@ -168,4 +168,3 @@ var Player;
         _lastUpdate.reset();
     });
 })(Player || (Player = {}));
-//# sourceMappingURL=Player.js.map
