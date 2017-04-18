@@ -1,8 +1,22 @@
 # Experimental
 
-The experimental parser to CSS3 Animations that HOPEFULLY speed up the animation
-and make it work better on mobile platforms.
+This directory contains features that are experimental and not ready to be 
+placed into the main track
+
+## Graduated features
+
+The following features have graduated from the experimental branch and been 
+incorporated into the main line:
+
+- experimental/scripting: Graduated to become KageroEngine
+- experimental/animation: Inspired CSS3 accelerated comments that are now in 
+    the main line as of v0.11
 
 # 实验性
 
-这里放着一个实验性的CSS3动画库，如果幸运可以提高在移动设备上的弹幕效果。目前还在初步研发阶段。
+实验性工具目录包括了一些实验性的未被引入主线的功能。
+
+## 从毕业的功能
+
+- experimental/scripting: 脚本弹幕现在在主线以KageroEngine形式实现
+- experimental/animation: 基于CSS3硬件加速动画的弹幕自v0.11，已经被引入主线

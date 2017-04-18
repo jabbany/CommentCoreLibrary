@@ -32,11 +32,11 @@
                     cm.time(Math.round(videoPlayer.currentTime * 1000));
                 }, 10);
             }
-            cm.startTimer();
+            cm.start();
             videoPlayer.play(); 
         }else{
             if(cm != null){
-                cm.stopTimer();
+                cm.stop();
                 clearTimeout(timer);
             }
             videoPlayer.pause(); 

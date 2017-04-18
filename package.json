@@ -12,17 +12,15 @@
   },
   "author": "Jim Chen <knh.jabbany@gmail.com>",
   "license":"MIT",
-  "version": "0.10.2-rc.2",
-  "main": "build/CommentCoreLibrary.js",
   "keywords": [
     "danmaku",
     "video",
     "comments",
+    "caption",
     "browser",
     "danmu"
   ],
   "main": "dist/CommentCoreLibrary.js",
-  "license": "MIT",
   "version": "0.11.0",
   "devDependencies": {
     "coveralls": "~2.13.0",

@@ -22,7 +22,7 @@ var Display;
                 return Math.sqrt(this.x * this.x + this.y * this.y);
             },
             set: function (l) {
-                __trace("Point.length is read-only", "err");
+                __trace('Point.length is read-only', 'err');
             },
             enumerable: true,
             configurable: true
@@ -58,7 +58,7 @@ var Display;
             return false;
         };
         Point.prototype.toString = function () {
-            return "(x=" + this.x + ", y=" + this.y + ")";
+            return '(x=' + this.x + ', y=' + this.y + ')';
         };
         Point.prototype.clone = function () {
             return new Point(this.x, this.y);
@@ -78,7 +78,7 @@ var Display;
         }
         Matrix.prototype.dotProduct = function (o) {
             if (o.length < 9) {
-                throw new Error("Matrix dot product expects a matrix");
+                throw new Error('Matrix dot product expects a matrix');
             }
             var res = [0, 0, 0, 0, 0, 0, 0, 0, 0];
             for (var i = 0; i < 3; i++) {
@@ -149,13 +149,13 @@ var Display;
                 this.identity();
             }
             else {
-                __trace("Matrix3D initialization vector invalid", "warn");
+                __trace('Matrix3D initialization vector invalid', 'warn');
                 this.identity();
             }
         }
         Matrix3D.prototype.dotProduct = function (a, b) {
             if (a.length !== 16 || b.length !== 16) {
-                throw new Error("Matrix3D dot product expects a matrix3d");
+                throw new Error('Matrix3D dot product expects a matrix3d');
             }
             var res = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
             for (var i = 0; i < 4; i++) {
@@ -241,10 +241,14 @@ var Display;
             ]);
         };
         Matrix3D.prototype.transformVector = function (v) {
-            var rx = this._data[0] * v.x + this._data[1] * v.y + this._data[2] * v.z + this._data[3] * v.w;
-            var ry = this._data[4] * v.x + this._data[5] * v.y + this._data[6] * v.z + this._data[7] * v.w;
-            var rz = this._data[8] * v.x + this._data[9] * v.y + this._data[10] * v.z + this._data[11] * v.w;
-            var rw = this._data[12] * v.x + this._data[13] * v.y + this._data[14] * v.z + this._data[15] * v.w;
+            var rx = this._data[0] * v.x + this._data[1] * v.y +
+                this._data[2] * v.z + this._data[3] * v.w;
+            var ry = this._data[4] * v.x + this._data[5] * v.y +
+                this._data[6] * v.z + this._data[7] * v.w;
+            var rz = this._data[8] * v.x + this._data[9] * v.y +
+                this._data[10] * v.z + this._data[11] * v.w;
+            var rw = this._data[12] * v.x + this._data[13] * v.y +
+                this._data[14] * v.z + this._data[15] * v.w;
             return new Vector3D(rx, ry, rz, rw);
         };
         Matrix3D.prototype.transformVectors = function (vin, vout) {
@@ -289,7 +293,7 @@ var Display;
             this.w = w;
         }
         Vector3D.prototype.toString = function () {
-            return "(x=" + this.x + ", y=" + this.y + ", z=" + this.z + ", w=" + this.w + ")";
+            return '(x=' + this.x + ', y=' + this.y + ', z=' + this.z + ', w=' + this.w + ')';
         };
         return Vector3D;
     }());
@@ -333,7 +337,7 @@ var Display;
             projectedVerts.pop();
         }
         if (verts.length % 3 !== 0) {
-            __trace("Display.projectVectors input vertex Vector must be a multiple of 3.", "err");
+            __trace('Display.projectVectors input vertex Vector must be a multiple of 3.', 'err');
             return;
         }
         var transformed = [];
@@ -353,7 +357,7 @@ var Display;
     function toIntVector(array) {
         Object.defineProperty(array, 'as3Type', {
             get: function () {
-                return "Vector<int>";
+                return 'Vector<int>';
             },
             set: function (value) {
                 __trace('as3Type should not be set.', 'warn');
@@ -1635,9 +1639,7 @@ var Display;
                 return this._dur;
             },
             set: function (dur) {
-                if (this._independentTimer) {
-                    this._timer.stop();
-                }
+                this._timeKeeper.reset();
                 this._ttl = dur;
                 this._dur = dur;
             },
@@ -1667,6 +1669,7 @@ var Display;
         };
         MotionManager.prototype.reset = function () {
             this._ttl = this._dur;
+            this._timeKeeper.reset();
         };
         MotionManager.prototype.play = function () {
             if (this._isRunning) {
@@ -1676,6 +1679,7 @@ var Display;
                 return;
             }
             this._isRunning = true;
+            this._timeKeeper.reset();
             if (this._tween) {
                 this._tween.play();
             }
@@ -1685,6 +1689,7 @@ var Display;
                 return;
             }
             this._isRunning = false;
+            this._timeKeeper.reset();
             if (this._tween) {
                 this._tween.stop();
             }
@@ -1882,7 +1887,7 @@ var Display;
         });
         Shape.prototype.serialize = function () {
             var serialized = _super.prototype.serialize.call(this);
-            serialized["class"] = "Shape";
+            serialized['class'] = 'Shape';
             return serialized;
         };
         return Shape;

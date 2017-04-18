@@ -1018,7 +1018,7 @@ var CommentManager = (function() {
         /** Precompute the offset width **/
         this.width = this.stage.offsetWidth;
         this.height = this.stage.offsetHeight;
-        this.startTimer = function () {
+        this._startTimer = function () {
             if (__timer > 0) {
                 return;
             }
@@ -1030,7 +1030,7 @@ var CommentManager = (function() {
                 cmMgr.onTimerEvent(elapsed,cmMgr);
             },10);
         };
-        this.stopTimer = function () {
+        this._stopTimer = function () {
             window.clearInterval(__timer);
             __timer = 0;
         };
@@ -1038,13 +1038,13 @@ var CommentManager = (function() {
 
     /** Public **/
     CommentManager.prototype.stop = function(){
-        this.stopTimer();
+        this._stopTimer();
         // Send stop signal to all comments
         this.runline.forEach(function (c) { c.stop(); });
     };
 
     CommentManager.prototype.start = function(){
-        this.startTimer();
+        this._startTimer();
     };
 
     CommentManager.prototype.seek = function(time){

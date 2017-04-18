@@ -186,7 +186,7 @@ function load(dmf,dmfmd){
 	});
 }
 function stop(){
-	cm.stopTimer();
+	cm.stop();
 	if(cm.scripting){
 		cm.scripting.send("Update:TimeUpdate",{
 			"state":"pause",
@@ -196,7 +196,7 @@ function stop(){
 	clearTimeout(tmr);
 }
 function resume(){
-	cm.startTimer();
+	cm.start();
 	start = new Date().getTime() - playhead;
 	lasthead = playhead;
 	tmr = setInterval(timeupdate,42);
