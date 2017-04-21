@@ -13,9 +13,6 @@ var __OOAPI = new function () {
         try {
           channels[msg.channel].listeners[i](msg.payload);
         } catch(e) {
-          if (e instanceof SyntaxError) {
-            __trace(msg.payload);
-          }
           if (e.stack) {
             __trace(e.stack.toString(), 'err');
           } else {

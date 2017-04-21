@@ -131,15 +131,15 @@ var playhead = 0, lasthead = 0;
 
 cm.scripting = bscripter.getSandbox($("commentCanvas"), {
     'play': function () {
-        bscripter.logger.log('Player.play invoked. Ignoring!');
+        bscripter.logger.log('Player.play invoked. Ignoring.');
         //resume();
     },
     'pause': function () { 
-        bscripter.logger.log('Player.pause invoked. Ignoring!');
+        bscripter.logger.log('Player.pause invoked. Ignoring.');
         //stop();
     },
     'seek': function (time) { 
-        bscripter.logger.log('Seeking to [' + time + ']. Ignoring!');
+        bscripter.logger.log('Seeking to [' + time + ']. Ignoring.');
         //playhead = time; 
         //lasthead = time; 
         //start = Date.now() - playhead; 
