@@ -6,28 +6,16 @@
  * @description Comment management unit for CCL
  */
 /// <reference path="Core.d.ts" />
-class ScrollCommentFactory implements ICommentFactory{
-  public create(manager:ICommentManager, data:Object):ScrollComment{
-    return new ScrollComment(manager, data);
-  }
-}
-
-class CanvasCommentFactory implements ICommentFactory{
-  public canvas:HTMLCanvasElement;
-  constructor(canvas:HTMLCanvasElement){
-    this.canvas = canvas;
-  }
-  public create(manager:ICommentManager, data:Object):IComment{
-    return null;
-  }
-}
+/// <reference path="Comment.ts" />
+/// <reference path="CommentFactory.ts" />
+/// <reference path="CommentSpaceAllocator.ts" />
 
 class CommentManager implements ICommentManager {
   private _width:number = 0;
   private _height:number = 0;
   private _status:string = "stopped";
   private _stage:HTMLDivElement;
-  private _listeners:Object = {};
+  private _listeners:{[name: string]:Array<Function>} = {};
   private _csa:Object = {};
 
   public options:CCLOptions = {
@@ -38,8 +26,7 @@ class CommentManager implements ICommentManager {
     },
     "scroll": {
       "scale": 1,
-      "opacity": 1,
-      "factory": new ScrollCommentFactory()
+      "opacity": 1
     },
     "scripting":{
       "mode": [8],
@@ -49,6 +36,7 @@ class CommentManager implements ICommentManager {
   public timeline:Array<Object> = [];
   public runline:Array<IComment> = [];
   public position:number = 0;
+  public factory:ICommentFactory;
 
   get width():number {
     return this._width;
@@ -70,8 +58,8 @@ class CommentManager implements ICommentManager {
     this._stage = stage;
   }
 
-  public static getCommentType(data:Object):string {
-    return "";
+  public init():void {
+    this.factory = CommentFactory.defaultCssRenderFactory();
   }
 
   /**
@@ -86,6 +74,10 @@ class CommentManager implements ICommentManager {
    */
   public stop():void {
     this._status = "stopped";
+    // Go through the comment runline and stop stuff
+    for (var i = 0; i < this.runline.length; i++) {
+      this.runline[i].stop();
+    }
   }
 
   /**
@@ -94,7 +86,6 @@ class CommentManager implements ICommentManager {
    */
   public load(data:Array<Object>):void {
     this.timeline = data;
-
   }
 
   /**
@@ -102,7 +93,6 @@ class CommentManager implements ICommentManager {
    * @param data - abstract comment data
    */
   public insert(data:Object):void {
-
   }
 
   /**
@@ -119,22 +109,17 @@ class CommentManager implements ICommentManager {
    * @param data - abstract comment data
    */
   public send(data:Object):void {
-    if(!data.hasOwnProperty("mode")){
+    if (!data.hasOwnProperty("mode")) {
       data["mode"] = 1;
     }
-    if(this.options.scripting.mode.indexOf(data["mode"]) >= 0){
+    if (this.options.scripting.mode.indexOf(data["mode"]) >= 0) {
       /** Scripting comment **/
-      if(this.options.scripting.engine !== null){
+      if (this.options.scripting.engine !== null) {
         this.options.scripting.engine.eval(data["code"]);
       }
+      return;
     }
-    var cmt:IComment;
-    if(data["mode"] === 1 || data["mode"] === 2 || data["mode"] === 6){
-      cmt = this.options.scroll.factory.create(this, data);
-    }else{
-      cmt = new CoreComment(this, data);
-    }
-
+    this.runline.push(this.factory.create(this, data));
   }
 
   /**
@@ -162,7 +147,7 @@ class CommentManager implements ICommentManager {
    * @param name - event name
    * @param data - corresponding data
    */
-  public dispatchEvent(name:String, data:Object = null):void {
+  public dispatchEvent(name:string, data:Object = null):void {
     if (this._listeners.hasOwnProperty(name)) {
       var listenerList:Array<Function> = this._listeners[name];
       for (var i = 0; i < listenerList.length; i++) {
@@ -180,9 +165,9 @@ class CommentManager implements ICommentManager {
    * @param name - event name
    * @param listener - listener function
    */
-  public addEventListener(name:String, listener:Function):void {
+  public addEventListener(name:string, listener:Function):void {
     if (this._listeners.hasOwnProperty(name)) {
-      (Array<Function>)(this._listeners[name]).push(listener);
+      this._listeners[name].push(listener);
     } else {
       this._listeners[name] = [listener];
     }

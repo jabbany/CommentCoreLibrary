@@ -27,11 +27,17 @@
 
 ## Methods 方法
 
-### init()
+### init(rendererType:string = 'css')
 初始化弹幕管理器并初次绑定舞台大小。注意：`init`调用时请确保弹幕舞台对象可以访问，并且已经实例化和
 可测大小。如果在动态的构成组件，只要保证在调用 `init()` 时舞台返回的大小数据正确即可。
 
-初始化管理器默认播放状态是未播放，需要单独通过 `start()` 启用
+初始化管理器默认播放状态是未播放，需要单独通过 `start()` 启用。
+
+rendererType 决定了渲染引擎类型，默认为CSS3渲染:
+- `css`: CSS3 transition
+- `svg`: SVG Animation
+- `canvas`: Canvas 
+- `legacy`: DOM + Timer 
 
 ### start()
 启动弹幕老化进程。调用后 `send()` 发送到运行列表（runline）的弹幕会开始移动。用于在刚刚 

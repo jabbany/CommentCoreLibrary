@@ -1,7 +1,7 @@
 language: node_js
 sudo: false
 node_js:
-  - "6.7.0"
+  - "7.9.0"
 before_install:
   - npm install npm -g
 before_script:

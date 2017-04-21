@@ -145,6 +145,9 @@ DOM Correspondance: 对应的渲染元素，根据不同情况是不一样的。
 ### finish()
 通知 parent 弹幕已经完结。
 
+### stop()
+当 parent 的 stop（暂停）被调用时，所有运行中的弹幕的停止方法也会被调用。这样可以优化如CSS和SVG引擎下的弹幕处理。
+
 ### toString():String
 返回弹幕调试信息。
 

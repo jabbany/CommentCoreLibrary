@@ -6,7 +6,7 @@
 [![Build Status: Linux](https://travis-ci.org/jabbany/CommentCoreLibrary.svg?branch=master)](https://travis-ci.org/jabbany/CommentCoreLibrary)
 [![Coverage Status](https://img.shields.io/coveralls/jabbany/CommentCoreLibrary.svg)](https://coveralls.io/r/jabbany/CommentCoreLibrary?branch=master)
 
-Other Languages: [简体中文](README.zh_cn.md)
+Other Languages: [简体中文](README.zh_CN.md)
 
 The CommentCoreLibrary is a set of Javascript modules that make up the
 core controller for comments streaming on top of timed media (video or audio).

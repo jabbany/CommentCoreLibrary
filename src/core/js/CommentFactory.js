@@ -96,8 +96,17 @@ var CommentFactory = (function () {
         factory.bind(17, CommentFactory._advancedCoreInitializer);
         return factory;
     };
+    CommentFactory.defaultCanvasRenderFactory = function () {
+        throw new Error('Not implemented');
+    };
+    CommentFactory.defaultSvgRenderFactory = function () {
+        throw new Error('Not implemented');
+    };
     CommentFactory.prototype.bind = function (mode, factory) {
         this._bindings[mode] = factory;
+    };
+    CommentFactory.prototype.canCreate = function (comment) {
+        return this._bindings.hasOwnProperty(comment['mode']);
     };
     CommentFactory.prototype.create = function (manager, comment) {
         if (comment === null || !comment.hasOwnProperty('mode')) {

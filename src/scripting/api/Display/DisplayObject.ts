@@ -5,7 +5,10 @@
  */
 /// <reference path="../Runtime.d.ts" />
 /// <reference path="ISerializable.ts" />
+
+/// <reference path="Display.ts" />
 /// <reference path="Filter.ts" />
+
 module Display {
 	export class BlendMode {
 		static ADD:string = "add";
@@ -769,6 +772,13 @@ module Display {
 		}
 
 		public addChild(o:DisplayObject):void {
+      // Make sure we're not adding a child onto a parent
+      if (typeof o === 'undefined' || o === null) {
+        throw new Error('Cannot add an empty child!');
+      }
+      if (o.contains(this)) {
+        throw new Error('Attempting to add an ancestor of this DisplayObject as a child!');
+      }
 			this._children.push(o);
 			this._boundingBox.unionCoord(o._anchor.x + o._boundingBox.left, o._anchor.y + o._boundingBox.top);
 			this._boundingBox.unionCoord(o._anchor.x + o._boundingBox.right, o._anchor.y + o._boundingBox.bottom);
@@ -810,6 +820,21 @@ module Display {
 			}
 			this.methodCall('removeChildren', ids);
 		}
+
+    public contains(child:DisplayObject):boolean {
+      if (child === this) {
+        return true;
+      }
+      if (this._children.indexOf(child) >= 0) {
+        return true;
+      }
+      for (var i = 0; i < this._children.length; i++) {
+        if (this._children[i].contains(child)) {
+          return true;
+        }
+      }
+      return false;
+    }
 
 		/**
 		 * Removes the object from a parent if exists.

@@ -110,6 +110,7 @@ var Tween;
             this._currentTime = 0;
             this._repeats = 0;
             this.easing = Tween.linear;
+            this.step = function () { };
             this._target = target;
             this._duration = duration;
             this._timeKeeper = new Runtime.TimeKeeper();
@@ -247,6 +248,19 @@ var Tween;
             }
         };
     }
+    function choose(n, k) {
+        if (n < 0 || k < 0) {
+            throw new Error('Cannot compute n-choose-k with negative inputs.');
+        }
+        if (k > n / 2) {
+            return choose(n, n - k);
+        }
+        var value = 1;
+        for (var i = 1; i <= k; i++) {
+            value *= (n + 1 - i) / i;
+        }
+        return value;
+    }
     function tween(object, dest, src, duration, easing) {
         if (dest === void 0) { dest = {}; }
         if (src === void 0) { src = {}; }
@@ -278,11 +292,69 @@ var Tween;
         return Tween.tween(object, dest, src, duration, easing);
     }
     Tween.to = to;
-    function beizer(object, dest, src, control) {
-        __trace('Bezier tween not implemented yet', 'warn');
-        return Tween.tween(object, dest, src);
+    function bezier(object, dest, src, control, duration, easing) {
+        if (duration === void 0) { duration = 1.0; }
+        if (easing === void 0) { easing = null; }
+        var tween = new ITween(object, duration * 1000);
+        if (easing !== null && typeof easing === 'function') {
+            tween.easing = easing;
+        }
+        var finalControlPoints = {};
+        for (var prop in control) {
+            if (Array.isArray(control[prop]) && control[prop].length > 0) {
+                finalControlPoints[prop] = control[prop];
+            }
+        }
+        if (typeof src === 'undefined' || src === null) {
+            src = {};
+        }
+        if (typeof dest === 'undefined' || dest === null) {
+            dest = {};
+        }
+        for (var prop in finalControlPoints) {
+            if (!(prop in src)) {
+                src[prop] = tween.target[prop];
+            }
+            if (!(prop in dest)) {
+                dest[prop] = finalControlPoints[prop][finalControlPoints[prop].length - 1];
+            }
+        }
+        tween.step = function (target, currentTime, totalTime) {
+            var t = Math.min(tween.easing(currentTime, 0, 1, totalTime), 1);
+            for (var prop in finalControlPoints) {
+                var controlPoints = finalControlPoints[prop];
+                var numControl = controlPoints.length;
+                var firstIndex = Math.floor(t * numControl);
+                var segmentT = (t - firstIndex / numControl) * numControl;
+                if (numControl === 1) {
+                    target[prop] = src[prop] +
+                        2 * t * (1 - t) * (controlPoints[0] - src[prop]) +
+                        t * t * (dest[prop] - src[prop]);
+                }
+                else {
+                    var p1 = 0;
+                    var p2 = 0;
+                    if (firstIndex === 0) {
+                        p1 = src[prop];
+                        p2 = (controlPoints[0] + controlPoints[1]) / 2;
+                    }
+                    else if (firstIndex === numControl - 1) {
+                        p1 = (controlPoints[firstIndex - 1] + controlPoints[firstIndex]) / 2;
+                        p2 = dest[prop];
+                    }
+                    else {
+                        p1 = (controlPoints[firstIndex - 1] + controlPoints[firstIndex]) / 2;
+                        p2 = (controlPoints[firstIndex] + controlPoints[firstIndex + 1]) / 2;
+                    }
+                    target[prop] = p1 +
+                        2 * segmentT * (1 - segmentT) * (controlPoints[firstIndex] - p1) +
+                        segmentT * segmentT * (p2 - p1);
+                }
+            }
+        };
+        return tween;
     }
-    Tween.beizer = beizer;
+    Tween.bezier = bezier;
     function scale(src, scale) {
         var clone = src.clone();
         clone.scale(scale);
@@ -336,6 +408,9 @@ var Tween;
         var args = [];
         for (var _i = 0; _i < arguments.length; _i++) {
             args[_i - 0] = arguments[_i];
+        }
+        if (args.length === 0) {
+            return new ITween({}, 0);
         }
         var totalTime = 0;
         var end = [];

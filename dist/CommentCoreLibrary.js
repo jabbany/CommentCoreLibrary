@@ -787,8 +787,17 @@ var CommentFactory = (function () {
         factory.bind(17, CommentFactory._advancedCoreInitializer);
         return factory;
     };
+    CommentFactory.defaultCanvasRenderFactory = function () {
+        throw new Error('Not implemented');
+    };
+    CommentFactory.defaultSvgRenderFactory = function () {
+        throw new Error('Not implemented');
+    };
     CommentFactory.prototype.bind = function (mode, factory) {
         this._bindings[mode] = factory;
+    };
+    CommentFactory.prototype.canCreate = function (comment) {
+        return this._bindings.hasOwnProperty(comment['mode']);
     };
     CommentFactory.prototype.create = function (manager, comment) {
         if (comment === null || !comment.hasOwnProperty('mode')) {
@@ -1827,10 +1836,10 @@ var BilibiliFormat = (function () {
     // Try to escape unsafe HTML code. DO NOT trust that this handles all cases
     // Please do not allow insecure DOM parsing unless you can trust your input source.
     var _escapeUnsafe = function (text) {
-        text = text.replace(new RegExp("</([^d])","g"), "</disabled $1");
-        text = text.replace(new RegExp("</(\S{2,})","g"), "</disabled $1");
-        text = text.replace(new RegExp("<([^d/]\W*?)","g"), "<disabled $1");
-        text = text.replace(new RegExp("<([^/ ]{2,}\W*?)","g"), "<disabled $1");
+        text = text.replace(new RegExp('</([^d])','g'), '</disabled $1');
+        text = text.replace(new RegExp('</(\S{2,})','g'), '</disabled $1');
+        text = text.replace(new RegExp('<([^d/]\W*?)','g'), '<disabled $1');
+        text = text.replace(new RegExp('<([^/ ]{2,}\W*?)','g'), '<disabled $1');
         return text;
     };
 
@@ -1858,7 +1867,7 @@ var BilibiliFormat = (function () {
         comment.mode = parseInt(params[1]);
         comment.date = parseInt(params[4]);
         comment.pool = parseInt(params[5]);
-        comment.position = "absolute";
+        comment.position = 'absolute';
         if (params[7] != null) {
             comment.dbid = parseInt(params[7]);
         }
@@ -1877,7 +1886,7 @@ var BilibiliFormat = (function () {
                     comment.x = parseFloat(extendedParams[0]);
                     comment.y = parseFloat(extendedParams[1]);
                     if (Math.floor(comment.x) < comment.x || Math.floor(comment.y) < comment.y) {
-                        comment.position = "relative";
+                        comment.position = 'relative';
                     }
                     comment.text = extendedParams[4].replace(/(\/n|\\n|\n|\r\n)/g, "\n");
                     comment.rZ = 0;
@@ -1915,7 +1924,7 @@ var BilibiliFormat = (function () {
                             motion.y.delay = parseInt(extendedParams[10], 10);
                         }
                         if (extendedParams.length > 11) {
-                            comment.shadow = (extendedParams[11] !== 'false');
+                            comment.shadow = (extendedParams[11] !== 'false' && extendedParams[11] !== false);
                             if (extendedParams[12] != null) {
                                 comment.font = extendedParams[12];
                             }
@@ -1933,7 +1942,7 @@ var BilibiliFormat = (function () {
                                     y: motion.y.from
                                 };
                                 var pathMotion = [];
-                                var regex = new RegExp("([a-zA-Z])\\s*(\\d+)[, ](\\d+)",'g');
+                                var regex = new RegExp('([a-zA-Z])\\s*(\\d+)[, ](\\d+)','g');
                                 var counts = path.split(/[a-zA-Z]/).length - 1;
                                 var m = regex.exec(path);
                                 while (m !== null) {

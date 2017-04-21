@@ -7,6 +7,7 @@
 /// <reference path="Timer.ts" />
 /// <reference path="ScriptManager.ts" />
 /// <reference path="Permissions.ts" />
+/// <reference path="Supports.ts" />
 module Runtime {
 
 	/**

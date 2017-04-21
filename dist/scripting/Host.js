@@ -28,21 +28,21 @@ var CCLScripting = function(workerUrl){
 		throw new Error("CCL: Scripting engine not defined.");
 		return;
 	}
-	
+
 	CCLScripting.prototype.ScriptingContext = function(scripter, stage){
 		// Here in the Scripting Context we also have a objects
 		var objects = {};
 		this.registerObject = function(objectId, serialized){
 			if(typeof this.Unpack[serialized["class"]] === "function"){
-				objects[objectId] = new this.Unpack[serialized["class"]](stage, 
+				objects[objectId] = new this.Unpack[serialized["class"]](stage,
 					serialized, this);
 			}else{
-				scripter.logger.error("Cannot unpack class \"" + 
+				scripter.logger.error("Cannot unpack class \"" +
 					serialized["class"] + "\". No valid unpacker found");
 				return;
 			}
 		};
-		
+
 		this.deregisterObject = function(objectId){
 			delete objects[objectId];
 		};
@@ -52,8 +52,8 @@ var CCLScripting = function(workerUrl){
 				return;
 			}
 			if(objects[objectId][propName] === undefined){
-				scripter.logger.error("Property \"" + propName 
-					+ "\" not defined for object of type " + 
+				scripter.logger.error("Property \"" + propName
+					+ "\" not defined for object of type " +
 					objects[objectId].getClass() +".");
 				return;
 			}
@@ -65,8 +65,8 @@ var CCLScripting = function(workerUrl){
 				return;
 			}
 			if(!objects[objectId][methodName]){
-				scripter.logger.error("Method \"" + methodName 
-					+ "\" not defined for object of type " + 
+				scripter.logger.error("Method \"" + methodName
+					+ "\" not defined for object of type " +
 					objects[objectId].getClass() +".");
 				return;
 			}
@@ -102,9 +102,9 @@ var CCLScripting = function(workerUrl){
 			}
 		};
 		this.clear = function(){
-			
+
 		};
-		
+
 		this.getDimensions = function(){
 			return {
 				"stageWidth":stage.offsetWidth,
@@ -114,9 +114,9 @@ var CCLScripting = function(workerUrl){
 			};
 		};
 	};
-	
+
 	CCLScripting.prototype.ScriptingContext.prototype.Unpack = {};
-	
+
 	CCLScripting.prototype.BridgedSandbox = function(scripter, stage, player){
 		var worker = scripter.getWorker();
 		var context = scripter.getScriptingContext(stage);
@@ -124,23 +124,23 @@ var CCLScripting = function(workerUrl){
 		var channels = {};
 		var isRunning = false;
 		var sandbox = this;
-		
+
 		if(!worker){
 			throw new Error("SANDBOX: Worker pool exhausted.");
 		}
-		
+
 		this.getLogger = function(){
 			return scripter.logger;
 		};
-		
+
 		this.getPlayer = function(){
 			return playerAbst;
 		};
-		
+
 		this.getContext = function(){
 			return context;
 		};
-		
+
 		this.addListener = function(channel, listener){
 			if(!channels[channel]){
 				channels[channel] = {
@@ -156,21 +156,21 @@ var CCLScripting = function(workerUrl){
 			channels[channel].listeners.push(listener);
 			return true;
 		};
-		
+
 		var dispatchMessage = function(msg){
 			if(channels[msg.channel] && channels[msg.channel].listeners){
 				for(var i = 0; i < channels[msg.channel].listeners.length; i++){
 					channels[msg.channel].listeners[i](msg.payload);
 				}
 			}else{
-				scripter.logger.warn("Message for channel \"" + msg.channel + 
+				scripter.logger.warn("Message for channel \"" + msg.channel +
 					"\" but channel not existant.");
 			}
 		};
-		
+
 		var WorkerHook = function(event){
 			try{
-				var resp = JSON.parse(event.data);	
+				var resp = JSON.parse(event.data);
 			} catch(e) {
 			    if (e.stack) {
 			        scripter.logger.error(e.stack);
@@ -226,7 +226,7 @@ var CCLScripting = function(workerUrl){
 				dispatchMessage(resp);
 			}
 		};
-		
+
 		this.resetWorker = function(){
 			try{
 				worker.terminate();
@@ -237,9 +237,9 @@ var CCLScripting = function(workerUrl){
 			}
 			worker.addEventListener("message", WorkerHook);
 		};
-		
+
 		worker.addEventListener("message", WorkerHook);
-		
+
 		this.eval = function(code){
 			// Pushes the code to be evaluated on the Worker
 			if(!isRunning){
@@ -250,7 +250,7 @@ var CCLScripting = function(workerUrl){
 				"payload":code
 			}));
 		};
-		
+
 		this.send = function(channel, payload){
 			// Low level send
 			worker.postMessage(JSON.stringify({
@@ -280,14 +280,14 @@ var CCLScripting = function(workerUrl){
 					default:return;
 					case "play": self.getPlayer().play();break;
 					case "pause": self.getPlayer().pause();break;
-					case "seek": self.getPlayer().seek(msg.offset);break;
+					case "seek": self.getPlayer().seek(msg.params);break;
 					case "jump": self.getPlayer().jump(msg.params);break;
 				}
 			}catch(e){
 				if(e.stack){
 					self.getLogger().error(e.stack);
 				}else{
-					self.getLogger().error(e.toString());	
+					self.getLogger().error(e.toString());
 				}
 			}
 		});

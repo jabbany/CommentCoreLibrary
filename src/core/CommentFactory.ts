@@ -9,6 +9,7 @@
 /// <reference path="Core.d.ts" />
 /// <reference path="Comment.ts" />
 /// <reference path="css-renderer/CssComment.ts" />
+
 class CommentFactory implements ICommentFactory {
   private _bindings:{[key:number]:Function;} = {};
 
@@ -111,8 +112,21 @@ class CommentFactory implements ICommentFactory {
     return factory;
   }
 
+  public static defaultCanvasRenderFactory ():ICommentFactory {
+    throw new Error('Not implemented');
+  }
+
+  public static defaultSvgRenderFactory ():ICommentFactory {
+    throw new Error('Not implemented');
+  }
+
   public bind (mode:number, factory:Function):void {
     this._bindings[mode] = factory;
+  }
+
+  public canCreate (comment:Object):boolean {
+    // Tests if a certain binding is available
+    return this._bindings.hasOwnProperty(comment['mode']);
   }
 
   public create (manager:ICommentManager, comment:Object):IComment {

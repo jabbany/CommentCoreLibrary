@@ -33,7 +33,20 @@
 3. alpha 渐变: 格式 `start-end` 的字符串表示透明度渐变
 4. duration 生存周期: 弹幕生存时间，默认 2500ms
 5. text: 文字
+
+### 3D弹幕属性
 6. (OPT) rotation Y: 可选，y坐标轴旋转，单位: deg
 7. (OPT) rotation Z: 可选，z坐标轴旋转，单位: deg
-8. 
+
+### 动画弹幕属性
+8. (OPT) target X: 可选，目标x坐标
+9. (OPT) target Y: 可选，目标y坐标 
+10. (OPT) animation duration: 动画生存时间
+11. (OPT) animation delay: 动画启动延迟
+12. (OPT) shadow: 是否显示阴影
+13. (OPT) font: 字体名称
+
+### 路径弹幕属性
+14. (OPT) ? 未知？ 猜测是补间方式(0=线形easing？)
+15. (OPT) path: 动画路径
 

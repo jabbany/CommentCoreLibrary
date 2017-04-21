@@ -39,11 +39,12 @@ pre.warning{color:#FFC500;}
 	<div class="controls">
 		<a class="button" onclick="stop();" href="javascript:;">Stop</a>
 		<a class="button" onclick="resume();" href="javascript:;">Resume</a>
+		<a class="button" onclick="resize();" href="javascript:;">Resize</a>
 		<div style="clear:both;"></div>
 	</div>
 	<div style="clear:both;"></div>
 </div>
-<div style="margin-top:450px;">
+<div style="margin-top:550px;">
 	<h2>Tests</h2>
 	<div class="controls">
 		<a class="button" onclick="load('../../test/scripting/kanpai.xml');" href="javascript:;">Run Scripting 1 (Pure) [Kanpai]</a>
@@ -91,6 +92,7 @@ function launchWindowFull(element){
 var $ = function (e) { return document.getElementById(e); }
 var cm = new CommentManager($('commentCanvas'));
 var bscripter = new CCLScripting("../../dist/scripting/Worker.js");
+
 bscripter.logger = new function(){
 	this.log = function(t){
 		var pre = document.createElement("pre");
@@ -122,20 +124,39 @@ bscripter.logger = new function(){
 		$("debug-console").scrollTop = 100000;
 	};
 };
-cm.scripting = bscripter.getSandbox($("commentCanvas"));
-cm.init();
 
 var tmr=0;
 var start=0;
 var playhead = 0, lasthead = 0;
 
+cm.scripting = bscripter.getSandbox($("commentCanvas"), {
+    'play': function () {
+        bscripter.logger.log('Player.play invoked. Ignoring!');
+        //resume();
+    },
+    'pause': function () { 
+        bscripter.logger.log('Player.pause invoked. Ignoring!');
+        //stop();
+    },
+    'seek': function (time) { 
+        bscripter.logger.log('Seeking to [' + time + ']. Ignoring!');
+        //playhead = time; 
+        //lasthead = time; 
+        //start = Date.now() - playhead; 
+    },
+    'jump': function (config) { 
+        bscripter.logger.warn('Called jump with videoid[' + config.vid + ']. Ignoring request.');
+    }
+});
+cm.init();
+
 function timeupdate(){
-	playhead = new Date().getTime() - start;
+	playhead = Date.now() - start;
 	cm.time(playhead);
-	if(cm.scripting && playhead - lasthead > 300 ){;
+	if(cm.scripting && playhead - lasthead > 300 ){
 		cm.scripting.send("Update:TimeUpdate",{
-			"state":"playing",
-			"time":playhead
+			"state": "playing",
+			"time": playhead
 		});
 		lasthead = playhead;
 	}
@@ -176,7 +197,7 @@ function load(dmf,dmfmd){
 		clearTimeout(tmr);
 	} catch (e) {}
 	cm._commentProvider.start().then(function () {
-		cm.startTimer();
+		cm.start();
 		start = new Date().getTime();
 		lasthead = playhead;
 		tmr = setInterval(timeupdate,42);
@@ -200,6 +221,21 @@ function resume(){
 	start = new Date().getTime() - playhead;
 	lasthead = playhead;
 	tmr = setInterval(timeupdate,42);
+}
+function resize() {
+    if (cm.large) {
+        cm.large = false;
+        $('player').style.height = '384px';
+        $('player-unit').style.width = '540px';
+        cm.setBounds();
+        cm.scripting.send("Update:DimensionUpdate", cm.scripting.getContext().getDimensions());
+    } else {
+        cm.large = true;
+        $('player').style.height = '438px';
+        $('player-unit').style.width = '672px';
+        cm.setBounds();
+        cm.scripting.send("Update:DimensionUpdate", cm.scripting.getContext().getDimensions());
+    }
 }
 </script>
 </body>

@@ -5,6 +5,10 @@
 /// <reference path="../Runtime.d.ts" />
 /// <reference path="Easing.ts" />
 module Tween {
+  // Property shorthand
+  type ValueMap = {[prop:string]: number};
+  type ValueListMap = {[prop:string]: Array<number>};
+
 	export class ITween {
 		private _target:any = null;
 		private _duration:number;
@@ -14,7 +18,7 @@ module Tween {
 		private _timeKeeper:Runtime.TimeKeeper;
 		private _timer:Runtime.Timer;
 		public easing:Function = Tween.linear;
-		public step:Function;
+		public step:Function = () => {};
 
 		constructor(target:any, duration:number = 0) {
 			this._target = target;
@@ -135,7 +139,7 @@ module Tween {
 		}
 	}
 
-	function createStepFunction(object:any, dest:Object, src:Object, tween:ITween) {
+	function createStepFunction(object:any, dest:ValueMap, src:ValueMap, tween:ITween) {
 		for (var property in dest) {
 			if (!src.hasOwnProperty(property)) {
 				src[property] = object[property];
@@ -159,9 +163,23 @@ module Tween {
 		};
 	}
 
+  function choose(n:number, k:number) {
+    if (n < 0 || k < 0) {
+      throw new Error('Cannot compute n-choose-k with negative inputs.');
+    }
+    if (k > n / 2) {
+      return choose(n, n - k);
+    }
+    var value:number = 1;
+    for (var i = 1; i <= k; i++) {
+      value *= (n + 1 - i) / i;
+    }
+    return value;
+  }
+
 	export function tween(object:any,
-			dest:Object = {},
-			src:Object = {},
+			dest:ValueMap = {},
+			src:ValueMap = {},
 			duration:number = 0,
 			easing:Function = null):ITween {
 
@@ -174,11 +192,11 @@ module Tween {
 	}
 
 	export function to(object:any,
-			dest:Object = {},
+			dest:ValueMap = {},
 			duration:number = 0,
 			easing:Function = null):ITween {
 
-		var src:Object = {};
+		var src:ValueMap = {};
 		for (var x in dest) {
 			if (dest.hasOwnProperty(x)) {
 				if (typeof object[x] !== "undefined") {
@@ -191,14 +209,79 @@ module Tween {
 		return Tween.tween(object, dest, src, duration, easing);
 	}
 
-	export function beizer(object:any,
-			dest:Object,
-			src:Object,
-			control:Object):ITween {
+	export function bezier(object:any,
+			dest:ValueMap,
+			src:ValueMap,
+			control:ValueListMap,
+      duration:number = 1.0,
+      easing:Function = null):ITween {
 
-		// TODO: implement beizer tween
-	  __trace('Bezier tween not implemented yet', 'warn');
-		return Tween.tween(object, dest, src);
+    var tween:ITween = new ITween(object, duration * 1000);
+    if (easing !== null && typeof easing === 'function') {
+      tween.easing = easing;
+    }
+    // Create real control arrays
+    var finalControlPoints:ValueListMap = {};
+    for (var prop in control) {
+      if (Array.isArray(control[prop]) && control[prop].length > 0) {
+        finalControlPoints[prop] = control[prop];
+      }
+    }
+    // Sanity
+    if (typeof src === 'undefined' || src === null) {
+      src = {};
+    }
+    if (typeof dest === 'undefined' || dest === null) {
+      dest = {};
+    }
+    // Prepopulate the control points
+    for (var prop in finalControlPoints) {
+      if (!(prop in src)) {
+        src[prop] = tween.target[prop];
+      }
+      if (!(prop in dest)) {
+        dest[prop] = finalControlPoints[prop][finalControlPoints[prop].length - 1];
+      }
+    }
+    /**
+     * Code from https://github.com/minodisk/minodisk-as/blob/master/thirdparty/org/libspark/betweenas3/core/updaters/BezierUpdater.as
+     * Used under permission of MIT License for betweenaas3.
+     * See linked file for full license text.
+     **/
+    tween.step = function (target:any, currentTime:number, totalTime:number) {
+      var t:number = Math.min(tween.easing(currentTime, 0, 1, totalTime), 1);
+      for (var prop in finalControlPoints) {
+        var controlPoints:Array<number> = finalControlPoints[prop];
+        var numControl:number = controlPoints.length;
+        // Figure out which three control points to use
+        var firstIndex:number = Math.floor(t * numControl);
+        // Figure out how far along that segment
+        var segmentT:number = (t - firstIndex / numControl) * numControl;
+        if (numControl === 1) {
+          // 3 control points
+          target[prop] = src[prop] +
+            2 * t * (1 - t) * (controlPoints[0] - src[prop]) +
+            t * t * (dest[prop] - src[prop]);
+        } else {
+          var p1:number = 0;
+          var p2:number = 0;
+          if (firstIndex === 0) {
+            p1 = src[prop];
+            p2 = (controlPoints[0] + controlPoints[1]) / 2;
+          } else if (firstIndex === numControl - 1) {
+            p1 = (controlPoints[firstIndex - 1] + controlPoints[firstIndex]) / 2
+            p2 = dest[prop];
+          } else {
+            p1 = (controlPoints[firstIndex - 1]  + controlPoints[firstIndex]) / 2;
+            p2 = (controlPoints[firstIndex] + controlPoints[firstIndex + 1]) / 2;
+          }
+          target[prop] = p1 +
+            2 * segmentT * (1 - segmentT) * (controlPoints[firstIndex] - p1) +
+            segmentT * segmentT * (p2 - p1);
+        }
+      }
+    }
+		return tween;
 	}
 
 	export function scale(src:ITween, scale:number):ITween {
@@ -235,10 +318,10 @@ module Tween {
 	}
 
 	export function slice(src:ITween, from:number, to:number):ITween {
-		if(to === null){
+		if (to === null) {
 			to = src.duration;
 		}
-		if(to < from){
+		if (to < from) {
 			to = from;
 		}
 		from *= 1000;
@@ -251,6 +334,10 @@ module Tween {
 	}
 
 	export function serial(...args:ITween[]):ITween {
+    // Check if there are any tweens
+    if (args.length === 0) {
+      return new ITween({}, 0);
+    }
 		var totalTime:number = 0;
 		var end:Array<number> = [];
 		var start:Array<number> = [];

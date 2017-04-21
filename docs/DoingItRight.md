@@ -91,59 +91,69 @@ Push Notify（监听等待）两个主动和被动模式实现。实时弹幕还
     
 下面是两个模式的一些参考伪代码：
 
-    // Polling example code
-    
-    var hasLastCheckReturned = true; // 标记之前检测是否已经完成，避免服务器过载
-    var lastCheckedTime = 0; // 上次检测时间
-    setTimeout(function(){
-    	if(!hasLastCheckReturned){
-    		return; // 上次还没返回结果。放弃这次请求。
-    	}
-    	var xhr = new XMLHttpRequest();
-    	xhr.onreadystatechange = function(){
-    		if(xhr.readyState === 4){
-    			if(xhr.responseCode === 200){
-    				// 解析弹幕
-    				var danmakuList = yourFormatParser(xhr.responseText);
-    				for(var i = 0; i < danmakuList.length; i++){
-    					CM.insert(danmakuList[i]); // 把增量弹幕每一个都插入
-    				};
-    				lastCheckedTime = Date.now(); // 更新上次检测的时间
-    				hasLastCheckReturned = true;
-    			} else {
-    				// 可能出了问题
-    				hasLastCheckReturned = true;
-    			}
-    		}
-    	};
-    	xhr.open('GET', 'http://yoururl/somevideoid/?from=' + lastCheckedTime, true); // 告诉服务器上次检查的时间，来获取增量
-    	xhr.send(); // 发送请求
-    	hasLastCheckReturned = false;
-    }, 3000); // 每3s检查新的弹幕
-    
+````JavaScript
+// Polling example code
+
+var hasLastCheckReturned = true; // 标记之前检测是否已经完成，避免服务器过载
+var lastCheckedTime = 0; // 上次检测时间
+setTimeout(function(){
+    if(!hasLastCheckReturned){
+        return; // 上次还没返回结果。放弃这次请求。
+    }
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function(){
+        if(xhr.readyState === 4){
+            if(xhr.responseCode === 200){
+                // 解析弹幕
+                var danmakuList = yourFormatParser(xhr.responseText);
+                for(var i = 0; i < danmakuList.length; i++){
+                    CM.insert(danmakuList[i]); // 把增量弹幕每一个都插入
+                };
+                lastCheckedTime = Date.now(); // 更新上次检测的时间
+                hasLastCheckReturned = true;
+            } else {
+                // 可能出了问题
+                hasLastCheckReturned = true;
+            }
+        }
+    };
+    xhr.open('GET', 'http://yoururl/somevideoid/?from=' + lastCheckedTime, true); // 告诉服务器上次检查的时间，来获取增量
+    xhr.send(); // 发送请求
+    hasLastCheckReturned = false;
+}, 3000); // 每3s检查新的弹幕
+````
+
 以及：
 
-    // Push notify example code
-    // 基于 socket.io 和 JQuery来简化代码
+````JavaScript
+// Push notify example code
+// 基于 socket.io 和 JQuery来简化代码
+
+var socket = io(); //开启流
+
+socket.on('danmaku', function(data){
+    // 当遇到 danmaku 事件，就把推送来的弹幕推送给 CCL
+    var danmaku = yourFormatParser(data);
+    if (danmaku.hasOwnProperty('stime')) {
+        // 弹幕有时间轴位置，那就插入时间轴
+        CM.insert(danmaku);
+    } else {
+        // 弹幕没有时间轴位置就立刻显示（不记录）
+        CM.send(danmaku);
+    }
+});
+
+$('#send-danmaku-btn').click(function(){
+    //当按了发送弹幕的按钮
+    var data = {
+        "text":"获取信息。。"
+        ...
+    };// 通过UI获取新弹幕的信息
     
-    var socket = io(); //开启流
+    //包装并发射弹幕
+    socket.emit('send-danmaku', JSON.stringify(yourFormatPackager(data)));
     
-    socket.on('danmaku', function(data){
-    	// 当遇到 danmaku 事件，就把推送来的弹幕推送给 CCL
-    	var danmaku = yourFormatParser(data);
-    	CM.insert(danmaku);
-    });
-    
-    $('#send-danmaku-btn').click(function(){
-    	//当按了发送弹幕的按钮
-    	var data = {
-    		"text":"获取信息。。"
-    		...
-    	};// 通过UI获取新弹幕的信息
-    	
-    	//包装并发射弹幕
-    	socket.emit('send-danmaku', JSON.stringify(yourFormatPackager(data));
-    	
-    	//清除 UI 文字部分
-    	$('#send-danmaku-field').value("");
-    });
+    //清除 UI 文字部分
+    $('#send-danmaku-field').value("");
+});
+````

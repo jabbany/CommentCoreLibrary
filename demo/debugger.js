@@ -343,7 +343,7 @@ function bind() {
                 break;
         }
         window._provider.start().then(function() {
-            cm.startTimer();
+            cm.start();
             $("control-status").className = "status active";
             if (state.mode !== "timer") {
                 $("abpVideo").play();
@@ -593,7 +593,7 @@ function bindVideo(video, cm) {
     video.addEventListener("timeupdate", function() {
         if (cm.display === false) return;
         if (video.hasStalled) {
-            cm.startTimer();
+            cm.start();
             video.hasStalled = false;
         }
         cm.time(Math.floor(video.currentTime * 1000));

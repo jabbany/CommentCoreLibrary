@@ -119,7 +119,7 @@ module Player{
 	export function seek(offset:number):void{
 		__pchannel("Player::action", {
 			"action":"seek",
-			"params":offset
+			"params": offset
 		});
 	}
 

@@ -368,6 +368,44 @@ var Runtime;
 })(Runtime || (Runtime = {}));
 var Runtime;
 (function (Runtime) {
+    var supported = {
+        "js": ["*"],
+        "Runtime": ["*", "openWindow", "injectStyle"],
+        "Display": ["*"],
+        "Player": ["*"],
+        "Tween": ["*"],
+        "Utils": ["*"]
+    };
+    function supports(featureName, subfeature) {
+        if (subfeature === void 0) { subfeature = "*"; }
+        if (!supported.hasOwnProperty(featureName)) {
+            return false;
+        }
+        else {
+            if (supported[featureName].indexOf(subfeature) >= 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+    Runtime.supports = supports;
+    ;
+    function requestLibrary(libraryName, callback) {
+        if (libraryName === 'libBitmap') {
+            callback(null, {
+                'type': 'object',
+                'name': 'Bitmap',
+                'obj': Display.Bitmap
+            });
+        }
+        else {
+            callback(new Error('Could not load unknown library [' + libraryName + ']'), null);
+        }
+    }
+    Runtime.requestLibrary = requestLibrary;
+})(Runtime || (Runtime = {}));
+var Runtime;
+(function (Runtime) {
     var MetaObject = (function () {
         function MetaObject(name) {
             this._listeners = {};

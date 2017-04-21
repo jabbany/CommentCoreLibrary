@@ -16,6 +16,7 @@ CCL包括一套尽可能完备的文档来帮助二次开发。文档主要针�
 - [CommentManager 弹幕管理器](CommentManager.md)
 - [CommentObject 弹幕对象](CommentObject.md)
 - [CommentProvider 弹幕通讯管理器](CommentProvider.md)
+- [KagerouEngine 代码弹幕文档](scripting/Readme.md) 
 
 ### 格式参考
 - [CommentProperties 抽象弹幕对象属性](CommentProperties.md)

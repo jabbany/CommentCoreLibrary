@@ -42,7 +42,6 @@ interface CCLOptions {
   scroll: {
     scale:number;
     opacity:number;
-    factory:ICommentFactory;
   }
   scripting:{
     mode:Array<number>;
@@ -140,4 +139,9 @@ interface IComment {
    * Remove the comment from display
    */
   finish():void;
+
+  /**
+   * Called when the outside container stops
+   */
+   stop():void;
 }

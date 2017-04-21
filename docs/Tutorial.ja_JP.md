@@ -1,4 +1,6 @@
 # チュートリアル
+（**翻訳中**）
+
 このチュートリアルはWebアプリ開発の初心者向けの簡単なチュートリアルです。
 
 ## はじめに
@@ -20,7 +22,7 @@ Github 有提供以 Zip 方式下载CCL的选项，但是我们不推荐你这�
 的方法：
 
 - 作为外部库通过 npm 或者 bower 引入： 只需运行 `npm install comment-core-library --save`
-    即可获取最新版的稳定CCL库。通过 `node_modules/comment-core-library/build/`
+    即可获取最新版的稳定CCL库。通过 `node_modules/comment-core-library/dist/`
     可以引用需要的文件。
 - 直接 Clone 下 Git 代码仓库： 通过 `git clone https://github.com/jabbany/CommentCoreLibrary.git`
     即可 Clone下 CCL 的全代码库。建议把工作目录放到 Web 开发服务器下的子文件夹内，如 `/var/www/`
@@ -56,7 +58,7 @@ CCL编译好的代码在 `dist/` 目录下。有两个文件非常重要： `Com
 其中弹幕结构会在 `container` 这个 div 里插入。采用双层嵌套可以允许你的弹幕 container 于实际容器
 的大小不同，用于实现避开字幕等等功能。
 
-### 调用API函数 （API Calls）
+### API
 调用API目前来说比较容易，在建立好页面dom之后，只要绑定 CommentManager 即可。
 
     var CM = new CommentManager(document.getElementById('my-comment-stage'));
@@ -105,5 +107,4 @@ CCL编译好的代码在 `dist/` 目录下。有两个文件非常重要： `Com
 コメントコアライブラリは送信機能がありませんですが、ユーザのコメントを記録するが欲しい場合、自分でサーバをセットすることは簡単にできます。
 
 ### 弾幕受信と生放送
-チュートリアルが説明したシステムは
-リアルライムで弾幕データを表現する方法は[ここ](DoingItRight.md)に書いています。
+リアルライムで弾幕データを表現する方法の例は[ここ](DoingItRight.md)に書いています。

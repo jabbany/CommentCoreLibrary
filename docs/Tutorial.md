@@ -1,4 +1,6 @@
 # Introduction
+[简体中文](Tutorial.zh_cn)
+
 The introduction document is geared towards developers that have some experience
 in web development but have not used CommentCoreLibrary before. Advanced users
 should dive directly into the relevant interfaces documentation
@@ -36,30 +38,32 @@ Instead, you should obtain CCL using one of the following ways:
     Make sure to update the node modules when you first clone the repository.
 
 ### Embedding CCL
-CCL编译好的代码在 `build/` 目录下。有两个文件非常重要： `CommentCoreLibrary.js` 和 `style.css`。
-这两个分别负责CCL的JS引擎部分和CSS呈现部分，不能省略。相对的还有俩 `.min.js`和 `.min.css` 文件
-是上述文件的压缩版。压缩版代码都在一行，较不方便对行号调试，建议开发时采用未压缩版，架设时则可以采取
-压缩版。
+The compiled output of CCL is located in the `dist/` directory. The two most important files are 
+`CommentCoreLibrary.js` and `style.css`. They are required for both running the library and presenting an absolute CSS
+base. You may also find corresponding minified targets `.min.js` and `.min.css`. These are useful for deployment while
+you should be using the non-minified versions in testing and development as they will allow for better debugging.
 
-引用方法为，在对应的HTML文件头部添加
+To include CCL, you can use:
 
     <head>
-        ... 其他头部信息 ...
-        <link rel="stylesheet" href="build/style.css" />
-        <script src="build/CommentCoreLibrary.js"></script>
-        ... 其他头部信息 ...
+        ... other header records ...
+        <link rel="stylesheet" href="dist/style.css" />
+        <script src="dist/CommentCoreLibrary.js"></script>
+        ... other header records ...
     </head>
     
-注意文件路径调整合理。
+Please take note of the directory structure and make sure you're referencing the correct path (these may be different on
+your server).
 
-之后在相应需要弹幕的位置，放置如下 HTML DOM结构：
+Next, before binding the CCL, make sure that you have the following structure in your DOM:
 
     <div id='my-player' class='abp'>
         <div id='my-comment-stage' class='container'></div>
     </div>
     
-其中弹幕结构会在 `container` 这个 div 里插入。采用双层嵌套可以允许你的弹幕 container 于实际容器
-的大小不同，用于实现避开字幕等等功能。
+The danmaku comments will be inserted into `container`. This kind of nested architecture allows you to present arbitrary
+elements that can be covered by the danmaku container. Please do note that if you plan to use a floating container, 
+make sure it is a child-element of the `abp` class (or adjust the CSS according to your needs).
 
 ### API Calls
 Here are just a few examples to get you started with using CCL's APIs. A more 
@@ -102,14 +106,18 @@ This enables the `CommentManager`, which you can then manipulate as follows:
     // Stop the player (moving comments will be paius
     CM.stop();
     
-    // 更新时间轴时间
+    // Updates the current playhead time
     CM.time(500);
     CM.time(1000);
     
-具体使用的参考可以参考 `demo/intro`。内有大部分此示例的代码。
+For more detailed use and examples, please view `demo/intro`.
 
-### 发送弹幕 （Sending Comments）
-CCL自己没有发送弹幕的内建支持，不过实现起来非常轻松。具体实现需要根据自己服务器的需求决定。
+### Sending Comments
+CCL does not include any inherent comment sending capabilities and it is up to you to implement an adequate backend and
+the necessary data formats and communication protocols.
 
-### 实时弹幕 （Realtime Comments）
-参考[推荐的实现方法](DoingItRight.md)
+This should be fairly easy and something akin to a simple AJAX POST call would be sufficient. You should also implement 
+your own UI elements to facilitate selecting properties (text size, color etc).
+
+### Realtime Comments
+Please read [Recommended Implementations](DoingItRight.md) for some details on how to implement realtime comments.

@@ -1,11 +1,10 @@
 # Parsers 解析器
 Parsers是期间过渡的支持库，用于解析弹幕文件，产生符合格式的弹幕抽象对象传送给 CommentManager。
-在未来 Parsers 会被合并到 Providers（供应源）里面，而Providers则会兼顾接受弹幕并解析和发送
-弹幕的任务。
+现在 Parsers 已经被合并到 Providers（供应源）里面，具体使用请参考 [CommentProvider](../CommentProvider.md) 使用例。
 
 目前CCL默认的编译自带支持如下格式：
-- Bilibili Format
-- Acfun Format
+- [Bilibili Format](bilibili-xml.md)
+- [Acfun Format](acfun-json.md)
 
 ## 兼容性 Compatibility
 
