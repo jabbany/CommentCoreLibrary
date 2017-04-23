@@ -1,3 +1,42 @@
+var CommentData = (function () {
+    function CommentData(comment) {
+        this._dbid = 0;
+        this.blocked = false;
+        this.blockType = 0;
+        this.border = false;
+        this.credit = false;
+        this.date = "";
+        this.deleted = false;
+        this.id = 0;
+        this.mode = 0;
+        this.msg = "";
+        this.live = true;
+        this.locked = true;
+        this.on = true;
+        this.pool = 0;
+        this.preview = false;
+        this.reported = false;
+        this.size = 25;
+        this.stime = 0;
+        this.text = "";
+        this.type = "";
+        this.uid = "";
+        this._dbid = comment["dbid"];
+        this.size = comment["size"];
+        this.text = comment["text"];
+        this.mode = comment["mode"];
+        this.stime = comment["stime"];
+        this.date = comment["date"];
+    }
+    Object.defineProperty(CommentData.prototype, "danmuId", {
+        get: function () {
+            return this._dbid;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return CommentData;
+}());
 var Player;
 (function (Player) {
     var Sound = (function () {
@@ -20,8 +59,8 @@ var Player;
         };
         Sound.prototype.serialize = function () {
             return {
-                "class": "Sound",
-                "url": this._source
+                'class': 'Sound',
+                'url': this._source
             };
         };
         return Sound;
@@ -62,6 +101,7 @@ var Player;
             return _commentList;
         },
         set: function (value) {
+            __trace('Player.commentData is read-only', 'warn');
         }
     });
     Object.defineProperty(Player, 'refreshRate', {
@@ -69,7 +109,7 @@ var Player;
             return _refreshRate;
         },
         set: function (value) {
-            __trace("Player.refreshRate deprecated. Please use Display.refreshRate.", "warn");
+            __trace("Player.refreshRate deprecated. Please use Display.frameRate", "warn");
         }
     });
     Object.defineProperty(Player, 'width', {
@@ -98,10 +138,10 @@ var Player;
     });
     Object.defineProperty(Player, 'version', {
         get: function () {
-            return "CCLPlayer/1.0 HTML5/* (bilibili, like BSE, like flash)";
+            return 'CCLPlayer/1.0 HTML5/* (bilibili, like BSE, like flash)';
         },
         set: function (value) {
-            __trace("Player.version is read-only", "warn");
+            __trace('Player.version is read-only', 'warn');
         }
     });
     function play() {
@@ -157,7 +197,8 @@ var Player;
     __schannel("Update:DimensionUpdate", function (payload) {
         _width = payload["stageWidth"];
         _height = payload["stageHeight"];
-        if (payload.hasOwnProperty("videoWidth") && payload.hasOwnProperty("videoHeight")) {
+        if (payload.hasOwnProperty("videoWidth") &&
+            payload.hasOwnProperty("videoHeight")) {
             _videoWidth = payload["videoWidth"];
             _videoHeight = payload["videoHeight"];
         }

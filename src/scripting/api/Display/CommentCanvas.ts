@@ -1,49 +1,51 @@
-/**
- * Compliant CommentCanvas Polyfill For BiliScriptEngine
- */
 /// <reference path="Sprite.ts" />
 /// <reference path="IComment.ts" />
 /// <reference path="MotionManager.ts" />
+
 module Display {
-	class CommentCanvas extends Sprite implements IComment {
-		private _mM:MotionManager = new MotionManager(this);
 
-		constructor(params:Object) {
-			super();
-			this.setDefaults(params);
-			this.initStyle(params);
-			Runtime.registerObject(this);
-			this.bindParent(params);
-			this._mM.play();
-		}
+  /**
+   * Compliant CommentCanvas Polyfill For BiliScriptEngine
+   */
+  class CommentCanvas extends Sprite implements IComment {
+    private _mM:MotionManager = new MotionManager(this);
 
-		get motionManager():MotionManager {
-			return this._mM;
-		}
+    constructor(params:Object) {
+      super();
+      this.setDefaults(params);
+      this.initStyle(params);
+      Runtime.registerObject(this);
+      this.bindParent(params);
+      this._mM.play();
+    }
 
-		set motionManager(m:MotionManager) {
-			__trace("IComment.motionManager is read-only", "warn");
-		}
+    get motionManager():MotionManager {
+      return this._mM;
+    }
 
-		private bindParent(params:Object):void {
-			if (params.hasOwnProperty("parent")) {
-				(<DisplayObject> params["parent"]).addChild(this);
-			}
-		}
+    set motionManager(m:MotionManager) {
+      __trace("IComment.motionManager is read-only", "warn");
+    }
 
-		public initStyle(style:Object):void {
-			if (style["lifeTime"]) {
-				this._mM.dur = style["lifeTime"] * 1000;
-			}
-			if (style.hasOwnProperty("motionGroup")) {
-				this._mM.initTweenGroup(style["motionGroup"], this._mM.dur);
-			} else if (style.hasOwnProperty("motion")) {
-				this._mM.initTween(style["motion"], false);
-			}
-		}
-	}
+    private bindParent(params:Object):void {
+      if (params.hasOwnProperty("parent")) {
+        (<DisplayObject> params["parent"]).addChild(this);
+      }
+    }
 
-	export function createCanvas(params:Object):any {
-		return new CommentCanvas(params);
-	}
+    public initStyle(style:Object):void {
+      if (style["lifeTime"]) {
+        this._mM.dur = style["lifeTime"] * 1000;
+      }
+      if (style.hasOwnProperty("motionGroup")) {
+        this._mM.initTweenGroup(style["motionGroup"], this._mM.dur);
+      } else if (style.hasOwnProperty("motion")) {
+        this._mM.initTween(style["motion"], false);
+      }
+    }
+  }
+
+  export function createCanvas(params:Object):any {
+    return new CommentCanvas(params);
+  }
 }

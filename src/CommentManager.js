@@ -143,8 +143,8 @@ var CommentManager = (function() {
             this.csa[comAlloc].setBounds(this.width,this.height);
         }
         // Update 3d perspective
-        this.stage.style.perspective = this.width * Math.tan(40 * Math.PI/180) / 2 + "px";
-        this.stage.style.webkitPerspective = this.width * Math.tan(40 * Math.PI/180) / 2 + "px";
+        this.stage.style.perspective = this.width / Math.tan(55 * Math.PI/180) / 2 + "px";
+        this.stage.style.webkitPerspective = this.width / Math.tan(55 * Math.PI/180) / 2 + "px";
     };
 
     CommentManager.prototype.init = function (renderer) {

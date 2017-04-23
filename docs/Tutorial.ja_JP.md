@@ -1,5 +1,5 @@
 # チュートリアル
-（**翻訳中**）
+[English](Tutorial.md) | [简体中文](Tutorial.zh_CN.md)（**翻訳中**）
 
 このチュートリアルはWebアプリ開発の初心者向けの簡単なチュートリアルです。
 
@@ -8,7 +8,7 @@
 问到的在云端安装的 nginx 等等。请先通过浏览器测试你能正确访问该服务器。如果你在本地开发，请尝试访问
 
     http://localhost/
-    
+
 来测试连同性。
 
 **ご注意：** 请注意确保你在服务器环境下开发 CCL ，在开发时如果遇到各种资源无法载入，请确保您的地址栏
@@ -27,9 +27,9 @@ Github 有提供以 Zip 方式下载CCL的选项，但是我们不推荐你这�
 - 直接 Clone 下 Git 代码仓库： 通过 `git clone https://github.com/jabbany/CommentCoreLibrary.git`
     即可 Clone下 CCL 的全代码库。建议把工作目录放到 Web 开发服务器下的子文件夹内，如 `/var/www/`
     或者 `D:\webroot\htdocs`下之类的。之后进入 CommentCoreLibrary 文件夹，
-    运行 `npm install grunt-cli -g` 和 `npm install` 
+    运行 `npm install grunt-cli -g` 和 `npm install`
     （注意：可能需要管理员权限） 即可开始开发
-    
+
 第一个方式主要用于希望直接挂载 CCL 功能的二次开发，而第二种方式则面向对 CCL 本生的开发有兴趣的人。
 
 ### 正しい使い方
@@ -46,7 +46,7 @@ CCL编译好的代码在 `dist/` 目录下。有两个文件非常重要： `Com
         <script src="dist/CommentCoreLibrary.js"></script>
         ... 其他头部信息 ...
     </head>
-    
+
 注意文件路径调整合理。
 
 之后在相应需要弹幕的位置，放置如下 HTML DOM结构：
@@ -54,7 +54,7 @@ CCL编译好的代码在 `dist/` 目录下。有两个文件非常重要： `Com
     <div id='my-player' class='abp'>
         <div id='my-comment-stage' class='container'></div>
     </div>
-    
+
 其中弹幕结构会在 `container` 这个 div 里插入。采用双层嵌套可以允许你的弹幕 container 于实际容器
 的大小不同，用于实现避开字幕等等功能。
 
@@ -63,7 +63,7 @@ CCL编译好的代码在 `dist/` 目录下。有两个文件非常重要： `Com
 
     var CM = new CommentManager(document.getElementById('my-comment-stage'));
     CM.init(); // 初始化
-    
+
 之后 `CM` 实例会提供如下功能：
 
     // 载入弹幕列表
@@ -77,7 +77,7 @@ CCL编译好的代码在 `dist/` 目录下。有两个文件非常重要： `Com
         }
     ];
     CM.load(danmakuList);
-    
+
     // 插入弹幕
     var someDanmakuAObj = {
         "mode":1,
@@ -87,17 +87,17 @@ CCL编译好的代码在 `dist/` 目录下。有两个文件非常重要： `Com
         "color":0xff0000
     };
     CM.insert(someDanmakuAObj);
-    
+
     // 启动播放弹幕（在未启动状态下弹幕不会移动）
     CM.start();
-    
+
     // 停止播放（停止弹幕移动）
     CM.stop();
-    
+
     // 更新时间轴时间
     CM.time(500);
     CM.time(1000);
-    
+
 具体使用的参考可以参考 `demo/tutorial`。内有大部分此示例的代码。
 
 ### コミュニティ

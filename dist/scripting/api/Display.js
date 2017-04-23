@@ -73,7 +73,7 @@ var Display;
         }
         Matrix.prototype.dotProduct = function (o) {
             if (o.length < 9) {
-                throw new Error('Matrix dot product expects a matrix');
+                throw new Error('Matrix dot product expects a 3x3 Matrix');
             }
             var res = [0, 0, 0, 0, 0, 0, 0, 0, 0];
             for (var i = 0; i < 3; i++) {
@@ -150,7 +150,7 @@ var Display;
         }
         Matrix3D.prototype.dotProduct = function (a, b) {
             if (a.length !== 16 || b.length !== 16) {
-                throw new Error('Matrix3D dot product expects a matrix3d');
+                throw new Error('Matrix3D dot product expects a 4xr Matrix3D');
             }
             var res = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
             for (var i = 0; i < 4; i++) {
@@ -304,14 +304,9 @@ var Display;
         return new Matrix3D(iv);
     }
     Display.createMatrix3D = createMatrix3D;
-    function createColorTransform() {
-        __trace('Display.createColorTransform not implemented.', 'warn');
-        return null;
-    }
-    Display.createColorTransform = createColorTransform;
     function createGradientBox(width, height, rotation, tX, tY) {
         var m = new Matrix();
-        m.createGradientBox(width, height, rotation, tX, tY);
+        m.createGradientBox(width / 1638.4, height / 1638.4, rotation, tX + width / 2, tY + height / 2);
         return m;
     }
     Display.createGradientBox = createGradientBox;
@@ -381,8 +376,8 @@ var Display;
         }
         Filter.prototype.serialize = function () {
             return {
-                "class": "Filter",
-                "type": "nullfilter"
+                'class': 'Filter',
+                'type': 'nullfilter'
             };
         };
         return Filter;
@@ -399,10 +394,10 @@ var Display;
         }
         BlurFilter.prototype.serialize = function () {
             var s = _super.prototype.serialize.call(this);
-            s["type"] = "blur";
-            s["params"] = {
-                "blurX": this._blurX,
-                "blurY": this._blurY
+            s['type'] = 'blur';
+            s['params'] = {
+                'blurX': this._blurX,
+                'blurY': this._blurY
             };
             return s;
         };
@@ -431,15 +426,15 @@ var Display;
         }
         GlowFilter.prototype.serialize = function () {
             var s = _super.prototype.serialize.call(this);
-            s["type"] = "glow";
-            s["params"] = {
-                "color": this._color,
-                "alpha": this._alpha,
-                "blurX": this._blurX,
-                "blurY": this._blurY,
-                "strength": this._strength,
-                "inner": this._inner,
-                "knockout": this._knockout
+            s['type'] = 'glow';
+            s['params'] = {
+                'color': this._color,
+                'alpha': this._alpha,
+                'blurX': this._blurX,
+                'blurY': this._blurY,
+                'strength': this._strength,
+                'inner': this._inner,
+                'knockout': this._knockout
             };
             return s;
         };
@@ -470,17 +465,15 @@ var Display;
         }
         DropShadowFilter.prototype.serialize = function () {
             var s = _super.prototype.serialize.call(this);
-            s["type"] = "dropShadow";
-            s["params"] = {
-                "distance": this._distance,
-                "angle": this._angle,
-                "color": this._color,
-                "alpha": this._alpha,
-                "blurX": this._blurX,
-                "blurY": this._blurY,
-                "strength": this._strength,
-                "inner": this._inner,
-                "knockout": this._knockout
+            s['type'] = 'dropShadow';
+            s['params'] = {
+                'distance': this._distance,
+                'angle': this._angle,
+                'color': this._color,
+                'blurY': this._blurY,
+                'strength': this._strength,
+                'inner': this._inner,
+                'knockout': this._knockout
             };
             return s;
         };
@@ -517,6 +510,113 @@ var Display;
         return new BlurFilter(blurX, blurY);
     }
     Display.createBlurFilter = createBlurFilter;
+    function createBevelFilter() {
+        throw new Error('Display.createBevelFilter not implemented');
+    }
+    Display.createBevelFilter = createBevelFilter;
+    function createConvolutionFilter() {
+        throw new Error('Display.createConvolutionFilter not implemented');
+    }
+    Display.createConvolutionFilter = createConvolutionFilter;
+    function createDisplacementMapFilter() {
+        throw new Error('Display.createDisplacementMapFilter not implemented');
+    }
+    Display.createDisplacementMapFilter = createDisplacementMapFilter;
+    function createGradientBevelFilter() {
+        throw new Error('Display.createGradientBevelFilter not implemented');
+    }
+    Display.createGradientBevelFilter = createGradientBevelFilter;
+    function createGradientGlowFilter() {
+        throw new Error('Display.createGradientGlowFilter not implemented');
+    }
+    Display.createGradientGlowFilter = createGradientGlowFilter;
+    function createColorMatrixFilter() {
+        throw new Error('Display.createColorMatrixFilter not implemented');
+    }
+    Display.createColorMatrixFilter = createColorMatrixFilter;
+})(Display || (Display = {}));
+var Display;
+(function (Display) {
+    var ColorTransform = (function () {
+        function ColorTransform(redMultiplier, greenMultiplier, blueMultiplier, alphaMultiplier, redOffset, greenOffset, blueOffset, alphaOffset) {
+            if (redMultiplier === void 0) { redMultiplier = 1; }
+            if (greenMultiplier === void 0) { greenMultiplier = 1; }
+            if (blueMultiplier === void 0) { blueMultiplier = 1; }
+            if (alphaMultiplier === void 0) { alphaMultiplier = 1; }
+            if (redOffset === void 0) { redOffset = 0; }
+            if (greenOffset === void 0) { greenOffset = 0; }
+            if (blueOffset === void 0) { blueOffset = 0; }
+            if (alphaOffset === void 0) { alphaOffset = 0; }
+            this.redMultiplier = redMultiplier;
+            this.greenMultiplier = greenMultiplier;
+            this.blueMultiplier = blueMultiplier;
+            this.alphaMultiplier = alphaMultiplier;
+            this.redOffset = redOffset;
+            this.greenOffset = greenOffset;
+            this.blueOffset = blueOffset;
+            this.alphaOffset = alphaOffset;
+        }
+        Object.defineProperty(ColorTransform.prototype, "color", {
+            get: function () {
+                return this.redOffset << 16 | this.greenOffset << 8 | this.blueOffset;
+            },
+            set: function (color) {
+                this.redOffset = ((color >> 16) & 0xFF);
+                this.greenOffset = ((color >> 8) & 0xFF);
+                this.blueOffset = color & 0xFF;
+                this.redMultiplier = 0;
+                this.greenMultiplier = 0;
+                this.blueMultiplier = 0;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        ColorTransform.prototype.concat = function (second) {
+            this.redMultiplier *= second.redMultiplier;
+            this.greenMultiplier *= second.greenMultiplier;
+            this.blueMultiplier *= second.blueMultiplier;
+            this.alphaMultiplier *= second.alphaMultiplier;
+            this.redOffset += second.redOffset;
+            this.greenOffset += second.greenOffset;
+            this.blueOffset += second.blueOffset;
+            this.alphaOffset += second.alphaOffset;
+        };
+        ColorTransform.prototype.serialize = function () {
+            return {
+                'class': 'ColorTransform',
+                'red': {
+                    'offset': this.redOffset,
+                    'multiplier': this.redMultiplier
+                },
+                'green': {
+                    'offset': this.greenOffset,
+                    'multiplier': this.greenMultiplier
+                },
+                'blue': {
+                    'offset': this.blueOffset,
+                    'multiplier': this.blueMultiplier
+                },
+                'alpha': {
+                    'offset': this.alphaOffset,
+                    'multiplier': this.alphaMultiplier
+                }
+            };
+        };
+        return ColorTransform;
+    }());
+    Display.ColorTransform = ColorTransform;
+    function createColorTransform(redMultiplier, greenMultiplier, blueMultiplier, alphaMultiplier, redOffset, greenOffset, blueOffset, alphaOffset) {
+        if (redMultiplier === void 0) { redMultiplier = 1; }
+        if (greenMultiplier === void 0) { greenMultiplier = 1; }
+        if (blueMultiplier === void 0) { blueMultiplier = 1; }
+        if (alphaMultiplier === void 0) { alphaMultiplier = 1; }
+        if (redOffset === void 0) { redOffset = 0; }
+        if (greenOffset === void 0) { greenOffset = 0; }
+        if (blueOffset === void 0) { blueOffset = 0; }
+        if (alphaOffset === void 0) { alphaOffset = 0; }
+        return new ColorTransform(redMultiplier, greenMultiplier, blueMultiplier, alphaMultiplier, redOffset, greenOffset, blueOffset, alphaOffset);
+    }
+    Display.createColorTransform = createColorTransform;
 })(Display || (Display = {}));
 var Display;
 (function (Display) {
@@ -541,14 +641,6 @@ var Display;
         return BlendMode;
     }());
     Display.BlendMode = BlendMode;
-    var ColorTransform = (function () {
-        function ColorTransform() {
-        }
-        ColorTransform.prototype.serialize = function () {
-            return {};
-        };
-        return ColorTransform;
-    }());
     var Transform = (function () {
         function Transform(parent) {
             this._matrix = new Display.Matrix();
@@ -571,8 +663,9 @@ var Display;
             },
             set: function (m) {
                 if (m === null) {
-                    if (this._matrix3d === null)
+                    if (this._matrix3d === null) {
                         return;
+                    }
                     this._matrix3d = null;
                     this._matrix = new Display.Matrix();
                 }
@@ -591,8 +684,9 @@ var Display;
             },
             set: function (m) {
                 if (m === null) {
-                    if (this._matrix === null)
+                    if (this._matrix === null) {
                         return;
+                    }
                     this._matrix = null;
                     this._matrix3d = new Display.Matrix3D();
                 }
@@ -640,8 +734,9 @@ var Display;
             }
         };
         Transform.prototype.update = function () {
-            if (this._parent === null)
+            if (this._parent === null) {
                 return;
+            }
             this._parent.transform = this;
         };
         Transform.prototype.getMatrix = function () {
@@ -653,7 +748,7 @@ var Display;
             }
         };
         Transform.prototype.getMatrixType = function () {
-            return this._matrix ? "2d" : "3d";
+            return this._matrix ? '2d' : '3d';
         };
         Transform.prototype.clone = function () {
             var t = new Transform(null);
@@ -663,8 +758,8 @@ var Display;
         };
         Transform.prototype.serialize = function () {
             return {
-                "mode": this.getMatrixType(),
-                "matrix": this.getMatrix().serialize()
+                'mode': this.getMatrixType(),
+                'matrix': this.getMatrix().serialize()
             };
         };
         return Transform;
@@ -1520,7 +1615,8 @@ var Display;
                 indices = indices.slice(0);
             }
             if (indices.length % 3 !== 0) {
-                __trace('Graphics.drawTriangles malformed indices count. Must be multiple of 3.', 'err');
+                __trace('Graphics.drawTriangles malformed indices count. ' +
+                    'Must be multiple of 3.', 'err');
                 return;
             }
             if (culling !== 'none') {
@@ -1614,6 +1710,126 @@ var Display;
         return RootSprite;
     }(Sprite));
     Display.RootSprite = RootSprite;
+})(Display || (Display = {}));
+var Display;
+(function (Display) {
+    var Bitmap = (function (_super) {
+        __extends(Bitmap, _super);
+        function Bitmap() {
+            _super.apply(this, arguments);
+        }
+        return Bitmap;
+    }(Display.DisplayObject));
+    Display.Bitmap = Bitmap;
+    var BitmapData = (function () {
+        function BitmapData(width, height, transparent, fillColor) {
+            if (transparent === void 0) { transparent = true; }
+            if (fillColor === void 0) { fillColor = 0xffffffff; }
+            this._rect = new Display.Rectangle(0, 0, width, height);
+            this._transparent = transparent;
+            this._fillColor = fillColor;
+            this._fill();
+        }
+        BitmapData.prototype._fill = function () {
+            this._byteArray = [];
+            for (var i = 0; i < this._rect.width * this._rect.height; i++) {
+                this._byteArray.push(this._fillColor);
+            }
+        };
+        Object.defineProperty(BitmapData.prototype, "height", {
+            get: function () {
+                return this._rect.height;
+            },
+            set: function (height) {
+                __trace('BitmapData.height is read-only', 'warn');
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(BitmapData.prototype, "width", {
+            get: function () {
+                return this._rect.width;
+            },
+            set: function (width) {
+                __trace('BitmapData.height is read-only', 'warn');
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(BitmapData.prototype, "rect", {
+            get: function () {
+                return this._rect;
+            },
+            set: function (rect) {
+                __trace('BitmapData.rect is read-only', 'warn');
+            },
+            enumerable: true,
+            configurable: true
+        });
+        BitmapData.prototype.getPixel = function (x, y) {
+            return this.getPixel32(x, y) & 0x00ffffff;
+        };
+        BitmapData.prototype.getPixel32 = function (x, y) {
+            if (x >= this._rect.width || y >= this._rect.height ||
+                x < 0 || y < 0) {
+                throw new Error('Coordinates out of bounds');
+            }
+            try {
+                return this._transparent ? this._byteArray[y * this._rect.width + x] :
+                    this._byteArray[y * this._rect.width + x] + 0xff000000;
+            }
+            catch (e) {
+                return this._fillColor;
+            }
+        };
+        BitmapData.prototype.getPixels = function (rect) {
+            if (typeof rect === 'undefined' || rect === null) {
+                throw new Error('Expected a region to acquire pixels.');
+            }
+            if (rect.width === 0 || rect.height === 0) {
+                return [];
+            }
+            var region = [];
+            for (var i = 0; i < rect.height; i++) {
+                Array.prototype.push.apply(region, this._byteArray.slice((rect.y + i) * this._rect.width + rect.x, (rect.y + i) * this._rect.width + rect.x + rect.width));
+            }
+            return region;
+        };
+        BitmapData.prototype.setPixel = function (x, y, color) {
+            this.setPixel32(x, y, color);
+        };
+        BitmapData.prototype.setPixel32 = function (x, y, color) {
+            if (!this._transparent) {
+                color = color & 0x00ffffff;
+            }
+            else {
+                color = color & 0xffffffff;
+            }
+            this._byteArray[y * this._rect.width + x] = color;
+        };
+        BitmapData.prototype.setPixels = function (rect, input) {
+            if (rect.width === 0 || rect.height === 0) {
+                return;
+            }
+            if (input.length !== rect.width * rect.height) {
+                throw new Error('setPixels expected ' + (rect.width * rect.height) +
+                    ' pixels, but actually got ' + input.length);
+            }
+            for (var i = 0; i < rect.width; i++) {
+                for (var j = 0; j < rect.height; j++) {
+                    this._byteArray[(rect.y + j) * this.width + (rect.x + i)] =
+                        input[j * rect.width + i];
+                }
+            }
+        };
+        BitmapData.prototype.serialize = function () {
+            return {
+                'class': 'BitmapData'
+            };
+        };
+        return BitmapData;
+    }());
+    Display.BitmapData = BitmapData;
 })(Display || (Display = {}));
 var Display;
 (function (Display) {
@@ -1767,6 +1983,75 @@ var Display;
     }());
     Display.MotionManager = MotionManager;
 })(Display || (Display = {}));
+var Display;
+(function (Display) {
+    var CommentBitmap = (function (_super) {
+        __extends(CommentBitmap, _super);
+        function CommentBitmap(params) {
+            _super.call(this);
+            this._mM = new Display.MotionManager(this);
+            this.initStyle(params);
+            Runtime.registerObject(this);
+            this.bindParent(params);
+            this._mM.play();
+        }
+        Object.defineProperty(CommentBitmap.prototype, "motionManager", {
+            get: function () {
+                return this._mM;
+            },
+            set: function (m) {
+                __trace("IComment.motionManager is read-only", "warn");
+            },
+            enumerable: true,
+            configurable: true
+        });
+        CommentBitmap.prototype.bindParent = function (params) {
+            if (params.hasOwnProperty("parent")) {
+                params["parent"].addChild(this);
+            }
+        };
+        CommentBitmap.prototype.initStyle = function (style) {
+        };
+        return CommentBitmap;
+    }(Display.Bitmap));
+    Display.CommentBitmap = CommentBitmap;
+    function createBitmap(params) {
+        return new CommentBitmap(params);
+    }
+    Display.createBitmap = createBitmap;
+    function createParticle(params) {
+        __trace('Bitmap.createParticle not implemented', 'warn');
+        return new CommentBitmap(params);
+    }
+    Display.createParticle = createParticle;
+    function createBitmapData(width, height, transparent, fillColor) {
+        if (transparent === void 0) { transparent = true; }
+        if (fillColor === void 0) { fillColor = 0xffffffff; }
+        return new Display.BitmapData(width, height, transparent, fillColor);
+    }
+    Display.createBitmapData = createBitmapData;
+})(Display || (Display = {}));
+var Bitmap;
+(function (Bitmap) {
+    function createBitmap(params) {
+        return Display.createBitmap(params);
+    }
+    Bitmap.createBitmap = createBitmap;
+    function createParticle(params) {
+        return Display.createParticle(params);
+    }
+    Bitmap.createParticle = createParticle;
+    function createBitmapData(width, height, transparent, fillColor) {
+        if (transparent === void 0) { transparent = true; }
+        if (fillColor === void 0) { fillColor = 0xffffffff; }
+        return Display.createBitmapData(width, height, transparent, fillColor);
+    }
+    Bitmap.createBitmapData = createBitmapData;
+    function createRectangle(x, y, width, height) {
+        return new Display.Rectangle(x, y, width, height);
+    }
+    Bitmap.createRectangle = createRectangle;
+})(Bitmap || (Bitmap = {}));
 var Display;
 (function (Display) {
     var CommentButton = (function (_super) {
@@ -2033,7 +2318,7 @@ var Display;
             },
             set: function (text) {
                 __trace("TextField.htmlText is restricted due to security policy.", "warn");
-                this.text = text.replace(/<\/?[^>]+(>|$)/g, "");
+                this.text = text.replace(/<\/?[^>]+(>|$)/g, '');
             },
             enumerable: true,
             configurable: true

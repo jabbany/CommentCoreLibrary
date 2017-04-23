@@ -393,9 +393,7 @@ var Runtime;
     function requestLibrary(libraryName, callback) {
         if (libraryName === 'libBitmap') {
             callback(null, {
-                'type': 'object',
-                'name': 'Bitmap',
-                'obj': Display.Bitmap
+                'type': 'noop'
             });
         }
         else {
@@ -447,6 +445,9 @@ var Runtime;
             return {
                 "class": this._name
             };
+        };
+        MetaObject.prototype.unload = function () {
+            throw new Error('Meta objects should not be unloaded!');
         };
         return MetaObject;
     }());
@@ -550,7 +551,7 @@ var Runtime;
             if (i.substr(0, 2) === "__") {
                 continue;
             }
-            if (_registeredObjects[i].unload) {
+            if (typeof _registeredObjects[i].unload === 'function') {
                 _registeredObjects[i].unload();
             }
         }

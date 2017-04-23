@@ -1,4 +1,4 @@
-/** 
+/**
  * Global Functions
  * @description Functions defined in the global namespace.
  **/
@@ -33,6 +33,9 @@ function load (library, onComplete) {
                     if (typeof self === 'object' && self !== null) {
                         self[response.name] = response.obj;
                     }
+                } else if (response.type === 'noop') {
+                  // Don't do anything
+                  // This means library was already loaded
                 }
                 // Execute the remaining code
                 if (typeof onComplete === 'function') {
@@ -49,7 +52,7 @@ function clone (target) {
     }
 
     // Clone an array
-    if (Array.isArray(object)) {
+    if (Array.isArray(target)) {
         return target.slice(0);
     }
 

@@ -1,9 +1,13 @@
-/**
- * Script Manager
- */
 /// <reference path="../OOAPI.d.ts" />
+
 /// <reference path="Timer.ts" />
+
 module Runtime {
+
+  /**
+   * Script Manager polyfill for BiliScriptEngine
+   * @author Jim Chen
+   */
   export interface ScriptManager {
     clearTimer():void;
     clearEl():void;
