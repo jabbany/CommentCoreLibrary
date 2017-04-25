@@ -259,7 +259,11 @@ var Runtime;
 (function (Runtime) {
     var ScriptManagerImpl = (function () {
         function ScriptManagerImpl() {
+            this._managedElements = {};
         }
+        ScriptManagerImpl.prototype._registerElement = function (name, mM) {
+            this._managedElements[name] = mM;
+        };
         ScriptManagerImpl.prototype.clearTimer = function () {
             Runtime.getTimer().clearAll('interval');
         };
@@ -273,7 +277,10 @@ var Runtime;
             __trace("ScriptManager.pushEl not implemented.", "warn");
         };
         ScriptManagerImpl.prototype.popEl = function (el) {
-            __trace("ScriptManager.popEl not implemented.", "warn");
+            __trace("ScriptManager.popEl is not properly implemented.", "warn");
+            if (el['motionManager']) {
+                el['motionManager'].stop();
+            }
         };
         ScriptManagerImpl.prototype.pushTimer = function (t) {
             __trace("ScriptManager.pushTimer not implemented.", "warn");

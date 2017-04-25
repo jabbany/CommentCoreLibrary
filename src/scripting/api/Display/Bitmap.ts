@@ -12,6 +12,60 @@ module Display {
 
 	}
 
+  export class ByteArray extends Array<number> {
+    private _readPosition:number = 0;
+
+    constructor(...params) {
+      super(...params);
+    }
+
+    get bytesAvailable():number {
+      return this.length - this._readPosition;
+    }
+
+    set bytesAvailable(n:number) {
+      __trace('ByteArray.bytesAvailable is read-only', 'warn');
+    }
+
+    public clear():void {
+      this.length = 0;
+      this._readPosition = 0;
+    }
+
+    public compress(algorithm:string = 'zlib'):void {
+      __trace('ByteArray.compress not implemented', 'warn');
+    }
+
+    public uncompress(algorithm:string = 'zlib'):void {
+      __trace('ByteArray.uncompress not implemented', 'warn');
+    }
+
+    public deflate():void {
+      __trace('ByteArray.deflate not implemented', 'warn');
+    }
+
+    public inflate():void {
+      __trace('ByteArray.inflate not implemented', 'warn');
+    }
+
+    public readUTFBytes(length:number):string {
+      // Get length
+      var subArray:Array<number> = this.slice(this._readPosition, length);
+      this._readPosition += Math.min(length, this.length - this._readPosition);
+      var str:string = '';
+      subArray.forEach((cc) => {
+        str += String.fromCharCode(cc);
+      })
+      return str;
+    }
+
+    public writeUTFBytes(value:string):void {
+      for (var i = 0; i < value.length; i++) {
+        Array.prototype.push.apply(this, [value.charCodeAt(i)]);
+      }
+    }
+  }
+
   /**
    * BitmapData Polyfill class
    * @author Jim Chen
@@ -81,14 +135,14 @@ module Display {
       }
     }
 
-    public getPixels(rect:Rectangle):Array<number> {
+    public getPixels(rect:Rectangle):ByteArray {
       if (typeof rect === 'undefined' || rect === null) {
         throw new Error('Expected a region to acquire pixels.');
       }
       if (rect.width === 0 || rect.height === 0) {
-        return [];
+        return new ByteArray();
       }
-      var region:Array<number> = [];
+      var region:ByteArray = new ByteArray();
       for (var i = 0; i < rect.height; i++) {
         Array.prototype.push.apply(region,
           this._byteArray.slice((rect.y + i) * this._rect.width + rect.x,

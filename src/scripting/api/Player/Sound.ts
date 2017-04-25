@@ -1,6 +1,3 @@
-/**
- * Player sound
- */
 module Player{
   /**
    * Class for sound support

@@ -65,7 +65,7 @@ function clone (target) {
     var copy = {};
     copy.constructor = copy.constructor;
     copy.prototype = copy.prototype;
-    for (var x in a) {
+    for (var x in target) {
         copy[x] = target[x];
     }
     return copy;

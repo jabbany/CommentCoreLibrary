@@ -371,6 +371,174 @@ var Display;
 })(Display || (Display = {}));
 var Display;
 (function (Display) {
+    var PerspectiveProjection = (function () {
+        function PerspectiveProjection(t) {
+            if (t === void 0) { t = null; }
+            this.fieldOfView = 55;
+            this.projectionCenter = new Display.Point(0, 0);
+            this.focalLength = 0;
+            if (t !== null) {
+                this.projectionCenter = new Display.Point(t.width / 2, t.height / 2);
+                this.fieldOfView = 55;
+                this.focalLength = t.width / 2 / Math.tan(this.fieldOfView / 2);
+            }
+        }
+        PerspectiveProjection.prototype.toMatrix3D = function () {
+            return new Display.Matrix3D();
+        };
+        PerspectiveProjection.prototype.clone = function () {
+            var proj = new PerspectiveProjection();
+            proj.fieldOfView = this.fieldOfView;
+            proj.projectionCenter = this.projectionCenter;
+            proj.focalLength = this.focalLength;
+            return proj;
+        };
+        return PerspectiveProjection;
+    }());
+    Display.PerspectiveProjection = PerspectiveProjection;
+    var Transform = (function () {
+        function Transform(parent) {
+            this._matrix = new Display.Matrix();
+            this._matrix3d = null;
+            this._parent = parent;
+            this._perspectiveProjection = new PerspectiveProjection(parent);
+            this._colorTransform = new Display.ColorTransform();
+        }
+        Object.defineProperty(Transform.prototype, "parent", {
+            get: function () {
+                return this._parent;
+            },
+            set: function (p) {
+                this._parent = p;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(Transform.prototype, "perspectiveProjection", {
+            get: function () {
+                return this._perspectiveProjection;
+            },
+            set: function (projection) {
+                this._perspectiveProjection = projection;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(Transform.prototype, "matrix3D", {
+            get: function () {
+                return this._matrix3d;
+            },
+            set: function (m) {
+                if (m === null) {
+                    if (this._matrix3d === null) {
+                        return;
+                    }
+                    this._matrix3d = null;
+                    this._matrix = new Display.Matrix();
+                }
+                else {
+                    this._matrix = null;
+                    this._matrix3d = m;
+                }
+                this.update();
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(Transform.prototype, "matrix", {
+            get: function () {
+                return this._matrix;
+            },
+            set: function (m) {
+                if (m === null) {
+                    if (this._matrix === null) {
+                        return;
+                    }
+                    this._matrix = null;
+                    this._matrix3d = new Display.Matrix3D();
+                }
+                else {
+                    this._matrix3d = null;
+                    this._matrix = m;
+                }
+                this.update();
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Transform.prototype.box3d = function (sX, sY, sZ, rotX, rotY, rotZ, tX, tY, tZ) {
+            if (sX === void 0) { sX = 1; }
+            if (sY === void 0) { sY = 1; }
+            if (sZ === void 0) { sZ = 1; }
+            if (rotX === void 0) { rotX = 0; }
+            if (rotY === void 0) { rotY = 0; }
+            if (rotZ === void 0) { rotZ = 0; }
+            if (tX === void 0) { tX = 0; }
+            if (tY === void 0) { tY = 0; }
+            if (tZ === void 0) { tZ = 0; }
+            if (this._matrix !== null || this._matrix3d === null) {
+                this._matrix = null;
+                this._matrix3d = new Display.Matrix3D();
+            }
+            this._matrix3d.identity();
+            this._matrix3d.appendRotation(rotX, Display.Vector3D.X_AXIS);
+            this._matrix3d.appendRotation(rotY, Display.Vector3D.Y_AXIS);
+            this._matrix3d.appendRotation(rotZ, Display.Vector3D.Z_AXIS);
+            this._matrix3d.appendScale(sX, sY, sZ);
+            this._matrix3d.appendTranslation(tX, tY, tZ);
+        };
+        Transform.prototype.box = function (sX, sY, rot, tX, tY) {
+            if (sX === void 0) { sX = 1; }
+            if (sY === void 0) { sY = 1; }
+            if (rot === void 0) { rot = 0; }
+            if (tX === void 0) { tX = 0; }
+            if (tY === void 0) { tY = 0; }
+            if (this._matrix) {
+                this._matrix.createBox(sX, sY, rot, tX, tY);
+            }
+            else {
+                this.box3d(sX, sY, 1, 0, 0, rot, tX, tY, 0);
+            }
+        };
+        Transform.prototype.update = function () {
+            if (this._parent === null) {
+                return;
+            }
+            this._parent.transform = this;
+        };
+        Transform.prototype.getRelativeMatrix3D = function (relativeTo) {
+            __trace('Transform.getRelativeMatrix3D not implemented', 'warn');
+            return new Display.Matrix3D();
+        };
+        Transform.prototype.getMatrix = function () {
+            if (this._matrix) {
+                return this._matrix;
+            }
+            else {
+                return this._matrix3d;
+            }
+        };
+        Transform.prototype.getMatrixType = function () {
+            return this._matrix ? '2d' : '3d';
+        };
+        Transform.prototype.clone = function () {
+            var t = new Transform(null);
+            t._matrix = this._matrix;
+            t._matrix3d = this._matrix3d;
+            return t;
+        };
+        Transform.prototype.serialize = function () {
+            return {
+                'mode': this.getMatrixType(),
+                'matrix': this.getMatrix().serialize()
+            };
+        };
+        return Transform;
+    }());
+    Display.Transform = Transform;
+})(Display || (Display = {}));
+var Display;
+(function (Display) {
     var Filter = (function () {
         function Filter() {
         }
@@ -641,129 +809,6 @@ var Display;
         return BlendMode;
     }());
     Display.BlendMode = BlendMode;
-    var Transform = (function () {
-        function Transform(parent) {
-            this._matrix = new Display.Matrix();
-            this._matrix3d = null;
-            this._parent = parent;
-        }
-        Object.defineProperty(Transform.prototype, "parent", {
-            get: function () {
-                return this._parent;
-            },
-            set: function (p) {
-                this._parent = p;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(Transform.prototype, "matrix3D", {
-            get: function () {
-                return this._matrix3d;
-            },
-            set: function (m) {
-                if (m === null) {
-                    if (this._matrix3d === null) {
-                        return;
-                    }
-                    this._matrix3d = null;
-                    this._matrix = new Display.Matrix();
-                }
-                else {
-                    this._matrix = null;
-                    this._matrix3d = m;
-                }
-                this.update();
-            },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(Transform.prototype, "matrix", {
-            get: function () {
-                return this._matrix;
-            },
-            set: function (m) {
-                if (m === null) {
-                    if (this._matrix === null) {
-                        return;
-                    }
-                    this._matrix = null;
-                    this._matrix3d = new Display.Matrix3D();
-                }
-                else {
-                    this._matrix3d = null;
-                    this._matrix = m;
-                }
-                this.update();
-            },
-            enumerable: true,
-            configurable: true
-        });
-        Transform.prototype.box3d = function (sX, sY, sZ, rotX, rotY, rotZ, tX, tY, tZ) {
-            if (sX === void 0) { sX = 1; }
-            if (sY === void 0) { sY = 1; }
-            if (sZ === void 0) { sZ = 1; }
-            if (rotX === void 0) { rotX = 0; }
-            if (rotY === void 0) { rotY = 0; }
-            if (rotZ === void 0) { rotZ = 0; }
-            if (tX === void 0) { tX = 0; }
-            if (tY === void 0) { tY = 0; }
-            if (tZ === void 0) { tZ = 0; }
-            if (this._matrix !== null || this._matrix3d === null) {
-                this._matrix = null;
-                this._matrix3d = new Display.Matrix3D();
-            }
-            this._matrix3d.identity();
-            this._matrix3d.appendRotation(rotX, Display.Vector3D.X_AXIS);
-            this._matrix3d.appendRotation(rotY, Display.Vector3D.Y_AXIS);
-            this._matrix3d.appendRotation(rotZ, Display.Vector3D.Z_AXIS);
-            this._matrix3d.appendScale(sX, sY, sZ);
-            this._matrix3d.appendTranslation(tX, tY, tZ);
-        };
-        Transform.prototype.box = function (sX, sY, rot, tX, tY) {
-            if (sX === void 0) { sX = 1; }
-            if (sY === void 0) { sY = 1; }
-            if (rot === void 0) { rot = 0; }
-            if (tX === void 0) { tX = 0; }
-            if (tY === void 0) { tY = 0; }
-            if (this._matrix) {
-                this._matrix.createBox(sX, sY, rot, tX, tY);
-            }
-            else {
-                this.box3d(sX, sY, 1, 0, 0, rot, tX, tY, 0);
-            }
-        };
-        Transform.prototype.update = function () {
-            if (this._parent === null) {
-                return;
-            }
-            this._parent.transform = this;
-        };
-        Transform.prototype.getMatrix = function () {
-            if (this._matrix) {
-                return this._matrix;
-            }
-            else {
-                return this._matrix3d;
-            }
-        };
-        Transform.prototype.getMatrixType = function () {
-            return this._matrix ? '2d' : '3d';
-        };
-        Transform.prototype.clone = function () {
-            var t = new Transform(null);
-            t._matrix = this._matrix;
-            t._matrix3d = this._matrix3d;
-            return t;
-        };
-        Transform.prototype.serialize = function () {
-            return {
-                'mode': this.getMatrixType(),
-                'matrix': this.getMatrix().serialize()
-            };
-        };
-        return Transform;
-    }());
     var Rectangle = (function () {
         function Rectangle(x, y, width, height) {
             if (x === void 0) { x = 0; }
@@ -983,7 +1028,7 @@ var Display;
             this._parent = null;
             this._name = "";
             this._children = [];
-            this._transform = new Transform(this);
+            this._transform = new Display.Transform(this);
             this._hasSetDefaults = false;
             this._id = id;
             this._visible = true;
@@ -1592,11 +1637,29 @@ var Display;
             if (alpha === void 0) { alpha = 1.0; }
             this._callDrawMethod('beginFill', [color, alpha]);
         };
-        Graphics.prototype.beginGradientFill = function () {
-            __trace('Graphics: Gradients not supported yet.', 'warn');
+        Graphics.prototype.beginGradientFill = function (fillType, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio) {
+            if (matrix === void 0) { matrix = null; }
+            if (spreadMethod === void 0) { spreadMethod = 'pad'; }
+            if (interpolationMethod === void 0) { interpolationMethod = 'rgb'; }
+            if (focalPointRatio === void 0) { focalPointRatio = 0; }
+            __trace('Graphics.beginGradientFill still needs work.', 'warn');
+            if (fillType !== 'linear' && fillType !== 'radial') {
+                __trace('Graphics.beginGradientFill unsupported fill type : ' +
+                    fillType, 'warn');
+                return;
+            }
+            this._callDrawMethod('beginGradientFill', [
+                fillType,
+                colors,
+                alphas,
+                ratios,
+                matrix === null ? null : matrix.serialize,
+                spreadMethod,
+                interpolationMethod,
+                focalPointRatio]);
         };
-        Graphics.prototype.beginShaderFill = function () {
-            __trace('Graphics: Shaders not supported yet.', 'warn');
+        Graphics.prototype.beginShaderFill = function (shader, matrix) {
+            __trace('Graphics.beginShaderFill not supported.', 'warn');
         };
         Graphics.prototype.endFill = function () {
             this._callDrawMethod('endFill', []);
@@ -1721,6 +1784,61 @@ var Display;
         return Bitmap;
     }(Display.DisplayObject));
     Display.Bitmap = Bitmap;
+    var ByteArray = (function (_super) {
+        __extends(ByteArray, _super);
+        function ByteArray() {
+            var params = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                params[_i - 0] = arguments[_i];
+            }
+            _super.apply(this, params);
+            this._readPosition = 0;
+        }
+        Object.defineProperty(ByteArray.prototype, "bytesAvailable", {
+            get: function () {
+                return this.length - this._readPosition;
+            },
+            set: function (n) {
+                __trace('ByteArray.bytesAvailable is read-only', 'warn');
+            },
+            enumerable: true,
+            configurable: true
+        });
+        ByteArray.prototype.clear = function () {
+            this.length = 0;
+            this._readPosition = 0;
+        };
+        ByteArray.prototype.compress = function (algorithm) {
+            if (algorithm === void 0) { algorithm = 'zlib'; }
+            __trace('ByteArray.compress not implemented', 'warn');
+        };
+        ByteArray.prototype.uncompress = function (algorithm) {
+            if (algorithm === void 0) { algorithm = 'zlib'; }
+            __trace('ByteArray.uncompress not implemented', 'warn');
+        };
+        ByteArray.prototype.deflate = function () {
+            __trace('ByteArray.deflate not implemented', 'warn');
+        };
+        ByteArray.prototype.inflate = function () {
+            __trace('ByteArray.inflate not implemented', 'warn');
+        };
+        ByteArray.prototype.readUTFBytes = function (length) {
+            var subArray = this.slice(this._readPosition, length);
+            this._readPosition += Math.min(length, this.length - this._readPosition);
+            var str = '';
+            subArray.forEach(function (cc) {
+                str += String.fromCharCode(cc);
+            });
+            return str;
+        };
+        ByteArray.prototype.writeUTFBytes = function (value) {
+            for (var i = 0; i < value.length; i++) {
+                Array.prototype.push.apply(this, [value.charCodeAt(i)]);
+            }
+        };
+        return ByteArray;
+    }(Array));
+    Display.ByteArray = ByteArray;
     var BitmapData = (function () {
         function BitmapData(width, height, transparent, fillColor) {
             if (transparent === void 0) { transparent = true; }
@@ -1787,9 +1905,9 @@ var Display;
                 throw new Error('Expected a region to acquire pixels.');
             }
             if (rect.width === 0 || rect.height === 0) {
-                return [];
+                return new ByteArray();
             }
-            var region = [];
+            var region = new ByteArray();
             for (var i = 0; i < rect.height; i++) {
                 Array.prototype.push.apply(region, this._byteArray.slice((rect.y + i) * this._rect.width + rect.x, (rect.y + i) * this._rect.width + rect.x + rect.width));
             }
@@ -1922,6 +2040,7 @@ var Display;
             }
         };
         MotionManager.prototype.forecasting = function (time) {
+            __trace('MotionManager.forecasting always returns false', 'warn');
             return false;
         };
         MotionManager.prototype.setPlayTime = function (playtime) {

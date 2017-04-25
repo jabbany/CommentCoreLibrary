@@ -1,12 +1,13 @@
-/**
- * Player Library
- * Author: Jim Chen
- */
 /// <reference path="../OOAPI.d.ts" />
 /// <reference path="../Runtime.d.ts"/>
 /// <reference path="../CommentData.ts"/>
 
 /// <reference path="Sound.ts" />
+
+/**
+ * Player Library
+ * @author Jim Chen
+ */
 module Player{
   var _state:string = '';
   var _time:string;

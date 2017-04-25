@@ -202,15 +202,37 @@ module Display {
     /**
      * Gradient Fill Not Supported yet
      */
-    public beginGradientFill():void {
-      __trace('Graphics: Gradients not supported yet.', 'warn');
+    public beginGradientFill(fillType:string,
+      colors:Array<number>,
+      alphas:Array<number>,
+      ratios:Array<number>,
+      matrix:Matrix = null,
+      spreadMethod:string = 'pad',
+      interpolationMethod:string = 'rgb',
+      focalPointRatio:number = 0):void {
+
+      __trace('Graphics.beginGradientFill still needs work.', 'warn');
+      if (fillType !== 'linear' && fillType !== 'radial') {
+        __trace('Graphics.beginGradientFill unsupported fill type : ' +
+          fillType, 'warn');
+        return;
+      }
+      this._callDrawMethod('beginGradientFill', [
+        fillType,
+        colors,
+        alphas,
+        ratios,
+        matrix === null ? null : matrix.serialize,
+        spreadMethod,
+        interpolationMethod,
+        focalPointRatio]);
     }
 
     /**
      * Shader Fill Not Supported yet
      */
-    public beginShaderFill():void {
-      __trace('Graphics: Shaders not supported yet.', 'warn');
+    public beginShaderFill(shader:any, matrix:Matrix):void {
+      __trace('Graphics.beginShaderFill not supported.', 'warn');
     }
 
     /**

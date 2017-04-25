@@ -39,7 +39,7 @@ pre.warning{color:#FFC500;}
 	<div class="controls">
 		<a class="button" onclick="stop();" href="javascript:;">Stop</a>
 		<a class="button" onclick="resume();" href="javascript:;">Resume</a>
-		<a class="button" onclick="resize();" href="javascript:;">Resize</a>
+		<a class="button" onclick="cmresize();" href="javascript:;">Resize</a>
 		<div style="clear:both;"></div>
 	</div>
 	<div style="clear:both;"></div>
@@ -52,7 +52,9 @@ pre.warning{color:#FFC500;}
 		<a class="button" onclick="load('../../test/scripting/comment-festival-v3.xml');" href="javascript:;">Run Scripting 3 (Large) [Comment Festival v3]</a>
 		<a class="button" onclick="load('../../test/scripting/jinzou-enemy.xml');" href="javascript:;">Run Scripting 4 (drawPath) [Jinzou Enemy]</a>
 		<a class="button" onclick="load('../../test/scripting/crazy-night.xml');" href="javascript:;">Run Scripting 5 (textures &amp; 3d) [Crazy Night]</a>
-		<a class="button" onclick="load('../../test/scripting/round-and-round.xml');" href="javascript:;">Run Scripting 6 (Akari engine) [Round and Round]</a>
+		<a class="button" onclick="load('../../test/scripting/av2775802.xml');" href="javascript:;">Run Scripting 6 (Complex) [World's End Dance Hall]</a>
+		<a class="button" onclick="load('../../test/scripting/round-and-round.xml');" href="javascript:;">Run Scripting 7 (Akari engine) [Round and Round]</a>
+		<a class="button" onclick="load('../../test/scripting/av2739681.xml');" href="javascript:;">Run Scripting 8 (Akari engine) [Vidro Moyou]</a>
 		<div style="clear:both;"></div>
 	</div>
 </div>	
@@ -153,13 +155,10 @@ cm.init();
 function timeupdate(){
 	playhead = Date.now() - start;
 	cm.time(playhead);
-	if(cm.scripting && playhead - lasthead > 300 ){
-		cm.scripting.send("Update:TimeUpdate",{
-			"state": "playing",
-			"time": playhead
-		});
-		lasthead = playhead;
-	}
+	cm.scripting.send("Update:TimeUpdate", {
+		"state": "playing",
+		"time": playhead
+	});
 }
 
 function load(dmf,dmfmd){
@@ -222,7 +221,7 @@ function resume(){
 	lasthead = playhead;
 	tmr = setInterval(timeupdate,42);
 }
-function resize() {
+function cmresize() {
     if (cm.large) {
         cm.large = false;
         $('player').style.height = '384px';

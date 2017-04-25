@@ -1,3 +1,4 @@
+/// <reference path="../OOAPI.d.ts" />
 /// <reference path="../Runtime.d.ts" />
 /// <reference path="../Tween.d.ts" />
 
@@ -111,6 +112,7 @@ module Display {
     }
 
     public forecasting(time:number):boolean {
+      __trace('MotionManager.forecasting always returns false', 'warn');
       return false;
     }
 

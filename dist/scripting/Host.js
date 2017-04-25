@@ -522,6 +522,7 @@ var CCLScripting = function(workerUrl){
 			return elem;
 		};
 		
+		var globalDefs = __('defs');
 		var defaultEffects = __("defs");
 		var defaultGroup =  __("g",{
 		});
@@ -529,8 +530,10 @@ var CCLScripting = function(workerUrl){
 			"transform":"translate(" + this._x + "," + this._y + ")",
 			"opacity":this._alpha,
 		});
+		
 		defaultContainer.appendChild(defaultGroup);
 		var defaultGroupWithEffects = defaultContainer;
+		this.DOM.appendChild(globalDefs);
 		this.DOM.appendChild(defaultEffects);
 		this.DOM.appendChild(defaultGroupWithEffects);
 		/** PROPS **/
@@ -548,6 +551,13 @@ var CCLScripting = function(workerUrl){
 		});
 		this.__defineSetter__("alpha", function(f){
 			this.setAlpha(f);
+		});
+		this.__defineSetter__("blendMode", function(f){
+			this.DOM.style.backgroundBlendMode = f;
+			this.DOM.style.mixBlendMode = f;
+		});
+		this.__defineGetter__("blendMode", function(f){
+			return '';
 		});
 		this.__defineGetter__("x", function(f){
 			return this._x;
@@ -772,6 +782,31 @@ var CCLScripting = function(workerUrl){
 				this.fill.alpha = params[1];
 			}
 		};
+		this.beginGradientFill = function(params) {
+		    if(params.length === 0) {
+		        return;
+		    }
+		    var gradId = 'gradient-' + params[0] + '-' + globalDefs.childNodes.length;
+		    var grad;
+		    if (params[0] === 'linear') {
+		        grad = __('linearGradient', {'id': gradId, 'spreadMethod': params[5]});
+		    } else {
+		        grad = __('radialGradient', {'id': gradId, 'spreadMethod': params[5]});
+		    }
+		    // Figure out all the stops
+		    var colors = params[1];
+		    var alphas = params[2];
+		    var ratios = params[3];
+		    for (var i = 0; i < ratios.length; i++) {
+		        grad.appendChild(__('stop', {
+		            'offset': ratios[i] / 255,
+		            'stop-color': toRGB(colors[i]),
+		            'stop-opacity': alphas[i]
+		        }));
+		    }
+		    globalDefs.appendChild(grad);
+		    this.fill.fill = 'url(#' + gradId + ')';
+		};
 		this.endFill = function(params){
 			this.fill.fill = "none";
 		};
@@ -807,7 +842,7 @@ var CCLScripting = function(workerUrl){
 			});
 			applyFill(r, this);
 			applyStroke(r, this);
-			this.DOM.appendChild(r);
+			defaultGroup.appendChild(r);
 		};
 		this.drawCircle = function(params){
 			var c = __("circle",{
@@ -889,10 +924,10 @@ var CCLScripting = function(workerUrl){
 				var filter = filters[i];
 				var dFilter = __("filter",{
 					"id":"fe" + filter.type + i,
-					"x":"-100%",
-					"y":"-100%",
-					"width":"400%",
-					"height":"400%"
+					"x":"-50%",
+					"y":"-50%",
+					"width":"200%",
+					"height":"200%"
 				});
 				switch(filter.type){
 					default:break;
@@ -992,6 +1027,13 @@ var CCLScripting = function(workerUrl){
 		this.__defineSetter__("y", function(f){
 			this.setY(f);
 		});
+		this.__defineSetter__("blendMode", function(f){
+			this.DOM.style.backgroundBlendMode = f;
+			this.DOM.style.mixBlendMode = f;
+		});
+		this.__defineGetter__("blendMode", function(f){
+			return '';
+		});
 		this.__defineGetter__("x", function(f){
 			return this.DOM.offsetLeft;
 		});
@@ -1072,10 +1114,10 @@ var CCLScripting = function(workerUrl){
 				return;
 			if(child.DOM){
 				if(child.getClass() === "Shape"){
-					child.DOM.style.left = -this.x + "px";
-					child.DOM.style.top = -this.y + "px";
-					child.setX(this.x);
-					child.setY(this.y);
+					var tX = (stage.offsetWidth / 2), tY = (stage.offsetHeight / 2);
+					child.offset(tX, tY);
+					child.DOM.style.left = -tX+ "px";
+					child.DOM.style.top = -tY+ "px";
 				}
 				this.DOM.appendChild(child.DOM);
 			}else{
