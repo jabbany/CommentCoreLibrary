@@ -1,5 +1,4 @@
-Tween Libraries Set 补间动画支持库
-====================================
+# Tween Libraries Set 补间动画支持库
 Tween Libraries Set是一套尽可能还原支持B站原有补间动画的补间动画库集合。它可以由Tween库进行
 访问。
 
@@ -14,12 +13,8 @@ Tween Libraries Set是一套尽可能还原支持B站原有补间动画的补间
 - slice 播放补间的一部分
 - serial 串联补间动画
 - parallel 并联补间动画
-
-目前不支持：
-
-- beizer 曲线补间
+- bezier 曲线补间
 
 
-补间函数（Easing）
-------------------------------
+## 补间函数（Easing）
 说到补间，就必须有补间函数咯。

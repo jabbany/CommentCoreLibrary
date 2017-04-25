@@ -4,12 +4,9 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta http-equiv="X-UA-Compatible" value="IE=9">
 <link rel="stylesheet" href="../../demo/default.css" />
-<link rel="stylesheet" href="../../build/style.css" />
+<link rel="stylesheet" href="../../dist/css/style.css" />
 <!-- Run 'make' to build the file -->
-<script src="../../build/CommentCoreLibrary.js"></script>
-
-<!-- A few helpers to do some decoding/fetching below-->
-<script src="../../demo/libxml.js"></script>
+<script src="../../dist/CommentCoreLibrary.js"></script>
 <style>
 pre{margin:0;}
 pre.error{color:#f00;}
@@ -27,7 +24,7 @@ pre.warning{color:#FFC500;}
 .s-button:hover,.abp .button:hover{background:#f88; color:#000;}
 </style>
 <!-- Scripting Extensions -->
-<script src="../../build/scripting/Host.js"></script>
+<script src="../../dist/scripting/Host.js"></script>
 
 <title>Testrun Sandbox For CCL /w Scripting Enabled</title>
 </head>
@@ -42,11 +39,12 @@ pre.warning{color:#FFC500;}
 	<div class="controls">
 		<a class="button" onclick="stop();" href="javascript:;">Stop</a>
 		<a class="button" onclick="resume();" href="javascript:;">Resume</a>
+		<a class="button" onclick="cmresize();" href="javascript:;">Resize</a>
 		<div style="clear:both;"></div>
 	</div>
 	<div style="clear:both;"></div>
 </div>
-<div style="margin-top:450px;">
+<div style="margin-top:550px;">
 	<h2>Tests</h2>
 	<div class="controls">
 		<a class="button" onclick="load('../../test/scripting/kanpai.xml');" href="javascript:;">Run Scripting 1 (Pure) [Kanpai]</a>
@@ -54,7 +52,9 @@ pre.warning{color:#FFC500;}
 		<a class="button" onclick="load('../../test/scripting/comment-festival-v3.xml');" href="javascript:;">Run Scripting 3 (Large) [Comment Festival v3]</a>
 		<a class="button" onclick="load('../../test/scripting/jinzou-enemy.xml');" href="javascript:;">Run Scripting 4 (drawPath) [Jinzou Enemy]</a>
 		<a class="button" onclick="load('../../test/scripting/crazy-night.xml');" href="javascript:;">Run Scripting 5 (textures &amp; 3d) [Crazy Night]</a>
-		<a class="button" onclick="load('../../test/scripting/round-and-round.xml');" href="javascript:;">Run Scripting 6 (Akari engine) [Round and Round]</a>
+		<a class="button" onclick="load('../../test/scripting/av2775802.xml');" href="javascript:;">Run Scripting 6 (Complex) [World's End Dance Hall]</a>
+		<a class="button" onclick="load('../../test/scripting/round-and-round.xml');" href="javascript:;">Run Scripting 7 (Akari engine) [Round and Round]</a>
+		<a class="button" onclick="load('../../test/scripting/av2739681.xml');" href="javascript:;">Run Scripting 8 (Akari engine) [Vidro Moyou]</a>
 		<div style="clear:both;"></div>
 	</div>
 </div>	
@@ -91,9 +91,10 @@ function launchWindowFull(element){
 	cm.getBounds();
 	isWindowedFullscreen = !isWindowedFullscreen;
 }
-
+var $ = function (e) { return document.getElementById(e); }
 var cm = new CommentManager($('commentCanvas'));
-var bscripter = new CCLScripting("../../build/scripting/Worker.js");
+var bscripter = new CCLScripting("../../dist/scripting/Worker.js");
+
 bscripter.logger = new function(){
 	this.log = function(t){
 		var pre = document.createElement("pre");
@@ -125,41 +126,87 @@ bscripter.logger = new function(){
 		$("debug-console").scrollTop = 100000;
 	};
 };
-cm.scripting = bscripter.getSandbox($("commentCanvas"));
-cm.init();
 
 var tmr=0;
 var start=0;
 var playhead = 0, lasthead = 0;
 
+cm.scripting = bscripter.getSandbox($("commentCanvas"), {
+    'play': function () {
+        bscripter.logger.log('Player.play invoked. Ignoring.');
+        //resume();
+    },
+    'pause': function () { 
+        bscripter.logger.log('Player.pause invoked. Ignoring.');
+        //stop();
+    },
+    'seek': function (time) { 
+        bscripter.logger.log('Seeking to [' + time + ']. Ignoring.');
+        //playhead = time; 
+        //lasthead = time; 
+        //start = Date.now() - playhead; 
+    },
+    'jump': function (config) { 
+        bscripter.logger.warn('Called jump with videoid[' + config.vid + ']. Ignoring request.');
+    }
+});
+cm.init();
+
 function timeupdate(){
-	playhead = new Date().getTime() - start;
+	playhead = Date.now() - start;
 	cm.time(playhead);
-	if(cm.scripting && playhead - lasthead > 300 ){;
-		cm.scripting.send("Update:TimeUpdate",{
-			"state":"playing",
-			"time":playhead
-		});
-		lasthead = playhead;
-	}
+	cm.scripting.send("Update:TimeUpdate", {
+		"state": "playing",
+		"time": playhead
+	});
 }
 
 function load(dmf,dmfmd){
-	if(dmfmd == null)
-		dmfmd = 'bilibili';
+	if (cm._commentProvider && cm._commentProvider instanceof CommentProvider) {
+		// Unload the previous comment provider if possible
+		cm._commentProvider.destroy();
+	}
+    cm._commentProvider = new CommentProvider();
+    cm._commentProvider.addTarget(cm);
 	cm.clear();
+	// Hook Providers
+	switch (dmfmd) {
+		case 'acfun': {
+			cm._commentProvider.addStaticSource(
+				CommentProvider.XMLProvider('GET', dmf), 
+				CommentProvider.SOURCE_JSON).addParser(new AcfunFormat.JSONParser(), CommentProvider.SOURCE_JSON);
+			break;
+		}
+		case 'cdf': {
+			cm._commentProvider.addStaticSource(
+				CommentProvider.XMLProvider('GET', dmf), 
+				CommentProvider.SOURCE_JSON).addParser(new CommonDanmakuFormat.JSONParser(), CommentProvider.SOURCE_JSON)
+			break;
+		}
+		case 'bilibili': 
+		default: {
+			cm._commentProvider.addStaticSource(
+				CommentProvider.XMLProvider('GET', dmf), 
+				CommentProvider.SOURCE_XML).addParser(new BilibiliFormat.XMLParser(), CommentProvider.SOURCE_XML)
+			break;
+		}
+	}
 	start = 0;
-	try{
+	try {
 		clearTimeout(tmr);
-	}catch(e){}
-	CommentLoader(dmf,cm,dmfmd);
-	cm.startTimer();
-	start = new Date().getTime();
-	lasthead = playhead;
-	tmr = setInterval(timeupdate,42);
+	} catch (e) {}
+	cm._commentProvider.start().then(function () {
+		cm.start();
+		start = new Date().getTime();
+		lasthead = playhead;
+		tmr = setInterval(timeupdate,42);
+	}).catch(function (e) {
+		console.error(e);
+		alert('Failed to load comment file!');
+	});
 }
 function stop(){
-	cm.stopTimer();
+	cm.stop();
 	if(cm.scripting){
 		cm.scripting.send("Update:TimeUpdate",{
 			"state":"pause",
@@ -169,10 +216,25 @@ function stop(){
 	clearTimeout(tmr);
 }
 function resume(){
-	cm.startTimer();
+	cm.start();
 	start = new Date().getTime() - playhead;
 	lasthead = playhead;
 	tmr = setInterval(timeupdate,42);
+}
+function cmresize() {
+    if (cm.large) {
+        cm.large = false;
+        $('player').style.height = '384px';
+        $('player-unit').style.width = '540px';
+        cm.setBounds();
+        cm.scripting.send("Update:DimensionUpdate", cm.scripting.getContext().getDimensions());
+    } else {
+        cm.large = true;
+        $('player').style.height = '438px';
+        $('player-unit').style.width = '672px';
+        cm.setBounds();
+        cm.scripting.send("Update:DimensionUpdate", cm.scripting.getContext().getDimensions());
+    }
 }
 </script>
 </body>

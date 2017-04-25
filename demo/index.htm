@@ -7,13 +7,11 @@
 	<link rel="stylesheet" href="default.css" />
 
 	<!-- CCL -->
-	<link rel="stylesheet" href="../build/style.css" />
-	<script type="text/javascript" src="../build/CommentCoreLibrary.js"></script>
+	<link rel="stylesheet" href="../dist/css/style.css" />
+	<script type="text/javascript" src="../dist/CommentCoreLibrary.js"></script>
 	<!-- Base -->
-	<script src="libxml.js"></script>
 	<script src="debugger.js"></script>
 	<!-- Extensions -->
-	<script src="../src/extend/fefx.js"></script>
 </head>
 <body>
 <div id="debugger">
@@ -60,8 +58,6 @@
 				<a id="test-ts-3" href="javascript:;">XSS</a>
 			</p>
 			<p>Filters: <br>
-				<a onclick="cm.filter.setRuntimeFilter(fefx.center_dim);" href="javascript:;">Apply Center-Transparency</a><br>
-				<a onclick="cm.filter.setRuntimeFilter(fefx.center_speedup);" href="javascript:;">Apply Center-Speedup</a><br>
 				<a id="profiler-start" href="javascript:;">Profiler</a><br>
 				<a onclick="cm.filter.setRuntimeFilter(null);" href="javascript:;">Clear Runtime Filters</a>
 			</p>

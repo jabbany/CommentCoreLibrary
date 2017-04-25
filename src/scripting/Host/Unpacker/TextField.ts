@@ -25,12 +25,15 @@ module Unpacker{
 			this.DOM.style.fontFamily = tf["font"];
 			this.DOM.style.fontSize = tf["size"];
 			this.DOM.style.color = Unpacker.color(tf["color"]);
-			if(tf["bold"])
+			if (tf["bold"]) {
 				this.DOM.style.fontWeight = "bold";
-			if(tf["italic"])
+			}
+			if (tf["italic"]) {
 				this.DOM.style.fontStyle = "italic";
-			if(tf["underline"])
+			}
+			if (tf["underline"]) {
 				this.DOM.style.textDecoration = "underline";
+			}
 			this.DOM.style.margin = tf["margin"] + "px";
 		}
 

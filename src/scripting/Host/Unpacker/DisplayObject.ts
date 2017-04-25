@@ -1,4 +1,8 @@
-/// <reference path="DisplayObject.ts" />
+/**
+ * Host end unpacker for generic DisplayObjects
+ * @author Jim Chen
+ */
+/// <reference path="Unpacker.ts" />
 module Unpacker{
 	export class DisplayObject{
 		public DOM:HTMLDivElement;
@@ -12,9 +16,9 @@ module Unpacker{
 
 		constructor(stage:any, data:Object, context:any){
 			Unpacker.sensibleDefaults(data,{
-				"x":0,
-				"y":0,
-				"alpha":1
+				"x": 0,
+				"y": 0,
+				"alpha": 1
 			});
 			this.DOM = <HTMLDivElement> Unpacker._("div",{
 				"style": {
@@ -67,12 +71,19 @@ module Unpacker{
 		}
 
 		/** Transform **/
-		set transform(t:Object){
-			this._transform = t;
-			if(this._transform["mode"] === "2d"){
-
-			}else{
-
+		set transform(transformation:Object){
+			if (transformation.hasOwnProperty("mode")) {
+				this._transform = transformation;
+				if (transformation["mode"] === "2d") {
+					this.DOM.style.transform = "matrix2d(" +
+						transformation.matrix.join(",") + ")";
+				} else if (transformation["mode"] === "3d") {
+					this.DOM.style.transform = "matrix3d(" +
+						transformation.matrix.join(",") + ")";
+				} else {
+					throw new Error("Transform mode " +
+						transformation.mode + " not supported.");
+				}
 			}
 		}
 

@@ -32,7 +32,7 @@ describe 'CommentManager', ->
       manager.init()
 
     'addEventListener clear dispatchEvent finish init
-    insert load onTimerEvent rescale seek send sendComment
+    insert load onTimerEvent rescale seek send
     setBounds start stop time validate'.split(/\s/).forEach (method)->
 
       it "has method: '#{method}'", ->
@@ -53,11 +53,12 @@ describe 'CommentManager', ->
 
       it 'smoking test', ->
         jasmine.getFixtures().fixturesPath = "test/"
-        comments = AcfunParser(readFixtures 'ac940133.json')
+        json = JSON.parse readFixtures 'ac940133.json'
+        comments = (new AcfunFormat.JSONParser()).parseMany json
         # TODO: Construct a json that cover all types of comments
         # and use it for smoking test
         manager.load comments
-        expect(manager.timeline.length).toBe 1962
+        expect(manager.timeline.length).toBe 2146
 
     describe '.send', ->
       it 'sends to runline' , ->
