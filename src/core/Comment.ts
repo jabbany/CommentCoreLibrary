@@ -331,7 +331,7 @@ class CoreComment implements IComment {
     var color:string = c.toString(16);
     color = color.length >= 6 ? color : new Array(6 - color.length + 1).join('0') + color;
     this.dom.style.color = '#' + color;
-    if (this._color === 0) {
+    if ((((c >> 16) & 0xff) * 0.2126 + ((c >> 8) & 0xff) * 0.7152 + (c & 0xff) * 0.0722) < 0x48) {
       this.dom.className = this.parent.options.global.className + ' rshadow';
     }
   }
