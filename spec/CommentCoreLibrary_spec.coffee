@@ -1,4 +1,5 @@
 'use strict'
+
 describe 'CommentManager', ->
   manager = stage = cmt = c1 = c2 = c3 = c4 = c5 = null
 
@@ -31,7 +32,7 @@ describe 'CommentManager', ->
       manager.init()
 
     'addEventListener clear dispatchEvent finish init
-    insert load onTimerEvent rescale seek send sendComment
+    insert load onTimerEvent rescale seek send
     setBounds start stop time validate'.split(/\s/).forEach (method)->
 
       it "has method: '#{method}'", ->
@@ -52,11 +53,12 @@ describe 'CommentManager', ->
 
       it 'smoking test', ->
         jasmine.getFixtures().fixturesPath = "test/"
-        comments = AcfunParser(readFixtures 'ac940133.json')
+        json = JSON.parse readFixtures 'ac940133.json'
+        comments = (new AcfunFormat.JSONParser()).parseMany json
         # TODO: Construct a json that cover all types of comments
         # and use it for smoking test
         manager.load comments
-        expect(manager.timeline.length).toBe 1962
+        expect(manager.timeline.length).toBe 2146
 
     describe '.send', ->
       it 'sends to runline' , ->
@@ -66,15 +68,15 @@ describe 'CommentManager', ->
 
     describe '.start', ->
       it 'starts the timer', ->
+        spy = sinon.spy window, 'setInterval'
         manager.start()
-        # TODO: figure out how to test the timer
-        # maybe just add spy on window.setInterval
+        expect(spy).toHaveBeenCalled true
 
     describe '.stop', ->
       it 'stops the timer', ->
+        spy = sinon.spy window, 'clearInterval'
         manager.stop()
-        # TODO: figure out how to test the timer
-        # maybe just add spy on window.clearInterval
+        expect(spy).toHaveBeenCalled true
 
     describe '.clear', ->
       it 'clears', ->
@@ -89,14 +91,37 @@ describe 'CommentManager', ->
         expect(manager.timeline).toEqual [c3, c5]
         manager.insert c4
         expect(manager.timeline).toEqual [c3, c4 , c5]
-        
+
+    describe '.setBounds', ->
+      beforeEach -> 
+        manager.stage.style.width = '640px'
+        manager.stage.style.width = '480px'
+
+      it 'updates width and height', ->
+        manager.setBounds()
+        expect(manager.width).toEqual stage.offsetWidth
+        expect(manager.height).toEqual stage.offsetHeight
+
+      it 'dispatches resize event', ->
+        callback = sinon.spy()
+        manager.addEventListener 'resize', callback
+        manager.setBounds()
+        expect(callback).toHaveBeenCalled true
+
+      it 'sets bounds on comment space allocators', ->
+        spies = {}
+        for allocatorName, allocator of manager.csa
+          spies[allocatorName] = sinon.spy allocator, 'setBounds'
+        manager.setBounds()
+        for allocatorName, spy of spies
+          expect(spy).toHaveBeenCalledWith stage.offsetWidth, stage.offsetHeight
+
     describe '.addEventListener .dispatchEvent', ->
       it 'add one event listener', ->
-        hasDispatchedEvent = false
-        manager.addEventListener 'myCustomEvent', ->
-          hasDispatchedEvent = true
+        callback = sinon.spy()
+        manager.addEventListener 'myCustomEvent', callback
         manager.dispatchEvent 'myCustomEvent'
-        expect(hasDispatchedEvent).toBe true
+        expect(callback).toHaveBeenCalled true
 
       it 'add multiple event listeners', ->
         dispatchedEventId = 0
@@ -106,3 +131,9 @@ describe 'CommentManager', ->
           dispatchedEventId = 2
         manager.dispatchEvent 'myCustomEvent'
         expect(dispatchedEventId).toBe 2
+
+      it 'dispatch event works with data', ->
+        callback = sinon.spy()
+        manager.addEventListener 'myCustomEvent', callback
+        manager.dispatchEvent 'myCustomEvent', 'foo'
+        expect(callback).toHaveBeenCalledWith 'foo'

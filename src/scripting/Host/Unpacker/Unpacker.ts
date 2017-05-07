@@ -1,5 +1,6 @@
 module Unpacker{
-	export function _(type:string, props:Object = {}, children:Array<HTMLElement> = [], callback:Function = null):Element{
+	export function _(type:string, props:Object = {},
+			children:Array<HTMLElement> = [], callback:Function = null):Element{
 		var elem:Element = null;
 		if(type !== "svg"){
 			elem = document.createElement(type);
@@ -57,15 +58,15 @@ module Unpacker{
 		return objectA;
 	}
 
-	export function color(color:number):string{
-		if(typeof color === "string"){
+	export function color(color:number | string):string{
+		if (typeof color === "string") {
 			color = parseInt("" + color);
-			if(color === NaN){
+			if (color === NaN) {
 				color = 0;
 			}
 		}
 		var code:string = color.toString(16);
-		while(code.length < 6){
+		while (code.length < 6) {
 			code = "0" + code;
 		}
 		return "#" + code;

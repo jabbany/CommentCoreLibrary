@@ -52,8 +52,8 @@ describe 'CommentSpaceAllocators', ->
         c1.cindex = -1
         expect(typeof anchorCSA.remove(c1)).toBe 'undefined'
 
-      it 'removal for cindex < 0', ->
-        c1.cindex = -1
+      it 'removal for cindex not found', ->
+        c1.cindex = 0
         expect(typeof anchorCSA.remove(c1)).toBe 'undefined'
       # TODO: We need more extensive test cases
 
@@ -75,7 +75,7 @@ describe 'CommentSpaceAllocators', ->
         s1.cindex = -1
         expect(typeof scrollCSA.remove(s1)).toBe 'undefined'
 
-      it 'removal for cindex < 0', ->
-        s1.cindex = -1
+      it 'removal for cindex not found', ->
+        s1.cindex = 0
         expect(typeof scrollCSA.remove(s1)).toBe 'undefined'
       # TODO: We need more extensive test cases

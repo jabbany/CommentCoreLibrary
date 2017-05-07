@@ -1,5 +1,4 @@
-Events 事件
-==================================
+# Events 事件
 在Display引擎里面，所有 DisplayObject 派生的对象都是一个潜在的 EventDispatcher。（注意我们
 为了节约代码不真的有EventDispatcher抽象层。）
 
@@ -26,24 +25,21 @@ Events 事件
 通讯而堵塞管道（Unclog the pipes!）。
 
 
-用户事件（User Events）
-----------------------------------
+## 用户事件（User Events）
 用户事件是由用户操作诱发的事件。大多说情况下这些事件都相对比较罕见而稀疏（因为用户的操作并不频繁），
 大多数用户相关的事件都采取常有效的模式。
 
 用户事件包括：键盘事件（KeyUp, KeyDown, KeyPress），点击事件（Click, DblClick），播放器
 事件（PlayerStateChange）。
 
-沙箱内事件（In Sandbox Events）
-----------------------------------
+## 沙箱内事件（In Sandbox Events）
 沙箱内事件是一些不需要沙箱外对象参与就可以实现的事件。其中有两种主要的事件：广播事件（Broadcast
 Events）和内部事件（Internal Events）。
 
 广播事件诸如：enterFrame，render等。
 内部事件诸如：added（不包括root的），removed等
 
-状态事件（State Events）
-----------------------------------
+## 状态事件（State Events）
 状态事件是一些反映各种状态的事件。这些事件往往是降低频率接收的。
 
 比如：mouseX, mouseY （在不邦定mouse相关操作时无法读取）。

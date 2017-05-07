@@ -1,0 +1,61 @@
+body {
+  background-color: #000;
+  color: #FFF;
+}
+
+.left-area {
+  width: 48%;
+  position: absolute;
+  top: 70px;
+  left: 10px;
+  bottom: 200px;
+}
+
+#playerdiv {
+  width: 48%;
+  position: absolute;
+  top: 70px;
+  right:10px;
+  bottom: 200px;
+}
+
+#player{
+  border:1px solid #f88;
+  width:100%;
+  top:0; bottom:10px; left: 0px; right:0px;
+  background-color:#100;
+  position:absolute;
+}
+#output{
+  font-family:Consolas, 'Courier New', monospace; font-size:12px;padding:10px; background:#000;
+  position:fixed; bottom:0; left:0; right:0; height:150px; overflow:auto; color:#ccc;border-top:1px dotted #fff;
+}
+.code-input {
+  position:absolute;
+  width:100%;
+  height:auto;
+  top:40px; bottom:10px; left:0; right:0;
+  display:block; border:1px solid #f88;
+  padding:10px;background:#000;color:#f88;font-size:20px;
+}
+.blue .code-input{
+  border:1px solid #88f;color:#88f;background:#113;
+}
+.s-button, .button{
+  display:block; border:1px solid #f88; padding:8px 6px 8px 6px; 
+  background:#000; color:#f88; float:left;
+  -moz-user-select: none;
+  -khtml-user-select: none; 
+  -webkit-user-select: none; 
+  -o-user-select: none; 
+  user-select: none; 
+  cursor:default;
+}
+.s-button:hover,.button:hover{background:#f88; color:#000;}
+.blue .s-button, .blue .button{ border:1px solid #88f;color:#88f;}
+.blue .s-button:hover,.blue .button:hover{background:#88f; color:#000;}
+.button{font-size:12px;z-index:99;}
+  
+pre{margin:0;}
+pre.error{color:#f00;}
+pre.warning{color:#FFC500;}

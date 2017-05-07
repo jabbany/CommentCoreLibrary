@@ -1,0 +1,27 @@
+[
+    {
+        "mode": 1,
+        "text": "This is a normal scrolling comment. Color is white.",
+        "size": 25,
+        "color": 16777215,
+        "stime": 0
+    },
+    {
+        "mode": 1,
+        "text": "This is a normal scrolling comment. Size is large",
+        "size": 60,
+        "color": 16777215,
+        "stime": 100
+    },
+    {
+        "mode": 1,
+        "text": "This is a normal scrolling comment. Color is red.",
+        "size": 25,
+        "color": 16711680,
+        "stime": 200
+    },
+    {
+        "mode": 2,
+        "text": "This is a normal "
+    }
+]

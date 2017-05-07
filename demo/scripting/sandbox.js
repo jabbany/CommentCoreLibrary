@@ -1,15 +1,16 @@
 var $ = function(e){return window.document.getElementById(e);}
+var _e = function(text) { return text.replace('&', '&amp;').replace('<', '&lt;');}
 window.addEventListener('load',function(){
-	window.bscripter = new CCLScripting("../../build/scripting/Worker.js");
+	window.bscripter = new CCLScripting("../../dist/scripting/Worker.js");
 	bscripter.logger = new function(){
 		this.log = function(t){
-			$("output").innerHTML = "<pre>" + t.toString() + "</pre>" + $("output").innerHTML;
+			$("output").innerHTML = "<pre>" + _e(t.toString()) + "</pre>" + $("output").innerHTML;
 		};
 		this.error = function(t){
-			$("output").innerHTML = "<pre class='error'>" + t.toString() + "</pre>" + $("output").innerHTML;
+			$("output").innerHTML = "<pre class='error'>" + _e(t.toString()) + "</pre>" + $("output").innerHTML;
 		};
 		this.warn = function(t){
-			$("output").innerHTML = "<pre class='warning'>" + t.toString() + "</pre>" + $("output").innerHTML;
+			$("output").innerHTML = "<pre class='warning'>" + _e(t.toString()) + "</pre>" + $("output").innerHTML;
 		};
 	};
 	window.sandbox = bscripter.getSandbox($("player"));
