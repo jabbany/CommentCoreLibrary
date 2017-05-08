@@ -1,106 +1,111 @@
-/**
- * Compliant CommentField Polyfill For BiliScriptEngine
- */
 /// <reference path="TextField.ts" />
 /// <reference path="IComment.ts" />
 /// <reference path="MotionManager.ts" />
+
 module Display {
-	class CommentField extends TextField implements IComment {
-		private _mM:MotionManager = new MotionManager(this);
 
-		constructor(text:string, params:Object) {
-			super(text, 0xffffff);
-			this.setDefaults(params);
-			this.initStyle(params);
-			Runtime.registerObject(this);
-			this.bindParent(params);
-			this._mM.play();
-		}
+  /**
+   * Compliant CommentField Polyfill For BiliScriptEngine
+   */
+  class CommentField extends TextField implements IComment {
+    private _mM:MotionManager = new MotionManager(this);
 
-		set fontsize(size:number) {
-			var tf = this.getTextFormat();
-			tf.size = size;
-			this.setTextFormat(tf);
-		}
+    constructor(text:string, params:Object) {
+      super(text, 0xffffff);
+      this.setDefaults(params);
+      this.initStyle(params);
+      Runtime.registerObject(this);
+      this.bindParent(params);
+      this._mM.play();
+    }
 
-		get fontsize():number {
-			return this.getTextFormat().fontsize;
-		}
+    set fontsize(size:number) {
+      var tf = this.getTextFormat();
+      tf.size = size;
+      this.setTextFormat(tf);
+    }
 
-		set font(fontname:string) {
-			var tf = this.getTextFormat();
-			tf.font = fontname;
-			this.setTextFormat(tf);
-		}
+    get fontsize():number {
+      return this.getTextFormat().fontsize;
+    }
 
-		get font():string {
-			return this.getTextFormat().font;
-		}
+    set font(fontname:string) {
+      var tf = this.getTextFormat();
+      tf.font = fontname;
+      this.setTextFormat(tf);
+    }
 
-		set align(a:string) {
-			var tf = this.getTextFormat();
-			tf.align = a;
-			this.setTextFormat(tf);
-		}
+    get font():string {
+      return this.getTextFormat().font;
+    }
 
-		get align():string {
-			return this.getTextFormat().align;
-		}
+    set align(a:string) {
+      var tf = this.getTextFormat();
+      tf.align = a;
+      this.setTextFormat(tf);
+    }
 
-		set bold(b:boolean) {
-			var tf = this.getTextFormat();
-			tf.bold = b;
-			this.setTextFormat(tf);
-		}
+    get align():string {
+      return this.getTextFormat().align;
+    }
 
-		get bold():boolean {
-			return this.getTextFormat().bold;
-		}
+    set bold(b:boolean) {
+      var tf = this.getTextFormat();
+      tf.bold = b;
+      this.setTextFormat(tf);
+    }
 
-		get motionManager():MotionManager {
-			return this._mM;
-		}
+    get bold():boolean {
+      return this.getTextFormat().bold;
+    }
 
-		set motionManager(m:MotionManager) {
-			__trace("IComment.motionManager is read-only", "warn");
-		}
+    get motionManager():MotionManager {
+      return this._mM;
+    }
 
-		private bindParent(params:Object):void {
-			if (params.hasOwnProperty("parent")) {
-				(<DisplayObject> params["parent"]).addChild(this);
-			}
-		}
+    set motionManager(m:MotionManager) {
+      __trace("IComment.motionManager is read-only", "warn");
+    }
 
-		public initStyle(style:Object):void {
-			if (style["lifeTime"]) {
-				this._mM.dur = style["lifeTime"] * 1000;
-			}
-			if (style["fontsize"]) {
-				this.getTextFormat().size = style["fontsize"];
-			}
-			if (style["font"]) {
-				this.getTextFormat().font = style["font"];
-			}
-			if (style["color"]) {
-				this.getTextFormat().color = style["color"];
-			}
-			if (style["bold"]) {
-				this.getTextFormat().bold = style["bold"];
-			}
-			if (style.hasOwnProperty("motionGroup")) {
-				this._mM.initTweenGroup(style["motionGroup"], this._mM.dur);
-			} else if (style.hasOwnProperty("motion")) {
-				this._mM.initTween(style["motion"], false);
-			}
-		}
-	}
+    private bindParent(params:Object):void {
+      if (params.hasOwnProperty("parent")) {
+        (<DisplayObject> params["parent"]).addChild(this);
+      }
+    }
 
-	export function createComment(text:string, params:Object):any {
-		return new CommentField(text, params);
-	}
+    public initStyle(style:Object):void {
+      if (typeof style === 'undefined' || style === null) {
+        style = {};
+      }
+      if ("lifeTime" in style) {
+        this._mM.dur = style["lifeTime"] * 1000;
+      }
+      if ("fontsize" in style) {
+        this.getTextFormat().size = style["fontsize"];
+      }
+      if ("font" in style) {
+        this.getTextFormat().font = style["font"];
+      }
+      if ("color" in style) {
+        this.getTextFormat().color = style["color"];
+      }
+      if ("bold" in style) {
+        this.getTextFormat().bold = style["bold"];
+      }
+      if (style.hasOwnProperty("motionGroup")) {
+        this._mM.initTweenGroup(style["motionGroup"], this._mM.dur);
+      } else if (style.hasOwnProperty("motion")) {
+        this._mM.initTween(style["motion"], false);
+      }
+    }
+  }
 
-	export function createTextField():any {
-		return new CommentField("",{});
-	}
+  export function createComment(text:string, params:Object):any {
+    return new CommentField(text, params);
+  }
+
+  export function createTextField():any {
+    return new CommentField("",{});
+  }
 
 }

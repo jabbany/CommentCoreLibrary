@@ -2,11 +2,12 @@ module.exports = (grunt) ->
   require('load-grunt-tasks') grunt , {
     pattern: ['grunt-*', '!grunt-template-jasmine-istanbul']
   }
-  grunt.file.readJSON('package.json')
+  # Read package.json to make sure it's there
+  pkg = grunt.file.readJSON('package.json')
 
   # !! Compile configurations
-  License = '/*!Copyright(c) CommentCoreLibrary (//github.com/jabbany/CommentCoreLibrary) - Licensed under the MIT License */'
-  FilterType = "Simple" # "Comment" || "Simple"
+  LICENSE = '/*!Copyright(c) CommentCoreLibrary v' + pkg.version +
+    ' (//github.com/jabbany/CommentCoreLibrary) - Licensed under the MIT License */'
   # !! End of config area
 
   CSS = [
@@ -14,85 +15,98 @@ module.exports = (grunt) ->
     'src/css/fontalias.css'
   ]
 
-  SRC_CORE_CMP = [
-    'Comment'
-    'CommentSpaceAllocator'
-  ]
-
   SRC_CORE = [
     'src/Array.js'
-    'src/core/CommentSpaceAllocator.js'
-    'src/core/Comment.js'
-    'src/filter/' + FilterType + 'Filter.js'
-    'src/CommentCoreLibrary.js'
+    'src/core/js/CommentUtils.js'
+    'src/core/js/Comment.js'
+    'src/core/js/css-renderer/CssComment.js'
+    'src/core/js/CommentFactory.js'
+    'src/core/js/CommentSpaceAllocator.js'
+    'src/CommentManager.js'
   ]
 
-  SRC_SCRIPTING_KAGEROU =
-    display: 'src/scripting/api/Display/Display.ts'
-    runtime: 'src/scripting/api/Runtime/Runtime.ts'
-    player:  'src/scripting/api/Player/Player.ts'
-    utils:   'src/scripting/api/Utils/Utils.ts'
-    tween:   'src/scripting/api/Tween/Tween.ts'
+  SRC_MODULES =
+    'filter': ['src/filter/CommentFilter.js']
+    'provider': ['src/CommentProvider.js', 'src/Promises.js']
+    'format-bilibili': ['src/parsers/BilibiliFormat.js']
+    'format-acfun': ['src/parsers/AcfunFormat.js']
+    'format-common': ['src/parsers/CommonDanmakuFormat.js']
 
-  SRC_PARSER = [
-    'src/parsers/AcfunFormat.js'
-    'src/parsers/BilibiliFormat.js'
+  # Typescript targets
+  SRC_TS_CORE = [
+    'src/core/Comment.ts'
+    'src/core/css-renderer/CssComment.ts'
+    'src/core/CommentFactory.ts'
+    'src/core/CommentSpaceAllocator.ts'
+    'src/core/CommentUtils.ts'
   ]
 
-  # !! Below are compile settings
-  # Dynamically generate the core ts targets
-  CMP_CORE_TS = { }
-  CMP_CORE_NAME = [ ]
-  for target in SRC_CORE_CMP
-    CMP_CORE_NAME.push ("ts:" + target)
-    CMP_CORE_TS[target] =
-      src: ["src/core/" + target + ".ts"]
-      out: "src/core/" + target + ".js"
+  SRC_TS_SCRIPTING_KAGEROU =
+    'Display': ['src/scripting/api/Display/Display.ts']
+    'Runtime': ['src/scripting/api/Runtime/Runtime.ts']
+    'Player': ['src/scripting/api/Player/Player.ts']
+    'Utils': ['src/scripting/api/Utils/Utils.ts']
+    'Tween': ['src/scripting/api/Tween/Tween.ts']
+
+  # ==== Below this point is logic to generate compile configurations ====
+  # You probably do not need to edit anything below here
+
+  # Dynamically generate the target for all
+  CMP_ALL = []
+  CMP_ALL = CMP_ALL.concat SRC_CORE
+  for name, source of SRC_MODULES
+    CMP_ALL = CMP_ALL.concat source
+
+  # Generate the core ts targets
+  CMP_CORE_TS =
+    'core':
+      src: SRC_TS_CORE
+      outDir: 'src/core/js/'
+  CMP_CORE_NAME = ['ts:core']
 
   # Dynamically generate the kagerou ts targets
-  CMP_KAGEROU_TS = { }
-  CMP_KAGEROU_NAME = [ ]
-  for target,src of SRC_SCRIPTING_KAGEROU
-    CMP_KAGEROU_NAME.push ('ts:kagerou_engine_' + target)
-    CMP_KAGEROU_TS['kagerou_engine_' + target] =
+  CMP_KAGEROU_TS = {}
+  CMP_KAGEROU_NAME = []
+  for target, src of SRC_TS_SCRIPTING_KAGEROU
+    CMP_KAGEROU_NAME.push ('ts:kagerou_engine_' + target.toLowerCase())
+    CMP_KAGEROU_TS['kagerou_engine_' + target.toLowerCase()] =
       src: src
-      out: 'build/scripting/api/' + src.split('/').pop().split('.')[0] + '.js'
+      out: 'dist/scripting/api/' + target + '.js'
 
   # Append Typescript Tasks
-  ts_config = 
+  ts_config =
     options:
       target: 'es5'
+      sourceMap: false
   for key,value of CMP_CORE_TS
     ts_config[key] = value
   for key,value of CMP_KAGEROU_TS
     ts_config[key] = value
 
-  # Core concatenated with libraries
-  # Actual concat ordering does not/should not matter
-  SRC_CORELIB = SRC_CORE.concat(SRC_PARSER)
+  grunt.loadNpmTasks 'grunt-contrib-coffee'
+  grunt.loadNpmTasks 'grunt-contrib-jasmine'
 
-  grunt.loadNpmTasks('grunt-contrib-coffee')
-  grunt.loadNpmTasks('grunt-contrib-jasmine')
   grunt.initConfig(
     clean:
-      scripting: ['build/scripting']
-      build: ['build']
+      scripting: ['dist/scripting']
+      dist: ['dist']
 
     # Concat CSS and JS files
-    # core_only : builds CCL without parsers
-    # all       : builds CCL with everything
+    # dist_core : builds CCL with just the comment system
+    # dist_all : builds CCL with everything
+    # scripting_host : builds just the scripting host
     concat:
+      dist_core:
+        files:
+          'dist/css/style.css': CSS
+          'dist/CommentCoreLibrary.js': SRC_CORE
+      dist_all:
+        files:
+          'dist/css/style.css': CSS
+          'dist/CommentCoreLibrary.js': CMP_ALL
       scripting_host:
         files:
-          'build/scripting/Host.js': ['src/scripting/Host.js','src/scripting/Unpacker.js']
-      core_only:
-        files:
-          'build/style.css':       CSS
-          'build/CommentCore.js':  SRC_CORE
-      all:
-        files:
-          'build/style.css':             CSS
-          'build/CommentCoreLibrary.js': SRC_CORELIB
+          'dist/scripting/Host.js': ['src/scripting/Host.js','src/scripting/Unpacker.js']
 
     # Compile TypeScript
     ts: ts_config
@@ -101,43 +115,42 @@ module.exports = (grunt) ->
     copy:
       scripting_sandbox:
         files:[
-          {expand: true, cwd:'src/scripting/api/', src: ['*.js'],  dest:'build/scripting/api/'},
-          {expand: true, cwd:'src/scripting/', src: ['OOAPI.js','Worker.js'],  dest:'build/scripting/'}
+          {expand: true, cwd:'src/scripting/api/', src: ['*.js'],  dest:'dist/scripting/api/'},
+          {expand: true, cwd:'src/scripting/', src: ['OOAPI.js','Worker.js'],  dest:'dist/scripting/'}
         ]
 
     # Auto-prefix CSS properties using Can I Use?
     autoprefixer:
       options:
         browsers: ['last 3 versions', 'bb 10', 'android 3']
-
       no_dest:
         # File to output
-        src: 'build/style.css'
+        src: 'dist/css/style.css'
 
     # Minify CSS
     cssmin:
       minify:
-        src: ['build/style.css']
-        dest: 'build/style.min.css'
+        src: ['dist/css/style.css']
+        dest: 'dist/css/style.min.css'
 
+    # Minify JS
     uglify:
-      options: banner: License
-      core_only:
-        files:
-          'build/CommentCore.min.js': SRC_CORE
+      options:
+        banner: LICENSE
       all:
         files:
-          'build/CommentCoreLibrary.min.js': SRC_CORELIB
+          'dist/CommentCoreLibrary.min.js': ['dist/CommentCoreLibrary.js']
 
     # Watch files for changes
-    #
     watch:
-      all:
-        files: ['src/**/*', '!node_modules']
-
-        # Run concat, autoprefixer, cssmin and uglify
+      scripting:
+        files: ['src/scripting/**/*', '!node_modules']
+        tasks: ['build:scripting']
+      core:
+        files: ['src/**/*', '!node_modules', '!src/scripting/**/*']
         tasks: ['build']
 
+    # JSHint
     jshint:
       options:
         curly:   true,
@@ -157,7 +170,6 @@ module.exports = (grunt) ->
         src: ['src/*.js']
 
     # Jasmine test
-
     jasmine:
       coverage:
         src: 'src/**/*.js'
@@ -169,13 +181,14 @@ module.exports = (grunt) ->
             'node_modules/jasmine-jquery/lib/jasmine-jquery.js'
             'node_modules/sinon/pkg/sinon.js'
             'node_modules/jasmine-sinon/lib/jasmine-sinon.js'
+            'node_modules/promise-polyfill/promise.js' # TODO: remove when phantomjs supports promises
           ]
           template: require('grunt-template-jasmine-istanbul')
           templateOptions:
             report: 'coverage'
             coverage: 'coverage/coverage.json'
       ci:
-        src: 'build/CommentCoreLibrary.js'
+        src: 'dist/CommentCoreLibrary.js'
         options:
           specs: 'compiled_spec/*spec.js'
           helpers: 'spec/*helper.js'
@@ -184,6 +197,7 @@ module.exports = (grunt) ->
             'node_modules/jasmine-jquery/lib/jasmine-jquery.js'
             'node_modules/sinon/pkg/sinon.js'
             'node_modules/jasmine-sinon/lib/jasmine-sinon.js'
+            'node_modules/promise-polyfill/promise.js' # TODO: remove when phantomjs supports promises
           ]
           template: require('grunt-template-jasmine-istanbul')
           templateOptions:
@@ -202,14 +216,14 @@ module.exports = (grunt) ->
   )
 
   # Register special compiles
-  grunt.registerTask 'compile-ts-kagerou', CMP_KAGEROU_NAME
-  grunt.registerTask 'compile-ts-core', CMP_CORE_NAME
+  grunt.registerTask 'compile:ts-core', CMP_CORE_NAME
+  grunt.registerTask 'compile:ts-kagerou', CMP_KAGEROU_NAME
 
   # Register our tasks
   grunt.registerTask 'test', ['coffee', 'jasmine:coverage']
-  grunt.registerTask 'build-scripting', ['clean:scripting','concat:scripting_host', 'compile-ts-kagerou', 'copy:scripting_sandbox']
-  grunt.registerTask 'build-core', ['compile-ts-core', 'concat:core_only', 'autoprefixer', 'cssmin', 'uglify:core_only']
-  grunt.registerTask 'build', ['compile-ts-core', 'concat:all', 'autoprefixer', 'cssmin', 'uglify:all']
+  grunt.registerTask 'build', ['compile:ts-core', 'concat:dist_all', 'autoprefixer', 'cssmin', 'uglify:all']
+  grunt.registerTask 'build:core', ['compile:ts-core', 'concat:dist_core', 'autoprefixer', 'cssmin', 'uglify:core']
+  grunt.registerTask 'build:scripting', ['clean:scripting','concat:scripting_host', 'compile:ts-kagerou', 'copy:scripting_sandbox']
   grunt.registerTask 'ci', ['build', 'coffee', 'jasmine:ci']
-  grunt.registerTask 'default', ['clean', 'build', 'build-scripting', 'watch']
 
+  grunt.registerTask 'default', ['clean', 'build', 'build:scripting', 'watch']

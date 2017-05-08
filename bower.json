@@ -1,8 +1,12 @@
 {
-  "name":    "comment-core-library",
-  "version": "0.9.3",
-  "main":    ["build/CommentCoreLibrary.js","build/style.css"],
-  "ignore":  [ 
+  "name": "comment-core-library",
+  "description": "Javascript library for organizing and displaying danmaku comments",
+  "license": "MIT",
+  "authors": [
+    "Jim Chen <knh.jabbany@gmail.com>"
+  ],
+  "main": ["dist/CommentCoreLibrary.js","dist/style.css"],
+  "ignore": [ 
   	"test/**/*",
   	"experimental/**/*",
   	"demo/**/*"
