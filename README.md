@@ -16,7 +16,7 @@ inside their own projects (whether web based or not) are encouraged to learn
 from and extend from the CommentCoreLibrary.
 
 ## Testing
-We have a live demo [here](http://jabbany.github.com/CommentCoreLibrary/demo).
+We have a live demo [here](http://jabbany.github.io/CommentCoreLibrary/demo).
 Feel free to [open tickets](CONTRIBUTING.md) if this demo test has bugs.
 
 ## License
@@ -66,7 +66,7 @@ implementation of a video player with CommentCoreLibrary.
 高级弹幕效果 (5) 基础格式解析 (6) 代码弹幕支持。
 
 ## 测试
-你可以在[这里](http://jabbany.github.com/CommentCoreLibrary/demo) 访问到测试页面。
+你可以在[这里](http://jabbany.github.io/CommentCoreLibrary/demo) 访问到测试页面。
 我们欢迎各种[BUG报告](CONTRIBUTING.md)。
 
 ## 许可
