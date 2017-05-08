@@ -51,7 +51,7 @@ Adds a static provider (see above for examples) and bind it to provide the
 specified type. 添加一个静态弹幕源。
 
 ### addDynamicSource(source:DynamicSource, type:String):this
-Adds a dynamic provider and bind it. 添加并绑定一个动太源。
+Adds a dynamic provider and bind it. 添加并绑定一个动态源。
 
 ### addTarget(commentManager:CommentManager):this
 Adds a target to broadcast comment load data to. This allows hooking multiple 
@@ -105,7 +105,7 @@ EventDispatcher:
     provider.addStaticSource(CommentProvider.XMLProvider('GET', 'http://localhost/danmaku.xml'), CommentProvider.SOURCE_XML)
 
     // 添加一个解析器
-    provider.addParser(BilibiliFormat.XML_PARSER(), CommentProvider.SOURCE_XML);
+    provider.addParser(new BilibiliFormat.XMLParser(), CommentProvider.SOURCE_XML);
     
     // 添加一个目标 (CommentManager)
     var cm = new CommentManager($('my-comment-container'));
@@ -113,7 +113,7 @@ EventDispatcher:
     
     // 加载弹幕并启动 cm
     cm.init();
-    provider.load.then(function () {
+    provider.load().then(function () {
         cm.start();
     }).catch(function (e) {
         alert('载入弹幕出错了！' + e);
@@ -126,8 +126,8 @@ EventDispatcher:
     provider.addStaticSource(CommentProvider.XMLProvider('GET', 'http://localhost/danmaku.xml'), CommentProvider.SOURCE_XML);
     provider.addStaticSource(CommentProvider.TextProvider('GET', 'http://localhost/backup-danmaku.txt'), CommentProvider.SOURCE_TEXT);
     
-    provider.addParser(BilibiliFormat.XML_PARSER(), CommentProvider.SOURCE_XML);
-    provider.addParser(BilibiliFormat.TEXT_PARSER(), CommentProvider.SOURCE_TEXT);
+    provider.addParser(new BilibiliFormat.XMLParser(), CommentProvider.SOURCE_XML);
+    provider.addParser(new BilibiliFormat.TextParser(), CommentProvider.SOURCE_TEXT);
     
 ### 多格式自动回退解析
 
@@ -135,8 +135,8 @@ EventDispatcher:
     
     provider.addStaticSource(CommentProvider.XMLProvider('GET', 'http://localhost/danmaku.xml'), CommentProvider.SOURCE_XML);
     
-    provider.addParser(SomeFormat.XML_PARSER(), CommentProvider.SOURCE_XML);
-    provider.addParser(SomeOtherFormat.XML_PARSER(), CommentProvider.SOURCE_XML);
+    provider.addParser(new SomeFormat.XMLParser(), CommentProvider.SOURCE_XML);
+    provider.addParser(new SomeOtherFormat.XMLParser(), CommentProvider.SOURCE_XML);
     
 ### 实时弹幕
 
@@ -145,6 +145,6 @@ EventDispatcher:
     // 绑定动态源，动态源可以是两种：LongPoll 或者 EventDispatcher
     provider.addDynamicSource(source, CommentProvider.SOURCE_JSON);
     // 会使用 parseOne 来逐个解析动态弹幕
-    provider.addParser(SomeFormat.JSON_PARSER(), CommentProvider.SOURCE_JSON);
+    provider.addParser(new SomeFormat.JSONParser(), CommentProvider.SOURCE_JSON);
 
     provider.addTarget(cm);
