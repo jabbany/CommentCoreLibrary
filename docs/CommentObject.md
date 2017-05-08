@@ -12,6 +12,7 @@
 ## Properties 属性
 
 ### LINEAR &lt;Func&gt; [静态]
+Static function that represents linear interpolation
 LINEAR 为线形拟合函数，提供用于默认补间动画的拟合。
 
 ### mode &lt;Num&gt; = 1
@@ -41,21 +42,48 @@ Is Movable: 弹幕是否可以移动。此处为 `False` 时，弹幕的 time �
 弹幕。这样弹幕将无动画效果（不管 motion 或者 update 函数的实现）。但是更改 `x,y` 坐标还是可以
 重新定位弹幕的。
 
-### align &lt;Num&gt; = 0
-Alignment: 对齐锚点（方形四角）。此数的高位表示上下，低位表示左右。
+### axis &lt;Num&gt; = 0
+Axis Direction: 座标轴增长方向。此数高位表示y轴，低位表示x轴。
 
-      Byte  |  Number  |  Alignment
-    -----------------------------------------
-      0 0   |    0     |  Top Left (Default)
-    -----------------------------------------
-      0 1   |    1     |  Top Right
-    -----------------------------------------
-      1 0   |    2     |  Bottom Left
-    -----------------------------------------
-      1 1   |    3     |  Bottom Right
+      Byte  |  Number  |  Axis
+    --------------------------------------------
+      0 0   |    0     |  x -> right, y -> down
+    --------------------------------------------
+      0 1   |    1     |  x -> left, y -> down
+    --------------------------------------------
+      1 0   |    2     |  x -> right, y -> up
+    --------------------------------------------
+      1 1   |    3     |  x -> left, y -> up
+  
+设定后x,y座标轴的零点方向将改变。
+
+### align &lt;Num&gt; = 0
+Alignment: 对齐锚点（方形四角）。此数的高位表示上下，低位表示左右。如果大于 4 则启动中对齐模式。
+
+        Byte  |  Number  |  Alignment
+    ------------------------------------------
+         0 0  |    0     |  Top Left (Default)
+    ------------------------------------------
+         0 1  |    1     |  Top Right
+    ------------------------------------------
+         1 0  |    2     |  Bottom Left
+    ------------------------------------------
+         1 1  |    3     |  Bottom Right
+    ------------------------------------------
+       1 0 0  |    4     |  Top Center
+    ------------------------------------------
+       1 0 1  |    5     |  Center Right
+    ------------------------------------------
+       1 1 0  |    6     |  Bottom Center
+    ------------------------------------------
+       1 1 1  |    7     |  Center Left
+    ------------------------------------------
+     1 0 0 0  |    8     |  Center Center
 
 设定后x,y坐标的锚点将变成对应的方形角。不过，在右和下的对齐时，读取 x,y 坐标不一定准确，而且因为
 效率低所以不推荐。比如 top right 模式下，读 x 坐标效率比较低，但是读 y 就要好很多。
+
+注意：`>=4`的模式未必在所有状态下都支持！
 
 ### absolute &lt;Bool&gt; =  true
 Absolute Coordinates: 是否使用绝对坐标。当 `absolute === false` 时，x,y坐标将会表示相对
@@ -63,9 +91,12 @@ Absolute Coordinates: 是否使用绝对坐标。当 `absolute === false` 时，
 
 注意：width, height 总会以绝对坐标返回，所以如果需要叠加则必须手动转换到相对坐标。
 
-### width/height/bottom/right &lt;Num&gt;
-Bounding Box: 定义弹幕的宽高和下部右部位置，前两个定义了 top left 顶点，后两个定义了bottom 
-right顶点。
+### x/y/bottom/right &lt;Num&gt;
+Bounding Box: 定义弹幕的四角位置，前两个定义了 top left 顶点，后两个定义了bottom right
+顶点。注意：只有 x/y 是主参数，bottom/right 是计算出的属性。
+
+### width/height &lt;Num&gt;
+Bounding Box: 定义了弹幕的“宽高”。注意：width/height是主参数，用于计算 bottom/right。
 
 ### size &lt;Num&gt; = 25
 Font Size: 弹幕的文字大小，请参考 [弹幕大小 Comment Sizes](CommentSizes.md)。更改会更新视图。
@@ -113,6 +144,9 @@ DOM Correspondance: 对应的渲染元素，根据不同情况是不一样的。
 
 ### finish()
 通知 parent 弹幕已经完结。
+
+### stop()
+当 parent 的 stop（暂停）被调用时，所有运行中的弹幕的停止方法也会被调用。这样可以优化如CSS和SVG引擎下的弹幕处理。
 
 ### toString():String
 返回弹幕调试信息。

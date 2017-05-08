@@ -1,10 +1,10 @@
-CCLNative CCL原生弹幕格式 JSON
-===================
+# CCLNative CCL原生弹幕格式 JSON
+
 CCLNative 是一套原生于 CCL的弹幕格式，用于配合 WordPress插件等现代化的HTML5弹幕插件。设计的
 主要思想是方便 JS 读取和未来的可扩展性。
 
-根结构
--------------------
+## 根结构
+
 标注 [OPT] 的字段为可选字段
 
     {
@@ -39,7 +39,7 @@ CCLNative 是一套原生于 CCL的弹幕格式，用于配合 WordPress插件�
 5. `timeline` - Danmaku Object timeline	
     时间轴。包含精华。
    
-timeline结构
-----------------
+## timeline结构
+
 timeline里的弹幕对象没有时序保证，一些实现可能会把最大的弹幕放在前面来保证加载，也有实现可能会把
 大的弹幕放在后方，而先行加载大量小型弹幕。

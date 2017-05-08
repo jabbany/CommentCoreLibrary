@@ -1,117 +1,168 @@
 /** 
- * Comment Filters Module
+ * Comment Filters Module Simplified
  * @license MIT
  * @author Jim Chen
  */
-function CommentFilter(){
-	this.rulebook = {"all":[]};
-	this.modifiers = [];
-	this.runtime = null;
-	this.allowTypes = {
-		"1":true,
-		"4":true,
-		"5":true,
-		"6":true,
-		"7":true,
-		"8":true,
-		"17":true
-	};
-	this.doModify = function(cmt){
-		for(var k=0;k<this.modifiers.length;k++){
-			cmt = this.modifiers[k](cmt);
-		}
-		return cmt;
-	};
-	this.isMatchRule = function(cmtData,rule){
-		switch(rule['operator']){
-			case '==':if(cmtData[rule['subject']] == rule['value']){return false;};break;
-			case '>':if(cmtData[rule['subject']] > rule['value']){return false;};break;
-			case '<':if(cmtData[rule['subject']] < rule['value']){return false;};break;
-			case 'range':if(cmtData[rule['subject']] > rule.value.min && cmtData[rule['subject']] < rule.value.max){return false;};break;
-			case '!=':if(cmtData[rule['subject']] != rule.value){return false;}break;
-			case '~':if(new RegExp(rule.value).test(cmtData[rule[subject]])){return false;}break;
-			case '!~':if(!(new RegExp(rule.value).test(cmtData[rule[subject]]))){return false;}break;
-		}
-		return true;
-	};
-	this.beforeSend = function(cmt){
-		//Check with the rules upon size
-		var cmtMode = cmt.data.mode;
-		if(this.rulebook[cmtMode]!=null){
-			for(var i=0;i<this.rulebook[cmtMode].length;i++){
-				if(this.rulebook[cmtMode][i].subject == 'width' || this.rulebook[cmtMode][i].subject == 'height'){
-					if(this.rulebook[cmtMode][i].subject == 'width'){
-						switch(this.rulebook[cmtMode][i].operator){
-							case '>':if(this.rulebook[cmtMode][i].value < cmt.offsetWidth)return false;break;
-							case '<':if(this.rulebook[cmtMode][i].value > cmt.offsetWidth)return false;break;
-							case 'range':if(this.rulebook[cmtMode][i].value.max > cmt.offsetWidth && this.rulebook[cmtMode][i].min < cmt.offsetWidth)return false;break;
-							case '==':if(this.rulebook[cmtMode][i].value == cmt.offsetWidth)return false;break;
-							default:break;
-						}
-					}else{
-						switch(this.rulebook[cmtMode][i].operator){
-							case '>':if(this.rulebook[cmtMode][i].value < cmt.offsetHeight)return false;break;
-							case '<':if(this.rulebook[cmtMode][i].value > cmt.offsetHeight)return false;break;
-							case 'range':if(this.rulebook[cmtMode][i].value.max > cmt.offsetHeight && this.rulebook[cmtMode][i].min < cmt.offsetHeight)return false;break;
-							case '==':if(this.rulebook[cmtMode][i].value == cmt.offsetHeight)return false;break;
-							default:break;
-						}
-					}
-				}
-			}
-			return true;
-		}else{return true;}
-	}
-	this.doValidate = function(cmtData){
-		if(!this.allowTypes[cmtData.mode])
-			return false;
-		/** Create abstract cmt data **/
-		var abstCmtData = {
-			text:cmtData.text,
-			mode:cmtData.mode,
-			color:cmtData.color,
-			size:cmtData.size,
-			stime:cmtData.stime,
-			hash:cmtData.hash,
-		};
-		if(this.rulebook[cmtData.mode] != null && this.rulebook[cmtData.mode].length > 0){
-			for(var i=0;i<this.rulebook[cmtData.mode];i++){
-				if(!this.isMatchRule(abstCmtData,this.rulebook[cmtData.mode][i]))
-					return false;
-			}
-		}
-		for(var i=0;i<this.rulebook[cmtData.mode];i++){
-			if(!this.isMatchRule(abstCmtData,this.rulebook[cmtData.mode][i]))
-				return false;
-		}
-		return true;
-	};
-	this.addRule = function(rule){
-		if(this.rulebook[rule.mode + ""] == null)
-			this.rulebook[rule.mode + ""] = [];
-		/** Normalize Operators **/
-		switch(rule.operator){
-			case 'eq':
-			case 'equals':
-			case '=':rule.operator='==';break;
-			case 'ineq':rule.operator='!=';break;
-			case 'regex':
-			case 'matches':rule.operator='~';break;
-			case 'notmatch':
-			case 'iregex':rule.operator='!~';break;
-		}
-		this.rulebook[rule.mode].push(rule);
-		return (this.rulebook[rule.mode].length - 1);
-	};
-	this.addModifier = function(f){
-		this.modifiers.push(f);
-	};
-	this.runtimeFilter = function(cmt){
-		if(this.runtime == null)
-			return cmt;
-		return this.runtime(cmt);
-	};
-	this.setRuntimeFilter = function(f){
-		this.runtime = f;
-	}
-}
+var CommentFilter = (function () {
+
+    /**
+     * Matches a rule against an input that could be the full or a subset of 
+     * the comment data.
+     *
+     * @param rule - rule object to match
+     * @param cmtData - full or portion of comment data
+     * @return boolean indicator of match
+     */
+    function _match (rule, cmtData) {
+        var path = rule.subject.split('.');
+        var extracted = cmtData;
+        while (path.length > 0) {
+            var item = path.shift();
+            if (item === '') {
+                continue;
+            }
+            if (extracted.hasOwnProperty(item)) {
+                extracted = extracted[item];
+            }
+            if (extracted === null || typeof extracted === 'undefined') {
+                extracted = null;
+                break;
+            }
+        }
+        if (extracted === null) {
+            // Null precondition implies anything
+            return true;
+        }
+        switch (rule.op) {
+            case '<':
+                return extracted < rule.value;
+            case '>':
+                return extracted > rule.value;
+            case '~':
+            case 'regexp':
+                return (new RegExp(rule.value)).test(extracted.toString());
+            case '=':
+            case 'eq':
+                return rule.value ===
+                    ((typeof extracted === 'number') ? 
+                        extracted : extracted.toString());
+            case 'NOT':
+                return !_match(rule.value, extracted);
+            case 'AND':
+                if (Array.isArray(rule.value)) {
+                    return rule.value.every(function (r) {
+                        return _match(r, extracted);
+                    });
+                } else {
+                    return false;
+                }
+            case 'OR':
+                if (Array.isArray(rule.value)) {
+                    return rule.value.some(function (r) {
+                        return _match(r, extracted);
+                    });
+                } else {
+                    return false;
+                }
+            default:
+                return false;
+        }
+    }
+
+    /**
+     * Constructor for CommentFilter
+     * @constructor
+     */
+    function CommentFilter() {
+        this.rules = [];
+        this.modifiers = [];
+        this.allowUnknownTypes = true;
+        this.allowTypes = {
+            '1': true,
+            '2': true,
+            '4': true,
+            '5': true,
+            '6': true,
+            '7': true,
+            '8': true,
+            '17': true
+        };
+    }
+
+    /**
+     * Runs all modifiers against current comment
+     *
+     * @param cmt - comment to run modifiers on
+     * @return modified comment
+     */
+    CommentFilter.prototype.doModify = function (cmt) {
+        return this.modifiers.reduce(function (c, f) {
+            return f(c);
+        }, cmt);
+    };
+
+    /**
+     * Executes a method defined to be executed right before the comment object
+     * (built from commentData) is placed onto the runline.
+     *
+     * @deprecated
+     * @param cmt - comment data
+     * @return cmt
+     */
+    CommentFilter.prototype.beforeSend = function (cmt) {
+        return cmt;
+    };
+
+    /**
+     * Performs validation of the comment data before it is allowed to get sent
+     * by applying type constraints and rules
+     *
+     * @param cmtData - comment data
+     * @return boolean indicator of whether this commentData should be shown
+     */
+    CommentFilter.prototype.doValidate = function (cmtData) {
+        if ((!this.allowUnknownTypes || 
+                cmtData.mode.toString() in this.allowTypes) &&
+            !this.allowTypes[cmtData.mode.toString()]) {
+            return false;
+        }
+        return this.rules.every(function (rule) {
+            // Decide if matched
+            try {
+              var matched = _match(rule, cmtData);
+            } catch (e) {
+              var matched = false;
+            }
+            return rule.mode === 'accept' ? matched : !matched;
+        });
+    };
+
+    /**
+     * Adds a rule for use with validation
+     *
+     * @param rule - object containing rule definitions
+     * @throws Exception when rule mode is incorrect
+     */
+    CommentFilter.prototype.addRule = function (rule) {
+        if (rule.mode !== 'accept' && rule.mode !== 'reject') {
+            throw new Error('Rule must be of accept type or reject type.');
+        }
+        this.rules.push(rule);
+    };
+
+    /**
+     * Adds a modifier to be used
+     *
+     * @param modifier - modifier function that takes in comment data and
+     *                   returns modified comment data
+     * @throws Exception when modifier is not a function
+     */
+    CommentFilter.prototype.addModifier = function (f) {
+        if (typeof f !== 'function') {
+            throw new Error('Modifiers need to be functions.');
+        }
+        this.modifiers.push(f);
+    };
+
+    return CommentFilter;
+})();
