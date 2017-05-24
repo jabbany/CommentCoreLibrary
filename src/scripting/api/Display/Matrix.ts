@@ -1,4 +1,5 @@
 /// <reference path="../OOAPI.d.ts" />
+/// <reference path="ISerializable.ts" />
 
 module Display {
   /**

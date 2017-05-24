@@ -5,14 +5,16 @@
  * @license MIT License
  * @description Comment space allocation units for static and movable comments
  */
-/// <reference path="Core.d.ts" />
-interface ISpaceAllocator {
+import { IComment } from "./IComment.d";
+import { BinArray } from "./lib/BinArray";
+
+export interface ISpaceAllocator {
   add(c:IComment):void;
   remove(c:IComment):void;
   setBounds(w:number, h:number):void;
 }
 
-class CommentSpaceAllocator implements ISpaceAllocator {
+export class CommentSpaceAllocator implements ISpaceAllocator {
   public _width:number;
   public _height:number;
   private _pools:Array<Array<IComment>> = [
@@ -169,7 +171,7 @@ class CommentSpaceAllocator implements ISpaceAllocator {
   }
 }
 
-class AnchorCommentSpaceAllocator extends CommentSpaceAllocator {
+export class AnchorCommentSpaceAllocator extends CommentSpaceAllocator {
   public add(comment:IComment):void {
     super.add(comment);
     comment.x = (this._width - comment.width) / 2;

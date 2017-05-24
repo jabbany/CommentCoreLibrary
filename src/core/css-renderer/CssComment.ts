@@ -5,30 +5,29 @@
  * @license MIT License
  * @description Comment abstraction based on CSS3 implementation
  */
-/// <reference path="../Comment.ts" />
+import { ScrollComment } from "../Comment";
+
 class CssCompatLayer {
   public static transform(dom:HTMLDivElement, trans:string):void{
     dom.style.transform = trans;
-    dom.style["webkitTransform"] = trans;
-    dom.style["msTransform"] = trans;
-    dom.style["oTransform"] = trans;
+    dom.style.webkitTransform = trans;
   }
 }
 
 /**
  * An add-in class to support CSS-based scrolling comments
  */
-class CssScrollComment extends ScrollComment {
+export class CssScrollComment extends ScrollComment {
   // Marker for whether we need to re-create the CSS or not
   private _dirtyCSS:boolean = true;
 
   set x(x:number) {
-    if (this._x !== null && typeof this._x === "number") {
+    if (this._x !== null && typeof this._x === 'number') {
       // This is run when starting
       var dx:number = x - this._x;
       this._x = x;
-      CssCompatLayer.transform(this.dom, "translateX(" +
-        (this.axis % 2 === 0 ? dx : -dx) + "px)");
+      CssCompatLayer.transform(this.dom, 'translateX(' +
+        (this.axis % 2 === 0 ? dx : -dx) + 'px)');
     } else {
       // This is run when stopping
       this._x = x;
@@ -56,7 +55,7 @@ class CssScrollComment extends ScrollComment {
   public update():void{
     if (this._dirtyCSS) {
       // Start moving
-      this.dom.style.transition = "transform " + this.ttl + "ms linear";
+      this.dom.style.transition = 'transform ' + this.ttl + 'ms linear';
       this.x = - this.width;
       this._dirtyCSS = false;
     }

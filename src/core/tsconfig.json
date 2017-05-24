@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "module": "umd",
+    "target": "es5",
+    "noImplicitAny": true,
+    "removeComments": false,
+    "preserveConstEnums": true,
+    "sourceMap": false,
+    "outDir": "../../dist/core/"
+  },
+  "files": [
+    "IComment.d.ts",
+    "ICommentManager.d.ts",
+    "IScriptingEngine.d.ts",
+    "lib/BinArray.ts",
+    "lib/CommentUtils.ts",
+    "lib/TimeKeeper.ts",
+    "Comment.ts",
+    "CommentFactory.ts",
+    "CommentManager.ts",
+    "CommentSpaceAllocator.ts",
+    "css-renderer/CssComment.ts",
+    "canvas-renderer/CanvasComment.ts"
+  ]
+}

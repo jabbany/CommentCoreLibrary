@@ -5,9 +5,12 @@
  * @license MIT License
  * @description Comment abstraction based on DOM implementation
  */
-/// <reference path="Core.d.ts" />
-/// <reference path="CommentUtils.ts" />
-class CoreComment implements IComment {
+import { ICommentData, IComment, AlphaMotion, IMotion, MotionFrame } from "./IComment.d";
+import { ICommentManager } from "./ICommentManager.d";
+
+import { CommentUtils } from "./lib/CommentUtils";
+
+export class CoreComment implements IComment {
   public static LINEAR:Function = function (t:number, b:number, c:number, d:number):number {
     return t * c / d + b;
   };
@@ -19,13 +22,13 @@ class CoreComment implements IComment {
   public dur:number = 4000;
   public cindex:number = -1;
 
-  public motion:Array<Object> = [];
+  public motion:Array<MotionFrame> = [];
   public movable:boolean = true;
 
   private _curMotion:number;
   private _motionStart:Array<number>;
   private _motionEnd:Array<number>;
-  private _alphaMotion:Object = null;
+  private _alphaMotion:AlphaMotion = null;
 
   public _x:number;
   public _y:number;
@@ -59,22 +62,22 @@ class CoreComment implements IComment {
   public parent:ICommentManager;
   public dom:HTMLDivElement;
 
-  constructor(parent:ICommentManager, init:Object = {}) {
+  constructor(parent:ICommentManager, init:ICommentData = {}) {
     if (!parent) {
-      throw new Error("Comment not bound to comment manager.");
+      throw new Error('Comment not bound to comment manager.');
     } else {
       this.parent = parent;
     }
-    if (init.hasOwnProperty("stime")) {
-      this.stime = init["stime"];
+    if (init.hasOwnProperty('stime')) {
+      this.stime = init.stime;
     }
-    if (init.hasOwnProperty("mode")) {
-      this.mode = init["mode"];
+    if (init.hasOwnProperty('mode')) {
+      this.mode = init.mode;
     } else {
       this.mode = 1;
     }
-    if (init.hasOwnProperty("dur")) {
-      this.dur = init["dur"];
+    if (init.hasOwnProperty('dur')) {
+      this.dur = init.dur;
       this.ttl = this.dur;
     }
     this.dur *= this.parent.options.global.scale;
@@ -85,16 +88,16 @@ class CoreComment implements IComment {
     if (init.hasOwnProperty("motion")) {
       this._motionStart = [];
       this._motionEnd = [];
-      this.motion = init["motion"];
+      this.motion = init.motion
       var head = 0;
-      for (var i = 0; i < init['motion'].length; i++) {
+      for (var i = 0; i < init.motion.length; i++) {
         this._motionStart.push(head);
         var maxDur = 0;
-        for (var k in init['motion'][i]) {
-          var m = <IMotion> init['motion'][i][k];
+        for (var k in init.motion[i]) {
+          var m = init.motion[i][k];
           maxDur = Math.max(m.dur, maxDur);
           if (m.easing === null || m.easing === undefined) {
-            init['motion'][i][k]['easing'] = CoreComment.LINEAR;
+            init.motion[i][k]['easing'] = CoreComment.LINEAR;
           }
         }
         head += maxDur;
@@ -103,43 +106,43 @@ class CoreComment implements IComment {
       this._curMotion = 0;
     }
     if (init.hasOwnProperty('color')) {
-      this._color = init['color'];
+      this._color = init.color;
     }
     if (init.hasOwnProperty('size')) {
-      this._size = init['size'];
+      this._size = init.size;
     }
-    if (init.hasOwnProperty("border")) {
-      this._border = init["border"];
+    if (init.hasOwnProperty('border')) {
+      this._border = init.border;
     }
-    if (init.hasOwnProperty("opacity")) {
-      this._alpha = init["opacity"];
+    if (init.hasOwnProperty('opacity')) {
+      this._alpha = init.opacity;
     }
-    if (init.hasOwnProperty("alpha")) {
-      this._alphaMotion = init["alpha"];
+    if (init.hasOwnProperty('alpha')) {
+      this._alphaMotion = init.alpha;
     }
-    if (init.hasOwnProperty("font")) {
-      this._font = init["font"];
+    if (init.hasOwnProperty('font')) {
+      this._font = init.font;
     }
-    if (init.hasOwnProperty("x")) {
-      this._x = init["x"];
+    if (init.hasOwnProperty('x')) {
+      this._x = init.x;
     }
-    if (init.hasOwnProperty("y")) {
-      this._y = init["y"];
+    if (init.hasOwnProperty('y')) {
+      this._y = init.y;
     }
-    if (init.hasOwnProperty("shadow")) {
-      this._shadow = init["shadow"];
+    if (init.hasOwnProperty('shadow')) {
+      this._shadow = init.shadow;
     }
-    if (init.hasOwnProperty("align")) {
-      this.align = init["align"];
+    if (init.hasOwnProperty('align')) {
+      this.align = init.align;
     }
     if (init.hasOwnProperty('axis')) {
-      this.axis = init['axis'];
+      this.axis = init.axis;
     }
     if (init.hasOwnProperty('transform')) {
-      this._transform = new CommentUtils.Matrix3D(init['transform']);
+      this._transform = new CommentUtils.Matrix3D(init.transform);
     }
     if (init.hasOwnProperty('position')) {
-      if (init['position'] === 'relative') {
+      if (init.position === 'relative') {
         this.absolute = false;
         if (this.mode < 7) {
           console.warn('Using relative position for CSA comment.');
@@ -151,6 +154,7 @@ class CoreComment implements IComment {
   /**
    * Initializes the DOM element (or canvas) backing the comment
    * This method takes the place of 'initCmt' in the old CCL
+   * @param {IComment} recycle - old comment that we want to use the DOM element
    */
   public init(recycle:IComment = null):void {
     if (recycle !== null) {
@@ -293,9 +297,11 @@ class CoreComment implements IComment {
       this._x *= this.parent.width;
     }
     if (this.axis % 2 === 0) {
-      this.dom.style.left = (this._x + (this.align % 2 === 0 ? 0 : -this.width)) + 'px';
+      this.dom.style.left =
+        (this._x + (this.align % 2 === 0 ? 0 : -this.width)) + 'px';
     } else {
-      this.dom.style.right = (this._x + (this.align % 2 === 0 ? -this.width : 0)) + 'px';
+      this.dom.style.right =
+        (this._x + (this.align % 2 === 0 ? -this.width : 0)) + 'px';
     }
   }
 
@@ -305,9 +311,11 @@ class CoreComment implements IComment {
       this._y *= this.parent.height;
     }
     if (this.axis < 2) {
-      this.dom.style.top = (this._y + (this.align < 2 ? 0 : -this.height)) + 'px';
+      this.dom.style.top =
+        (this._y + (this.align < 2 ? 0 : -this.height)) + 'px';
     } else {
-      this.dom.style.bottom = (this._y + (this.align < 2 ? -this.height : 0)) + 'px';
+      this.dom.style.bottom =
+        (this._y + (this.align < 2 ? -this.height : 0)) + 'px';
     }
   }
 
@@ -329,7 +337,8 @@ class CoreComment implements IComment {
   set color(c:number) {
     this._color = c;
     var color:string = c.toString(16);
-    color = color.length >= 6 ? color : new Array(6 - color.length + 1).join('0') + color;
+    color = color.length >= 6 ?
+      color : new Array(6 - color.length + 1).join('0') + color;
     this.dom.style.color = '#' + color;
     if (this._color === 0) {
       this.dom.className = this.parent.options.global.className + ' rshadow';
@@ -353,7 +362,7 @@ class CoreComment implements IComment {
   set shadow(s:boolean) {
     this._shadow = s;
     if (!this._shadow) {
-      this.dom.className = this.parent.options.global.className + " noshadow";
+      this.dom.className = this.parent.options.global.className + ' noshadow';
     }
   }
 
@@ -377,7 +386,8 @@ class CoreComment implements IComment {
    * Moves the comment by a number of milliseconds. When
    * the given parameter is greater than 0 the comment moves
    * forward. Otherwise it moves backwards.
-   * @param time - elapsed time in ms
+   * Note: Backwards motion is not always supported!
+   * @param {number} time - elapsed time in ms
    */
   public time(time:number):void {
     this.ttl -= time;
@@ -412,14 +422,19 @@ class CoreComment implements IComment {
 
   /**
    * Executes a motion object
-   * @param currentMotion - motion object
+   * @param {MotionFrame} currentMotion - motion object
    * @private
    */
-  private _execMotion(currentMotion:Object, time:number):void {
+  private _execMotion(currentMotion:MotionFrame, time:number):void {
     for (var prop in currentMotion) {
       if (currentMotion.hasOwnProperty(prop)) {
-        var m = <IMotion> currentMotion[prop];
-        this[prop] = m.easing(Math.min(Math.max(time - m.delay, 0), m.dur), m.from, m.to - m.from, m.dur);
+        var m:IMotion = currentMotion[prop];
+        // Explicitly forget the type of this to allow assigning to unknown properties
+        (<any>this)[prop] =
+          m.easing(Math.min(Math.max(time - m.delay, 0), m.dur),
+            m.from,
+            m.to - m.from,
+            m.dur);
       }
     }
   }
@@ -430,7 +445,9 @@ class CoreComment implements IComment {
    */
   public animate():void {
     if (this._alphaMotion) {
-      this.alpha = (this.dur - this.ttl) * (this._alphaMotion['to'] - this._alphaMotion['from']) / this.dur + this._alphaMotion['from'];
+      this.alpha = (this.dur - this.ttl) *
+        (this._alphaMotion['to'] - this._alphaMotion['from']) / this.dur +
+        this._alphaMotion['from'];
     }
     if (this.motion.length === 0) {
       return;
@@ -471,8 +488,8 @@ class CoreComment implements IComment {
   }
 }
 
-class ScrollComment extends CoreComment {
-  constructor(parent:ICommentManager, data:Object) {
+export class ScrollComment extends CoreComment {
+  constructor(parent:ICommentManager, data:ICommentData) {
     super(parent, data);
     this.dur *= this.parent.options.scroll.scale;
     this.ttl *= this.parent.options.scroll.scale;
@@ -480,7 +497,10 @@ class ScrollComment extends CoreComment {
 
   set alpha(a:number) {
     this._alpha = a;
-    this.dom.style.opacity = Math.min(Math.min(this._alpha, this.parent.options.global.opacity),
+    this.dom.style.opacity = Math.min(
+      Math.min(
+        this._alpha,
+        this.parent.options.global.opacity),
       this.parent.options.scroll.opacity) + '';
   }
 
@@ -494,6 +514,7 @@ class ScrollComment extends CoreComment {
   }
 
   public update():void {
-    this.x = (this.ttl / this.dur) * (this.parent.width + this.width) - this.width;
+    this.x = (this.ttl / this.dur) * (this.parent.width + this.width) -
+      this.width;
   }
 }

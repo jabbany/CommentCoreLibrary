@@ -4,10 +4,16 @@ module.exports = (grunt) ->
   }
   # Read package.json to make sure it's there
   pkg = grunt.file.readJSON('package.json')
+  
+  # Read tsconfigs for both the Kagerou Display Engine and the Core
+  coreTsconfig = grunt.file.readJSON('src/core/tsconfig.json');
+  kegerouTsconfig = {};
 
   # !! Compile configurations
+
   LICENSE = '/*!Copyright(c) CommentCoreLibrary v' + pkg.version +
     ' (//github.com/jabbany/CommentCoreLibrary) - Licensed under the MIT License */'
+
   # !! End of config area
 
   CSS = [
@@ -33,13 +39,7 @@ module.exports = (grunt) ->
     'format-common': ['src/parsers/CommonDanmakuFormat.js']
 
   # Typescript targets
-  SRC_TS_CORE = [
-    'src/core/Comment.ts'
-    'src/core/css-renderer/CssComment.ts'
-    'src/core/CommentFactory.ts'
-    'src/core/CommentSpaceAllocator.ts'
-    'src/core/CommentUtils.ts'
-  ]
+  SRC_TS_CORE = ('src/core/' + file for file in coreTsconfig.files)
 
   SRC_TS_SCRIPTING_KAGEROU =
     'Display': ['src/scripting/api/Display/Display.ts']
@@ -61,7 +61,7 @@ module.exports = (grunt) ->
   CMP_CORE_TS =
     'core':
       src: SRC_TS_CORE
-      outDir: 'src/core/js/'
+      outDir: 'dist/core/'
   CMP_CORE_NAME = ['ts:core']
 
   # Dynamically generate the kagerou ts targets

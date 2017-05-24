@@ -20,6 +20,11 @@
     "browser",
     "danmu"
   ],
+  "files": [
+    "LICENSE",
+    "README.md",
+    "dist/"
+  ],
   "main": "dist/CommentCoreLibrary.js",
   "version": "0.11.0",
   "devDependencies": {

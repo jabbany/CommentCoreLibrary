@@ -1,3 +1,4 @@
+"use strict";
 var CommentUtils;
 (function (CommentUtils) {
     var Matrix3D = (function () {
@@ -77,4 +78,4 @@ var CommentUtils;
         return Matrix3D;
     }());
     CommentUtils.Matrix3D = Matrix3D;
-})(CommentUtils || (CommentUtils = {}));
+})(CommentUtils = exports.CommentUtils || (exports.CommentUtils = {}));

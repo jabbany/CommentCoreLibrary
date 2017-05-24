@@ -5,4 +5,7 @@
  * @license MIT License
  * @description Comment abstraction based on SVG implementation
  */
-/// <reference path="../Comment.ts" />
+
+export class SvgComment {
+
+}

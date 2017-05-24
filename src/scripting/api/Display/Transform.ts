@@ -1,5 +1,5 @@
-///<reference path="Matrix.ts" />
 ///<reference path="ISerializable.ts" />
+///<reference path="Matrix.ts" />
 
 module Display {
 

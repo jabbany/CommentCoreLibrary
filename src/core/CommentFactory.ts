@@ -6,11 +6,18 @@
  * @description Factory to allow creation of different kinds of comments with
  *        different underlying abstractions.
  */
-/// <reference path="Core.d.ts" />
-/// <reference path="Comment.ts" />
-/// <reference path="css-renderer/CssComment.ts" />
+import { IComment, ICommentData } from "./IComment.d";
+import { ICommentManager } from "./ICommentManager.d";
 
-class CommentFactory implements ICommentFactory {
+import { CommentUtils } from "./lib/CommentUtils";
+import { CoreComment, ScrollComment } from "./Comment";
+import { CssScrollComment } from "./css-renderer/CssComment";
+
+export interface ICommentFactory {
+  create(manager:ICommentManager, comment:ICommentData):IComment;
+}
+
+export class CommentFactory implements ICommentFactory {
   private _bindings:{[key:number]:Function;} = {};
 
   private static _simpleCssScrollingInitializer (manager:ICommentManager, data:Object):IComment {
@@ -80,10 +87,10 @@ class CommentFactory implements ICommentFactory {
     return cmt;
   };
 
-  private static _advancedCoreInitializer (manager:ICommentManager, data:Object):IComment  {
+  private static _advancedCoreInitializer (manager:ICommentManager, data:ICommentData):IComment  {
     var cmt = new CoreComment(manager, data);
     cmt.init();
-    cmt.transform = CommentUtils.Matrix3D.createRotationMatrix(0, data['rY'], data['rZ']).flatArray;
+    cmt.transform = CommentUtils.Matrix3D.createRotationMatrix(data.rX, data.rY, data.rZ).flatArray;
     manager.stage.appendChild(cmt.dom);
     return cmt;
   }
@@ -124,18 +131,18 @@ class CommentFactory implements ICommentFactory {
     this._bindings[mode] = factory;
   }
 
-  public canCreate (comment:Object):boolean {
+  public canCreate (comment:ICommentData):boolean {
     // Tests if a certain binding is available
-    return this._bindings.hasOwnProperty(comment['mode']);
+    return this._bindings.hasOwnProperty(comment.mode.toString());
   }
 
-  public create (manager:ICommentManager, comment:Object):IComment {
+  public create (manager:ICommentManager, comment:ICommentData):IComment {
     if (comment === null || !comment.hasOwnProperty('mode')) {
       throw new Error('Comment format incorrect');
     }
-    if (!this._bindings.hasOwnProperty(comment['mode'])) {
-      throw new Error('No binding for comment type ' + comment['mode']);
+    if (!this._bindings.hasOwnProperty(comment.mode.toString())) {
+      throw new Error('No binding for comment type ' + comment.mode);
     }
-    return this._bindings[comment['mode']](manager, comment);
+    return this._bindings[comment.mode](manager, comment);
   }
 }

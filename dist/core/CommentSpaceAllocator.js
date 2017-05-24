@@ -1,8 +1,10 @@
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
+var BinArray_1 = require("./lib/BinArray");
 var CommentSpaceAllocator = (function () {
     function CommentSpaceAllocator(width, height) {
         if (width === void 0) { width = 0; }
@@ -71,7 +73,7 @@ var CommentSpaceAllocator = (function () {
         }
         else {
             comment.y = this.assign(comment, 0);
-            BinArray.binsert(this._pools[comment.cindex], comment, function (a, b) {
+            BinArray_1.BinArray.binsert(this._pools[comment.cindex], comment, function (a, b) {
                 if (a.bottom < b.bottom) {
                     return -1;
                 }
@@ -102,6 +104,7 @@ var CommentSpaceAllocator = (function () {
     };
     return CommentSpaceAllocator;
 }());
+exports.CommentSpaceAllocator = CommentSpaceAllocator;
 var AnchorCommentSpaceAllocator = (function (_super) {
     __extends(AnchorCommentSpaceAllocator, _super);
     function AnchorCommentSpaceAllocator() {
@@ -128,3 +131,4 @@ var AnchorCommentSpaceAllocator = (function (_super) {
     };
     return AnchorCommentSpaceAllocator;
 }(CommentSpaceAllocator));
+exports.AnchorCommentSpaceAllocator = AnchorCommentSpaceAllocator;

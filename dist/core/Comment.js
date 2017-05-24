@@ -1,8 +1,10 @@
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
+var CommentUtils_1 = require("./lib/CommentUtils");
 var CoreComment = (function () {
     function CoreComment(parent, init) {
         if (init === void 0) { init = {}; }
@@ -26,22 +28,22 @@ var CoreComment = (function () {
         this._font = "";
         this._transform = null;
         if (!parent) {
-            throw new Error("Comment not bound to comment manager.");
+            throw new Error('Comment not bound to comment manager.');
         }
         else {
             this.parent = parent;
         }
-        if (init.hasOwnProperty("stime")) {
-            this.stime = init["stime"];
+        if (init.hasOwnProperty('stime')) {
+            this.stime = init.stime;
         }
-        if (init.hasOwnProperty("mode")) {
-            this.mode = init["mode"];
+        if (init.hasOwnProperty('mode')) {
+            this.mode = init.mode;
         }
         else {
             this.mode = 1;
         }
-        if (init.hasOwnProperty("dur")) {
-            this.dur = init["dur"];
+        if (init.hasOwnProperty('dur')) {
+            this.dur = init.dur;
             this.ttl = this.dur;
         }
         this.dur *= this.parent.options.global.scale;
@@ -52,16 +54,16 @@ var CoreComment = (function () {
         if (init.hasOwnProperty("motion")) {
             this._motionStart = [];
             this._motionEnd = [];
-            this.motion = init["motion"];
+            this.motion = init.motion;
             var head = 0;
-            for (var i = 0; i < init['motion'].length; i++) {
+            for (var i = 0; i < init.motion.length; i++) {
                 this._motionStart.push(head);
                 var maxDur = 0;
-                for (var k in init['motion'][i]) {
-                    var m = init['motion'][i][k];
+                for (var k in init.motion[i]) {
+                    var m = init.motion[i][k];
                     maxDur = Math.max(m.dur, maxDur);
                     if (m.easing === null || m.easing === undefined) {
-                        init['motion'][i][k]['easing'] = CoreComment.LINEAR;
+                        init.motion[i][k]['easing'] = CoreComment.LINEAR;
                     }
                 }
                 head += maxDur;
@@ -70,43 +72,43 @@ var CoreComment = (function () {
             this._curMotion = 0;
         }
         if (init.hasOwnProperty('color')) {
-            this._color = init['color'];
+            this._color = init.color;
         }
         if (init.hasOwnProperty('size')) {
-            this._size = init['size'];
+            this._size = init.size;
         }
-        if (init.hasOwnProperty("border")) {
-            this._border = init["border"];
+        if (init.hasOwnProperty('border')) {
+            this._border = init.border;
         }
-        if (init.hasOwnProperty("opacity")) {
-            this._alpha = init["opacity"];
+        if (init.hasOwnProperty('opacity')) {
+            this._alpha = init.opacity;
         }
-        if (init.hasOwnProperty("alpha")) {
-            this._alphaMotion = init["alpha"];
+        if (init.hasOwnProperty('alpha')) {
+            this._alphaMotion = init.alpha;
         }
-        if (init.hasOwnProperty("font")) {
-            this._font = init["font"];
+        if (init.hasOwnProperty('font')) {
+            this._font = init.font;
         }
-        if (init.hasOwnProperty("x")) {
-            this._x = init["x"];
+        if (init.hasOwnProperty('x')) {
+            this._x = init.x;
         }
-        if (init.hasOwnProperty("y")) {
-            this._y = init["y"];
+        if (init.hasOwnProperty('y')) {
+            this._y = init.y;
         }
-        if (init.hasOwnProperty("shadow")) {
-            this._shadow = init["shadow"];
+        if (init.hasOwnProperty('shadow')) {
+            this._shadow = init.shadow;
         }
-        if (init.hasOwnProperty("align")) {
-            this.align = init["align"];
+        if (init.hasOwnProperty('align')) {
+            this.align = init.align;
         }
         if (init.hasOwnProperty('axis')) {
-            this.axis = init['axis'];
+            this.axis = init.axis;
         }
         if (init.hasOwnProperty('transform')) {
-            this._transform = new CommentUtils.Matrix3D(init['transform']);
+            this._transform = new CommentUtils_1.CommentUtils.Matrix3D(init.transform);
         }
         if (init.hasOwnProperty('position')) {
-            if (init['position'] === 'relative') {
+            if (init.position === 'relative') {
                 this.absolute = false;
                 if (this.mode < 7) {
                     console.warn('Using relative position for CSA comment.');
@@ -338,7 +340,7 @@ var CoreComment = (function () {
         set: function (s) {
             this._shadow = s;
             if (!this._shadow) {
-                this.dom.className = this.parent.options.global.className + " noshadow";
+                this.dom.className = this.parent.options.global.className + ' noshadow';
             }
         },
         enumerable: true,
@@ -365,7 +367,7 @@ var CoreComment = (function () {
             return this._transform.flatArray;
         },
         set: function (array) {
-            this._transform = new CommentUtils.Matrix3D(array);
+            this._transform = new CommentUtils_1.CommentUtils.Matrix3D(array);
             if (this.dom !== null) {
                 this.dom.style.transform = this._transform.toCss();
             }
@@ -398,7 +400,8 @@ var CoreComment = (function () {
         for (var prop in currentMotion) {
             if (currentMotion.hasOwnProperty(prop)) {
                 var m = currentMotion[prop];
-                this[prop] = m.easing(Math.min(Math.max(time - m.delay, 0), m.dur), m.from, m.to - m.from, m.dur);
+                this[prop] =
+                    m.easing(Math.min(Math.max(time - m.delay, 0), m.dur), m.from, m.to - m.from, m.dur);
             }
         }
     };
@@ -433,6 +436,7 @@ var CoreComment = (function () {
     };
     return CoreComment;
 }());
+exports.CoreComment = CoreComment;
 var ScrollComment = (function (_super) {
     __extends(ScrollComment, _super);
     function ScrollComment(parent, data) {
@@ -462,3 +466,4 @@ var ScrollComment = (function (_super) {
     };
     return ScrollComment;
 }(CoreComment));
+exports.ScrollComment = ScrollComment;

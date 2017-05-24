@@ -5,7 +5,7 @@
  * @license MIT License
  * @description Useful utility classes
  */
-module CommentUtils {
+export namespace CommentUtils {
   export class Matrix3D {
     private _internalArray:Array<number> = null;
 
