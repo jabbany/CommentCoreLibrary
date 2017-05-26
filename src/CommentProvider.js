@@ -48,8 +48,6 @@ var CommentProvider = (function () {
                 uri += argsArray.join('&');
             }
 
-            xhr.responseType = typeof responseType === "string" ? 
-                responseType : "";
             xhr.onload = function () {
                 if (this.status >= 200 && this.status < 300) {
                     resolve(this.response);
@@ -63,6 +61,13 @@ var CommentProvider = (function () {
             };
 
             xhr.open(method, uri);
+
+            // Change response type before open() will cause InvalidStateError in IE11.
+            // The error is documented here:
+            // https://connect.microsoft.com/IE/feedback/details/795580/ie11-xmlhttprequest-incorrectly-throws-invalidstateerror-when-setting-responsetype
+            xhr.responseType = typeof responseType === "string" ?
+                responseType : "";
+
             if (typeof body !== 'undefined') {
                 xhr.send(body);
             } else {
