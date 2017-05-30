@@ -52,7 +52,7 @@ var CommentManager = (function() {
         this.runline = [];
         this.position = 0;
         this.limiter = 0;
-        
+
         this.factory = null;
         this.filter = null;
         this.csa = {
@@ -190,7 +190,7 @@ var CommentManager = (function() {
     };
 
     CommentManager.prototype.rescale = function () {
-        
+        // TODO: Implement rescaling
     };
 
     CommentManager.prototype.send = function (data) {

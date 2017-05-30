@@ -23,13 +23,13 @@ var CommentProvider = (function () {
     /**
      * Provider for HTTP content. This returns a promise that resolves to TEXT.
      *
-     * @param method - HTTP method to use
-     * @param url - Base URL
-     * @param responseType - type of response expected.
-     * @param args - Arguments for query string. Note: This is only used when
+     * @param {string} method - HTTP method to use
+     * @param {string} url - Base URL
+     * @param {string} responseType - type of response expected.
+     * @param {Object} args - Arguments for query string. Note: This is only used when
      *               method is POST or PUT
-     * @param body - Text body content. If not provided will omit a body
-     * @return Promise that resolves or rejects based on the success or failure
+     * @param {any} body - Text body content. If not provided will omit a body
+     * @return {Promise} that resolves or rejects based on the success or failure
      *         of the request
      **/
     CommentProvider.BaseHttpProvider = function (method, url, responseType, args, body) {
@@ -41,7 +41,7 @@ var CommentProvider = (function () {
                 var argsArray = [];
                 for (var key in args) {
                     if (args.hasOwnProperty(key)) {
-                        argsArray.push(encodeURIComponent(key) + 
+                        argsArray.push(encodeURIComponent(key) +
                             '=' + encodeURIComponent(args[key]));
                     }
                 }
@@ -62,9 +62,7 @@ var CommentProvider = (function () {
 
             xhr.open(method, uri);
 
-            // Change response type before open() will cause InvalidStateError in IE11.
-            // The error is documented here:
-            // https://connect.microsoft.com/IE/feedback/details/795580/ie11-xmlhttprequest-incorrectly-throws-invalidstateerror-when-setting-responsetype
+            // Limit the response type based on input
             xhr.responseType = typeof responseType === "string" ?
                 responseType : "";
 
@@ -79,12 +77,12 @@ var CommentProvider = (function () {
     /**
      * Provider for JSON content. This returns a promise that resolves to JSON.
      *
-     * @param method - HTTP method to use
-     * @param url - Base URL
-     * @param args - Arguments for query string. Note: This is only used when
+     * @param {string} method - HTTP method to use
+     * @param {string} url - Base URL
+     * @param {Object} args - Arguments for query string. Note: This is only used when
      *               method is POST or PUT
-     * @param body - Text body content. If not provided will omit a body
-     * @return Promise that resolves or rejects based on the success or failure
+     * @param {any} body - Text body content. If not provided will omit a body
+     * @return {Promise} that resolves or rejects based on the success or failure
      *         of the request
      **/
     CommentProvider.JSONProvider = function (method, url, args, body) {
@@ -97,12 +95,12 @@ var CommentProvider = (function () {
     /**
      * Provider for XML content. This returns a promise that resolves to Document.
      *
-     * @param method - HTTP method to use
-     * @param url - Base URL
-     * @param args - Arguments for query string. Note: This is only used when
+     * @param {string} method - HTTP method to use
+     * @param {string} url - Base URL
+     * @param {Object} args - Arguments for query string. Note: This is only used when
      *               method is POST or PUT
-     * @param body - Text body content. If not provided will omit a body
-     * @return Promise that resolves or rejects based on the success or failure
+     * @param {any} body - Text body content. If not provided will omit a body
+     * @return {Promise} that resolves or rejects based on the success or failure
      *         of the request
      **/
     CommentProvider.XMLProvider = function (method, url, args, body) {
@@ -115,12 +113,12 @@ var CommentProvider = (function () {
     /**
      * Provider for text content. This returns a promise that resolves to Text.
      *
-     * @param method - HTTP method to use
-     * @param url - Base URL
-     * @param args - Arguments for query string. Note: This is only used when
+     * @param {string} method - HTTP method to use
+     * @param {string} url - Base URL
+     * @param {Object} args - Arguments for query string. Note: This is only used when
      *               method is POST or PUT
-     * @param body - Text body content. If not provided will omit a body
-     * @return Promise that resolves or rejects based on the success or failure
+     * @param {any} body - Text body content. If not provided will omit a body
+     * @return {Promise} that resolves or rejects based on the success or failure
      *         of the request
      **/
     CommentProvider.TextProvider = function (method, url, args, body) {
@@ -135,14 +133,14 @@ var CommentProvider = (function () {
      * NOTE: Multiple static sources will race to determine the initial comment
      *       list so it is imperative that they all parse to the SAME content.
      *
-     * @param source - Promise that resolves to one of the supported types
-     * @param type - Type that the provider resolves to
-     * @return this
+     * @param {Provider} source - Promise that resolves to one of the supported types
+     * @param {Type} type - Type that the provider resolves to
+     * @return {CommentProvider} this
      **/
     CommentProvider.prototype.addStaticSource = function (source, type) {
         if (this._destroyed) {
             throw new Error(
-                'Comment provider has been destroyed, ' + 
+                'Comment provider has been destroyed, ' +
                 'cannot attach more sources.');
         }
         if (!(type in this._staticSources)) {
@@ -156,14 +154,14 @@ var CommentProvider = (function () {
      * Attaches a dynamic source to the corresponding type
      * NOTE: Multiple dynamic sources will collectively provide comment data.
      *
-     * @param source - Listenable that resolves to one of the supported types
-     * @param type - Type that the provider resolves to
-     * @return this
+     * @param {DynamicProvider} source - Listenable that resolves to one of the supported types
+     * @param {Type} type - Type that the provider resolves to
+     * @return {CommentProvider} this
      **/
     CommentProvider.prototype.addDynamicSource = function (source, type) {
         if (this._destroyed) {
             throw new Error(
-                'Comment provider has been destroyed, ' + 
+                'Comment provider has been destroyed, ' +
                 'cannot attach more sources.');
         }
         if (!(type in this._dynamicSources)) {
@@ -176,8 +174,8 @@ var CommentProvider = (function () {
     /**
      * Attaches a target comment manager so that we can stream comments to it
      *
-     * @param commentManager - Comment Manager instance to attach to
-     * @return this
+     * @param {CommentManager} commentManager - Comment Manager instance to attach to
+     * @return {CommentProvider} this
      **/
     CommentProvider.prototype.addTarget = function (commentManager) {
         if (this._destroyed) {
@@ -197,14 +195,14 @@ var CommentProvider = (function () {
      * Adds a parser for an incoming data type. If multiple parsers are added,
      * parsers added later take precedence.
      *
-     * @param parser - Parser spec compliant parser
-     * @param type - Type that the provider resolves to
-     * @return this
+     * @param {CommentParser} parser - Parser spec compliant parser
+     * @param {Type} type - Type that the provider resolves to
+     * @return {CommentProvider} this
      **/
     CommentProvider.prototype.addParser = function (parser, type) {
         if (this._destroyed) {
             throw new Error(
-                'Comment provider has been destroyed, ' + 
+                'Comment provider has been destroyed, ' +
                 'cannot attach more parsers.');
         }
         if (!(type in this._parsers)) {
@@ -261,9 +259,9 @@ var CommentProvider = (function () {
     };
 
     /**
-     * Reloads static comments
+     * (Re)loads static comments
      *
-     * @return Promise that is resolved when the static sources have been
+     * @return {Promise} that is resolved when the static sources have been
      *         loaded
      */
     CommentProvider.prototype.load = function () {
@@ -293,7 +291,7 @@ var CommentProvider = (function () {
     /**
      * Commit the changes and boot up the provider
      *
-     * @return Promise that is resolved when all the static sources are loaded
+     * @return {Promise} that is resolved when all the static sources are loaded
      *         and all the dynamic sources are hooked up
      **/
     CommentProvider.prototype.start = function () {
