@@ -2,11 +2,9 @@
  * Scripting context used by the host end of KagerouEngine
  * @author Jim Chen
  */
+import { StageElement, IScriptingContext } from "./IScripter.ts";
 
-module Kagerou {
-    interface ScriptingContext {
-    
-    }
+export module KagerouScripting {
     interface IDimensions {
         stageWidth:number;
         stageHeight:number;
@@ -17,45 +15,54 @@ module Kagerou {
     interface IBaseObject { }
     interface IEnvironment { }
 
-    class BaseScriptingContext implements ScriptingContext {
+    class ScriptingContextError extends Error {
+      constructor(message:string) {
+        super(message);
+      }
+    }
+
+    class BaseScriptingContext implements IScriptingContext {
         private _objects:{ [id: string] : IBaseObject; } = {};
-        private stage:any;
+        private stage:StageElement;
 
-        constructor (environment:IEnvironment, stage:any) {
-        
+        constructor (environment:IEnvironment, stage:StageElement) {
+
         }
 
-        public registerObject():void {
-        
+        public registerObject(objectId:string, serialized:Object):void {
+
         }
 
-        public deregisterObject():void {
-        
+        public deregisterObject(objectId:string):void {
+
         }
 
-        public updateProperty():void {
-        
+        public updateProperty(objectId:string, propertyName:string, propertyValue:any):void {
+
         }
 
-        public callMethod():void {
-        
+        public callMethod(objectId:string, methodName:string, parameters:any[]):void {
+
         }
 
         public getObject(id:string):IBaseObject {
-        
+          if (id in this._objects) {
+            return this._objects[id];
+          }
+          throw new ScriptingContextError('Object (' + id + ') not found.');
         }
 
-        public invokeError(message:string, mode:string) {
-        
-        }
+        public reset():void {
 
-        public clear():void {
-        
         }
 
         public getDimensions():IDimensions {
-            
+          return;
         }
 
+    }
+
+    export function getContext(stage:StageElement):IScriptingContext {
+      return new BaseScriptingContext({}, stage);
     }
 }

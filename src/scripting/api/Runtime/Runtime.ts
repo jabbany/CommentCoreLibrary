@@ -47,6 +47,9 @@ module Runtime {
     private _listeners:{[name:string]: Array<Function>} = {};
 
     constructor(name:string) {
+      if (name.slice(0, 2) !== '__') {
+        throw new Error('MetaObject names must start with two underscores.');
+      }
       this._name = name;
     }
 
@@ -103,6 +106,7 @@ module Runtime {
   }
 
   /** Variables **/
+  // objCount is uniformly increasing to make object names unique
   var objCount:number = 0;
   var _registeredObjects:ObjectRegistry = {
     '__self': new MetaObject('__self'),
@@ -149,9 +153,9 @@ module Runtime {
   /**
    * Gets the object registered by id
    * @param {string} objectId - objectid of object
-   * @returns {any} - object or undefined if not found
+   * @returns {RegisterableObject} - object or undefined if not found
    */
-  export function getObject(objectId:string):any{
+  export function getObject(objectId:string):RegisterableObject{
     return _registeredObjects[objectId];
   }
 
@@ -162,25 +166,26 @@ module Runtime {
    */
   export function registerObject(object:RegisterableObject):void{
     if (!object.getId) {
-      __trace("Attempted to register unnamed object", "warn");
+      __trace('Cannot register object without getId method.','warn');
       return;
     }
     if (!Runtime.hasObject(object.getId())) {
       _registeredObjects[object.getId()] = object;
-      __pchannel("Runtime:RegisterObject", {
-        "id": object.getId(),
-        "data": object.serialize()
+      __pchannel('Runtime:RegisterObject', {
+        'id': object.getId(),
+        'data': object.serialize()
       });
       __schannel("object::(" + object.getId() + ")",  (payload:any) => {
-        if (payload.hasOwnProperty("type") &&
-          payload.type === "event") {
+        if (payload.hasOwnProperty('type') &&
+          payload.type === 'event') {
           _dispatchEvent(object.getId(), payload.event, payload.data);
         }
       });
       objCount++;
       return;
     } else {
-      __trace('Attempted to re-register object or id collision', 'warn');
+      __trace('Attempted to re-register object or id collision @ ' +
+        object.getId(), 'warn');
       return;
     }
   }
@@ -194,12 +199,13 @@ module Runtime {
    */
   export function deregisterObject(objectId:string):void {
     if (Runtime.hasObject(objectId)) {
-      if (objectId.substr(0,2) === "__") {
-        __trace("Runtime.deregisterObject cannot de-register a MetaObject","warn");
+      if (objectId.substr(0,2) === '__') {
+        __trace('Runtime.deregisterObject cannot de-register a MetaObject',
+          'warn');
         return;
       }
-      __pchannel("Runtime:DeregisterObject", {
-        "id": objectId
+      __pchannel('Runtime:DeregisterObject', {
+        'id': objectId
       });
       if (typeof _registeredObjects[objectId].unload === "function") {
         // Gracefully unload first
@@ -207,8 +213,13 @@ module Runtime {
       }
       _registeredObjects[objectId] = null;
       delete _registeredObjects[objectId];
-      objCount--;
     }
+  }
+
+  function _getId(type:string = 'obj', container:string = 'rt'):string {
+    var randomSeed:number = Math.random()
+    var randomSegment:string = '';
+    return;
   }
 
   /**
@@ -217,10 +228,10 @@ module Runtime {
    * @returns {string} - objectid that has not been registered
    */
   export function generateId(type:string = "obj"):string {
-    var id:string = type + ":" + (new Date()).getTime() + "|" +
-      Math.round(Math.random() * 4096) + ":" + objCount;
+    var id:string = [type, ':', Date.now(), '|',
+      Math.round(Math.random() * 4096), ':', objCount].join();
     while (Runtime.hasObject(id)) {
-      id = type + ":" + (new Date()).getTime() + "|" +
+      id = type + ":" + Date.now() + "|" +
         Math.round(Math.random() * 4096) + ":" + objCount;
     }
     return id;
@@ -254,7 +265,7 @@ module Runtime {
   }
 
   /**
-   * Invoke termination of script
+   * Invoke termination of script from outside the sandbox
    */
   export function crash():void {
     __trace("Runtime.crash() : Manual crash", "fatal");
