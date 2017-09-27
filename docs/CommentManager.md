@@ -13,7 +13,8 @@
 * `scroll`
   * `opacity` 透明度
   * `scale` 生命时间加成（TTL Scale）
-* `limit` 最大显示弹幕数量，0或以下表示不限制同屏弹幕数量
+* `limit` 最大显示弹幕数量，`0` 或以下表示不限制同屏弹幕数量，默认 `0`
+* `seekTrigger` 在 `time()` 调用时间数值跳跃大于这个数值（ms）时，并不输出从上一个时间到这个时间的弹幕，而是直接更新上次弹幕时间。这个数值用于避免在手动移动时间轴时导致弹幕一起输出。数值设置太大可能导致搓时间轴时大量弹幕输出，设置太小则可能导致敏感度不足而不输出弹幕。默认 `2000`
 
 ### isRunning &lt;Bool&gt;
 管理器的弹幕是否在运行。`false`表示没有在运行，`true`表示在运行。可以通过 start/stop 控制。这
@@ -36,11 +37,11 @@
 rendererType 决定了渲染引擎类型，默认为CSS3渲染:
 - `css`: CSS3 transition
 - `svg`: SVG Animation
-- `canvas`: Canvas 
-- `legacy`: DOM + Timer 
+- `canvas`: Canvas
+- `legacy`: DOM + Timer
 
 ### start()
-启动弹幕老化进程。调用后 `send()` 发送到运行列表（runline）的弹幕会开始移动。用于在刚刚 
+启动弹幕老化进程。调用后 `send()` 发送到运行列表（runline）的弹幕会开始移动。用于在刚刚
 `init()` 之后进入播放状态，或者在暂停弹幕后重新开始移动弹幕。播放时调用无作用。
 
 注意：在播放状态未非播放时，调用 `send()`发送的弹幕会加入 runline，在start之后一并开始移动。
@@ -77,12 +78,12 @@ runline（运行列表）里，至于这些弹幕是否在移动，则要根据�
 删除只会从时间轴中删除，如果被删除的弹幕正再播放，不会导致正在播放的弹幕消失。
 
 ### remove(filterFunction:Function)
-从弹幕列表中删除弹幕。filterFunction会在每个弹幕对象上被调用。当filterFunction返回 true 
+从弹幕列表中删除弹幕。filterFunction会在每个弹幕对象上被调用。当filterFunction返回 true
 时（严格），删除相应弹幕。
 
 ### send(data:ICommentData)
 把一个抽象弹幕数据对象变成一个 IComment 并放入运行列表中。当 data 对象不符合 filter 规则或者
-时发送不会实现。代码弹幕也要通过send发送，只不过它们会进一步被派发到代码弹幕引擎。同一个 
+时发送不会实现。代码弹幕也要通过send发送，只不过它们会进一步被派发到代码弹幕引擎。同一个
 ICommentData 实例如果多次用于调用这个方法会产生多个不同的弹幕实例 IComment。
 
 注意：send可以发送不在时间轴里的弹幕。这个功能尤其利于实时弹幕的实现，因为对于直播实时弹幕，基本不

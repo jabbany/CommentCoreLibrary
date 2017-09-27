@@ -149,7 +149,8 @@ module Display {
 
       // Make sure we're not out-of-bounds
       if (!this._rect.containsRect(change)) {
-        __trace('', 'err');
+        __trace('BitmapData._updateBox box ' + change.toString() +
+          ' out of bonunds ' + this._rect.toString(), 'err');
         throw new Error('Rectangle provided was not within image bounds.');
       }
       // Extract the values

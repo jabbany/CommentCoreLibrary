@@ -990,12 +990,12 @@ var CommentManager = (function() {
                 opacity:1,
                 scale:1
             },
-            limit: 0
+            limit: 0,
+            seekTrigger: 2000
         };
         this.timeline = [];
         this.runline = [];
         this.position = 0;
-        this.limiter = 0;
 
         this.factory = null;
         this.filter = null;
@@ -1111,7 +1111,9 @@ var CommentManager = (function() {
 
     CommentManager.prototype.time = function (time) {
         time = time - 1;
-        if (this.position >= this.timeline.length || Math.abs(this._lastPosition - time) >= 2000) {
+        if (this.position >= this.timeline.length ||
+          Math.abs(this._lastPosition - time) >= this.options.seekTrigger) {
+
             this.seek(time);
             this._lastPosition = time;
             if (this.timeline.length <= this.position) {
@@ -1122,7 +1124,7 @@ var CommentManager = (function() {
         }
         for (;this.position < this.timeline.length;this.position++) {
             if (this.timeline[this.position]['stime']<=time) {
-                if (this.options.limit > 0 && this.runline.length > this.limiter) {
+                if (this.options.limit > 0 && this.runline.length >= this.options.limit) {
                     continue; // Skip comments but still move the position pointer
                 } else if (this.validate(this.timeline[this.position])) {
                     this.send(this.timeline[this.position]);
@@ -1229,7 +1231,7 @@ var CommentManager = (function() {
 
 })();
 
-/** 
+/**
  * Comment Filters Module Simplified
  * @license MIT
  * @author Jim Chen
@@ -1237,7 +1239,7 @@ var CommentManager = (function() {
 var CommentFilter = (function () {
 
     /**
-     * Matches a rule against an input that could be the full or a subset of 
+     * Matches a rule against an input that could be the full or a subset of
      * the comment data.
      *
      * @param rule - rule object to match
@@ -1275,11 +1277,13 @@ var CommentFilter = (function () {
             case '=':
             case 'eq':
                 return rule.value ===
-                    ((typeof extracted === 'number') ? 
+                    ((typeof extracted === 'number') ?
                         extracted : extracted.toString());
-            case 'NOT':
+            case '!':
+            case 'not':
                 return !_match(rule.value, extracted);
-            case 'AND':
+            case '&&':
+            case 'and':
                 if (Array.isArray(rule.value)) {
                     return rule.value.every(function (r) {
                         return _match(r, extracted);
@@ -1287,7 +1291,8 @@ var CommentFilter = (function () {
                 } else {
                     return false;
                 }
-            case 'OR':
+            case '||':
+            case 'or':
                 if (Array.isArray(rule.value)) {
                     return rule.value.some(function (r) {
                         return _match(r, extracted);
@@ -1352,7 +1357,10 @@ var CommentFilter = (function () {
      * @return boolean indicator of whether this commentData should be shown
      */
     CommentFilter.prototype.doValidate = function (cmtData) {
-        if ((!this.allowUnknownTypes || 
+        if (!cmtData.hasOwnProperty('mode')) {
+            return false;
+        }
+        if ((!this.allowUnknownTypes ||
                 cmtData.mode.toString() in this.allowTypes) &&
             !this.allowTypes[cmtData.mode.toString()]) {
             return false;

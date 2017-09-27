@@ -26,15 +26,15 @@
 
 - Subject: (Subject) 规则绑定的对象
     比如 `subject=""` 时，则匹配整个 ICommentData 对象而 `subject="text"` 则匹配
-    弹幕文字。可以通过 `.` 来进入子属性，比如 `subject="text.length"` 则会匹配 
+    弹幕文字。可以通过 `.` 来进入子属性，比如 `subject="text.length"` 则会匹配
     `cmtData.text.length` (`cmtData` 为 ICommentData对象)。
 - Op: (Operator) 规则使用的匹配方式
     - `<`/`>`: 数字匹配 (value为number)
     - `~` 或 `regexp`: 正则匹配 (value为正则表达式对象)
     - `=` 或 `eq`: 全等匹配 (value为任何对象)
-    - `NOT`: 取反反规则，以前判定true则会返回false (value为 `rule`)
-    - `AND`: 合并规则，只有列表中所有规则都匹配才匹配 (value为 `rule[]`)
-    - `OR`: 或合并规则，只要列表中有一个匹配则匹配 (value为 `rule[]`)
+    - `!` 或 `not`: 取反反规则，以前判定true则会返回false (value为 `rule`)
+    - `&&` 或 `and`: 合并规则，只有列表中所有规则都匹配才匹配 (value为 `rule[]`)
+    - `||` 或 `or`: 或合并规则，只要列表中有一个匹配则匹配 (value为 `rule[]`)
 - Value: (Target value) 规则目标参考值
     根据 OP 的取值，可能代表不同含义
 - Mode: (Rule mode) 规则类型

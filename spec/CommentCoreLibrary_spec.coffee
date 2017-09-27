@@ -5,18 +5,26 @@ describe 'CommentManager', ->
 
   describe 'instance API', ->
     beforeEach ->
-      c1 = stime: 1
-      c2 = stime: 2, date: '2014-07-12T04:35:55.624Z'
+      c1 =
+        stime: 1
+        mode: 1
+      c2 =
+        stime: 2
+        mode: 1
+        date: '2014-07-12T04:35:55.624Z'
       c3 =
         stime: 2
+        mode: 1
         date: '2014-07-12T04:35:55.626Z'
         dbid: '53c0bb2b6465625061b40698'
       c4 =
         stime: 2
+        mode: 1
         date: '2014-07-12T04:35:55.626Z'
         dbid: '53c0bb2b6465625061b40700'
       c5 =
         stime: 2
+        mode: 1
         date: '2014-07-12T04:35:55.626Z'
         dbid: '53c0bb2b6465625061b40700'
       cmt =
@@ -66,6 +74,27 @@ describe 'CommentManager', ->
         manager.send cmt
         expect(manager.runline.length).toBe 1
 
+    describe '.time', ->
+      it 'allocates comments to the runline', ->
+        spy = sinon.spy manager, 'send'
+        manager.load [ c3, c4, c5 ]
+        manager.time 3
+        expect(spy).toHaveBeenCalledThrice()
+
+      it 'limits based on limiter', ->
+        spy = sinon.spy manager, 'send'
+        manager.load [ c3, c4, c5 ]
+        manager.options.limit = 2
+        manager.time 3
+        expect(spy).toHaveBeenCalledTwice()
+
+      it 'seeks if seek threshold is passed', ->
+        manager.load [ c1 ]
+        manager.options.seekTrigger = 100
+        manager.time 0
+        manager.time 200
+        expect(manager.runline.length).toBe 0
+
     describe '.start', ->
       it 'starts the timer', ->
         spy = sinon.spy window, 'setInterval'
@@ -93,7 +122,7 @@ describe 'CommentManager', ->
         expect(manager.timeline).toEqual [c3, c4 , c5]
 
     describe '.setBounds', ->
-      beforeEach -> 
+      beforeEach ->
         manager.stage.style.width = '640px'
         manager.stage.style.width = '480px'
 

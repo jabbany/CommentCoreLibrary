@@ -11,7 +11,7 @@
     "url": "https://github.com/jabbany/CommentCoreLibrary.git"
   },
   "author": "Jim Chen <knh.jabbany@gmail.com>",
-  "license":"MIT",
+  "license": "MIT",
   "keywords": [
     "danmaku",
     "video",
@@ -30,18 +30,18 @@
     "grunt-contrib-coffee": "^1.0.0",
     "grunt-contrib-concat": "^1.0.1",
     "grunt-contrib-copy": "^1.0.0",
-    "grunt-contrib-cssmin": "^2.0.0",
+    "grunt-contrib-cssmin": "^2.2.1",
     "grunt-contrib-jasmine": "^1.0.3",
     "grunt-contrib-jshint": "^1.0.0",
     "grunt-contrib-uglify": "^2.3.0",
     "grunt-contrib-watch": "^1.0.0",
     "grunt-template-jasmine-istanbul": "^0.5.0",
     "grunt-ts": "^5.5.1",
-    "jquery": "^3.1.1",
     "jasmine-jquery": "^2.0.0",
-    "sinon": "^2.1.0",
     "jasmine-sinon": "^0.4.0",
+    "jquery": "^3.1.1",
+    "load-grunt-tasks": "^3.5.2",
     "promise-polyfill": "^6.0.2",
-    "load-grunt-tasks": "^3.5.2"
+    "sinon": "^2.4.1"
   }
 }
