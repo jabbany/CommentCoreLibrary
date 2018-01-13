@@ -7,7 +7,7 @@
 * 6 - 逆向弹幕 / Top-anchored reverse
 * 7 - 定位弹幕 / Animated positioned
 * 8 - 代码高级弹幕 / Code comments
-* 9 - 预留 Zoome弹幕兼容性 / Reserved: Zoome-type 
+* 9 - 预留 Zoome弹幕兼容性 / Reserved: Zoome-type
 * 17 - 图片定位弹幕 / Reserved: Image
 * 18 - Canvas/SVG定位弹幕（未完成） / Reserved: Canvas or SVG
 * 19 - 绘图弹幕（未完成） / Reserved: Draw-command
@@ -35,22 +35,28 @@
 ## 定位弹幕
 ### 定位弹幕简单模式
     可选参量：Array[x,y,opacity,duration,text]
-定位弹幕简单模式允许用户对弹幕进行精确定位和透明度渐变，但是本身不包含任何3D排版效果。opacity为形如：```[Float]-[Float]```，分别定义了始末透明度。x,y都小于1的时候我们认为是百分比。
+定位弹幕简单模式允许用户对弹幕进行精确定位和透明度渐变，但是本身不包含任何3D排版效果。
+opacity为形如：```[Float]-[Float]```，分别定义了始末透明度。x,y都小于 1 的时候我们认为是
+百分比。
 
 ### 定位弹幕扩展模式
     可选参量：Array[x,y,opacity,duration,text,rotateZ,rotateY]
-定位弹幕扩展模式允许用户对弹幕进行旋转的3维操作，3维旋转中心默认为左上角0% 0%位置，沿物体本身各轴的旋转X=0 (deg) Y=rotateY (deg) Z=rotateZ (deg)。
-注意这里没有移动效果。
+定位弹幕扩展模式允许用户对弹幕进行旋转的3维操作，3维旋转中心默认为左上角0% 0%位置，沿物体本身
+各轴的旋转X=0 (deg) Y=rotateY (deg) Z=rotateZ (deg)。注意这里没有移动效果。
 
 ### 定位移动弹幕模式
     可选参量：Array[x,y,opacity,duration,text,rotateZ,rotateY,toX,toY,(dur),(delay),(shadow),(font),(linear)]
-定位移动弹幕允许用户指定了扩展弹幕后进行移动，由初始位置(x,y)线性移动到(toX,toY)，同时 dur 表示整个移动的时长（默认500ms），delay 表示移动的滞后时间（默认为0ms)。
-定位移动开始于弹幕生命周期的delay，并完结于生命周期的 (delay+dur) 时间。如果(delay+dur)>duration，则移动会在duration到达时终止（注意此时可能并未到达移动终点）
-定位弹幕的Shadow为"true"或"false"字符串，若为false则文字不钩边。font如果指定，则会改变当前弹幕的字体。linear目前暂时不起作用。
+定位移动弹幕允许用户指定了扩展弹幕后进行移动，由初始位置(x,y)线性移动到(toX,toY)，同时 `dur`
+表示整个移动的时长（默认`500ms`），`delay` 表示移动的滞后时间（默认为 `0ms`)。
+定位移动开始于弹幕生命周期的`delay`，并完结于生命周期的 (delay+dur) 时间。
+如果 `(delay+dur) > duration`，则移动会在duration到达时终止（注意此时可能并未到达移动终点）
+定位弹幕的Shadow为`"true"`或`"false"`字符串，若为`false`则文字不钩边。`font`如果指定，
+则会改变当前弹幕的字体。`linear`目前暂时不起作用。
 
 ### 定位移动弹幕轨道跟踪模式
     可选参量：Array[x,y,opacity,duration,text,rotateZ,rotateY,toX,toY,dur,delay,shadow,font,linear,path]
-定位移动弹幕轨道跟踪模式允许定位弹幕沿着轨道path进行线性跟踪。path的格式类似于 SVG 的轨道定义，其中目前支持的是`L`和`M`参数。形似：`M100,100L200,200L200,400L400,400L100,100`
+定位移动弹幕轨道跟踪模式允许定位弹幕沿着轨道path进行线性跟踪。path的格式类似于 SVG 的轨道定义
+，其中目前支持的是`L`和`M`参数。形似：`M100,100L200,200L200,400L400,400L100,100`
 - `M`: Move to (x, y) ：表示轨迹的起点，一般来说只应该出现一次。
 - `L`: Line to (x, y) ：表示轨迹的中继连线。它表示从上一个坐标到现在坐标进行连线。
 - `C`: Curve to (cx, cy, ax, ay) ：表示轨迹中从现在的坐标到 (ax,ay) 经过控制点 (cx,cy) 进行贝塞尔曲线运动
@@ -62,7 +68,10 @@
 ## 代码弹幕
 ### 标准代码弹幕
     可选参量：代码
-定义一条代码弹幕。代码会在弹幕开始时被执行，并且被局限于一个弹幕的运行时空间。有关代码弹幕请参考 [scripting](scripting/readme.md) 章节。CCL的代码弹幕实现与Bilibili 高级弹幕的API有兼容层，这表示一些Bilibili的高级弹幕可以无须更改的运行在 CCL代码弹幕引擎上。另一些代码弹幕则需少量的更改（或者视情况可能需要一些结构重构）。
+定义一条代码弹幕。代码会在弹幕开始时被执行，并且被局限于一个弹幕的运行时空间。
+有关代码弹幕请参考 [scripting](scripting/readme.md) 章节。CCL的代码弹幕实现与 Bilibili
+原版高级弹幕的API有兼容层（新版采用BAS语法），这表示一些 Bilibili 的高级弹幕可以无须更改的
+运行在 CCL代码弹幕引擎上。另一些代码弹幕则需少量的更改（或者视情况可能需要一些结构重构）。
 
 ### 非标准代码弹幕
     可选参量：代码
@@ -72,18 +81,23 @@
 ## 图片定位弹幕
 ### 标准模式
     可选参量：Array[x,y,opacity,duration,url]
-图片定位弹幕允许用户进行图片弹幕的动态载入，其中(x,y)为显示坐标，opacity为形如```[Float]-[Float]```的渐变区段，而duration为生命周期。
+图片定位弹幕允许用户进行图片弹幕的动态载入，其中(x,y)为显示坐标，`opacity` 为形如
+`[Float]-[Float]` 的渐变区段，而 `duration` 为生命周期。
 
 ### 扩展形式
     可选参量：Array[x,y,opacity,duration,url,rotX,rotY,rotZ,(originTL),(imgScale)]
-图片弹幕的扩展格式比文字弹幕要更加灵活。imgScale定义了图片缩放比例```[Width]x[Height]```，默认为原始大小。为"0x0"时也等同于默认大小。
-rotX,rotY,rotZ则分别定义了图片在X,Y,Z轴向的转动量。
-originTL是一个形如`[originT%]-[originL%]`的字符串，其定义了一下旋转中心距离左上角的位置，默认是"0% 0%"处（等同于参数"0-0"），旋转中心为整个图形的中心时，可用"50-50"参数。右下角则是"100-100"
+图片弹幕的扩展格式比文字弹幕要更加灵活。imgScale定义了图片缩放比例`[Width]x[Height]`，
+默认为原始大小。为"0x0"时也等同于默认大小。`rotX`,`rotY`,`rotZ`则分别定义了图片在X,Y,Z
+轴向的转动量。 `originTL`是一个形如`[originT%]-[originL%]`的字符串，其定义了一下旋转中心
+距离左上角的位置，默认是 `0% 0%` 处（等同于参数 `0-0`），旋转中心为整个图形的中心时，可用
+`50-50`参数。右下角则是`100-100`
 
 ### 扩展可动模式
     可选参量：Array[x,y,opacity,duration,url,rotX,rotY,rotZ,originTL,imgScale,toX,toY,delay,dur,(toScale)]
-图片弹幕的扩展可动模式为最为灵活的模式。其中originTL和imgScale为必选参数。toX,toY为目标位置，delay为延时，dur为移动时长。
-toScale为形如"[Int]x[Int]"的参数，标记了缩放末位置的大小。缩放运动与渐变运动相同，为全过程运动，不受delay & dur的影响。
+图片弹幕的扩展可动模式为最为灵活的模式。其中 `originTL` 和 `imgScale` 为必选参数。
+`toX`,`toY`为目标位置，`delay`为延时，`dur`为移动时长。`toScale`为形如 `[Int]x[Int]`
+的参数，标记了缩放末位置的大小。缩放运动与渐变运动相同，为全过程运动，不受`delay` 和 `dur`
+的影响。
 
 ## 高阶定位混合弹幕组
     可选设置：Object
@@ -108,7 +122,7 @@ toScale为形如"[Int]x[Int]"的参数，标记了缩放末位置的大小。缩
         "effects": [],
         "motions": [],
     }
-    
+
 说明如下：
 
     $.start为一个数组，定义了(x,y)坐标，当 x,y中一方小于0时，则按照舞台另一端进行运动。（假定窗口为640x480，则[-50,-50]的弹幕初始位置是 590,430）
