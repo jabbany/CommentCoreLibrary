@@ -147,7 +147,7 @@ class CommentSpaceAllocator implements ISpaceAllocator {
       return;
     }
     if (comment.cindex >= this._pools.length) {
-      throw new Error("cindex out of bounds");
+      throw new Error('cindex out of bounds');
     }
     var index = this._pools[comment.cindex].indexOf(comment);
     if (index < 0)

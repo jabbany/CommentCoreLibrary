@@ -157,6 +157,22 @@ var CommentFilter = (function () {
     };
 
     /**
+     * Removes a rule
+     *
+     * @param rule - the rule that was added
+     * @return true if the rule was removed, false if not found
+     */
+    CommentFilter.prototype.removeRule = function (rule) {
+        var index = this.rules.indexOf(rule);
+        if (index >= 0) {
+          this.rules.splice(index, 1);
+          return true;
+        } else {
+          return false;
+        }
+    };
+
+    /**
      * Adds a modifier to be used
      *
      * @param modifier - modifier function that takes in comment data and
