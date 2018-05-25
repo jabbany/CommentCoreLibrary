@@ -1,4 +1,4 @@
-/** 
+/**
  * Comment Filters Module Simplified
  * @license MIT
  * @author Jim Chen
@@ -6,7 +6,7 @@
 var CommentFilter = (function () {
 
     /**
-     * Matches a rule against an input that could be the full or a subset of 
+     * Matches a rule against an input that could be the full or a subset of
      * the comment data.
      *
      * @param rule - rule object to match
@@ -44,11 +44,13 @@ var CommentFilter = (function () {
             case '=':
             case 'eq':
                 return rule.value ===
-                    ((typeof extracted === 'number') ? 
+                    ((typeof extracted === 'number') ?
                         extracted : extracted.toString());
-            case 'NOT':
+            case '!':
+            case 'not':
                 return !_match(rule.value, extracted);
-            case 'AND':
+            case '&&':
+            case 'and':
                 if (Array.isArray(rule.value)) {
                     return rule.value.every(function (r) {
                         return _match(r, extracted);
@@ -56,7 +58,8 @@ var CommentFilter = (function () {
                 } else {
                     return false;
                 }
-            case 'OR':
+            case '||':
+            case 'or':
                 if (Array.isArray(rule.value)) {
                     return rule.value.some(function (r) {
                         return _match(r, extracted);
@@ -121,7 +124,10 @@ var CommentFilter = (function () {
      * @return boolean indicator of whether this commentData should be shown
      */
     CommentFilter.prototype.doValidate = function (cmtData) {
-        if ((!this.allowUnknownTypes || 
+        if (!cmtData.hasOwnProperty('mode')) {
+            return false;
+        }
+        if ((!this.allowUnknownTypes ||
                 cmtData.mode.toString() in this.allowTypes) &&
             !this.allowTypes[cmtData.mode.toString()]) {
             return false;
@@ -148,6 +154,22 @@ var CommentFilter = (function () {
             throw new Error('Rule must be of accept type or reject type.');
         }
         this.rules.push(rule);
+    };
+
+    /**
+     * Removes a rule
+     *
+     * @param rule - the rule that was added
+     * @return true if the rule was removed, false if not found
+     */
+    CommentFilter.prototype.removeRule = function (rule) {
+        var index = this.rules.indexOf(rule);
+        if (index >= 0) {
+          this.rules.splice(index, 1);
+          return true;
+        } else {
+          return false;
+        }
     };
 
     /**

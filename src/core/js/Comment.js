@@ -8,7 +8,7 @@ var CoreComment = (function () {
         if (init === void 0) { init = {}; }
         this.mode = 1;
         this.stime = 0;
-        this.text = "";
+        this.text = '';
         this.ttl = 4000;
         this.dur = 4000;
         this.cindex = -1;
@@ -23,43 +23,43 @@ var CoreComment = (function () {
         this._color = 0xffffff;
         this._border = false;
         this._shadow = true;
-        this._font = "";
+        this._font = '';
         this._transform = null;
         if (!parent) {
-            throw new Error("Comment not bound to comment manager.");
+            throw new Error('Comment not bound to comment manager.');
         }
         else {
             this.parent = parent;
         }
-        if (init.hasOwnProperty("stime")) {
-            this.stime = init["stime"];
+        if (init.hasOwnProperty('stime')) {
+            this.stime = init['stime'];
         }
-        if (init.hasOwnProperty("mode")) {
-            this.mode = init["mode"];
+        if (init.hasOwnProperty('mode')) {
+            this.mode = init['mode'];
         }
         else {
             this.mode = 1;
         }
-        if (init.hasOwnProperty("dur")) {
-            this.dur = init["dur"];
+        if (init.hasOwnProperty('dur')) {
+            this.dur = init['dur'];
             this.ttl = this.dur;
         }
         this.dur *= this.parent.options.global.scale;
         this.ttl *= this.parent.options.global.scale;
-        if (init.hasOwnProperty("text")) {
-            this.text = init["text"];
+        if (init.hasOwnProperty('text')) {
+            this.text = init['text'];
         }
-        if (init.hasOwnProperty("motion")) {
+        if (init.hasOwnProperty('motion')) {
             this._motionStart = [];
             this._motionEnd = [];
-            this.motion = init["motion"];
+            this.motion = init['motion'];
             var head = 0;
             for (var i = 0; i < init['motion'].length; i++) {
                 this._motionStart.push(head);
                 var maxDur = 0;
                 for (var k in init['motion'][i]) {
                     var m = init['motion'][i][k];
-                    maxDur = Math.max(m.dur, maxDur);
+                    maxDur = Math.max(m.dur + m.delay, maxDur);
                     if (m.easing === null || m.easing === undefined) {
                         init['motion'][i][k]['easing'] = CoreComment.LINEAR;
                     }
@@ -75,29 +75,29 @@ var CoreComment = (function () {
         if (init.hasOwnProperty('size')) {
             this._size = init['size'];
         }
-        if (init.hasOwnProperty("border")) {
-            this._border = init["border"];
+        if (init.hasOwnProperty('border')) {
+            this._border = init['border'];
         }
-        if (init.hasOwnProperty("opacity")) {
-            this._alpha = init["opacity"];
+        if (init.hasOwnProperty('opacity')) {
+            this._alpha = init['opacity'];
         }
-        if (init.hasOwnProperty("alpha")) {
-            this._alphaMotion = init["alpha"];
+        if (init.hasOwnProperty('alpha')) {
+            this._alphaMotion = init['alpha'];
         }
-        if (init.hasOwnProperty("font")) {
-            this._font = init["font"];
+        if (init.hasOwnProperty('font')) {
+            this._font = init['font'];
         }
-        if (init.hasOwnProperty("x")) {
-            this._x = init["x"];
+        if (init.hasOwnProperty('x')) {
+            this._x = init['x'];
         }
-        if (init.hasOwnProperty("y")) {
-            this._y = init["y"];
+        if (init.hasOwnProperty('y')) {
+            this._y = init['y'];
         }
-        if (init.hasOwnProperty("shadow")) {
-            this._shadow = init["shadow"];
+        if (init.hasOwnProperty('shadow')) {
+            this._shadow = init['shadow'];
         }
-        if (init.hasOwnProperty("align")) {
-            this.align = init["align"];
+        if (init.hasOwnProperty('align')) {
+            this.align = init['align'];
         }
         if (init.hasOwnProperty('axis')) {
             this.axis = init['axis'];
@@ -338,7 +338,7 @@ var CoreComment = (function () {
         set: function (s) {
             this._shadow = s;
             if (!this._shadow) {
-                this.dom.className = this.parent.options.global.className + " noshadow";
+                this.dom.className = this.parent.options.global.className + ' noshadow';
             }
         },
         enumerable: true,

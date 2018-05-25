@@ -3,6 +3,42 @@
 
 module Display {
 
+  class DirtyArea {
+    private _xBegin:number = null;
+    private _yBegin:number = null;
+    private _xEnd:number = null;
+    private _yEnd:number = null;
+
+    public expand(x:number, y:number) {
+      this._xBegin = this._xBegin === null ? x : Math.min(this._xBegin, x);
+      this._xEnd = this._xEnd === null ? x : Math.max(this._xEnd, x);
+      this._yBegin = this._yBegin === null ? y :Math.min(this._yBegin, y);
+      this._yEnd = this._xEnd === null ? y :Math.max(this._yEnd, y);
+    }
+
+    public asRect():Rectangle {
+      if (this.isEmpty()) {
+        return new Rectangle(0, 0, 0, 0);
+      }
+      return new Rectangle(this._xBegin,
+        this._yBegin,
+        this._xEnd - this._xBegin,
+        this._yEnd - this._yBegin);
+    }
+
+    public isEmpty():boolean {
+      return this._xBegin === null || this._yBegin === null ||
+        this._xEnd === null || this._yEnd === null;
+    }
+
+    public reset():void {
+      this._xBegin = null;
+      this._xEnd = null;
+      this._yBegin = null;
+      this._yEnd = null;
+    }
+  }
+
   /**
    * Bitmap AS3 Polyfill class
    * Note: This is NOT equivalent to the Bitmap library class of the same name!
@@ -71,7 +107,10 @@ module Display {
    * @author Jim Chen
    */
   export class BitmapData {
+    private _id:string;
     private _rect:Rectangle;
+    private _locked:boolean = false;
+    private _dirtyArea:DirtyArea;
     private _transparent:boolean;
     private _fillColor:number;
     private _byteArray:Array<number>;
@@ -79,8 +118,10 @@ module Display {
     constructor(width:number,
       height:number,
       transparent:boolean = true,
-      fillColor:number = 0xffffffff) {
+      fillColor:number = 0xffffffff,
+      id:string = Runtime.generateId()) {
 
+      this._id = id;
       this._rect = new Rectangle(0, 0, width, height);
       this._transparent = transparent;
       this._fillColor = fillColor;
@@ -92,6 +133,51 @@ module Display {
       for (var i = 0; i < this._rect.width * this._rect.height; i++) {
         this._byteArray.push(this._fillColor);
       }
+    }
+
+    private _updateBox(changeRect:Rectangle = null):void {
+      if (this._dirtyArea.isEmpty()) {
+        // Don't update anything if nothing was changed
+        return;
+      }
+      if (this._locked) {
+        // Don't send updates if this is locked
+        return;
+      }
+      var change:Rectangle = changeRect === null ? this._dirtyArea.asRect() :
+        changeRect;
+
+      // Make sure we're not out-of-bounds
+      if (!this._rect.containsRect(change)) {
+        __trace('BitmapData._updateBox box ' + change.toString() +
+          ' out of bonunds ' + this._rect.toString(), 'err');
+        throw new Error('Rectangle provided was not within image bounds.');
+      }
+      // Extract the values
+      var region:Array<number> = [];
+      for (var i = 0; i < change.height; i++) {
+        for (var j = 0; j < change.width; j++) {
+          region.push(this._byteArray[(change.y + i) * this._rect.width +
+              change.x + j]);
+        }
+      }
+
+      __pchannel('Runtime:CallMethod', {
+        'id': this.getId(),
+        'name': 'updateBox',
+        'value': {
+          'box': change.serialize(),
+          'values': values
+        },
+      });
+    }
+
+    private _call(method:string, arguments:any):void {
+      __pchannel('Runtime:CallMethod', {
+        'id': this.getId(),
+        'name': name,
+        'value': arguments,
+      });
     }
 
     get height():number {
@@ -162,6 +248,7 @@ module Display {
         color = color & 0xffffffff;
       }
       this._byteArray[y * this._rect.width + x] = color;
+      this._dirtyArea.expand(x, y);
     }
 
     public setPixels(rect:Rectangle, input:Array<number>):void {
@@ -177,8 +264,26 @@ module Display {
         for (var j = 0; j < rect.height; j++) {
           this._byteArray[(rect.y + j) * this.width + (rect.x + i)] =
             input[j * rect.width + i];
+            this._dirtyArea.expand(i, j);
         }
       }
+    }
+
+    public lock():void {
+      this._locked = true;
+    }
+
+    public unlock(changeRect:Rectangle = null):void {
+      this._locked = false;
+      if (changeRect == null) {
+        this._updateBox();
+      } else {
+        this._updateBox(changeRect);
+      }
+    }
+
+    public getId():string {
+      return this._id;
     }
 
     public serialize():Object {

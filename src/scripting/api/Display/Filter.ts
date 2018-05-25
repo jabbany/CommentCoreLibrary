@@ -133,6 +133,46 @@ module Display {
     }
   }
 
+  class ConvolutionFilter extends Filter {
+    private _matrixX:number;
+    private _matrixY:number;
+    private _matrix:number[];
+    private _divisor:number;
+    private _bias:number;
+    private _preserveAlpha:boolean;
+    private _clamp:boolean;
+    private _color:number;
+    private _alpha:number;
+
+    constructor(matrixX:number = 0,
+      matrixY:number = 0,
+      matrix:number[] = null,
+      divisor:number = 1.0,
+      bias:number = 0.0,
+      preserveAlpha:boolean = true,
+      clamp:boolean = true,
+      color:number = 0,
+      alpha:number = 0.0) {
+      super();
+    };
+
+    public serialize():Object {
+      var s:Object = super.serialize();
+      s['type'] = 'convolution';
+      s['matrix'] = {
+        'x': this._matrixX,
+        'y': this._matrixY,
+        'data': this._matrix
+      };
+      s['divisor'] = this._divisor;
+      s['preserveAlpha'] = this._preserveAlpha;
+      s['clamp'] = this._clamp;
+      s['color'] = this._color;
+      s['alpha'] = this._alpha;
+      return s;
+    }
+  }
+
   export function createDropShadowFilter(
     distance:number = 4.0,
     angle:number = 45,
@@ -171,8 +211,17 @@ module Display {
     throw new Error('Display.createBevelFilter not implemented');
   }
 
-  export function createConvolutionFilter() {
-    throw new Error('Display.createConvolutionFilter not implemented');
+  export function createConvolutionFilter(matrixX:number = 0,
+    matrixY:number = 0,
+    matrix:number[] = null,
+    divisor:number = 1.0,
+    bias:number = 0.0,
+    preserveAlpha:boolean = true,
+    clamp:boolean = true,
+    color:number = 0,
+    alpha:number = 0.0) {
+
+    return new ConvolutionFilter(matrixX, matrixY, matrix, divisor, bias, preserveAlpha, clamp, color, alpha);
   }
 
   export function createDisplacementMapFilter() {

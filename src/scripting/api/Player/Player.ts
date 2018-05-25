@@ -156,7 +156,12 @@ module Player{
   }
 
   export function keyTrigger(callback:Function, timeout:number):void{
-
+    if (!Runtime.hasObject('__player')) {
+      __trace('Your environment does not support key triggers.', 'warn');
+      return;
+    }
+    var player:Runtime.Listenable = <Runtime.Listenable>
+      Runtime.getObject('__player');
   }
 
   export function setMask(mask:any):void{

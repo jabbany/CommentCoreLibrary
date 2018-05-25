@@ -54,6 +54,19 @@ declare module Runtime {
   function privilegedCode(): void;
 }
 declare module Runtime {
+  interface Listenable {
+    addEventListener(
+      event:string,
+      listener:Function,
+      useCapture:boolean,
+      priority:number):void;
+    removeEventListener(
+      event:string,
+      listener:Function,
+      useCapture:boolean
+    ):void;
+    hasEventListener(event:string):boolean;
+  }
   interface RegisterableObject {
     getId():string;
     dispatchEvent(event:string, data?:any):void;
@@ -70,9 +83,9 @@ declare module Runtime {
   /**
   * Gets the object registered by id
   * @param objectId - objectid of object
-  * @returns {any} - object or undefined if not found
+  * @returns {RegisterableObject} - object or undefined if not found
   */
-  function getObject(objectId: string): any;
+  function getObject(objectId: string): RegisterableObject;
   /**
   * Registers an object to allow two way communication between the API
   * and the host.

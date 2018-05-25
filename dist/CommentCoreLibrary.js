@@ -161,7 +161,7 @@ var CoreComment = (function () {
         if (init === void 0) { init = {}; }
         this.mode = 1;
         this.stime = 0;
-        this.text = "";
+        this.text = '';
         this.ttl = 4000;
         this.dur = 4000;
         this.cindex = -1;
@@ -176,43 +176,43 @@ var CoreComment = (function () {
         this._color = 0xffffff;
         this._border = false;
         this._shadow = true;
-        this._font = "";
+        this._font = '';
         this._transform = null;
         if (!parent) {
-            throw new Error("Comment not bound to comment manager.");
+            throw new Error('Comment not bound to comment manager.');
         }
         else {
             this.parent = parent;
         }
-        if (init.hasOwnProperty("stime")) {
-            this.stime = init["stime"];
+        if (init.hasOwnProperty('stime')) {
+            this.stime = init['stime'];
         }
-        if (init.hasOwnProperty("mode")) {
-            this.mode = init["mode"];
+        if (init.hasOwnProperty('mode')) {
+            this.mode = init['mode'];
         }
         else {
             this.mode = 1;
         }
-        if (init.hasOwnProperty("dur")) {
-            this.dur = init["dur"];
+        if (init.hasOwnProperty('dur')) {
+            this.dur = init['dur'];
             this.ttl = this.dur;
         }
         this.dur *= this.parent.options.global.scale;
         this.ttl *= this.parent.options.global.scale;
-        if (init.hasOwnProperty("text")) {
-            this.text = init["text"];
+        if (init.hasOwnProperty('text')) {
+            this.text = init['text'];
         }
-        if (init.hasOwnProperty("motion")) {
+        if (init.hasOwnProperty('motion')) {
             this._motionStart = [];
             this._motionEnd = [];
-            this.motion = init["motion"];
+            this.motion = init['motion'];
             var head = 0;
             for (var i = 0; i < init['motion'].length; i++) {
                 this._motionStart.push(head);
                 var maxDur = 0;
                 for (var k in init['motion'][i]) {
                     var m = init['motion'][i][k];
-                    maxDur = Math.max(m.dur, maxDur);
+                    maxDur = Math.max(m.dur + m.delay, maxDur);
                     if (m.easing === null || m.easing === undefined) {
                         init['motion'][i][k]['easing'] = CoreComment.LINEAR;
                     }
@@ -228,29 +228,29 @@ var CoreComment = (function () {
         if (init.hasOwnProperty('size')) {
             this._size = init['size'];
         }
-        if (init.hasOwnProperty("border")) {
-            this._border = init["border"];
+        if (init.hasOwnProperty('border')) {
+            this._border = init['border'];
         }
-        if (init.hasOwnProperty("opacity")) {
-            this._alpha = init["opacity"];
+        if (init.hasOwnProperty('opacity')) {
+            this._alpha = init['opacity'];
         }
-        if (init.hasOwnProperty("alpha")) {
-            this._alphaMotion = init["alpha"];
+        if (init.hasOwnProperty('alpha')) {
+            this._alphaMotion = init['alpha'];
         }
-        if (init.hasOwnProperty("font")) {
-            this._font = init["font"];
+        if (init.hasOwnProperty('font')) {
+            this._font = init['font'];
         }
-        if (init.hasOwnProperty("x")) {
-            this._x = init["x"];
+        if (init.hasOwnProperty('x')) {
+            this._x = init['x'];
         }
-        if (init.hasOwnProperty("y")) {
-            this._y = init["y"];
+        if (init.hasOwnProperty('y')) {
+            this._y = init['y'];
         }
-        if (init.hasOwnProperty("shadow")) {
-            this._shadow = init["shadow"];
+        if (init.hasOwnProperty('shadow')) {
+            this._shadow = init['shadow'];
         }
-        if (init.hasOwnProperty("align")) {
-            this.align = init["align"];
+        if (init.hasOwnProperty('align')) {
+            this.align = init['align'];
         }
         if (init.hasOwnProperty('axis')) {
             this.axis = init['axis'];
@@ -491,7 +491,7 @@ var CoreComment = (function () {
         set: function (s) {
             this._shadow = s;
             if (!this._shadow) {
-                this.dom.className = this.parent.options.global.className + " noshadow";
+                this.dom.className = this.parent.options.global.className + ' noshadow';
             }
         },
         enumerable: true,
@@ -902,7 +902,7 @@ var CommentSpaceAllocator = (function () {
             return;
         }
         if (comment.cindex >= this._pools.length) {
-            throw new Error("cindex out of bounds");
+            throw new Error('cindex out of bounds');
         }
         var index = this._pools[comment.cindex].indexOf(comment);
         if (index < 0)
@@ -990,12 +990,12 @@ var CommentManager = (function() {
                 opacity:1,
                 scale:1
             },
-            limit: 0
+            limit: 0,
+            seekTrigger: 2000
         };
         this.timeline = [];
         this.runline = [];
         this.position = 0;
-        this.limiter = 0;
 
         this.factory = null;
         this.filter = null;
@@ -1111,7 +1111,9 @@ var CommentManager = (function() {
 
     CommentManager.prototype.time = function (time) {
         time = time - 1;
-        if (this.position >= this.timeline.length || Math.abs(this._lastPosition - time) >= 2000) {
+        if (this.position >= this.timeline.length ||
+          Math.abs(this._lastPosition - time) >= this.options.seekTrigger) {
+
             this.seek(time);
             this._lastPosition = time;
             if (this.timeline.length <= this.position) {
@@ -1122,7 +1124,7 @@ var CommentManager = (function() {
         }
         for (;this.position < this.timeline.length;this.position++) {
             if (this.timeline[this.position]['stime']<=time) {
-                if (this.options.limit > 0 && this.runline.length > this.limiter) {
+                if (this.options.limit > 0 && this.runline.length >= this.options.limit) {
                     continue; // Skip comments but still move the position pointer
                 } else if (this.validate(this.timeline[this.position])) {
                     this.send(this.timeline[this.position]);
@@ -1229,7 +1231,7 @@ var CommentManager = (function() {
 
 })();
 
-/** 
+/**
  * Comment Filters Module Simplified
  * @license MIT
  * @author Jim Chen
@@ -1237,7 +1239,7 @@ var CommentManager = (function() {
 var CommentFilter = (function () {
 
     /**
-     * Matches a rule against an input that could be the full or a subset of 
+     * Matches a rule against an input that could be the full or a subset of
      * the comment data.
      *
      * @param rule - rule object to match
@@ -1275,11 +1277,13 @@ var CommentFilter = (function () {
             case '=':
             case 'eq':
                 return rule.value ===
-                    ((typeof extracted === 'number') ? 
+                    ((typeof extracted === 'number') ?
                         extracted : extracted.toString());
-            case 'NOT':
+            case '!':
+            case 'not':
                 return !_match(rule.value, extracted);
-            case 'AND':
+            case '&&':
+            case 'and':
                 if (Array.isArray(rule.value)) {
                     return rule.value.every(function (r) {
                         return _match(r, extracted);
@@ -1287,7 +1291,8 @@ var CommentFilter = (function () {
                 } else {
                     return false;
                 }
-            case 'OR':
+            case '||':
+            case 'or':
                 if (Array.isArray(rule.value)) {
                     return rule.value.some(function (r) {
                         return _match(r, extracted);
@@ -1352,7 +1357,10 @@ var CommentFilter = (function () {
      * @return boolean indicator of whether this commentData should be shown
      */
     CommentFilter.prototype.doValidate = function (cmtData) {
-        if ((!this.allowUnknownTypes || 
+        if (!cmtData.hasOwnProperty('mode')) {
+            return false;
+        }
+        if ((!this.allowUnknownTypes ||
                 cmtData.mode.toString() in this.allowTypes) &&
             !this.allowTypes[cmtData.mode.toString()]) {
             return false;
@@ -1379,6 +1387,22 @@ var CommentFilter = (function () {
             throw new Error('Rule must be of accept type or reject type.');
         }
         this.rules.push(rule);
+    };
+
+    /**
+     * Removes a rule
+     *
+     * @param rule - the rule that was added
+     * @return true if the rule was removed, false if not found
+     */
+    CommentFilter.prototype.removeRule = function (rule) {
+        var index = this.rules.indexOf(rule);
+        if (index >= 0) {
+          this.rules.splice(index, 1);
+          return true;
+        } else {
+          return false;
+        }
     };
 
     /**

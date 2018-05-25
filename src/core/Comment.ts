@@ -5,8 +5,8 @@
  * @license MIT License
  * @description Comment abstraction based on DOM implementation
  */
-/// <reference path="Core.d.ts" />
-/// <reference path="CommentUtils.ts" />
+/// <reference path='Core.d.ts' />
+/// <reference path='CommentUtils.ts' />
 class CoreComment implements IComment {
   public static LINEAR:Function = function (t:number, b:number, c:number, d:number):number {
     return t * c / d + b;
@@ -14,7 +14,7 @@ class CoreComment implements IComment {
 
   public mode:number = 1;
   public stime:number = 0;
-  public text:string = "";
+  public text:string = '';
   public ttl:number = 4000;
   public dur:number = 4000;
   public cindex:number = -1;
@@ -53,7 +53,7 @@ class CoreComment implements IComment {
   private _color:number = 0xffffff;
   private _border:boolean = false;
   private _shadow:boolean = true;
-  private _font:string = "";
+  private _font:string = '';
   private _transform:CommentUtils.Matrix3D = null;
 
   public parent:ICommentManager;
@@ -61,38 +61,38 @@ class CoreComment implements IComment {
 
   constructor(parent:ICommentManager, init:Object = {}) {
     if (!parent) {
-      throw new Error("Comment not bound to comment manager.");
+      throw new Error('Comment not bound to comment manager.');
     } else {
       this.parent = parent;
     }
-    if (init.hasOwnProperty("stime")) {
-      this.stime = init["stime"];
+    if (init.hasOwnProperty('stime')) {
+      this.stime = init['stime'];
     }
-    if (init.hasOwnProperty("mode")) {
-      this.mode = init["mode"];
+    if (init.hasOwnProperty('mode')) {
+      this.mode = init['mode'];
     } else {
       this.mode = 1;
     }
-    if (init.hasOwnProperty("dur")) {
-      this.dur = init["dur"];
+    if (init.hasOwnProperty('dur')) {
+      this.dur = init['dur'];
       this.ttl = this.dur;
     }
     this.dur *= this.parent.options.global.scale;
     this.ttl *= this.parent.options.global.scale;
-    if (init.hasOwnProperty("text")) {
-      this.text = init["text"];
+    if (init.hasOwnProperty('text')) {
+      this.text = init['text'];
     }
-    if (init.hasOwnProperty("motion")) {
+    if (init.hasOwnProperty('motion')) {
       this._motionStart = [];
       this._motionEnd = [];
-      this.motion = init["motion"];
+      this.motion = init['motion'];
       var head = 0;
       for (var i = 0; i < init['motion'].length; i++) {
         this._motionStart.push(head);
         var maxDur = 0;
         for (var k in init['motion'][i]) {
           var m = <IMotion> init['motion'][i][k];
-          maxDur = Math.max(m.dur, maxDur);
+          maxDur = Math.max(m.dur + m.delay, maxDur);
           if (m.easing === null || m.easing === undefined) {
             init['motion'][i][k]['easing'] = CoreComment.LINEAR;
           }
@@ -108,29 +108,29 @@ class CoreComment implements IComment {
     if (init.hasOwnProperty('size')) {
       this._size = init['size'];
     }
-    if (init.hasOwnProperty("border")) {
-      this._border = init["border"];
+    if (init.hasOwnProperty('border')) {
+      this._border = init['border'];
     }
-    if (init.hasOwnProperty("opacity")) {
-      this._alpha = init["opacity"];
+    if (init.hasOwnProperty('opacity')) {
+      this._alpha = init['opacity'];
     }
-    if (init.hasOwnProperty("alpha")) {
-      this._alphaMotion = init["alpha"];
+    if (init.hasOwnProperty('alpha')) {
+      this._alphaMotion = init['alpha'];
     }
-    if (init.hasOwnProperty("font")) {
-      this._font = init["font"];
+    if (init.hasOwnProperty('font')) {
+      this._font = init['font'];
     }
-    if (init.hasOwnProperty("x")) {
-      this._x = init["x"];
+    if (init.hasOwnProperty('x')) {
+      this._x = init['x'];
     }
-    if (init.hasOwnProperty("y")) {
-      this._y = init["y"];
+    if (init.hasOwnProperty('y')) {
+      this._y = init['y'];
     }
-    if (init.hasOwnProperty("shadow")) {
-      this._shadow = init["shadow"];
+    if (init.hasOwnProperty('shadow')) {
+      this._shadow = init['shadow'];
     }
-    if (init.hasOwnProperty("align")) {
-      this.align = init["align"];
+    if (init.hasOwnProperty('align')) {
+      this.align = init['align'];
     }
     if (init.hasOwnProperty('axis')) {
       this.axis = init['axis'];
@@ -353,7 +353,7 @@ class CoreComment implements IComment {
   set shadow(s:boolean) {
     this._shadow = s;
     if (!this._shadow) {
-      this.dom.className = this.parent.options.global.className + " noshadow";
+      this.dom.className = this.parent.options.global.className + ' noshadow';
     }
   }
 

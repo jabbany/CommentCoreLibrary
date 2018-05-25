@@ -15,9 +15,12 @@ describe 'CommentFilter', ->
     'date': 2000
     'size': 50
     'color': 0xff0000
+  commentNoMode =
+    'stime': 1
+    'text': 'This comment has no mode'
 
   ruleAccept =
-    'mode': 'accept' 
+    'mode': 'accept'
     'subject': 'size'
     'op': '<'
     'value': 50
@@ -29,7 +32,7 @@ describe 'CommentFilter', ->
   ruleNot =
     'mode': 'accept'
     'subject': ''
-    'op': 'NOT'
+    'op': 'not'
     'value':
       'subject': 'text.length'
       'op': '<'
@@ -37,7 +40,7 @@ describe 'CommentFilter', ->
   ruleOr =
     'mode': 'accept'
     'subject': ''
-    'op': 'OR'
+    'op': 'or'
     'value': [
       {
         'subject': 'date'
@@ -55,7 +58,7 @@ describe 'CommentFilter', ->
     beforeEach ->
       filter = new CommentFilter()
 
-    'doModify beforeSend doValidate addRule 
+    'doModify beforeSend doValidate addRule
     addModifier'.split(/\s/).forEach (method)->
 
       it "has method: '#{method}'", ->
@@ -102,9 +105,12 @@ describe 'CommentFilter', ->
         filter.allowTypes['1'] = false
         expect(filter.doValidate comment).toBe false
 
+      it 'fails validation on no-mode comments', ->
+        expect(filter.doValidate commentNoMode).toBe false
+
       it 'passes validation unknown mode', ->
         expect(filter.doValidate alienModeComment).toBe true
-      
+
       it 'fails validation if allowUnknownTypes false', ->
         filter.allowUnknownTypes = false
         expect(filter.doValidate alienModeComment).toBe false
@@ -113,7 +119,7 @@ describe 'CommentFilter', ->
         filter.addRule ruleAccept
         expect(filter.doValidate comment).toBe true
         expect(filter.doValidate commentAlt).toBe false
-      
+
       it 'executes reject rules', ->
         filter.addRule ruleReject
         expect(filter.rules.length).toBe 1
@@ -149,9 +155,9 @@ describe 'CommentFilter', ->
         expect(filter.rules[0]).toBe rule
 
       it 'rejects adding invalid rule', ->
-        expect( => 
+        expect( =>
           filter.addRule
-            'mode': '???').toThrow()          
+            'mode': '???').toThrow()
 
     describe '.addModifier', ->
       modifier = (cmt) ->
@@ -165,4 +171,3 @@ describe 'CommentFilter', ->
 
       it 'rejects invalid modifier', ->
         expect( => filter.addModifier 'Boo').toThrow()
-
