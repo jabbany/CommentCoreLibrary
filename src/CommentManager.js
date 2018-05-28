@@ -269,7 +269,7 @@ var CommentManager = (function() {
                 try {
                     this._listeners[event][i](data);
                 } catch (e) {
-                    console.err(e.stack);
+                    console.error(e.stack);
                 }
             }
         }
