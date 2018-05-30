@@ -1,8 +1,23 @@
+/**
+ * Base module for the unpacker.
+ * @author Jim Chen
+ */
 module Unpacker {
+	var UnpackTable = {
 
+	};
 
-	export function _(type:string, props:Object = {},
-			children:Array<HTMLElement> = [], callback:Function = null):Element{
+	export interface DOMObject {
+		DOM:Element;
+	}
+
+	export interface Transformation {
+		mode:string,
+		matrix:number[],
+	};
+
+	export function _<T extends Element>(type:string, props:Object = {},
+		children:Array<HTMLElement> = [], callback:Function = null):T {
 		var elem:Element = null;
 		if (type !== "svg") {
 			elem = document.createElement(type);
@@ -31,7 +46,7 @@ module Unpacker {
 		if (typeof callback === "function" && callback !== null) {
 			callback(elem);
 		}
-		return elem;
+		return <T> elem;
 	}
 
 	export function modernize(styles:Object):Object {
@@ -62,18 +77,20 @@ module Unpacker {
 	}
 
 	export function color(color:number | string):string {
-		if (typeof color === "string") {
-			color = parseInt("" + color);
+		if (typeof color === 'string') {
+			color = parseInt(color.toString());
 			if (color === NaN) {
 				color = 0;
 			}
 		}
 		var code:string = color.toString(16);
 		while (code.length < 6) {
-			code = "0" + code;
+			code = '0' + code;
 		}
-		return "#" + code;
+		return '#' + code;
+	}
+
+	export function unpack(className:string, data:Object):DOMObject {
+		return;
 	}
 }
-
-/// <reference path="TextField.ts" />

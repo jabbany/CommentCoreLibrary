@@ -181,9 +181,18 @@ var Player;
             __trace('Your environment does not support player triggers.', 'warn');
             return;
         }
+        __trace('Comment trigger: not implemented', 'warn');
     }
     Player.commentTrigger = commentTrigger;
     function keyTrigger(callback, timeout) {
+        if (!Runtime.hasObject('__player')) {
+            __trace('Your environment does not support key triggers.', 'warn');
+            return;
+        }
+        var player = Runtime.getObject('__player');
+        player.addEventListener('keydown', function (key) {
+            callback(key.keyCode);
+        });
     }
     Player.keyTrigger = keyTrigger;
     function setMask(mask) {
@@ -194,7 +203,7 @@ var Player;
         return '[player Player]';
     }
     Player.toString = toString;
-    __schannel("Update:DimensionUpdate", function (payload) {
+    __schannel('Update:DimensionUpdate', function (payload) {
         _width = payload["stageWidth"];
         _height = payload["stageHeight"];
         if (payload.hasOwnProperty("videoWidth") &&

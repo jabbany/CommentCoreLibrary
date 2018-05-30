@@ -230,7 +230,9 @@ var CCLScripting = function(workerUrl){
 		this.resetWorker = function(){
 			try{
 				worker.terminate();
-			}catch(e){}
+			} catch(e) {
+
+      }
 			worker = scripter.getWorker();
 			if(!worker){
 				throw new Error("SANDBOX: Worker pool exhausted.");

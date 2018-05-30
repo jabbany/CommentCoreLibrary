@@ -36,14 +36,14 @@ var Tween;
         return c / 2 * (t * t * t * t * t + 2) + b;
     }
     Tween.quintic = quintic;
-    function circuar(t, b, c, d) {
+    function circular(t, b, c, d) {
         t /= d / 2;
         if (t < 1)
             return -c / 2 * (Math.sqrt(1 - t * t) - 1) + b;
         t -= 2;
         return c / 2 * (Math.sqrt(1 - t * t) + 1) + b;
     }
-    Tween.circuar = circuar;
+    Tween.circular = circular;
     function sine(t, b, c, d) {
         return -c / 2 * (Math.cos(Math.PI * t / d) - 1) + b;
     }
@@ -61,7 +61,7 @@ var Tween;
             linear: Tween.linear,
             back: null,
             bounce: null,
-            circular: Tween.circuar,
+            circular: Tween.circular,
             cubic: Tween.cubic,
             elastic: null,
             exponential: Tween.exponential,
@@ -84,7 +84,7 @@ var Tween;
             case "exponential":
                 return Tween.exponential;
             case "circular":
-                return Tween.circuar;
+                return Tween.circular;
             case "quadratic":
                 return Tween.quadratic;
             case "cubic":
@@ -247,19 +247,6 @@ var Tween;
                 object[property] = tween.easing(currentTime, src[property], dest[property] - src[property], totalTime);
             }
         };
-    }
-    function choose(n, k) {
-        if (n < 0 || k < 0) {
-            throw new Error('Cannot compute n-choose-k with negative inputs.');
-        }
-        if (k > n / 2) {
-            return choose(n, n - k);
-        }
-        var value = 1;
-        for (var i = 1; i <= k; i++) {
-            value *= (n + 1 - i) / i;
-        }
-        return value;
     }
     function tween(object, dest, src, duration, easing) {
         if (dest === void 0) { dest = {}; }

@@ -2,13 +2,13 @@
  * General Host Engine for CCLScripter
  * Author: Jim Chen
  */
-import { StageElement, Logger, IPlayer, IScripter } from "./IScripter.ts";
+import { StageElement, Logger, IPlayer, IScripter } from './IScripter.ts';
 
-import { BridgedSandbox } from "./BridgedSandbox.ts";
+import { BridgedSandbox } from './BridgedSandbox.ts';
 
 export class CCLScripter implements IScripter {
-	public backendVersion:string = "KagerouEngine/v1";
-	public frontendVersion:string = "KagerouHost/v1";
+	public backendVersion:string = 'KagerouEngine/v1';
+	public frontendVersion:string = 'KagerouHost/v1';
 	public workerUrl:string;
 
 	/** Setup default logger **/

@@ -10,7 +10,7 @@ module Display {
   class CommentField extends TextField implements IComment {
     private _mM:MotionManager = new MotionManager(this);
 
-    constructor(text:string, params:Object) {
+    constructor(text:string, params:Object = {}) {
       super(text, 0xffffff);
       this.setDefaults(params);
       this.initStyle(params);

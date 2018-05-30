@@ -48,8 +48,9 @@ var Display;
             this.y = y;
         };
         Point.prototype.equals = function (p) {
-            if (p.x === this.x && p.y === this.y)
+            if (p.x === this.x && p.y === this.y) {
                 return true;
+            }
             return false;
         };
         Point.prototype.toString = function () {
@@ -371,6 +372,89 @@ var Display;
 })(Display || (Display = {}));
 var Display;
 (function (Display) {
+    var ColorTransform = (function () {
+        function ColorTransform(redMultiplier, greenMultiplier, blueMultiplier, alphaMultiplier, redOffset, greenOffset, blueOffset, alphaOffset) {
+            if (redMultiplier === void 0) { redMultiplier = 1; }
+            if (greenMultiplier === void 0) { greenMultiplier = 1; }
+            if (blueMultiplier === void 0) { blueMultiplier = 1; }
+            if (alphaMultiplier === void 0) { alphaMultiplier = 1; }
+            if (redOffset === void 0) { redOffset = 0; }
+            if (greenOffset === void 0) { greenOffset = 0; }
+            if (blueOffset === void 0) { blueOffset = 0; }
+            if (alphaOffset === void 0) { alphaOffset = 0; }
+            this.redMultiplier = redMultiplier;
+            this.greenMultiplier = greenMultiplier;
+            this.blueMultiplier = blueMultiplier;
+            this.alphaMultiplier = alphaMultiplier;
+            this.redOffset = redOffset;
+            this.greenOffset = greenOffset;
+            this.blueOffset = blueOffset;
+            this.alphaOffset = alphaOffset;
+        }
+        Object.defineProperty(ColorTransform.prototype, "color", {
+            get: function () {
+                return this.redOffset << 16 | this.greenOffset << 8 | this.blueOffset;
+            },
+            set: function (color) {
+                this.redOffset = ((color >> 16) & 0xFF);
+                this.greenOffset = ((color >> 8) & 0xFF);
+                this.blueOffset = color & 0xFF;
+                this.redMultiplier = 0;
+                this.greenMultiplier = 0;
+                this.blueMultiplier = 0;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        ColorTransform.prototype.concat = function (second) {
+            this.redMultiplier *= second.redMultiplier;
+            this.greenMultiplier *= second.greenMultiplier;
+            this.blueMultiplier *= second.blueMultiplier;
+            this.alphaMultiplier *= second.alphaMultiplier;
+            this.redOffset += second.redOffset;
+            this.greenOffset += second.greenOffset;
+            this.blueOffset += second.blueOffset;
+            this.alphaOffset += second.alphaOffset;
+        };
+        ColorTransform.prototype.serialize = function () {
+            return {
+                'class': 'ColorTransform',
+                'red': {
+                    'offset': this.redOffset,
+                    'multiplier': this.redMultiplier
+                },
+                'green': {
+                    'offset': this.greenOffset,
+                    'multiplier': this.greenMultiplier
+                },
+                'blue': {
+                    'offset': this.blueOffset,
+                    'multiplier': this.blueMultiplier
+                },
+                'alpha': {
+                    'offset': this.alphaOffset,
+                    'multiplier': this.alphaMultiplier
+                }
+            };
+        };
+        return ColorTransform;
+    }());
+    Display.ColorTransform = ColorTransform;
+    function createColorTransform(redMultiplier, greenMultiplier, blueMultiplier, alphaMultiplier, redOffset, greenOffset, blueOffset, alphaOffset) {
+        if (redMultiplier === void 0) { redMultiplier = 1; }
+        if (greenMultiplier === void 0) { greenMultiplier = 1; }
+        if (blueMultiplier === void 0) { blueMultiplier = 1; }
+        if (alphaMultiplier === void 0) { alphaMultiplier = 1; }
+        if (redOffset === void 0) { redOffset = 0; }
+        if (greenOffset === void 0) { greenOffset = 0; }
+        if (blueOffset === void 0) { blueOffset = 0; }
+        if (alphaOffset === void 0) { alphaOffset = 0; }
+        return new ColorTransform(redMultiplier, greenMultiplier, blueMultiplier, alphaMultiplier, redOffset, greenOffset, blueOffset, alphaOffset);
+    }
+    Display.createColorTransform = createColorTransform;
+})(Display || (Display = {}));
+var Display;
+(function (Display) {
     var PerspectiveProjection = (function () {
         function PerspectiveProjection(t) {
             if (t === void 0) { t = null; }
@@ -647,6 +731,38 @@ var Display;
         };
         return DropShadowFilter;
     }(Filter));
+    var ConvolutionFilter = (function (_super) {
+        __extends(ConvolutionFilter, _super);
+        function ConvolutionFilter(matrixX, matrixY, matrix, divisor, bias, preserveAlpha, clamp, color, alpha) {
+            if (matrixX === void 0) { matrixX = 0; }
+            if (matrixY === void 0) { matrixY = 0; }
+            if (matrix === void 0) { matrix = null; }
+            if (divisor === void 0) { divisor = 1.0; }
+            if (bias === void 0) { bias = 0.0; }
+            if (preserveAlpha === void 0) { preserveAlpha = true; }
+            if (clamp === void 0) { clamp = true; }
+            if (color === void 0) { color = 0; }
+            if (alpha === void 0) { alpha = 0.0; }
+            _super.call(this);
+        }
+        ;
+        ConvolutionFilter.prototype.serialize = function () {
+            var s = _super.prototype.serialize.call(this);
+            s['type'] = 'convolution';
+            s['matrix'] = {
+                'x': this._matrixX,
+                'y': this._matrixY,
+                'data': this._matrix
+            };
+            s['divisor'] = this._divisor;
+            s['preserveAlpha'] = this._preserveAlpha;
+            s['clamp'] = this._clamp;
+            s['color'] = this._color;
+            s['alpha'] = this._alpha;
+            return s;
+        };
+        return ConvolutionFilter;
+    }(Filter));
     function createDropShadowFilter(distance, angle, color, alpha, blurX, blurY, strength, quality) {
         if (distance === void 0) { distance = 4.0; }
         if (angle === void 0) { angle = 45; }
@@ -682,8 +798,17 @@ var Display;
         throw new Error('Display.createBevelFilter not implemented');
     }
     Display.createBevelFilter = createBevelFilter;
-    function createConvolutionFilter() {
-        throw new Error('Display.createConvolutionFilter not implemented');
+    function createConvolutionFilter(matrixX, matrixY, matrix, divisor, bias, preserveAlpha, clamp, color, alpha) {
+        if (matrixX === void 0) { matrixX = 0; }
+        if (matrixY === void 0) { matrixY = 0; }
+        if (matrix === void 0) { matrix = null; }
+        if (divisor === void 0) { divisor = 1.0; }
+        if (bias === void 0) { bias = 0.0; }
+        if (preserveAlpha === void 0) { preserveAlpha = true; }
+        if (clamp === void 0) { clamp = true; }
+        if (color === void 0) { color = 0; }
+        if (alpha === void 0) { alpha = 0.0; }
+        return new ConvolutionFilter(matrixX, matrixY, matrix, divisor, bias, preserveAlpha, clamp, color, alpha);
     }
     Display.createConvolutionFilter = createConvolutionFilter;
     function createDisplacementMapFilter() {
@@ -702,89 +827,6 @@ var Display;
         throw new Error('Display.createColorMatrixFilter not implemented');
     }
     Display.createColorMatrixFilter = createColorMatrixFilter;
-})(Display || (Display = {}));
-var Display;
-(function (Display) {
-    var ColorTransform = (function () {
-        function ColorTransform(redMultiplier, greenMultiplier, blueMultiplier, alphaMultiplier, redOffset, greenOffset, blueOffset, alphaOffset) {
-            if (redMultiplier === void 0) { redMultiplier = 1; }
-            if (greenMultiplier === void 0) { greenMultiplier = 1; }
-            if (blueMultiplier === void 0) { blueMultiplier = 1; }
-            if (alphaMultiplier === void 0) { alphaMultiplier = 1; }
-            if (redOffset === void 0) { redOffset = 0; }
-            if (greenOffset === void 0) { greenOffset = 0; }
-            if (blueOffset === void 0) { blueOffset = 0; }
-            if (alphaOffset === void 0) { alphaOffset = 0; }
-            this.redMultiplier = redMultiplier;
-            this.greenMultiplier = greenMultiplier;
-            this.blueMultiplier = blueMultiplier;
-            this.alphaMultiplier = alphaMultiplier;
-            this.redOffset = redOffset;
-            this.greenOffset = greenOffset;
-            this.blueOffset = blueOffset;
-            this.alphaOffset = alphaOffset;
-        }
-        Object.defineProperty(ColorTransform.prototype, "color", {
-            get: function () {
-                return this.redOffset << 16 | this.greenOffset << 8 | this.blueOffset;
-            },
-            set: function (color) {
-                this.redOffset = ((color >> 16) & 0xFF);
-                this.greenOffset = ((color >> 8) & 0xFF);
-                this.blueOffset = color & 0xFF;
-                this.redMultiplier = 0;
-                this.greenMultiplier = 0;
-                this.blueMultiplier = 0;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        ColorTransform.prototype.concat = function (second) {
-            this.redMultiplier *= second.redMultiplier;
-            this.greenMultiplier *= second.greenMultiplier;
-            this.blueMultiplier *= second.blueMultiplier;
-            this.alphaMultiplier *= second.alphaMultiplier;
-            this.redOffset += second.redOffset;
-            this.greenOffset += second.greenOffset;
-            this.blueOffset += second.blueOffset;
-            this.alphaOffset += second.alphaOffset;
-        };
-        ColorTransform.prototype.serialize = function () {
-            return {
-                'class': 'ColorTransform',
-                'red': {
-                    'offset': this.redOffset,
-                    'multiplier': this.redMultiplier
-                },
-                'green': {
-                    'offset': this.greenOffset,
-                    'multiplier': this.greenMultiplier
-                },
-                'blue': {
-                    'offset': this.blueOffset,
-                    'multiplier': this.blueMultiplier
-                },
-                'alpha': {
-                    'offset': this.alphaOffset,
-                    'multiplier': this.alphaMultiplier
-                }
-            };
-        };
-        return ColorTransform;
-    }());
-    Display.ColorTransform = ColorTransform;
-    function createColorTransform(redMultiplier, greenMultiplier, blueMultiplier, alphaMultiplier, redOffset, greenOffset, blueOffset, alphaOffset) {
-        if (redMultiplier === void 0) { redMultiplier = 1; }
-        if (greenMultiplier === void 0) { greenMultiplier = 1; }
-        if (blueMultiplier === void 0) { blueMultiplier = 1; }
-        if (alphaMultiplier === void 0) { alphaMultiplier = 1; }
-        if (redOffset === void 0) { redOffset = 0; }
-        if (greenOffset === void 0) { greenOffset = 0; }
-        if (blueOffset === void 0) { blueOffset = 0; }
-        if (alphaOffset === void 0) { alphaOffset = 0; }
-        return new ColorTransform(redMultiplier, greenMultiplier, blueMultiplier, alphaMultiplier, redOffset, greenOffset, blueOffset, alphaOffset);
-    }
-    Display.createColorTransform = createColorTransform;
 })(Display || (Display = {}));
 var Display;
 (function (Display) {
@@ -1773,9 +1815,70 @@ var Display;
         return RootSprite;
     }(Sprite));
     Display.RootSprite = RootSprite;
+    var UIComponent = (function (_super) {
+        __extends(UIComponent, _super);
+        function UIComponent(id) {
+            _super.call(this, id);
+            this._styles = {};
+        }
+        UIComponent.prototype.clearStyle = function (style) {
+            delete this._styles[style];
+        };
+        UIComponent.prototype.getStyle = function (style) {
+            return this._styles[style];
+        };
+        UIComponent.prototype.setStyle = function (styleProp, value) {
+            __trace("UIComponent.setStyle not implemented", "warn");
+            this._styles[styleProp] = value;
+        };
+        UIComponent.prototype.setFocus = function () {
+            this.methodCall("setFocus", null);
+        };
+        UIComponent.prototype.setSize = function (width, height) {
+            this.width = width;
+            this.height = height;
+        };
+        UIComponent.prototype.move = function (x, y) {
+            this.x = x;
+            this.y = y;
+        };
+        return UIComponent;
+    }(Sprite));
+    Display.UIComponent = UIComponent;
 })(Display || (Display = {}));
 var Display;
 (function (Display) {
+    var DirtyArea = (function () {
+        function DirtyArea() {
+            this._xBegin = null;
+            this._yBegin = null;
+            this._xEnd = null;
+            this._yEnd = null;
+        }
+        DirtyArea.prototype.expand = function (x, y) {
+            this._xBegin = this._xBegin === null ? x : Math.min(this._xBegin, x);
+            this._xEnd = this._xEnd === null ? x : Math.max(this._xEnd, x);
+            this._yBegin = this._yBegin === null ? y : Math.min(this._yBegin, y);
+            this._yEnd = this._xEnd === null ? y : Math.max(this._yEnd, y);
+        };
+        DirtyArea.prototype.asRect = function () {
+            if (this.isEmpty()) {
+                return new Display.Rectangle(0, 0, 0, 0);
+            }
+            return new Display.Rectangle(this._xBegin, this._yBegin, this._xEnd - this._xBegin, this._yEnd - this._yBegin);
+        };
+        DirtyArea.prototype.isEmpty = function () {
+            return this._xBegin === null || this._yBegin === null ||
+                this._xEnd === null || this._yEnd === null;
+        };
+        DirtyArea.prototype.reset = function () {
+            this._xBegin = null;
+            this._xEnd = null;
+            this._yBegin = null;
+            this._yEnd = null;
+        };
+        return DirtyArea;
+    }());
     var Bitmap = (function (_super) {
         __extends(Bitmap, _super);
         function Bitmap() {
@@ -1840,9 +1943,12 @@ var Display;
     }(Array));
     Display.ByteArray = ByteArray;
     var BitmapData = (function () {
-        function BitmapData(width, height, transparent, fillColor) {
+        function BitmapData(width, height, transparent, fillColor, id) {
             if (transparent === void 0) { transparent = true; }
             if (fillColor === void 0) { fillColor = 0xffffffff; }
+            if (id === void 0) { id = Runtime.generateId(); }
+            this._locked = false;
+            this._id = id;
             this._rect = new Display.Rectangle(0, 0, width, height);
             this._transparent = transparent;
             this._fillColor = fillColor;
@@ -1853,6 +1959,40 @@ var Display;
             for (var i = 0; i < this._rect.width * this._rect.height; i++) {
                 this._byteArray.push(this._fillColor);
             }
+        };
+        BitmapData.prototype._updateBox = function (changeRect) {
+            if (changeRect === void 0) { changeRect = null; }
+            if (this._dirtyArea.isEmpty()) {
+                return;
+            }
+            if (this._locked) {
+                return;
+            }
+            var change = changeRect === null ? this._dirtyArea.asRect() :
+                changeRect;
+            if (!this._rect.containsRect(change)) {
+                __trace('BitmapData._updateBox box ' + change.toString() +
+                    ' out of bonunds ' + this._rect.toString(), 'err');
+                throw new Error('Rectangle provided was not within image bounds.');
+            }
+            var region = [];
+            for (var i = 0; i < change.height; i++) {
+                for (var j = 0; j < change.width; j++) {
+                    region.push(this._byteArray[(change.y + i) * this._rect.width +
+                        change.x + j]);
+                }
+            }
+            this._call('updateBox', {
+                'box': change.serialize(),
+                'values': region
+            });
+        };
+        BitmapData.prototype._call = function (method, args) {
+            __pchannel('Runtime:CallMethod', {
+                'id': this.getId(),
+                'name': name,
+                'value': args,
+            });
         };
         Object.defineProperty(BitmapData.prototype, "height", {
             get: function () {
@@ -1924,6 +2064,7 @@ var Display;
                 color = color & 0xffffffff;
             }
             this._byteArray[y * this._rect.width + x] = color;
+            this._dirtyArea.expand(x, y);
         };
         BitmapData.prototype.setPixels = function (rect, input) {
             if (rect.width === 0 || rect.height === 0) {
@@ -1937,8 +2078,25 @@ var Display;
                 for (var j = 0; j < rect.height; j++) {
                     this._byteArray[(rect.y + j) * this.width + (rect.x + i)] =
                         input[j * rect.width + i];
+                    this._dirtyArea.expand(i, j);
                 }
             }
+        };
+        BitmapData.prototype.lock = function () {
+            this._locked = true;
+        };
+        BitmapData.prototype.unlock = function (changeRect) {
+            if (changeRect === void 0) { changeRect = null; }
+            this._locked = false;
+            if (changeRect == null) {
+                this._updateBox();
+            }
+            else {
+                this._updateBox(changeRect);
+            }
+        };
+        BitmapData.prototype.getId = function () {
+            return this._id;
         };
         BitmapData.prototype.serialize = function () {
             return {
@@ -2185,9 +2343,6 @@ var Display;
             this.bindParent(params);
             this._mM.play();
         }
-        CommentButton.prototype.setStyle = function (styleProp, value) {
-            __trace("UIComponent.setStyle not implemented", "warn");
-        };
         Object.defineProperty(CommentButton.prototype, "motionManager", {
             get: function () {
                 return this._mM;
@@ -2230,7 +2385,7 @@ var Display;
             return serialized;
         };
         return CommentButton;
-    }(Display.Sprite));
+    }(Display.UIComponent));
     function createButton(params) {
         return new CommentButton(params);
     }
@@ -2547,6 +2702,7 @@ var Display;
     var CommentField = (function (_super) {
         __extends(CommentField, _super);
         function CommentField(text, params) {
+            if (params === void 0) { params = {}; }
             _super.call(this, text, 0xffffff);
             this._mM = new Display.MotionManager(this);
             this.setDefaults(params);

@@ -45,7 +45,7 @@ module Tween {
     return c / 2 * (t * t * t * t * t + 2) + b;
   }
 
-  export function circuar(t:number, b:number, c:number, d:number):number {
+  export function circular(t:number, b:number, c:number, d:number):number {
     t /= d / 2;
     if (t < 1) return -c / 2 * (Math.sqrt(1 - t * t) - 1) + b;
     t -= 2;
@@ -73,7 +73,7 @@ module Tween {
       linear: Tween.linear,
       back: null,
       bounce: null,
-      circular: Tween.circuar,
+      circular: Tween.circular,
       cubic: Tween.cubic,
       elastic: null,
       exponential: Tween.exponential,
@@ -95,7 +95,7 @@ module Tween {
       case "exponential":
         return Tween.exponential;
       case "circular":
-        return Tween.circuar;
+        return Tween.circular;
       case "quadratic":
         return Tween.quadratic;
       case "cubic":

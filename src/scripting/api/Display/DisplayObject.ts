@@ -41,63 +41,63 @@ module Display {
       this._height= height;
     }
 
-    set x(v:number) {
+    public set x(v:number) {
       if (v !== null) {
         this._x = v;
       }
     }
 
-    set y(v:number) {
+    public set y(v:number) {
       if (v !== null) {
         this._y = v;
       }
     }
 
-    set width(v:number) {
+    public set width(v:number) {
       if (v !== null) {
         this._width = v;
       }
     }
 
-    set height(v:number) {
+    public set height(v:number) {
       if (v !== null) {
         this._height = v;
       }
     }
 
-    get x():number {
+    public get x():number {
       return this._x;
     }
 
-    get y():number {
+    public get y():number {
       return this._y;
     }
 
-    get width():number {
+    public get width():number {
       return this._width;
     }
 
-    get height():number {
+    public get height():number {
       return this._height;
     }
 
-    get left():number {
+    public get left():number {
       return this._x;
     }
 
-    get right():number {
+    public get right():number {
       return this._x + this._width;
     }
 
-    get top():number {
+    public get top():number {
       return this._y;
     }
 
-    get bottom():number {
+    public get bottom():number {
       return this._y + this._height;
     }
 
-    get size():any {
+    public get size():any {
       return Display.createPoint(this._width, this._height);
     }
 
@@ -330,43 +330,43 @@ module Display {
     }
 
     /** Properties **/
-    set alpha(value:number) {
+    public set alpha(value:number) {
       this._alpha = value;
       this.propertyUpdate("alpha", value);
     }
 
-    get alpha():number {
+    public get alpha():number {
       return this._alpha;
     }
 
-    set anchor(p:Point) {
+    public set anchor(p:Point) {
       this._anchor = p;
       this.propertyUpdate("x", p.x);
       this.propertyUpdate("y", p.y);
     }
 
-    get anchor():Point {
+    public get anchor():Point {
       return this._anchor;
     }
 
-    set boundingBox(r:Rectangle) {
+    public set boundingBox(r:Rectangle) {
       this._boundingBox = r;
       this.propertyUpdate("boundingBox", r.serialize());
     }
 
-    get boundingBox():Rectangle {
+    public get boundingBox():Rectangle {
       return this._boundingBox;
     }
 
-    set cacheAsBitmap(value:boolean) {
+    public set cacheAsBitmap(value:boolean) {
       __trace("DisplayObject.cacheAsBitmap is not supported", "warn");
     }
 
-    get cacheAsBitmap():boolean {
+    public get cacheAsBitmap():boolean {
       return false;
     }
 
-    set filters(filters:Array<Filter>) {
+    public set filters(filters:Array<Filter>) {
       this._filters = filters ? filters : [];
       var serializedFilters:Array<Object> = [];
       for (var i = 0; i < this._filters.length; i++) {
@@ -378,23 +378,23 @@ module Display {
       this.propertyUpdate("filters", serializedFilters);
     }
 
-    get filters():Array<Filter> {
+    public get filters():Array<Filter> {
       return this._filters;
     }
 
-    get root():DisplayObject {
+    public get root():DisplayObject {
       return Display.root;
     }
 
-    set root(s:DisplayObject) {
+    public set root(s:DisplayObject) {
       __trace("DisplayObject.root is read-only.","warn");
     }
 
-    get stage():DisplayObject {
+    public get stage():DisplayObject {
       return Display.root;
     }
 
-    set stage(s:DisplayObject) {
+    public set stage(s:DisplayObject) {
       __trace("DisplayObject.stage is read-only.","warn");
     }
 
@@ -418,134 +418,134 @@ module Display {
       this.transform = this._transform;
     }
 
-    set rotationX(x:number) {
+    public set rotationX(x:number) {
       this._rotationX = x;
       this._updateBox("3d");
     }
 
-    set rotationY(y:number) {
+    public set rotationY(y:number) {
       this._rotationY = y;
       this._updateBox("3d");
     }
 
-    set rotationZ(z:number) {
+    public set rotationZ(z:number) {
       this._rotationZ = z;
       this._updateBox();
     }
 
-    set rotation(r:number) {
+    public set rotation(r:number) {
       this._rotationZ = r;
       this._updateBox();
     }
 
-    set scaleX(val:number) {
+    public set scaleX(val:number) {
       this._scaleX = val;
       this._updateBox();
     }
 
-    set scaleY(val:number) {
+    public set scaleY(val:number) {
       this._scaleY = val;
       this._updateBox();
     }
 
-    set scaleZ(val:number) {
+    public set scaleZ(val:number) {
       this._scaleZ = val;
       this._updateBox("3d");
     }
 
-    set x(val:number) {
+    public set x(val:number) {
       this._anchor.x = val;
       this.propertyUpdate("x", val);
     }
 
-    set y(val:number) {
+    public set y(val:number) {
       this._anchor.y = val;
       this.propertyUpdate("y", val);
     }
 
-    set z(val:number) {
+    public set z(val:number) {
       this._z = val;
       this._updateBox("3d");
     }
 
-    get rotationX():number {
+    public get rotationX():number {
       return this._rotationX;
     }
 
-    get rotationY():number {
+    public get rotationY():number {
       return this._rotationY;
     }
 
-    get rotationZ():number {
+    public get rotationZ():number {
       return this._rotationZ;
     }
 
-    get rotation():number {
+    public get rotation():number {
       return this._rotationZ;
     }
 
-    get scaleX():number {
+    public get scaleX():number {
       return this._scaleX;
     }
 
-    get scaleY():number {
+    public get scaleY():number {
       return this._scaleY;
     }
 
-    get scaleZ():number {
+    public get scaleZ():number {
       return this._scaleZ;
     }
 
-    get x():number {
+    public get x():number {
       return this._anchor.x;
     }
 
-    get y():number {
+    public get y():number {
       return this._anchor.y;
     }
 
-    get z():number {
+    public get z():number {
       return this._z;
     }
     /** End Transform Area **/
 
-    set width(w:number) {
+    public set width(w:number) {
       this._boundingBox.width = w;
       this.propertyUpdate('width', w);
     }
 
-    get width():number {
+    public get width():number {
       return this._boundingBox.width;
     }
 
-    set height(h:number) {
+    public set height(h:number) {
       this._boundingBox.height = h;
       this.propertyUpdate('height', h);
     }
 
-    get height():number {
+    public get height():number {
       return this._boundingBox.height;
     }
 
-    set visible(visible:boolean) {
+    public set visible(visible:boolean) {
       this._visible = visible;
       this.propertyUpdate('visible', visible);
     }
 
-    get visible():boolean {
+    public get visible():boolean {
       return this._visible;
     }
 
-    set blendMode(blendMode:string) {
+    public set blendMode(blendMode:string) {
       this._blendMode = blendMode;
       this.propertyUpdate('blendMode', blendMode);
     }
 
-    get blendMode():string {
+    public get blendMode():string {
       return this._blendMode;
     }
 
-    set transform(t:any) {
+    public set transform(t:any) {
       this._transform = t;
       if (this._transform.parent !== this) {
         this._transform.parent = this;
@@ -553,33 +553,33 @@ module Display {
       this.propertyUpdate('transform', this._transform.serialize());
     }
 
-    get transform():any {
+    public get transform():any {
       return this._transform;
     }
 
-    set name(name:string) {
+    public set name(name:string) {
       this._name = name;
       this.propertyUpdate('name', name);
     }
 
-    get name():string {
+    public get name():string {
       return this._name;
     }
 
-    set loaderInfo(name:any) {
+    public set loaderInfo(name:any) {
       __trace("DisplayObject.loaderInfo is read-only", "warn");
     }
 
-    get loaderInfo():any {
+    public get loaderInfo():any {
       __trace("DisplayObject.loaderInfo is not supported", "warn");
       return {};
     }
 
-    set parent(p:DisplayObject) {
+    public set parent(p:DisplayObject) {
       __trace("DisplayObject.parent is read-only", "warn");
     }
 
-    get parent():DisplayObject {
+    public get parent():DisplayObject {
       return this._parent !== null ? this._parent : Display.root;
     }
 

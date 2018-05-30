@@ -85,6 +85,10 @@ export class OOAPIWorker {
     }
   }
 
+  public send(message:OOAPIMessage):void {
+    this._worker.postMessage(JSON.stringify(message));
+  }
+
   public setMalformedEventHandler(handler:Function):void {
     this._malformedHandler = handler;
   }

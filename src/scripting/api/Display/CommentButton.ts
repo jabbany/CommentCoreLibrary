@@ -7,7 +7,7 @@ module Display {
   /**
    * Compliant CommentButton Polyfill For BiliScriptEngine
    */
-  class CommentButton extends Sprite implements IComment {
+  class CommentButton extends UIComponent implements IComment {
     private _mM:MotionManager = new MotionManager(this);
     private _label:string = "";
 
@@ -18,15 +18,6 @@ module Display {
       Runtime.registerObject(this);
       this.bindParent(params);
       this._mM.play();
-    }
-
-    /**
-     * Set the style for the UIComponent which this is
-     * @param styleProp - style to set
-     * @param value - value to set the style to
-     */
-    public setStyle(styleProp:string, value:any):void {
-      __trace("UIComponent.setStyle not implemented", "warn");
     }
 
     get motionManager():MotionManager {

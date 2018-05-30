@@ -16,5 +16,29 @@ Tween Libraries Set是一套尽可能还原支持B站原有补间动画的补间
 - bezier 曲线补间
 
 
-## 补间函数（Easing）
-说到补间，就必须有补间函数咯。
+## 补间函数 Easing
+说到补间，就必须有补间函数。补间函数形如 `easing(time, begin, change, duration)`。每个
+参数的功能如下：
+
+- `time`, `duration`: 决定动画播放的位置。`time` 是一个在 `0-duration` 之间的数字。
+- `begin`, `change` : 决定补间处理的属性的值域。`begin` 为 `time=0` 时的取值，
+    `begin + change` 为 `time=duration` 时的取值。
+
+基本函数结构如下：
+
+```
+param = fn(time / duration) * change + begin
+```
+具体支持如下函数：
+
+- linear 线性补间
+- quadratic 平方补间
+- cubic 立方补间
+- quartic 四次方补间
+- quintic 五次方补间
+- circular 圆形补间
+- sine 三角函数补间
+- exponential 幂补间
+
+函数图像参考： [easings.net](http://easings.net/)
+所有函数都以 Ease in out 给出（同时作为进入和退出补间）

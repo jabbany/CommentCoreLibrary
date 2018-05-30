@@ -2,56 +2,56 @@
  * Host end unpacker for generic DisplayObjects
  * @author Jim Chen
  */
-/// <reference path="Unpacker.ts" />
+/// <reference path='Unpacker.ts' />
 module Unpacker{
-	export class DisplayObject{
+	export class DisplayObject implements DOMObject {
 		public DOM:HTMLDivElement;
 		private _x:number;
 		private _y:number;
 		private _alpha:number;
-		private _transform:Object = {
-			"mode":"3d",
-			"matrix":[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]
+		private _transform:Transformation = {
+			'mode':'3d',
+			'matrix':[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]
 		};
 
 		constructor(stage:any, data:Object, context:any){
 			Unpacker.sensibleDefaults(data,{
-				"x": 0,
-				"y": 0,
-				"alpha": 1
+				'x': 0,
+				'y': 0,
+				'alpha': 1
 			});
-			this.DOM = <HTMLDivElement> Unpacker._("div",{
-				"style": {
-					"position":"absolute",
-					"transform":"matrix3d(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1)",
-					"transformOrigin":"0 0 0",
-					"opacity": data["alpha"],
-					"top": data["y"],
-					"left": data["x"]
+			this.DOM =  Unpacker._<HTMLDivElement>('div',{
+				'style': {
+					'position':'absolute',
+					'transform':'matrix3d(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1)',
+					'transformOrigin':'0 0 0',
+					'opacity': data['alpha'],
+					'top': data['y'],
+					'left': data['x']
 				}
 			});
-			this._x = data["x"];
-			this._y = data["y"];
-			this._alpha = data["alpha"];
+			this._x = data['x'];
+			this._y = data['y'];
+			this._alpha = data['alpha'];
 		}
 
 		set x(x:number){
 			this._x = x;
-			this.DOM.style.left = x + "px";
+			this.DOM.style.left = x + 'px';
 		}
 
 		set y(y:number){
 			this._y = y;
-			this.DOM.style.top = y + "px";
+			this.DOM.style.top = y + 'px';
 		}
 
 		set alpha(alpha:number){
 			this._alpha = alpha;
-			this.DOM.style.opacity = alpha + "";
+			this.DOM.style.opacity = alpha.toString();
 		}
 
 		set visible(v:boolean){
-			this.DOM.style.visibility = v ? "visible" : "hidden";
+			this.DOM.style.visibility = v ? 'visible' : 'hidden';
 		}
 
 		get x():number{
@@ -67,27 +67,27 @@ module Unpacker{
 		}
 
 		get visible():boolean{
-			return this.DOM.style.visibility !== "hidden";
+			return this.DOM.style.visibility !== 'hidden';
 		}
 
 		/** Transform **/
-		set transform(transformation:Object){
-			if (transformation.hasOwnProperty("mode")) {
-				this._transform = transformation;
-				if (transformation["mode"] === "2d") {
-					this.DOM.style.transform = "matrix2d(" +
-						transformation.matrix.join(",") + ")";
-				} else if (transformation["mode"] === "3d") {
-					this.DOM.style.transform = "matrix3d(" +
-						transformation.matrix.join(",") + ")";
-				} else {
-					throw new Error("Transform mode " +
-						transformation.mode + " not supported.");
-				}
+		set transform(transformation:Transformation) {
+			this._transform = transformation;
+			switch(transformation.mode) {
+				case '2d':
+					this.DOM.style.transform = 'matrix2d(' +
+						transformation.matrix.join(',') + ')';
+					break;
+				case '3d':
+					this.DOM.style.transform = 'matrix3d(' +
+						transformation.matrix.join(',') + ')'
+				default:
+					throw new Error('Transform mode ' + transformation.mode +
+						' not supported.');
 			}
 		}
 
-		get transform():Object{
+		get transform():Transformation {
 			return this._transform;
 		}
 	}

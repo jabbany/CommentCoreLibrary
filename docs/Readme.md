@@ -7,9 +7,10 @@ CCL包括一套尽可能完备的文档来帮助二次开发。文档主要针�
 ## 入门文档 Tutorial
 想开始对 CCL 的开发却还不太了解 CommentCoreLibrary？希望在自己的项目里使用 CCL 却不熟悉接口？
 赶紧来看:
-- [入门文档](Tutorial.zh_CN.md)
-- [チュートリアル](Tutorial.ja_JP.md)
-- [Quick Tutorial](Tutorial.md)
+
+- [入门文档](Tutorial.zh_CN.md) | [チュートリアル](Tutorial.ja_JP.md) |
+    [Quick Tutorial](Tutorial.md)
+- 原理介绍
 
 ## 常见问题 FAQ
 理论上CCL兼容的功能非常之多，但是并不是所有的功能都在库中有实现，有关实现一些效果的较好的做法，请参考

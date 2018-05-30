@@ -2,23 +2,26 @@
 以下包括一些常见的问题，和我们推荐的解决方案。
 
 ### 弹幕速度 Comment Default Speed
-调整弹幕速度无需更改代码。相比之下我们更推荐使用 `CommentManager.options`下调整。相关参数是：
+调整弹幕速度无需更改代码。相比之下我们更推荐使用 `CommentManager.options` 下调整。
+相关参数是：
 
 - `options.global.scale` 全局生存时间加成
 - `options.scroll.scale` 滚动弹幕生存时间加成
 
-默认的弹幕生存时间是 `4.000s`，加成参数叠加使用，比如如果 `global.scale = a`，`scroll.scale = b`
-那么一条滚动弹幕（滚动，底部滚动，逆向）的总生存时间就是 `4 * a * b`，而固定弹幕（顶部，底部）的
-生存时间则是 `4 * a`。
+默认的弹幕生存时间是 `4.000s`，加成参数叠加使用，比如如果 `global.scale = a`，
+`scroll.scale = b` 那么一条滚动弹幕（滚动，底部滚动，逆向）的总生存时间就是 `4 * a * b`
+秒，而固定弹幕（顶部，底部）的生存时间则是 `4 * a` 秒。
 
-加成数值越大， **弹幕运行速度越低**。不过值得注意的是，每条弹幕的“速度”是不一样的，根据弹幕的长度
-决定。这里的加成数值只改变弹幕的“生存时间“。
+加成数值越大， **弹幕运行速度越低**。不过值得注意的是，每条弹幕的“速度”是不一样的，根据弹幕的
+长度决定。这里的加成数值只改变弹幕的 “生存时间“ 。
 
-注意：改变全局加成会改变包括高级弹幕在内的所有弹幕的生存时间。请确认你真的希望这样做才更改`global`。
+注意：改变全局加成会改变包括高级弹幕在内的所有弹幕的生存时间。请确认你真的希望这样做才更改
+`global`。
 
 ### 弹幕字号（和速度）同步拉伸 Autoscale Comment
 如果希望实现弹幕的速度和字号同步拉伸的话，比起更改每条弹幕，我们更加推荐直接拉伸弹幕舞台/“容器”。
 注意的步骤如下：
+
 - **不要** 更改弹幕速度的加成数值，弹幕大了自然速度就慢了，没必要继续降低速度。
 - 首先，确定默认的容器大小，这个大小为弹幕字号 1:1 的大小。
 - 注意更新 setBounds让等比放大的弹幕容器还能继续填满视频
@@ -26,19 +29,34 @@
 实现的伪代码如下：
 
 ```JavaScript
-var container = document.getElementById("container");
-var width = WIDTH, height = HEIGHT;
+// cm.stage 的父对象或播放器容器等会变大的东西
+var containerParent = document.getElementById("container-parent");
+// 记住默认大小，此处亦可换成固定的默认大小
+var defWidth = CM.width, defHeight = CM.height;
 
-// 计算缩放比例，只看宽度
-var scale = container.offsetWidth / WIDTH;
+// 这里代表任何播放器/父对象的的resize，如果有多处可能触发resize的地方（如全屏化）都须绑定
+containerParent.addEventListener('resize', function () {
+  var stage = CM.stage; // CommentManager 的 stage
 
-//计算高度差，更新银幕
-var expHeight = (container.offsetHeight / scale);
-cm.setBounds(width, expHeight); // 更新空间管理器的大小
+  // 计算缩放比例，只看宽度
+  var scale = containerParent.offsetWidth / defWidth;
+  var relHeight = containerParent.offsetHeight / scale;
 
-// 用 CSS 来拉伸银幕
-container.style.transform = "scale(" + scale + ")";
+  // 把弹幕舞台设置成小版舞台
+  CM.setBounds(defWidth, relHeight);
+  stage.style.width = defWidth;
+  stage.style.height = relHeight;
+
+  // 用 CSS 来拉伸
+  stage.style.transform = "scale(" + scale + ")";
+});
 ```
+
+### 防挡字幕 Subtitle Area Avoidance
+TBD
+
+### 单独弹幕停止 Individually Stop Comment
+TBD
 
 ### 弹幕透明度 Opacity
 弹幕透明度有两个设置方法，位于
@@ -46,8 +64,20 @@ container.style.transform = "scale(" + scale + ")";
 - `options.global.opacity` 全局透明度上限
 - `options.scroll.opacity` 滚动弹幕透明度上限
 
-一般情况下，允许用户更改的透明度上限应该是滚动弹幕上限。更改全局上限的话可能引发弹幕字符画的不利显示。
-注意：虽然在设置里叫opacity其实这个是对应弹幕的 alpha 字段。
+一般情况下，允许用户更改的透明度上限应该是滚动弹幕上限。更改全局上限的话可能引发弹幕字符画的
+不利显示。注意：虽然在设置里叫 `opacity` 其实这个是对应弹幕的 `alpha` 字段。
+
+### 播放器跳跃判定 Seek Trigger
+默认情况下当两个 `time()` 调用提供的时间 `t2 - t1 >= 2000ms` 时，播放器将会判定这个操作
+是因为用户在重新定位时间轴。这个操作和 `t2 < t1` 的调用会导致弹幕管理器清除现在显示的弹幕，
+seek到距离 `t2` 最近的未来弹幕然后从那个位置开始继续播放。
+
+如果你的播放器或者时钟来源通报 `time` 的间隔 `> 2000ms` 会导致管理器一直处于reset模式，
+不显示任何弹幕。这种情况下可以调整 `options.seekTrigger` 到另一个更大的数值来避免过度积极
+重置荧幕。
+
+如果你发现播放环境用户经常需要跳跃 `< 2000ms` 导致大量弹幕同屏，可以考虑降低这个数值更早的触发
+“用户拖动时间轴”的环境。注意当 `t2 < t1` 时（回到之前的播放时间），总会触发reset。
 
 ### 弹幕显示模式切换 Change Global Display Mode
 如果希望给弹幕更改显示模式（描边/字体/粗体等等），则可以采取更改 `options.global.className`
@@ -60,6 +90,7 @@ container.style.transform = "scale(" + scale + ")";
 ```
 
 进而通过让用户设置 `options.global.className = 'cmt bold'` 即可开启/关闭粗体等等。
+注意：切换这个设置只会对之后生成的弹幕生效。
 
 ### 用户发送弹幕加上蓝色边框 Add Border for Self-Sent Comments
 实现加边框很容易，不过采用了一些机智的逻辑。实现可以参考如下代码：
@@ -124,7 +155,7 @@ $('#send-button').click(function (){ // 为了简单采取类似 jQuery 的语�
     定期更新时间轴，把弹幕按顺序正确插入，保持弹幕时间轴新鲜度，可以自由更改播放时间
     （快进快退）。优点是可以支持用户搓时间轴，缺点是直播环境下需要控制时间轴不能过度饱和。
 
-#### 参考伪代码
+#### 参考伪代码 Reference Implementation
 
 ````JavaScript
 // Polling example code
@@ -153,7 +184,9 @@ setInterval(function() {
             }
         }
     };
-    xhr.open('GET', 'http://yoururl/somevideoid/?from=' + lastCheckedTime, true); // 告诉服务器上次检查的时间，来获取增量
+    // 告诉服务器上次检查的时间，来获取增量
+    xhr.open('GET', 'http://yoururl/somevideoid/?from=' + lastCheckedTime,
+        true);
     xhr.send(); // 发送请求
     hasLastCheckReturned = false;
 }, 3000); // 每3s检查新的弹幕
@@ -195,11 +228,11 @@ $('#send-danmaku-btn').click(function(){
 });
 ````
 
-#### 实时时间轴模式
+#### 实时时间轴模式 Timeline Modes in Realtime Comments
 实时弹幕的时间轴需求会根据实现目标不同而不同，以下是两种常见场景的实现方法。
 
-大屏幕直播弹幕：用户使用自己的终端发送弹幕，大屏幕上实时进行显示。由于只需要实时显示（无需回到过去的
-时间点），建议采用 **无时间轴模式**:
+大屏幕直播弹幕：用户使用自己的终端发送弹幕，大屏幕上实时进行显示。由于只需要实时显示（无需回到
+过去的时间点），建议采用 **无时间轴模式**:
 
 ````JavaScript
 CM = new CommentManager(...);
@@ -214,8 +247,8 @@ socket.on('danmaku', function (data) {
 });
 ````
 
-网上视频直播：视频直播虽然需要随时播放弹幕，但是同时还允许用户回到过往的时间部分，看过往部分的弹幕。
-这时需要有时间轴模式
+网上视频直播：视频直播虽然需要随时播放弹幕，但是同时还允许用户回到过往的时间部分，看过往部分
+的弹幕。这时需要有时间轴模式
 
 ````JavaScript
 CM = new CommentManager(...);

@@ -1,5 +1,84 @@
 var Runtime;
 (function (Runtime) {
+    var NotCrypto;
+    (function (NotCrypto) {
+        var _rngState = [
+            Math.floor(Date.now() / 1024) % 1024,
+            Date.now() % 1024
+        ];
+        var Rc4 = (function () {
+            function Rc4(key) {
+                this._s = [];
+                for (var i = 0; i < 256; i++) {
+                    this._s[i] = i;
+                }
+                var j = 0;
+                for (var i = 0; i < 256; i++) {
+                    j = j + this._s[i] + key[i % key.length] % 256;
+                    var m = this._s[i];
+                    this._s[i] = this._s[j];
+                    this._s[j] = m;
+                }
+            }
+            return Rc4;
+        }());
+        function random(bits) {
+            if (bits === void 0) { bits = 16; }
+            if (bits > 32) {
+                throw new Error('NotCrypto.random expects 32 bits or less');
+            }
+            if (Math && Math.random) {
+                var value = 0;
+                for (var i = 0; i < bits; i++) {
+                    value = (value << 1) + (Math.random() < 0.5 ? 0 : 1);
+                }
+                return value;
+            }
+            else {
+                return Runtime.NotCrypto.fallbackRandom(Date.now() % 1024, bits);
+            }
+        }
+        NotCrypto.random = random;
+        function xorshift128p() {
+            var s0 = _rngState[1], s1 = _rngState[0];
+            _rngState[0] = s0;
+            s1 ^= s1 << 23;
+            s1 ^= s1 >> 17;
+            s1 ^= s0;
+            s1 ^= s0 >> 26;
+            _rngState[1] = s1;
+        }
+        function fallbackRandom(seed, bits) {
+            if (bits === void 0) { bits = 16; }
+            if (bits > 32) {
+                throw new Error('NotCrypto.fallbackRandom expects 32 bits or less');
+            }
+            for (var i = 0; i < seed; i++) {
+                xorshift128p();
+            }
+            var mask = 0;
+            for (var i = 0; i < bits; i++) {
+                mask = (mask << 1) + 1;
+            }
+            return (_rngState[0] + _rngState[1]) & mask;
+        }
+        NotCrypto.fallbackRandom = fallbackRandom;
+        function toHex(value, length) {
+            if (length === void 0) { length = 0; }
+            if (length <= 0) {
+                return value.toString(16);
+            }
+            var base = value.toString(16);
+            while (base.length < length) {
+                base = '0' + base;
+            }
+            return base;
+        }
+        NotCrypto.toHex = toHex;
+    })(NotCrypto = Runtime.NotCrypto || (Runtime.NotCrypto = {}));
+})(Runtime || (Runtime = {}));
+var Runtime;
+(function (Runtime) {
     var RuntimeTimer = (function () {
         function RuntimeTimer(type, dur, key, callback) {
             this.ttl = dur;
@@ -414,6 +493,9 @@ var Runtime;
     var MetaObject = (function () {
         function MetaObject(name) {
             this._listeners = {};
+            if (name.slice(0, 2) !== '__') {
+                throw new Error('MetaObject names must start with two underscores.');
+            }
             this._name = name;
         }
         MetaObject.prototype.addEventListener = function (event, listener, useCapture, priority) {
@@ -491,18 +573,18 @@ var Runtime;
     Runtime.getObject = getObject;
     function registerObject(object) {
         if (!object.getId) {
-            __trace("Attempted to register unnamed object", "warn");
+            __trace('Cannot register object without getId method.', 'warn');
             return;
         }
         if (!Runtime.hasObject(object.getId())) {
             _registeredObjects[object.getId()] = object;
-            __pchannel("Runtime:RegisterObject", {
-                "id": object.getId(),
-                "data": object.serialize()
+            __pchannel('Runtime:RegisterObject', {
+                'id': object.getId(),
+                'data': object.serialize()
             });
             __schannel("object::(" + object.getId() + ")", function (payload) {
-                if (payload.hasOwnProperty("type") &&
-                    payload.type === "event") {
+                if (payload.hasOwnProperty('type') &&
+                    payload.type === 'event') {
                     _dispatchEvent(object.getId(), payload.event, payload.data);
                 }
             });
@@ -510,36 +592,47 @@ var Runtime;
             return;
         }
         else {
-            __trace('Attempted to re-register object or id collision', 'warn');
+            __trace('Attempted to re-register object or id collision @ ' +
+                object.getId(), 'warn');
             return;
         }
     }
     Runtime.registerObject = registerObject;
-    function deregisterObject(objectId) {
+    function deregisterObject(object) {
+        var objectId = object.getId();
+        deregisterObjectById(objectId);
+    }
+    Runtime.deregisterObject = deregisterObject;
+    function deregisterObjectById(objectId) {
         if (Runtime.hasObject(objectId)) {
-            if (objectId.substr(0, 2) === "__") {
-                __trace("Runtime.deregisterObject cannot de-register a MetaObject", "warn");
+            if (objectId.substr(0, 2) === '__') {
+                __trace('Runtime.deregisterObject cannot de-register a MetaObject', 'warn');
                 return;
             }
-            __pchannel("Runtime:DeregisterObject", {
-                "id": objectId
+            __pchannel('Runtime:DeregisterObject', {
+                'id': objectId
             });
             if (typeof _registeredObjects[objectId].unload === "function") {
                 _registeredObjects[objectId].unload();
             }
             _registeredObjects[objectId] = null;
             delete _registeredObjects[objectId];
-            objCount--;
         }
     }
-    Runtime.deregisterObject = deregisterObject;
+    function _getId(type, container) {
+        if (type === void 0) { type = 'obj'; }
+        if (container === void 0) { container = 'rt'; }
+        var randomSeed = Math.random();
+        var randomSegment = '';
+        return;
+    }
     function generateId(type) {
         if (type === void 0) { type = "obj"; }
-        var id = type + ":" + (new Date()).getTime() + "|" +
-            Math.round(Math.random() * 4096) + ":" + objCount;
+        var id = [type, ':', Date.now(), '|',
+            Runtime.NotCrypto.random(16), ':', objCount].join();
         while (Runtime.hasObject(id)) {
-            id = type + ":" + (new Date()).getTime() + "|" +
-                Math.round(Math.random() * 4096) + ":" + objCount;
+            id = type + ":" + Date.now() + "|" +
+                Runtime.NotCrypto.random(16) + ":" + objCount;
         }
         return id;
     }
@@ -548,7 +641,7 @@ var Runtime;
     function reset() {
         for (var i in _registeredObjects) {
             if (i.substr(0, 2) !== "__") {
-                Runtime.deregisterObject(i);
+                deregisterObjectById(i);
             }
         }
     }

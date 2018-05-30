@@ -161,22 +161,17 @@ module Display {
               change.x + j]);
         }
       }
-
-      __pchannel('Runtime:CallMethod', {
-        'id': this.getId(),
-        'name': 'updateBox',
-        'value': {
-          'box': change.serialize(),
-          'values': values
-        },
+      this._call('updateBox', {
+        'box': change.serialize(),
+        'values': region
       });
     }
 
-    private _call(method:string, arguments:any):void {
+    private _call(method:string, args:any):void {
       __pchannel('Runtime:CallMethod', {
         'id': this.getId(),
         'name': name,
-        'value': arguments,
+        'value': args,
       });
     }
 

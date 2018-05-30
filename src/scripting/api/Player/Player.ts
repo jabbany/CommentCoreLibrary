@@ -120,7 +120,7 @@ module Player{
    */
   export function seek(offset:number):void {
     __pchannel("Player::action", {
-      "action":"seek",
+      "action": "seek",
       "params": offset
     });
   }
@@ -139,8 +139,8 @@ module Player{
     newWindow:boolean = false):void {
 
     __pchannel("Player::action", {
-      "action":"jump",
-      "params":{
+      "action": "jump",
+      "params": {
         "vid":video,
         "page":page,
         "window":newWindow
@@ -153,6 +153,7 @@ module Player{
       __trace('Your environment does not support player triggers.', 'warn');
       return;
     }
+    __trace('Comment trigger: not implemented', 'warn');
   }
 
   export function keyTrigger(callback:Function, timeout:number):void{
@@ -160,8 +161,11 @@ module Player{
       __trace('Your environment does not support key triggers.', 'warn');
       return;
     }
-    var player:Runtime.Listenable = <Runtime.Listenable>
-      Runtime.getObject('__player');
+    var player:Runtime.IMetaObject =
+      Runtime.getObject<Runtime.IMetaObject>('__player');
+    player.addEventListener('keydown', function (key) {
+      callback(key.keyCode);
+    });
   }
 
   export function setMask(mask:any):void{
@@ -173,7 +177,7 @@ module Player{
   }
 
   /** Update Listeners **/
-  __schannel("Update:DimensionUpdate", function(payload) {
+  __schannel('Update:DimensionUpdate', function(payload) {
     _width = payload["stageWidth"];
     _height = payload["stageHeight"];
     if (payload.hasOwnProperty("videoWidth") &&

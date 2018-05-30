@@ -6,6 +6,11 @@
  * If safety is required, please use something else.
  */
 module Runtime.NotCrypto {
+  var _rngState = [
+    Math.floor(Date.now() / 1024) % 1024,
+    Date.now() % 1024
+  ];
+
   class Rc4 {
     private _s:number[] = [];
     constructor (key:number[]) {
@@ -25,10 +30,14 @@ module Runtime.NotCrypto {
   /**
    * (UNSAFE) Random value generator.
    * @param {number} bits - number of bits of randomness requested
+   *                        must not be greater than 32
    * @returns {number} a number within requested number of bits
    */
   export function random(bits:number = 16):number {
     // Use Math.random for this if it exists
+    if (bits > 32) {
+      throw new Error('NotCrypto.random expects 32 bits or less');
+    }
     if (Math && Math.random) {
       var value:number = 0;
       for (var i = 0; i < bits; i++) {
@@ -36,15 +45,35 @@ module Runtime.NotCrypto {
       }
       return value;
     } else {
-      return Runtime.NotCrypto.fallbackRandom([Date.now() % 1024]);
+      return Runtime.NotCrypto.fallbackRandom(Date.now() % 1024, bits);
     }
+  }
+
+  function xorshift128p() {
+    var s0 = _rngState[1], s1 = _rngState[0];
+    _rngState[0] = s0;
+    s1 ^= s1 << 23;
+    s1 ^= s1 >> 17;
+    s1 ^= s0;
+    s1 ^= s0 >> 26;
+    _rngState[1] = s1;
   }
 
   /**
    * Generates a some randomness
    */
-  export function fallbackRandom(seed:number[], bits:number = 16):number {
-    return ;
+  export function fallbackRandom(seed:number, bits:number = 16):number {
+    if (bits > 32) {
+      throw new Error('NotCrypto.fallbackRandom expects 32 bits or less');
+    }
+    for (var i = 0; i < seed; i++) {
+      xorshift128p();
+    }
+    var mask = 0;
+    for (var i = 0; i < bits; i++) {
+      mask = (mask << 1) + 1;
+    }
+    return (_rngState[0] + _rngState[1]) & mask;
   }
 
   /**

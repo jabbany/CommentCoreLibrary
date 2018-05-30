@@ -54,12 +54,13 @@ declare module Runtime {
   function privilegedCode(): void;
 }
 declare module Runtime {
-  interface Listenable {
+  type IMetaObject = RegisterableObject & Listenable;
+  export interface Listenable {
     addEventListener(
       event:string,
       listener:Function,
-      useCapture:boolean,
-      priority:number):void;
+      useCapture?:boolean,
+      priority?:number):void;
     removeEventListener(
       event:string,
       listener:Function,
@@ -85,7 +86,7 @@ declare module Runtime {
   * @param objectId - objectid of object
   * @returns {RegisterableObject} - object or undefined if not found
   */
-  function getObject(objectId: string): RegisterableObject;
+  function getObject<T extends RegisterableObject>(objectId: string): T;
   /**
   * Registers an object to allow two way communication between the API
   * and the host.

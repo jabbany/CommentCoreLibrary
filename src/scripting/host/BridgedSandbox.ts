@@ -1,84 +1,12 @@
 import { StageElement, IScripter, ISandbox, IScriptingContext, IPlayer } from "./IScripter.ts";
-import { OOAPIMessage } from './OOAPI.d.ts';
+import { OOAPIMessage, LogMessage } from './OOAPI.d.ts';
 
 import { OOAPIWorker } from './OOAPIWorker.ts';
-import { KagerouScripting } from "./ScriptingContext.ts";
-
-interface UpdateItem {
-  /**
-   * The "class" that this UpdateItem is in. Items of the same class may
-   * override each other.
-   */
-  group:string;
-  /**
-   * Boolean value indicating whether to allow future items to override this one
-   */
-  allowOverride:boolean;
-  /**
-   * Boolean value indicating whether the current item will trigger an override
-   */
-  triggerOverride:boolean;
-}
+import { KagerouScripting } from './ScriptingContext.ts';
+import { SmartQueue, UpdateItem } from './Queue/SmartQueue.ts';
 
 interface SandboxEvent extends UpdateItem {
 
-}
-
-/**
- * Smart queue that can combine items that "override" earlier ones by removing
- * earlier occurrances of the item
- * @author Jim Chen
- */
-class SmartQueue<T extends UpdateItem> {
-  private _groups:{[groupName:string]: T[]} = {};
-  public items:T[] = [];
-
-  private prune(groupName:string):void {
-    // Remove all the items in group that allow override
-    if (groupName in this._groups) {
-      for (var i = 0; i < this.items.length; i++) {
-        if (this.items[i].group === groupName) {
-          if (this.items[i].allowOverride) {
-            // Remove from both _groups and main list
-            if (this.items[i] !== this._groups[groupName].shift()) {
-              throw new Error('SmartQueue desynchronized. Expected ' +
-                this.items[i]);
-            }
-            this.items.splice(i, 1);
-            i--;
-            // Continue the loop but since we removed this element,
-            // we look at this element's index again,
-          }
-        }
-      }
-    }
-  }
-
-  public enqueue(item:T):void {
-    if (item.triggerOverride) {
-      this.prune(item.group);
-    }
-    this.items.push(item);
-    if (!(item.group in this._groups)) {
-      this._groups[item.group] = [];
-    }
-    this._groups[item.group].push(item);
-  }
-
-  public dequeue():T {
-    // Get the item from the list
-    var item:T = this.items.shift();
-    // Also remove it from its group and do a sanity check
-    if (this._groups[item.group].shift() !== item) {
-      throw new Error('SmartQueue desynchronized. Expected ' + item);
-    }
-    return item;
-  }
-
-  public clear():void {
-    this._groups = {};
-    this.items = [];
-  }
 }
 
 export class BridgedSandbox implements ISandbox {
@@ -102,6 +30,26 @@ export class BridgedSandbox implements ISandbox {
     this._bind();
   }
 
+  get isAvailable():boolean {
+    return this._isAvailable;
+  }
+
+  set isAvailable(b:boolean) {
+    throw new Error('BridgedSandbox.isAvailable is read-only');
+  }
+
+  private _getDimensionsMessage():OOAPIMessage {
+    return {
+      'channel': 'Update:DimensionUpdate',
+      'payload': {
+        'stageWidth':this._stage.offsetWidth,
+				'stageHeight':this._stage.offsetHeight,
+				'screenWidth':window.screen.width,
+				'screenHeight':window.screen.height
+      }
+    };
+  }
+
   private _bind():void {
     // Handle all malformed packets by throwing them into the logger
     this._worker.setMalformedEventHandler(((e) => {
@@ -120,23 +68,66 @@ export class BridgedSandbox implements ISandbox {
     }).bind(this));
 
 
-    //
+    // Add a channel for logging
     this._worker.addChannelListener('', ((m:OOAPIMessage) => {
       // Log message
+      var message:LogMessage = m as LogMessage;
+      switch (message.mode) {
+        case 'log':
+        default:
+          this._scripter.logger.log(message.obj);
+          break;
+        case 'warn':
+          this._scripter.logger.warn(message.obj);
+          break;
+        case 'err':
+          this._scripter.logger.error(message.obj);
+          break;
+        case 'fatal':
+          this._scripter.logger.error(message.obj);
+          this.reset();
+          break;
+      }
     }).bind(this));
+
+    // Add a channel to acquire worker state info
+    this._worker.addChannelListener('::worker:state', ((m:OOAPIMessage) => {
+      if (m.auth === 'worker' && m.payload === 'running') {
+        if (!this._isAvailable) {
+          this._isAvailable = true;
+          this.init();
+        }
+      }
+    }));
+
+    // Add a channel to debug the worker
+    this._worker.addChannelListener('::worker:debug', ((m:OOAPIMessage) => {
+      this._scripter.logger.log(JSON.stringify(m.payload));
+    }));
+  }
+
+  private init():void {
+    this._worker.send(this._getDimensionsMessage());
+    // Actually do the bindings
   }
 
   public eval(code:string):void {
     if (!this._isAvailable) {
       throw new Error('Worker not available yet!');
     }
+    this._worker.send({
+      'channel': '::eval',
+      'payload': code
+    });
   }
 
   public reset():void {
     this._isAvailable = false;
     try {
       this._worker.terminate();
-    } catch(e) { }
+    } catch(e) {
+      this._scripter.logger.error(e);
+    }
     this._queue.clear();
 
     // Empty any remnants in the scripting context

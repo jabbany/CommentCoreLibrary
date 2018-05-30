@@ -62,7 +62,7 @@ var Utils;
     }
     Utils.hue = hue;
     function formatTimes(time) {
-        return Math.floor(time / 60) + ":" + (time % 60 > 9 ? time % 60 + "" : "0" + (time % 60));
+        return Math.floor(time / 60) + ":" + (time % 60 > 9 ? "" : "0") + time % 60;
     }
     Utils.formatTimes = formatTimes;
     function distance(x1, y1, x2, y2) {

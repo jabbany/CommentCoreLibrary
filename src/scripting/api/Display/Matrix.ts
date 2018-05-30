@@ -1,4 +1,5 @@
 /// <reference path="../OOAPI.d.ts" />
+/// <reference path="ISerializable.ts" />
 
 module Display {
   /**
@@ -53,8 +54,9 @@ module Display {
     }
 
     public equals(p:Point):boolean {
-      if(p.x === this.x && p.y === this.y)
+      if(p.x === this.x && p.y === this.y) {
         return true;
+      }
       return false;
     }
 

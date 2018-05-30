@@ -17,7 +17,7 @@ declare module Tween {
     function cubic(t: number, b: number, c: number, d: number): number;
     function quartic(t: number, b: number, c: number, d: number): number;
     function quintic(t: number, b: number, c: number, d: number): number;
-    function circuar(t: number, b: number, c: number, d: number): number;
+    function circular(t: number, b: number, c: number, d: number): number;
     function sine(t: number, b: number, c: number, d: number): number;
     function exponential(t: number, b: number, c: number, d: number): number;
     /**

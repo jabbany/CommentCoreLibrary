@@ -165,20 +165,6 @@ module Tween {
     };
   }
 
-  function choose(n:number, k:number) {
-    if (n < 0 || k < 0) {
-      throw new Error('Cannot compute n-choose-k with negative inputs.');
-    }
-    if (k > n / 2) {
-      return choose(n, n - k);
-    }
-    var value:number = 1;
-    for (var i = 1; i <= k; i++) {
-      value *= (n + 1 - i) / i;
-    }
-    return value;
-  }
-
   export function tween(object:any,
       dest:ValueMap = {},
       src:ValueMap = {},

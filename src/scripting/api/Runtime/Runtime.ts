@@ -1,5 +1,6 @@
 /// <reference path="../OOAPI.d.ts" />
 
+/// <reference path="NotCrypto.ts" />
 /// <reference path="Timer.ts" />
 /// <reference path="ScriptManager.ts" />
 /// <reference path="Permissions.ts" />
@@ -11,7 +12,7 @@
 */
 module Runtime {
   type ObjectRegistry = {[objectName: string]: RegisterableObject};
-
+  type IMetaObject = RegisterableObject & Listenable;
   /**
    * Global interface for Listenable objects
    */
@@ -19,8 +20,8 @@ module Runtime {
     addEventListener(
       event:string,
       listener:Function,
-      useCapture:boolean,
-      priority:number):void;
+      useCapture?:boolean,
+      priority?:number):void;
     removeEventListener(
       event:string,
       listener:Function,
@@ -155,8 +156,8 @@ module Runtime {
    * @param {string} objectId - objectid of object
    * @returns {RegisterableObject} - object or undefined if not found
    */
-  export function getObject(objectId:string):RegisterableObject{
-    return _registeredObjects[objectId];
+  export function getObject<T extends RegisterableObject>(objectId:string):T {
+    return <T> _registeredObjects[objectId];
   }
 
   /**
@@ -195,9 +196,14 @@ module Runtime {
    * from the stage if it is onstage, but also prevents the element from
    * receiving any more events.
    *
-   * @param {string} objectId - objectid to remove
+   * @param {RegisterableObject} object - object to remove
    */
-  export function deregisterObject(objectId:string):void {
+  export function deregisterObject(object:RegisterableObject):void {
+    var objectId:string = object.getId();
+    deregisterObjectById(objectId);
+  }
+
+  function deregisterObjectById(objectId:string) {
     if (Runtime.hasObject(objectId)) {
       if (objectId.substr(0,2) === '__') {
         __trace('Runtime.deregisterObject cannot de-register a MetaObject',
@@ -229,10 +235,10 @@ module Runtime {
    */
   export function generateId(type:string = "obj"):string {
     var id:string = [type, ':', Date.now(), '|',
-      Math.round(Math.random() * 4096), ':', objCount].join();
+      Runtime.NotCrypto.random(16), ':', objCount].join();
     while (Runtime.hasObject(id)) {
       id = type + ":" + Date.now() + "|" +
-        Math.round(Math.random() * 4096) + ":" + objCount;
+        Runtime.NotCrypto.random(16) + ":" + objCount;
     }
     return id;
   };
@@ -244,7 +250,7 @@ module Runtime {
   export function reset():void {
     for (var i in _registeredObjects) {
       if (i.substr(0,2) !== "__") {
-        Runtime.deregisterObject(i);
+        deregisterObjectById(i);
       }
     }
   }

@@ -1,5 +1,6 @@
 ///<reference path="Matrix.ts" />
 ///<reference path="ISerializable.ts" />
+///<reference path="ColorTransform.ts" />
 
 module Display {
 
@@ -137,7 +138,7 @@ module Display {
       this._parent.transform = this;
     }
 
-    public getRelativeMatrix3D(relativeTo:DisplayObject):Matrix3D {
+    public getRelativeMatrix3D(relativeTo:any):Matrix3D {
       __trace('Transform.getRelativeMatrix3D not implemented', 'warn');
       return new Matrix3D();
     }

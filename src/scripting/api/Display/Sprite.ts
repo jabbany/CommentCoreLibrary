@@ -3,7 +3,7 @@
 
 module Display {
   /**
-   * Sprite Polyfill for AS3.
+   * Sprite Polyfill for AS3. Is also a UIComponent.
    * @author Jim Chen
    */
   export class Sprite extends DisplayObject {
@@ -62,6 +62,55 @@ module Display {
     get parent():DisplayObject {
       __trace('SecurityError: No access above root sprite.','err');
       return null;
+    }
+  }
+
+  export class UIComponent extends Sprite {
+    private _styles:{[name:string]:any} = {};
+
+    constructor(id?:string) {
+      super(id);
+    }
+
+    /**
+     * Clears the style for the UIComponent which this is
+     * @param style - style to clear
+     */
+    public clearStyle(style:string):void {
+      delete this._styles[style];
+    }
+
+    /**
+     * Get the style for the UIComponent which this is
+     * @param style - style to set
+     * @return value - value of that style
+     */
+    public getStyle(style:string):any {
+      return this._styles[style];
+    }
+
+    /**
+     * Set the style for the UIComponent which this is
+     * @param styleProp - style to set
+     * @param value - value to set the style to
+     */
+    public setStyle(styleProp:string, value:any):void {
+      __trace("UIComponent.setStyle not implemented", "warn");
+      this._styles[styleProp] = value;
+    }
+
+    public setFocus():void {
+      this.methodCall("setFocus", null);
+    }
+
+    public setSize(width:number, height:number):void {
+      this.width = width;
+      this.height = height;
+    }
+
+    public move(x:number, y:number):void {
+      this.x = x;
+      this.y =y;
     }
   }
 }
