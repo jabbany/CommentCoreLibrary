@@ -60,13 +60,23 @@ describe 'CommentManager', ->
         expect(manager.timeline).toEqual [c1, c2, c3, c4, c5]
 
       it 'smoking test', ->
-        jasmine.getFixtures().fixturesPath = "test/"
-        json = JSON.parse readFixtures 'ac940133.json'
-        comments = (new AcfunFormat.JSONParser()).parseMany json
-        # TODO: Construct a json that cover all types of comments
-        # and use it for smoking test
+        sampleNormal = 
+          """
+          <?xml version="1.0" encoding="UTF-8"?><i>
+          <d p="15.104999542236,1,25,16777215,1388314569,0,1a87dd40,364586099">关了弹幕瞬间好多了</d>
+          <d p="34.501998901367,1,25,16777215,1388466323,0,5655b2f2,365355859">I74700MQ无压力</d>
+          <d p="62.062000274658,1,25,16711680,1388505601,0,d2255ead,365815874">虽然很卡但是撑下来了</d>
+          <d p="42.189998626709,7,30,65535,1408889055,0,c1cd5522,576943544">[0,0,"1-1",3.8,"醒来时头昏脑大 不知道在谁家",0,0,0,0,1000,0,true,"微软雅黑",1,"M67,264L66,264L230,263"]</d>
+          <d p="45.959999084473,7,30,65535,1408889089,0,c1cd5522,576944643">[0,0,"1-1",5.4,"走为上策应该不用负责任吧",0,0,0,0,1000,0,true,"微软雅黑",1,"M67,264L66,264L230,263"]</d>
+          <d p="187.02600097656,7,50,26367,1409126632,0,c1cd5522,580760706">[0,0,"1-1",5,"(笑)都现在了还装什么装",0,0,0,0,5000,0,true,"微软雅黑",1,"M24,343L25,343L60,340"]</d>
+          <d p="16.60000038147,8,25,16777215,1353069133,2,241d61da,149343959">var exCanvas=$.createCanvas({lifeTime:2.0,x:0,y:0});</d>
+          <d p="16.60000038147,8,25,16777215,1353069133,2,241d61da,149343959">if (13 &lt;d) { trace('hahajust a test');}</d>
+          <d p="16.60000038147,8,25,16777215,1353069133,2,241d61da,149343959">trace('&lt;just some html-like&gt;hahajust a test');</d></i>
+          """
+        document = (new DOMParser()).parseFromString sampleNormal, "application/xml"
+        comments = (new BilibiliFormat.XMLParser()).parseMany document
         manager.load comments
-        expect(manager.timeline.length).toBe 2146
+        expect(manager.timeline.length).toBe 9
 
     describe '.send', ->
       it 'sends to runline' , ->

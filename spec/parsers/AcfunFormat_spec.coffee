@@ -1,13 +1,22 @@
 'use strict'
 describe 'AcfunFormat', ->
-  jasmine.getFixtures().fixturesPath = "test/synthetic/"
   textfix = (text) -> text.replace(/\ /g, "\u00a0")
-
   it 'provides json parser', ->
     expect(typeof AcfunFormat.JSONParser).toBe "function"
 
   describe '.JSONParser', ->
-    raw = readFixtures 'AcfunFormat.json'
+    raw = """
+    [
+        {
+            "c":"1,16763904,5,25,guest,1315736602.0",
+            "m":"This is just some test."
+        },
+        {
+            "c":"1,16777215,1,25,guest,1315736602.0",
+            "m":"Comment 2."
+        }
+    ]
+    """
     parser = data = null
     
     beforeEach ->

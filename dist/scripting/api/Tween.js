@@ -394,7 +394,7 @@ var Tween;
     function serial() {
         var args = [];
         for (var _i = 0; _i < arguments.length; _i++) {
-            args[_i - 0] = arguments[_i];
+            args[_i] = arguments[_i];
         }
         if (args.length === 0) {
             return new ITween({}, 0);
@@ -434,7 +434,7 @@ var Tween;
     function parallel() {
         var args = [];
         for (var _i = 0; _i < arguments.length; _i++) {
-            args[_i - 0] = arguments[_i];
+            args[_i] = arguments[_i];
         }
         var totalTime = 0;
         for (var i = 0; i < args.length; i++) {

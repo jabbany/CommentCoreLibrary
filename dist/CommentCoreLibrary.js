@@ -70,92 +70,305 @@ var BinArray = (function () {
     return BinArray;
 })();
 
-var CommentUtils;
-(function (CommentUtils) {
-    var Matrix3D = (function () {
-        function Matrix3D(array) {
-            this._internalArray = null;
-            if (!Array.isArray(array)) {
-                throw new Error('Not an array. Cannot construct matrix.');
+/*!
+ * Comment Core Library CommentManager
+ * @license MIT
+ * @author Jim Chen
+ *
+ * Copyright (c) 2014 Jim Chen
+ */
+var CommentManager = (function() {
+    var _defaultComparator = function (a,b) {
+        if (a.stime > b.stime) {
+            return 2;
+        } else if (a.stime < b.stime) {
+            return -2;
+        } else {
+            if (a.date > b.date) {
+                return 1;
+            } else if (a.date < b.date) {
+                return -1;
+            } else if (a.dbid != null && b.dbid != null) {
+                if (a.dbid > b.dbid) {
+                    return 1;
+                } else if (a.dbid < b.dbid) {
+                    return -1;
+                }
+                return 0;
+            } else {
+                return 0;
             }
-            if (array.length != 16) {
-                throw new Error('Illegal Dimensions. Matrix3D should be 4x4 matrix.');
-            }
-            this._internalArray = array;
         }
-        Object.defineProperty(Matrix3D.prototype, "flatArray", {
-            get: function () {
-                return this._internalArray.slice(0);
-            },
-            set: function (array) {
-                throw new Error('Not permitted. Matrices are immutable.');
-            },
-            enumerable: true,
-            configurable: true
-        });
-        Matrix3D.prototype.isIdentity = function () {
-            return this.equals(Matrix3D.identity());
-        };
-        Matrix3D.prototype.dot = function (matrix) {
-            var a = this._internalArray.slice(0);
-            var b = matrix._internalArray.slice(0);
-            var res = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-            for (var i = 0; i < 4; i++) {
-                for (var j = 0; j < 4; j++) {
-                    for (var k = 0; k < 4; k++) {
-                        res[i * 4 + j] += a[i * 4 + k] * b[k * 4 + j];
-                    }
-                }
-            }
-            return new Matrix3D(res);
-        };
-        Matrix3D.prototype.equals = function (matrix) {
-            for (var i = 0; i < 16; i++) {
-                if (this._internalArray[i] !== matrix._internalArray[i]) {
-                    return false;
-                }
-            }
-            return true;
-        };
-        Matrix3D.prototype.toCss = function () {
-            var matrix = this._internalArray.slice(0);
-            for (var i = 0; i < matrix.length; i++) {
-                if (Math.abs(matrix[i]) < 0.000001) {
-                    matrix[i] = 0;
-                }
-            }
-            return 'matrix3d(' + matrix.join(',') + ')';
-        };
-        Matrix3D.identity = function () {
-            return new Matrix3D([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
-        };
-        Matrix3D.createScaleMatrix = function (xscale, yscale, zscale) {
-            return new Matrix3D([xscale, 0, 0, 0, 0, yscale, 0, 0, 0, 0, zscale, 0, 0, 0, 0, 1]);
-        };
-        Matrix3D.createRotationMatrix = function (xrot, yrot, zrot) {
-            var DEG2RAD = Math.PI / 180;
-            var yr = yrot * DEG2RAD;
-            var zr = zrot * DEG2RAD;
-            var COS = Math.cos;
-            var SIN = Math.sin;
-            var matrix = [
-                COS(yr) * COS(zr), COS(yr) * SIN(zr), SIN(yr), 0,
-                (-SIN(zr)), COS(zr), 0, 0,
-                (-SIN(yr) * COS(zr)), (-SIN(yr) * SIN(zr)), COS(yr), 0,
-                0, 0, 0, 1
-            ];
-            return new Matrix3D(matrix.map(function (v) { return Math.round(v * 1e10) * 1e-10; }));
-        };
-        return Matrix3D;
-    }());
-    CommentUtils.Matrix3D = Matrix3D;
-})(CommentUtils || (CommentUtils = {}));
+    };
 
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
+    function CommentManager(stageObject){
+        var __timer = 0;
+
+        this._listeners = {};
+        this._lastPosition = 0;
+
+        this.stage = stageObject;
+        this.options = {
+            global:{
+                opacity:1,
+                scale:1,
+                className:"cmt"
+            },
+            scroll:{
+                opacity:1,
+                scale:1
+            },
+            limit: 0,
+            seekTrigger: 2000
+        };
+        this.timeline = [];
+        this.runline = [];
+        this.position = 0;
+
+        this.factory = null;
+        this.filter = null;
+        this.csa = {
+            scroll: new CommentSpaceAllocator(0,0),
+            top: new AnchorCommentSpaceAllocator(0,0),
+            bottom: new AnchorCommentSpaceAllocator(0,0),
+            reverse: new CommentSpaceAllocator(0,0),
+            scrollbtm: new CommentSpaceAllocator(0,0)
+        };
+
+        /** Precompute the offset width **/
+        this.width = this.stage.offsetWidth;
+        this.height = this.stage.offsetHeight;
+        this._startTimer = function () {
+            if (__timer > 0) {
+                return;
+            }
+            var lastTPos = new Date().getTime();
+            var cmMgr = this;
+            __timer = window.setInterval(function () {
+                var elapsed = new Date().getTime() - lastTPos;
+                lastTPos = new Date().getTime();
+                cmMgr.onTimerEvent(elapsed,cmMgr);
+            },10);
+        };
+        this._stopTimer = function () {
+            window.clearInterval(__timer);
+            __timer = 0;
+        };
+    }
+
+    /** Public **/
+    CommentManager.prototype.stop = function(){
+        this._stopTimer();
+        // Send stop signal to all comments
+        this.runline.forEach(function (c) { c.stop(); });
+    };
+
+    CommentManager.prototype.start = function(){
+        this._startTimer();
+    };
+
+    CommentManager.prototype.seek = function(time){
+        this.position = BinArray.bsearch(this.timeline, time, function(a,b){
+            if (a < b.stime) {
+                return -1
+            } else if(a > b.stime) {
+                return 1;
+            } else {
+                return 0;
+            }
+        });
+    };
+
+    CommentManager.prototype.validate = function(cmt){
+        if (cmt == null) {
+            return false;
+        }
+        return this.filter.doValidate(cmt);
+    };
+
+    CommentManager.prototype.load = function(a){
+        this.timeline = a;
+        this.timeline.sort(_defaultComparator);
+        this.dispatchEvent("load");
+    };
+
+    CommentManager.prototype.insert = function(c){
+        var index = BinArray.binsert(this.timeline, c, _defaultComparator);
+        if (index <= this.position) {
+            this.position++;
+        }
+        this.dispatchEvent("insert");
+    };
+
+    CommentManager.prototype.clear = function () {
+        while (this.runline.length > 0) {
+            this.runline[0].finish();
+        }
+        this.dispatchEvent("clear");
+    };
+
+    CommentManager.prototype.setBounds = function () {
+        this.width = this.stage.offsetWidth;
+        this.height= this.stage.offsetHeight;
+        this.dispatchEvent("resize");
+        for (var comAlloc in this.csa) {
+            this.csa[comAlloc].setBounds(this.width,this.height);
+        }
+        // Update 3d perspective
+        this.stage.style.perspective = this.width / Math.tan(55 * Math.PI/180) / 2 + "px";
+        this.stage.style.webkitPerspective = this.width / Math.tan(55 * Math.PI/180) / 2 + "px";
+    };
+
+    CommentManager.prototype.init = function (renderer) {
+        this.setBounds();
+        if (this.filter == null) {
+            this.filter = new CommentFilter(); //Only create a filter if none exist
+        }
+        if (this.factory == null) {
+            switch (renderer) {
+                case 'legacy':
+                    this.factory = CommentFactory.defaultFactory();
+                    break;
+                default:
+                case 'css':
+                    this.factory = CommentFactory.defaultCssRenderFactory();
+                    break;
+            }
+        }
+    };
+
+    CommentManager.prototype.time = function (time) {
+        time = time - 1;
+        if (this.position >= this.timeline.length ||
+          Math.abs(this._lastPosition - time) >= this.options.seekTrigger) {
+
+            this.seek(time);
+            this._lastPosition = time;
+            if (this.timeline.length <= this.position) {
+                return;
+            }
+        } else {
+            this._lastPosition = time;
+        }
+        for (;this.position < this.timeline.length;this.position++) {
+            if (this.timeline[this.position]['stime']<=time) {
+                if (this.options.limit > 0 && this.runline.length >= this.options.limit) {
+                    continue; // Skip comments but still move the position pointer
+                } else if (this.validate(this.timeline[this.position])) {
+                    this.send(this.timeline[this.position]);
+                }
+            } else {
+                break;
+            }
+        }
+    };
+
+    CommentManager.prototype.rescale = function () {
+        // TODO: Implement rescaling
+    };
+
+    CommentManager.prototype.send = function (data) {
+        if (data.mode === 8) {
+            console.log(data);
+            if (this.scripting) {
+                console.log(this.scripting.eval(data.code));
+            }
+            return;
+        }
+        if (this.filter != null) {
+            data = this.filter.doModify(data);
+            if (data == null) {
+                return;
+            }
+        }
+        var cmt = this.factory.create(this, data);
+        switch (cmt.mode) {
+            default:
+            case 1:
+                this.csa.scroll.add(cmt);
+                break;
+            case 2:
+                this.csa.scrollbtm.add(cmt);
+                break;
+            case 4:
+                this.csa.bottom.add(cmt);
+                break;
+            case 5:
+                this.csa.top.add(cmt);
+                break;
+            case 6:
+                this.csa.reverse.add(cmt);
+                break;
+            case 7:
+            case 17:
+                /* Do NOT manage these comments! */
+                break;
+        }
+        cmt.y = cmt.y;
+        this.dispatchEvent("enterComment", cmt);
+        this.runline.push(cmt);
+    };
+
+    CommentManager.prototype.finish = function (cmt) {
+        this.dispatchEvent("exitComment", cmt);
+        this.stage.removeChild(cmt.dom);
+        var index = this.runline.indexOf(cmt);
+        if (index >= 0) {
+            this.runline.splice(index, 1);
+        }
+        switch (cmt.mode) {
+            default:
+            case 1: {this.csa.scroll.remove(cmt);} break;
+            case 2: {this.csa.scrollbtm.remove(cmt);} break;
+            case 4: {this.csa.bottom.remove(cmt);} break;
+            case 5: {this.csa.top.remove(cmt);} break;
+            case 6: {this.csa.reverse.remove(cmt);} break;
+            case 7: break;
+        }
+    };
+
+    CommentManager.prototype.addEventListener = function (event, listener) {
+        if (typeof this._listeners[event] !== "undefined") {
+            this._listeners[event].push(listener);
+        } else {
+            this._listeners[event] = [listener];
+        }
+    };
+
+    CommentManager.prototype.dispatchEvent = function (event, data) {
+        if (typeof this._listeners[event] !== "undefined") {
+            for (var i = 0; i < this._listeners[event].length; i++) {
+                try {
+                    this._listeners[event][i](data);
+                } catch (e) {
+                    console.error(e.stack);
+                }
+            }
+        }
+    };
+
+    /** Static Functions **/
+    CommentManager.prototype.onTimerEvent = function (timePassed,cmObj) {
+        for (var i= 0;i < cmObj.runline.length; i++) {
+            var cmt = cmObj.runline[i];
+            cmt.time(timePassed);
+        }
+    };
+
+    return CommentManager;
+
+})();
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var CoreComment = (function () {
     function CoreComment(parent, init) {
         if (init === void 0) { init = {}; }
@@ -589,9 +802,10 @@ var CoreComment = (function () {
 var ScrollComment = (function (_super) {
     __extends(ScrollComment, _super);
     function ScrollComment(parent, data) {
-        _super.call(this, parent, data);
-        this.dur *= this.parent.options.scroll.scale;
-        this.ttl *= this.parent.options.scroll.scale;
+        var _this = _super.call(this, parent, data) || this;
+        _this.dur *= _this.parent.options.scroll.scale;
+        _this.ttl *= _this.parent.options.scroll.scale;
+        return _this;
     }
     Object.defineProperty(ScrollComment.prototype, "alpha", {
         set: function (a) {
@@ -615,79 +829,6 @@ var ScrollComment = (function (_super) {
     };
     return ScrollComment;
 }(CoreComment));
-
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
-var CssCompatLayer = (function () {
-    function CssCompatLayer() {
-    }
-    CssCompatLayer.transform = function (dom, trans) {
-        dom.style.transform = trans;
-        dom.style["webkitTransform"] = trans;
-        dom.style["msTransform"] = trans;
-        dom.style["oTransform"] = trans;
-    };
-    return CssCompatLayer;
-}());
-var CssScrollComment = (function (_super) {
-    __extends(CssScrollComment, _super);
-    function CssScrollComment() {
-        _super.apply(this, arguments);
-        this._dirtyCSS = true;
-    }
-    Object.defineProperty(CssScrollComment.prototype, "x", {
-        get: function () {
-            return (this.ttl / this.dur) * (this.parent.width + this.width) - this.width;
-        },
-        set: function (x) {
-            if (this._x !== null && typeof this._x === "number") {
-                var dx = x - this._x;
-                this._x = x;
-                CssCompatLayer.transform(this.dom, "translateX(" +
-                    (this.axis % 2 === 0 ? dx : -dx) + "px)");
-            }
-            else {
-                this._x = x;
-                if (!this.absolute) {
-                    this._x *= this.parent.width;
-                }
-                if (this.axis % 2 === 0) {
-                    this.dom.style.left =
-                        (this._x + (this.align % 2 === 0 ? 0 : -this.width)) + 'px';
-                }
-                else {
-                    this.dom.style.right =
-                        (this._x + (this.align % 2 === 0 ? -this.width : 0)) + 'px';
-                }
-            }
-        },
-        enumerable: true,
-        configurable: true
-    });
-    CssScrollComment.prototype.update = function () {
-        if (this._dirtyCSS) {
-            this.dom.style.transition = "transform " + this.ttl + "ms linear";
-            this.x = -this.width;
-            this._dirtyCSS = false;
-        }
-    };
-    CssScrollComment.prototype.invalidate = function () {
-        _super.prototype.invalidate.call(this);
-        this._dirtyCSS = true;
-    };
-    CssScrollComment.prototype.stop = function () {
-        _super.prototype.stop.call(this);
-        this.dom.style.transition = '';
-        this.x = this._x;
-        this._x = null;
-        this.x = this.x;
-        this._dirtyCSS = true;
-    };
-    return CssScrollComment;
-}(ScrollComment));
 
 var CommentFactory = (function () {
     function CommentFactory() {
@@ -811,11 +952,16 @@ var CommentFactory = (function () {
     return CommentFactory;
 }());
 
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var CommentSpaceAllocator = (function () {
     function CommentSpaceAllocator(width, height) {
         if (width === void 0) { width = 0; }
@@ -918,7 +1064,7 @@ var CommentSpaceAllocator = (function () {
 var AnchorCommentSpaceAllocator = (function (_super) {
     __extends(AnchorCommentSpaceAllocator, _super);
     function AnchorCommentSpaceAllocator() {
-        _super.apply(this, arguments);
+        return _super !== null && _super.apply(this, arguments) || this;
     }
     AnchorCommentSpaceAllocator.prototype.add = function (comment) {
         _super.prototype.add.call(this, comment);
@@ -942,294 +1088,165 @@ var AnchorCommentSpaceAllocator = (function (_super) {
     return AnchorCommentSpaceAllocator;
 }(CommentSpaceAllocator));
 
-/*!
- * Comment Core Library CommentManager
- * @license MIT
- * @author Jim Chen
- *
- * Copyright (c) 2014 Jim Chen
- */
-var CommentManager = (function() {
-    var _defaultComparator = function (a,b) {
-        if (a.stime > b.stime) {
-            return 2;
-        } else if (a.stime < b.stime) {
-            return -2;
-        } else {
-            if (a.date > b.date) {
-                return 1;
-            } else if (a.date < b.date) {
-                return -1;
-            } else if (a.dbid != null && b.dbid != null) {
-                if (a.dbid > b.dbid) {
-                    return 1;
-                } else if (a.dbid < b.dbid) {
-                    return -1;
-                }
-                return 0;
-            } else {
-                return 0;
+var CommentUtils;
+(function (CommentUtils) {
+    var Matrix3D = (function () {
+        function Matrix3D(array) {
+            this._internalArray = null;
+            if (!Array.isArray(array)) {
+                throw new Error('Not an array. Cannot construct matrix.');
             }
+            if (array.length != 16) {
+                throw new Error('Illegal Dimensions. Matrix3D should be 4x4 matrix.');
+            }
+            this._internalArray = array;
         }
-    };
-
-    function CommentManager(stageObject){
-        var __timer = 0;
-
-        this._listeners = {};
-        this._lastPosition = 0;
-
-        this.stage = stageObject;
-        this.options = {
-            global:{
-                opacity:1,
-                scale:1,
-                className:"cmt"
+        Object.defineProperty(Matrix3D.prototype, "flatArray", {
+            get: function () {
+                return this._internalArray.slice(0);
             },
-            scroll:{
-                opacity:1,
-                scale:1
+            set: function (array) {
+                throw new Error('Not permitted. Matrices are immutable.');
             },
-            limit: 0,
-            seekTrigger: 2000
-        };
-        this.timeline = [];
-        this.runline = [];
-        this.position = 0;
-
-        this.factory = null;
-        this.filter = null;
-        this.csa = {
-            scroll: new CommentSpaceAllocator(0,0),
-            top: new AnchorCommentSpaceAllocator(0,0),
-            bottom: new AnchorCommentSpaceAllocator(0,0),
-            reverse: new CommentSpaceAllocator(0,0),
-            scrollbtm: new CommentSpaceAllocator(0,0)
-        };
-
-        /** Precompute the offset width **/
-        this.width = this.stage.offsetWidth;
-        this.height = this.stage.offsetHeight;
-        this._startTimer = function () {
-            if (__timer > 0) {
-                return;
-            }
-            var lastTPos = new Date().getTime();
-            var cmMgr = this;
-            __timer = window.setInterval(function () {
-                var elapsed = new Date().getTime() - lastTPos;
-                lastTPos = new Date().getTime();
-                cmMgr.onTimerEvent(elapsed,cmMgr);
-            },10);
-        };
-        this._stopTimer = function () {
-            window.clearInterval(__timer);
-            __timer = 0;
-        };
-    }
-
-    /** Public **/
-    CommentManager.prototype.stop = function(){
-        this._stopTimer();
-        // Send stop signal to all comments
-        this.runline.forEach(function (c) { c.stop(); });
-    };
-
-    CommentManager.prototype.start = function(){
-        this._startTimer();
-    };
-
-    CommentManager.prototype.seek = function(time){
-        this.position = BinArray.bsearch(this.timeline, time, function(a,b){
-            if (a < b.stime) {
-                return -1
-            } else if(a > b.stime) {
-                return 1;
-            } else {
-                return 0;
-            }
+            enumerable: true,
+            configurable: true
         });
-    };
-
-    CommentManager.prototype.validate = function(cmt){
-        if (cmt == null) {
-            return false;
-        }
-        return this.filter.doValidate(cmt);
-    };
-
-    CommentManager.prototype.load = function(a){
-        this.timeline = a;
-        this.timeline.sort(_defaultComparator);
-        this.dispatchEvent("load");
-    };
-
-    CommentManager.prototype.insert = function(c){
-        var index = BinArray.binsert(this.timeline, c, _defaultComparator);
-        if (index <= this.position) {
-            this.position++;
-        }
-        this.dispatchEvent("insert");
-    };
-
-    CommentManager.prototype.clear = function () {
-        while (this.runline.length > 0) {
-            this.runline[0].finish();
-        }
-        this.dispatchEvent("clear");
-    };
-
-    CommentManager.prototype.setBounds = function () {
-        this.width = this.stage.offsetWidth;
-        this.height= this.stage.offsetHeight;
-        this.dispatchEvent("resize");
-        for (var comAlloc in this.csa) {
-            this.csa[comAlloc].setBounds(this.width,this.height);
-        }
-        // Update 3d perspective
-        this.stage.style.perspective = this.width / Math.tan(55 * Math.PI/180) / 2 + "px";
-        this.stage.style.webkitPerspective = this.width / Math.tan(55 * Math.PI/180) / 2 + "px";
-    };
-
-    CommentManager.prototype.init = function (renderer) {
-        this.setBounds();
-        if (this.filter == null) {
-            this.filter = new CommentFilter(); //Only create a filter if none exist
-        }
-        if (this.factory == null) {
-            switch (renderer) {
-                case 'legacy':
-                    this.factory = CommentFactory.defaultFactory();
-                    break;
-                default:
-                case 'css':
-                    this.factory = CommentFactory.defaultCssRenderFactory();
-                    break;
-            }
-        }
-    };
-
-    CommentManager.prototype.time = function (time) {
-        time = time - 1;
-        if (this.position >= this.timeline.length ||
-          Math.abs(this._lastPosition - time) >= this.options.seekTrigger) {
-
-            this.seek(time);
-            this._lastPosition = time;
-            if (this.timeline.length <= this.position) {
-                return;
-            }
-        } else {
-            this._lastPosition = time;
-        }
-        for (;this.position < this.timeline.length;this.position++) {
-            if (this.timeline[this.position]['stime']<=time) {
-                if (this.options.limit > 0 && this.runline.length >= this.options.limit) {
-                    continue; // Skip comments but still move the position pointer
-                } else if (this.validate(this.timeline[this.position])) {
-                    this.send(this.timeline[this.position]);
-                }
-            } else {
-                break;
-            }
-        }
-    };
-
-    CommentManager.prototype.rescale = function () {
-        // TODO: Implement rescaling
-    };
-
-    CommentManager.prototype.send = function (data) {
-        if (data.mode === 8) {
-            console.log(data);
-            if (this.scripting) {
-                console.log(this.scripting.eval(data.code));
-            }
-            return;
-        }
-        if (this.filter != null) {
-            data = this.filter.doModify(data);
-            if (data == null) {
-                return;
-            }
-        }
-        var cmt = this.factory.create(this, data);
-        switch (cmt.mode) {
-            default:
-            case 1:
-                this.csa.scroll.add(cmt);
-                break;
-            case 2:
-                this.csa.scrollbtm.add(cmt);
-                break;
-            case 4:
-                this.csa.bottom.add(cmt);
-                break;
-            case 5:
-                this.csa.top.add(cmt);
-                break;
-            case 6:
-                this.csa.reverse.add(cmt);
-                break;
-            case 7:
-            case 17:
-                /* Do NOT manage these comments! */
-                break;
-        }
-        cmt.y = cmt.y;
-        this.dispatchEvent("enterComment", cmt);
-        this.runline.push(cmt);
-    };
-
-    CommentManager.prototype.finish = function (cmt) {
-        this.dispatchEvent("exitComment", cmt);
-        this.stage.removeChild(cmt.dom);
-        var index = this.runline.indexOf(cmt);
-        if (index >= 0) {
-            this.runline.splice(index, 1);
-        }
-        switch (cmt.mode) {
-            default:
-            case 1: {this.csa.scroll.remove(cmt);} break;
-            case 2: {this.csa.scrollbtm.remove(cmt);} break;
-            case 4: {this.csa.bottom.remove(cmt);} break;
-            case 5: {this.csa.top.remove(cmt);} break;
-            case 6: {this.csa.reverse.remove(cmt);} break;
-            case 7: break;
-        }
-    };
-
-    CommentManager.prototype.addEventListener = function (event, listener) {
-        if (typeof this._listeners[event] !== "undefined") {
-            this._listeners[event].push(listener);
-        } else {
-            this._listeners[event] = [listener];
-        }
-    };
-
-    CommentManager.prototype.dispatchEvent = function (event, data) {
-        if (typeof this._listeners[event] !== "undefined") {
-            for (var i = 0; i < this._listeners[event].length; i++) {
-                try {
-                    this._listeners[event][i](data);
-                } catch (e) {
-                    console.error(e.stack);
+        Matrix3D.prototype.isIdentity = function () {
+            return this.equals(Matrix3D.identity());
+        };
+        Matrix3D.prototype.dot = function (matrix) {
+            var a = this._internalArray.slice(0);
+            var b = matrix._internalArray.slice(0);
+            var res = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            for (var i = 0; i < 4; i++) {
+                for (var j = 0; j < 4; j++) {
+                    for (var k = 0; k < 4; k++) {
+                        res[i * 4 + j] += a[i * 4 + k] * b[k * 4 + j];
+                    }
                 }
             }
-        }
+            return new Matrix3D(res);
+        };
+        Matrix3D.prototype.equals = function (matrix) {
+            for (var i = 0; i < 16; i++) {
+                if (this._internalArray[i] !== matrix._internalArray[i]) {
+                    return false;
+                }
+            }
+            return true;
+        };
+        Matrix3D.prototype.toCss = function () {
+            var matrix = this._internalArray.slice(0);
+            for (var i = 0; i < matrix.length; i++) {
+                if (Math.abs(matrix[i]) < 0.000001) {
+                    matrix[i] = 0;
+                }
+            }
+            return 'matrix3d(' + matrix.join(',') + ')';
+        };
+        Matrix3D.identity = function () {
+            return new Matrix3D([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
+        };
+        Matrix3D.createScaleMatrix = function (xscale, yscale, zscale) {
+            return new Matrix3D([xscale, 0, 0, 0, 0, yscale, 0, 0, 0, 0, zscale, 0, 0, 0, 0, 1]);
+        };
+        Matrix3D.createRotationMatrix = function (xrot, yrot, zrot) {
+            var DEG2RAD = Math.PI / 180;
+            var yr = yrot * DEG2RAD;
+            var zr = zrot * DEG2RAD;
+            var COS = Math.cos;
+            var SIN = Math.sin;
+            var matrix = [
+                COS(yr) * COS(zr), COS(yr) * SIN(zr), SIN(yr), 0,
+                (-SIN(zr)), COS(zr), 0, 0,
+                (-SIN(yr) * COS(zr)), (-SIN(yr) * SIN(zr)), COS(yr), 0,
+                0, 0, 0, 1
+            ];
+            return new Matrix3D(matrix.map(function (v) { return Math.round(v * 1e10) * 1e-10; }));
+        };
+        return Matrix3D;
+    }());
+    CommentUtils.Matrix3D = Matrix3D;
+})(CommentUtils || (CommentUtils = {}));
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
-
-    /** Static Functions **/
-    CommentManager.prototype.onTimerEvent = function (timePassed,cmObj) {
-        for (var i= 0;i < cmObj.runline.length; i++) {
-            var cmt = cmObj.runline[i];
-            cmt.time(timePassed);
-        }
-    };
-
-    return CommentManager;
-
 })();
+var CssCompatLayer = (function () {
+    function CssCompatLayer() {
+    }
+    CssCompatLayer.transform = function (dom, trans) {
+        dom.style.transform = trans;
+        dom.style["webkitTransform"] = trans;
+        dom.style["msTransform"] = trans;
+        dom.style["oTransform"] = trans;
+    };
+    return CssCompatLayer;
+}());
+var CssScrollComment = (function (_super) {
+    __extends(CssScrollComment, _super);
+    function CssScrollComment() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this._dirtyCSS = true;
+        return _this;
+    }
+    Object.defineProperty(CssScrollComment.prototype, "x", {
+        get: function () {
+            return (this.ttl / this.dur) * (this.parent.width + this.width) - this.width;
+        },
+        set: function (x) {
+            if (this._x !== null && typeof this._x === "number") {
+                var dx = x - this._x;
+                this._x = x;
+                CssCompatLayer.transform(this.dom, "translateX(" +
+                    (this.axis % 2 === 0 ? dx : -dx) + "px)");
+            }
+            else {
+                this._x = x;
+                if (!this.absolute) {
+                    this._x *= this.parent.width;
+                }
+                if (this.axis % 2 === 0) {
+                    this.dom.style.left =
+                        (this._x + (this.align % 2 === 0 ? 0 : -this.width)) + 'px';
+                }
+                else {
+                    this.dom.style.right =
+                        (this._x + (this.align % 2 === 0 ? -this.width : 0)) + 'px';
+                }
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    CssScrollComment.prototype.update = function () {
+        if (this._dirtyCSS) {
+            this.dom.style.transition = "transform " + this.ttl + "ms linear";
+            this.x = -this.width;
+            this._dirtyCSS = false;
+        }
+    };
+    CssScrollComment.prototype.invalidate = function () {
+        _super.prototype.invalidate.call(this);
+        this._dirtyCSS = true;
+    };
+    CssScrollComment.prototype.stop = function () {
+        _super.prototype.stop.call(this);
+        this.dom.style.transition = '';
+        this.x = this._x;
+        this._x = null;
+        this.x = this.x;
+        this._dirtyCSS = true;
+    };
+    return CssScrollComment;
+}(ScrollComment));
 
 /**
  * Comment Filters Module Simplified

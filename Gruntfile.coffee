@@ -17,12 +17,12 @@ module.exports = (grunt) ->
 
   SRC_CORE = [
     'src/Array.js'
-    'src/core/js/CommentUtils.js'
-    'src/core/js/Comment.js'
-    'src/core/js/css-renderer/CssComment.js'
-    'src/core/js/CommentFactory.js'
-    'src/core/js/CommentSpaceAllocator.js'
     'src/CommentManager.js'
+    'compiled_src/core/Comment.js'
+    'compiled_src/core/CommentFactory.js'
+    'compiled_src/core/CommentSpaceAllocator.js'
+    'compiled_src/core/CommentUtils.js'
+    'compiled_src/core/css-renderer/CssComment.js'
   ]
 
   SRC_MODULES =
@@ -35,10 +35,10 @@ module.exports = (grunt) ->
   # Typescript targets
   SRC_TS_CORE = [
     'src/core/Comment.ts'
-    'src/core/css-renderer/CssComment.ts'
     'src/core/CommentFactory.ts'
     'src/core/CommentSpaceAllocator.ts'
     'src/core/CommentUtils.ts'
+    'src/core/css-renderer/CssComment.ts'
   ]
 
   SRC_TS_SCRIPTING_KAGEROU =
@@ -61,7 +61,7 @@ module.exports = (grunt) ->
   CMP_CORE_TS =
     'core':
       src: SRC_TS_CORE
-      outDir: 'src/core/js/'
+      outDir: 'compiled_src/'
   CMP_CORE_NAME = ['ts:core']
 
   # Dynamically generate the kagerou ts targets
@@ -78,6 +78,7 @@ module.exports = (grunt) ->
     options:
       target: 'es5'
       sourceMap: false
+      rootDir: 'src/'
   for key,value of CMP_CORE_TS
     ts_config[key] = value
   for key,value of CMP_KAGEROU_TS
@@ -92,9 +93,9 @@ module.exports = (grunt) ->
       dist: ['dist']
 
     # Concat CSS and JS files
-    # dist_core : builds CCL with just the comment system
-    # dist_all : builds CCL with everything
-    # scripting_host : builds just the scripting host
+    #  dist_core : builds CCL with just the comment system
+    #  dist_all : builds CCL with everything
+    #  scripting_host : builds just the scripting host
     concat:
       dist_core:
         files:
@@ -172,40 +173,39 @@ module.exports = (grunt) ->
     # Jasmine test
     jasmine:
       coverage:
-        src: 'src/**/*.js'
+        src: ['src/**/*.js', 'compiled_src/**/*.js']
         options:
-          specs: 'compiled_spec/*spec.js'
-          helpers: 'spec/*helper.js'
+          specs: ['compiled_spec/*_spec.js']
+          helpers: ['compiled_spec/*_helper.js']
           vendor: [
             'node_modules/jquery/dist/jquery.js'
-            'node_modules/jasmine-jquery/lib/jasmine-jquery.js'
             'node_modules/sinon/pkg/sinon.js'
             'node_modules/jasmine-sinon/lib/jasmine-sinon.js'
-            'node_modules/promise-polyfill/promise.js' # TODO: remove when phantomjs supports promises
           ]
-          template: require('grunt-template-jasmine-istanbul')
-          templateOptions:
-            report: 'coverage'
-            coverage: 'coverage/coverage.json'
+          # Don't use this, it doesnt work anymore
+          #template: require('grunt-template-jasmine-istanbul')
+          #templateOptions:
+          #  report: 'coverage'
+          #  coverage: 'coverage/coverage.json'
       ci:
-        src: 'dist/CommentCoreLibrary.js'
+        src: ['dist/CommentCoreLibrary.js']
         options:
-          specs: 'compiled_spec/*spec.js'
-          helpers: 'spec/*helper.js'
+          specs: ['compiled_spec/*_spec.js']
+          helpers: ['compiled_spec/*_helper.js']
           vendor: [
             'node_modules/jquery/dist/jquery.js'
-            'node_modules/jasmine-jquery/lib/jasmine-jquery.js'
             'node_modules/sinon/pkg/sinon.js'
             'node_modules/jasmine-sinon/lib/jasmine-sinon.js'
-            'node_modules/promise-polyfill/promise.js' # TODO: remove when phantomjs supports promises
           ]
-          template: require('grunt-template-jasmine-istanbul')
-          templateOptions:
-            report:
-              type: 'lcovonly'
-              options:
-                dir:  'coverage'
-            coverage: 'coverage/coverage.json'
+          # Don't use this, it doesnt work anymore
+          #template: require('grunt-template-jasmine-istanbul')
+          #templateOptions:
+          #  report:
+          #    type: 'lcovonly'
+          #    options:
+          #      dir:  'coverage'
+          #  coverage: 'coverage/coverage.json'
+
     coffee:
       glob_to_multiple:
         expand:  true,
