@@ -1,5 +1,8 @@
 language: node_js
-sudo: false
+sudo: required
+dist: trusty
+addons:
+  chrome: stable
 node_js:
   - "10.3.0"
 before_install:
