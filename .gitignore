@@ -12,6 +12,9 @@
 /compiled_spec/*
 /coverage/*
 
+# Ignore temporary core compile output
+/compiled_src/*
+
 # Ignore tscache
 .tscache
 
@@ -21,6 +24,3 @@
 .baseDir.ts
 .baseDir.js
 .baseDir.js.map
-
-# Ignore temporary core compile output
-/compiled_src/*

@@ -1,0 +1,13 @@
+# Non-package items
+/spec
+/test
+/docs
+/demo
+/experimental
+
+# Temporary files
+.tscache
+/compiled_spec
+/compiled_src
+/coverage
+
