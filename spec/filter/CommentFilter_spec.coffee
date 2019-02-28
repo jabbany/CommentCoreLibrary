@@ -159,6 +159,23 @@ describe 'CommentFilter', ->
           filter.addRule
             'mode': '???').toThrow()
 
+    describe '.removeRule', ->
+      rule =
+        'mode': 'reject',
+        'subject': 'text',
+        'op': '=',
+        'value': 'Foo'
+
+      it 'removes an added rule', ->
+        filter.addRule rule
+        expect(filter.removeRule rule).toBe true
+        expect(filter.rules.length).toBe 0
+
+      it 'returns false when rule is not found', ->
+        newrule =
+          'mode': 'reject'
+        expect(filter.removeRule newrule).toBe false
+
     describe '.addModifier', ->
       modifier = (cmt) ->
         cmt.color = 0xffffff
