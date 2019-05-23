@@ -22,7 +22,7 @@
     "danmu"
   ],
   "main": "dist/CommentCoreLibrary.js",
-  "version": "0.11.0",
+  "version": "0.11.1",
   "devDependencies": {
     "coveralls": "^3.0.3",
     "grunt": "^1.0.4",
