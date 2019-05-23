@@ -24,3 +24,6 @@
 .baseDir.ts
 .baseDir.js
 .baseDir.js.map
+
+# Ignore typescript tmp files
+*.tmp.txt
