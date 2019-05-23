@@ -60,7 +60,7 @@ describe 'CommentManager', ->
         expect(manager.timeline).toEqual [c1, c2, c3, c4, c5]
 
       it 'smoking test', ->
-        sampleNormal = 
+        sampleNormal =
           """
           <?xml version="1.0" encoding="UTF-8"?><i>
           <d p="15.104999542236,1,25,16777215,1388314569,0,1a87dd40,364586099">关了弹幕瞬间好多了</d>
@@ -89,14 +89,16 @@ describe 'CommentManager', ->
         spy = sinon.spy manager, 'send'
         manager.load [ c3, c4, c5 ]
         manager.time 3
-        expect(spy).toHaveBeenCalledThrice()
+        expect(spy).toHaveBeenCalledOnce()
+        expect(spy).toHaveBeenCalledWith([ c3, c4, c5 ])
 
       it 'limits based on limiter', ->
         spy = sinon.spy manager, 'send'
         manager.load [ c3, c4, c5 ]
         manager.options.limit = 2
         manager.time 3
-        expect(spy).toHaveBeenCalledTwice()
+        expect(spy).toHaveBeenCalledOnce()
+        expect(spy).toHaveBeenCalledWith([ c3, c4 ])
 
       it 'seeks if seek threshold is passed', ->
         manager.load [ c1 ]
