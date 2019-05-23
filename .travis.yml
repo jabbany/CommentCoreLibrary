@@ -10,4 +10,4 @@ before_install:
 before_script:
   - npm install -g grunt-cli
 script:
-  - npm run-sript ci
+  - npm run-script ci
