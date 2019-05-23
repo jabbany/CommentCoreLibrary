@@ -220,10 +220,11 @@ module.exports = (grunt) ->
   grunt.registerTask 'compile:ts-kagerou', CMP_KAGEROU_NAME
 
   # Register our tasks
-  grunt.registerTask 'test', ['coffee', 'jasmine:coverage']
   grunt.registerTask 'build', ['compile:ts-core', 'concat:dist_all', 'autoprefixer', 'cssmin', 'uglify:all']
   grunt.registerTask 'build:core', ['compile:ts-core', 'concat:dist_core', 'autoprefixer', 'cssmin', 'uglify:core']
   grunt.registerTask 'build:scripting', ['clean:scripting','concat:scripting_host', 'compile:ts-kagerou', 'copy:scripting_sandbox']
-  grunt.registerTask 'ci', ['build', 'coffee', 'jasmine:ci']
 
-  grunt.registerTask 'default', ['clean', 'build', 'build:scripting', 'watch']
+  grunt.registerTask 'ci', ['build', 'coffee', 'jasmine:ci']
+  grunt.registerTask 'test', ['coffee', 'jasmine:coverage']
+
+  grunt.registerTask 'default', ['clean', 'build', 'build:scripting']

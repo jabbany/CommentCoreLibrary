@@ -148,6 +148,26 @@ class CoreComment implements IComment {
     }
   }
 
+  protected _toggleClass(className:string, toggle:boolean = false):void {
+    if (!this.dom) {
+      return;
+    }
+    if (this.dom.classList) {
+      this.dom.classList.toggle(className, toggle);
+    } else {
+      // Fallback to traditional method
+      var classList:string[] = this.dom.className.split(' ');
+      var index = classList.indexOf(className);
+      if (index >= 0 && !toggle) {
+        classList.splice(index, 1);
+        this.dom.className = classList.join(' ');
+      } else if (index < 0 && toggle) {
+        classList.push(className)
+        this.dom.className = classList.join(' ');
+      }
+    }
+  }
+
   /**
    * Initializes the DOM element (or canvas) backing the comment
    * This method takes the place of 'initCmt' in the old CCL
@@ -332,7 +352,7 @@ class CoreComment implements IComment {
     color = color.length >= 6 ? color : new Array(6 - color.length + 1).join('0') + color;
     this.dom.style.color = '#' + color;
     if (this._color === 0) {
-      this.dom.className = this.parent.options.global.className + ' rshadow';
+      this._toggleClass('reverse-shadow', true);
     }
   }
 
@@ -353,7 +373,7 @@ class CoreComment implements IComment {
   set shadow(s:boolean) {
     this._shadow = s;
     if (!this._shadow) {
-      this.dom.className = this.parent.options.global.className + ' noshadow';
+      this._toggleClass('no-shadow', true);
     }
   }
 
@@ -419,7 +439,11 @@ class CoreComment implements IComment {
     for (var prop in currentMotion) {
       if (currentMotion.hasOwnProperty(prop)) {
         var m = <IMotion> currentMotion[prop];
-        this[prop] = m.easing(Math.min(Math.max(time - m.delay, 0), m.dur), m.from, m.to - m.from, m.dur);
+        this[prop] = m.easing(
+          Math.min(Math.max(time - m.delay, 0), m.dur),
+          m.from,
+          m.to - m.from,
+          m.dur);
       }
     }
   }
@@ -430,7 +454,11 @@ class CoreComment implements IComment {
    */
   public animate():void {
     if (this._alphaMotion) {
-      this.alpha = (this.dur - this.ttl) * (this._alphaMotion['to'] - this._alphaMotion['from']) / this.dur + this._alphaMotion['from'];
+      this.alpha =
+        (this.dur - this.ttl) *
+          (this._alphaMotion['to'] - this._alphaMotion['from']) /
+          this.dur +
+          this._alphaMotion['from'];
     }
     if (this.motion.length === 0) {
       return;

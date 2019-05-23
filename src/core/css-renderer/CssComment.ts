@@ -22,6 +22,11 @@ class CssScrollComment extends ScrollComment {
   // Marker for whether we need to re-create the CSS or not
   private _dirtyCSS:boolean = true;
 
+  public init(recycle:IComment = null):void {
+    super.init(recycle);
+    this._toggleClass('css-optimize', true);
+  }
+
   set x(x:number) {
     if (this._x !== null && typeof this._x === "number") {
       // This is run when starting
