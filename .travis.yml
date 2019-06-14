@@ -1,7 +1,9 @@
 language: node_js
-sudo: required
 dist: trusty
 addons:
+  apt:
+    packages:
+      - libnss3
   chrome: stable
 node_js:
   - "12.2.0"

@@ -15,39 +15,6 @@ module.exports = (grunt) ->
     'src/css/fontalias.css'
   ]
 
-  SRC_CORE = [
-    'src/Array.js'
-    'src/CommentManager.js'
-    'compiled_src/core/Comment.js'
-    'compiled_src/core/CommentFactory.js'
-    'compiled_src/core/CommentSpaceAllocator.js'
-    'compiled_src/core/CommentUtils.js'
-    'compiled_src/core/css-renderer/CssComment.js'
-  ]
-
-  SRC_MODULES =
-    'filter': ['src/filter/CommentFilter.js']
-    'provider': ['src/CommentProvider.js', 'src/Promises.js']
-    'format-bilibili': ['src/parsers/BilibiliFormat.js']
-    'format-acfun': ['src/parsers/AcfunFormat.js']
-    'format-common': ['src/parsers/CommonDanmakuFormat.js']
-
-  # Typescript targets
-  SRC_TS_CORE = [
-    'src/core/Comment.ts'
-    'src/core/CommentFactory.ts'
-    'src/core/CommentSpaceAllocator.ts'
-    'src/core/CommentUtils.ts'
-    'src/core/css-renderer/CssComment.ts'
-  ]
-
-  SRC_TS_SCRIPTING_KAGEROU =
-    'Display': ['src/scripting/api/Display/Display.ts']
-    'Runtime': ['src/scripting/api/Runtime/Runtime.ts']
-    'Player': ['src/scripting/api/Player/Player.ts']
-    'Utils': ['src/scripting/api/Utils/Utils.ts']
-    'Tween': ['src/scripting/api/Tween/Tween.ts']
-
   # ==== Below this point is logic to generate compile configurations ====
   # You probably do not need to edit anything below here
 
