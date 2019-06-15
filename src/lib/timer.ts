@@ -29,6 +29,10 @@ export class Timer {
     }
   }
 
+  get running():boolean {
+    return this._isStarted;
+  }
+
   /**
    * Start the timer. If the timer already has time ticked, it will continue
    */

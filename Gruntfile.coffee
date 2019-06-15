@@ -56,28 +56,20 @@ module.exports = (grunt) ->
 
   grunt.initConfig(
     clean:
-      scripting: ['dist/scripting']
-      dist: ['dist']
-
-    # Concat CSS and JS files
-    #  dist_core : builds CCL with just the comment system
-    #  dist_all : builds CCL with everything
-    #  scripting_host : builds just the scripting host
-    concat:
-      dist_core:
-        files:
-          'dist/css/style.css': CSS
-          'dist/CommentCoreLibrary.js': SRC_CORE
-      dist_all:
-        files:
-          'dist/css/style.css': CSS
-          'dist/CommentCoreLibrary.js': CMP_ALL
-      scripting_host:
-        files:
-          'dist/scripting/Host.js': ['src/scripting/Host.js','src/scripting/Unpacker.js']
+      temp: [
+        'compiled_spec/',
+        'compiled_src/'
+      ]
+      dist: [
+        'dist'
+      ]
 
     # Compile TypeScript
-    ts: ts_config
+    ts: {
+      default: {
+        tsconfig: './tsconfig.json'
+      }
+    }
 
     # Copy
     copy:
@@ -182,16 +174,11 @@ module.exports = (grunt) ->
         ext: '.js'
   )
 
-  # Register special compiles
-  grunt.registerTask 'compile:ts-core', CMP_CORE_NAME
-  grunt.registerTask 'compile:ts-kagerou', CMP_KAGEROU_NAME
-
+  grunt.loadNpmTasks("grunt-ts");
   # Register our tasks
-  grunt.registerTask 'build', ['compile:ts-core', 'concat:dist_all', 'autoprefixer', 'cssmin', 'uglify:all']
-  grunt.registerTask 'build:core', ['compile:ts-core', 'concat:dist_core', 'autoprefixer', 'cssmin', 'uglify:core']
-  grunt.registerTask 'build:scripting', ['clean:scripting','concat:scripting_host', 'compile:ts-kagerou', 'copy:scripting_sandbox']
+  grunt.registerTask 'build', ['clean', 'ts']
 
   grunt.registerTask 'ci', ['build', 'coffee', 'jasmine:ci']
   grunt.registerTask 'test', ['coffee', 'jasmine:coverage']
 
-  grunt.registerTask 'default', ['clean', 'build', 'build:scripting']
+  grunt.registerTask 'default', ['clean', 'build']

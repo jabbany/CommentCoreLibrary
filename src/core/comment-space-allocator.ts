@@ -5,13 +5,13 @@
  * @license MIT License
  * @description Comment space allocation units for static and movable comments
  */
-import { SpaceAllocator, AllocationResult, UpdateableCommentData }
+import { SpaceAllocator, AllocationResult, UpdateableCommentData, CommentData }
   from './interfaces';
-import { Renderer } from '../renderer';
+import { Renderer, Measurement } from '../renderer/interfaces';
 import { binaryInsert } from '../lib';
 
 export class CommentSpaceAllocator<T> implements SpaceAllocator<T> {
-  protected _renderer:Renderer<T, UpdateableCommentData>;
+  protected _renderer:Renderer<T, UpdateableCommentData, CommentData>;
   protected _width:number;
   protected _height:number;
   private _pools:T[][];
@@ -26,7 +26,7 @@ export class CommentSpaceAllocator<T> implements SpaceAllocator<T> {
    * @param width - allocator width pixels (default 0)
    * @param height - allocator height pixels (default 0)
    */
-  constructor(renderer:Renderer<T, UpdateableCommentData>,
+  constructor(renderer:Renderer<T, UpdateableCommentData, CommentData>,
     width:number = 0, height:number = 0) {
 
     this._renderer = renderer;
@@ -58,10 +58,9 @@ export class CommentSpaceAllocator<T> implements SpaceAllocator<T> {
    * @param pool - The pool to test in.
    * @returns {boolean} whether or not a valid path exists in the tested pool.
    */
-  public pathCheck(y:number, comment:T, pool:T[]):boolean {
+  protected pathCheck(y:number, measurement:Measurement, pool:T[]):boolean {
     // Measure the comment
-    let measurement = this._renderer.measure(comment),
-      bottom = y + measurement.height,
+    let bottom = y + measurement.height,
       right = measurement.right;
     for (let i = 0; i < pool.length; i++) {
       let refMeasurement = this._renderer.measure(pool[i]);
@@ -92,16 +91,15 @@ export class CommentSpaceAllocator<T> implements SpaceAllocator<T> {
    * @param poolIndex - Pool index
    * @returns {number} Y offset assigned
    */
-  public assign(comment:T, poolIndex:number = 0):AllocationResult {
+  public provision(measurement:Measurement,
+    poolIndex:number = 0):AllocationResult {
     // Measure the comment first
-    let measurement = this._renderer.measure(comment);
     while (this._pools.length <= poolIndex) {
       this._pools.push([]);
     }
     let pool = this._pools[poolIndex];
-    if (pool.length === 0 || this.pathCheck(0, comment, pool)) {
+    if (pool.length === 0 || this.pathCheck(0, measurement, pool)) {
       return {
-        x: measurement.x,
         y: 0,
         poolIndex: poolIndex
       };
@@ -113,7 +111,7 @@ export class CommentSpaceAllocator<T> implements SpaceAllocator<T> {
       if (y + measurement.height > this._height) {
         break;
       }
-      if (this.pathCheck(y, comment, pool)) {
+      if (this.pathCheck(y, measurement, pool)) {
         // Has a path in the current pool
         return {
           x: measurement.x,
@@ -123,7 +121,7 @@ export class CommentSpaceAllocator<T> implements SpaceAllocator<T> {
       }
     }
     // Assign one pool deeper
-    return this.assign(comment, poolIndex + 1);
+    return this.assign(measurement, poolIndex + 1);
   }
 
   /**

@@ -1,2 +1,2 @@
 export * from './interfaces';
-export * from './DOMRenderer';
+export * from './dom-renderer';

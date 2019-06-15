@@ -1,4 +1,4 @@
-import { ScriptingEngine } from './ScriptingEngine';
+import { ScriptingEngine } from './scripting-engine';
 
 export interface TypeOptions {
   scale: number;

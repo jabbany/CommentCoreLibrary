@@ -4,7 +4,6 @@ addons:
   apt:
     packages:
       - libnss3
-  chrome: stable
 node_js:
   - "12.2.0"
 before_install:

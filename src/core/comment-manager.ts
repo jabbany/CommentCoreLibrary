@@ -17,7 +17,7 @@ type ListenerPool = {[name:string]:Listener[]};
 
 export class CommentManager<T> {
   private _status:Status;
-  private _renderer:Renderer<T, UpdateableCommentData>;
+  private _renderer:Renderer<T, UpdateableCommentData, CommentData>;
 
   private _listeners:ListenerPool = {};
   private _csa:{[name:string]:SpaceAllocator<T>} = {};
@@ -50,7 +50,7 @@ export class CommentManager<T> {
     return this._status;
   }
 
-  constructor(renderer:Renderer<T, UpdateableCommentData>) {
+  constructor(renderer:Renderer<T, UpdateableCommentData, CommentData>) {
     this._renderer = renderer;
     this._status = 'stopped';
   }
@@ -132,6 +132,10 @@ export class CommentManager<T> {
     let comment = this._renderer.create(data);
     // Try to allocate the comment;
 
+    // Start the comment moving
+    this._renderer.track(comment).start();
+
+    this.runline.push(comment);
   }
 
   /**
