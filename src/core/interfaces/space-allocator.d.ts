@@ -2,7 +2,7 @@ import { Measurement } from '../../renderer/interfaces';
 import { UpdateablePosition } from './comment-data';
 
 export interface SpaceAllocator<T> {
-  provision(measurement:Measurement):AllocationResult;
+  provision(item:T):AllocationResult;
   add(item:T):void;
   remove(item:T):void;
   setBounds(w:number, h:number):void;

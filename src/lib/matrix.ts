@@ -38,6 +38,10 @@ export class Matrix3D {
       (-SIN(yr) * COS(zr)) , (-SIN(yr) * SIN(zr)) , COS(yr) , 0,
       0                    , 0                    , 0       , 1
     ];
+
+    if (xr !== 0) {
+      throw new Error('Not implemented');
+    }
     // Do some rounding
     return new Matrix3D(matrix.map(v => Math.round(v * 1e10) * 1e-10));
   };

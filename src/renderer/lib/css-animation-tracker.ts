@@ -1,7 +1,8 @@
 import { Timer } from '../../lib/timer';
 import { CommentData } from '../../core/interfaces';
 
-import { AnimationTracker, Measurement } from '../interfaces';
+import { AnimationTracker, Measurement, Offset } from '../interfaces';
+import { LazyFutureMeasurement } from './lazy-dom-measurement';
 
 export class CSSAnimationTracker implements AnimationTracker {
   private _item:HTMLDivElement;
@@ -27,6 +28,14 @@ export class CSSAnimationTracker implements AnimationTracker {
     return this._timer.time;
   }
 
+  private getOffsetAt(time:number = 0):Offset {
+    let timeDiff = time - this._timer.time;
+    if (timeDiff === 0) {
+      return {'x': 0, 'y': 0};
+    }
+    return {'x': 0, 'y': 0};
+  }
+
   public stop():void {
     this._timer.stop();
   }
@@ -37,9 +46,11 @@ export class CSSAnimationTracker implements AnimationTracker {
     }
     this._timer.start();
     // Render the spec
+    this._item.style.transform = '';
   }
 
   public measure(time?:number):Measurement {
-    return this._measurement;
+    return new LazyFutureMeasurement(this._measurement,
+      this.getOffsetAt(time));
   }
 }

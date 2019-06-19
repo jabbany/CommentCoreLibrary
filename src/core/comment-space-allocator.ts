@@ -7,7 +7,7 @@
  */
 import { SpaceAllocator, AllocationResult, UpdateableCommentData, CommentData }
   from './interfaces';
-import { Renderer, Measurement } from '../renderer/interfaces';
+import { Renderer } from '../renderer/interfaces';
 import { binaryInsert } from '../lib';
 
 export class CommentSpaceAllocator<T> implements SpaceAllocator<T> {
@@ -54,12 +54,13 @@ export class CommentSpaceAllocator<T> implements SpaceAllocator<T> {
    * Validates sufficient space for a "bullet path" for the comment.
    *
    * @param y - Path starting at y offset (path height is the comment height)
-   * @param comment - Comment instance to test
+   * @param measurement - Measurement to check
    * @param pool - The pool to test in.
    * @returns {boolean} whether or not a valid path exists in the tested pool.
    */
-  protected pathCheck(y:number, measurement:Measurement, pool:T[]):boolean {
+  protected pathCheck(y:number, comment:T, pool:T[]):boolean {
     // Measure the comment
+    let measurement = this._renderer.measure(comment);
     let bottom = y + measurement.height,
       right = measurement.right;
     for (let i = 0; i < pool.length; i++) {
@@ -91,14 +92,14 @@ export class CommentSpaceAllocator<T> implements SpaceAllocator<T> {
    * @param poolIndex - Pool index
    * @returns {number} Y offset assigned
    */
-  public provision(measurement:Measurement,
+  public provision(comment:T,
     poolIndex:number = 0):AllocationResult {
     // Measure the comment first
     while (this._pools.length <= poolIndex) {
       this._pools.push([]);
     }
     let pool = this._pools[poolIndex];
-    if (pool.length === 0 || this.pathCheck(0, measurement, pool)) {
+    if (pool.length === 0 || this.pathCheck(0, comment, pool)) {
       return {
         y: 0,
         poolIndex: poolIndex
@@ -106,12 +107,13 @@ export class CommentSpaceAllocator<T> implements SpaceAllocator<T> {
     }
 
     let y:number = 0;
+    let measurement = this._renderer.measure(comment);
     for (let  k = 0; k < pool.length; k++) {
       y = this._renderer.measure(pool[k]).bottom + this.avoid;
       if (y + measurement.height > this._height) {
         break;
       }
-      if (this.pathCheck(y, measurement, pool)) {
+      if (this.pathCheck(y, comment, pool)) {
         // Has a path in the current pool
         return {
           x: measurement.x,
@@ -121,7 +123,7 @@ export class CommentSpaceAllocator<T> implements SpaceAllocator<T> {
       }
     }
     // Assign one pool deeper
-    return this.assign(measurement, poolIndex + 1);
+    return this.provision(comment, poolIndex + 1);
   }
 
   /**
@@ -140,7 +142,7 @@ export class CommentSpaceAllocator<T> implements SpaceAllocator<T> {
         }
       });
     } else {
-      let assignedPosition = this.assign(comment, 0);
+      let assignedPosition = this.provision(comment, 0);
       binaryInsert(this._pools[assignedPosition.poolIndex], comment, (a, b) => {
         let bottomA = this._renderer.measure(a).bottom,
           bottomB = this._renderer.measure(b).bottom;
@@ -186,7 +188,7 @@ export class CommentSpaceAllocator<T> implements SpaceAllocator<T> {
 
 export class AnchorCommentSpaceAllocator<T> extends CommentSpaceAllocator<T> {
   public assign(comment:T, poolIndex:number = 0):AllocationResult {
-    let result = super.assign(comment, poolIndex);
+    let result = super.provision(comment, poolIndex);
     result.x = (this._width - this._renderer.measure(comment).width) / 2;
     return result;
   }

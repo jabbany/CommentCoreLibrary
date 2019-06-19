@@ -1,7 +1,7 @@
 import { Timer } from '../../lib/timer';
 import { CommentData } from '../../core/interfaces';
 
-import { AnimationTracker, Measurement } from '../interfaces';
+import { AnimationTracker, Measurement, Offset } from '../interfaces';
 import { LazyFutureMeasurement } from './lazy-dom-measurement';
 
 export class RafAnimationTracker implements AnimationTracker {
@@ -29,6 +29,17 @@ export class RafAnimationTracker implements AnimationTracker {
     return this._timer.time;
   }
 
+  private getOffsetAt(time:number = 0):Offset {
+    let timeDiff = time - this._timer.time;
+    if (timeDiff === 0) {
+      return {'x': 0, 'y': 0};
+    }
+    return {
+      'x': 0,
+      'y': 0
+    }
+  }
+
   public stop():void {
     this._timer.stop();
   }
@@ -42,8 +53,9 @@ export class RafAnimationTracker implements AnimationTracker {
     window.requestAnimationFrame(this._tick.bind(this));
   }
 
-  public measure():Measurement {
-    return new LazyFutureMeasurement(this._measurement);
+  public measure(time:number = 0):Measurement {
+    return new LazyFutureMeasurement(this._measurement,
+      this.getOffsetAt(time));
   }
 
   private _tick() {

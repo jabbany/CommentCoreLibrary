@@ -18,39 +18,7 @@ module.exports = (grunt) ->
   # ==== Below this point is logic to generate compile configurations ====
   # You probably do not need to edit anything below here
 
-  # Dynamically generate the target for all
-  CMP_ALL = []
-  CMP_ALL = CMP_ALL.concat SRC_CORE
-  for name, source of SRC_MODULES
-    CMP_ALL = CMP_ALL.concat source
-
-  # Generate the core ts targets
-  CMP_CORE_TS =
-    'core':
-      src: SRC_TS_CORE
-      outDir: 'compiled_src/'
-  CMP_CORE_NAME = ['ts:core']
-
-  # Dynamically generate the kagerou ts targets
-  CMP_KAGEROU_TS = {}
-  CMP_KAGEROU_NAME = []
-  for target, src of SRC_TS_SCRIPTING_KAGEROU
-    CMP_KAGEROU_NAME.push ('ts:kagerou_engine_' + target.toLowerCase())
-    CMP_KAGEROU_TS['kagerou_engine_' + target.toLowerCase()] =
-      src: src
-      out: 'dist/scripting/api/' + target + '.js'
-
-  # Append Typescript Tasks
-  ts_config =
-    options:
-      target: 'es5'
-      sourceMap: false
-      rootDir: 'src/'
-  for key,value of CMP_CORE_TS
-    ts_config[key] = value
-  for key,value of CMP_KAGEROU_TS
-    ts_config[key] = value
-
+  grunt.loadNpmTasks "grunt-ts"
   grunt.loadNpmTasks 'grunt-contrib-coffee'
   grunt.loadNpmTasks 'grunt-contrib-jasmine'
 
@@ -174,11 +142,11 @@ module.exports = (grunt) ->
         ext: '.js'
   )
 
-  grunt.loadNpmTasks("grunt-ts");
+
   # Register our tasks
   grunt.registerTask 'build', ['clean', 'ts']
 
-  grunt.registerTask 'ci', ['build', 'coffee', 'jasmine:ci']
-  grunt.registerTask 'test', ['coffee', 'jasmine:coverage']
+  grunt.registerTask 'test', ['build'] # And do tests
+  grunt.registerTask 'ci', ['build'] # Do CI stuff
 
-  grunt.registerTask 'default', ['clean', 'build']
+  grunt.registerTask 'default', ['build', 'watch']

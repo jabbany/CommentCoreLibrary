@@ -1,3 +1,8 @@
+export interface Offset {
+  readonly x:number;
+  readonly y:number;
+}
+
 export interface Measurement {
   readonly width:number;
   readonly height:number;

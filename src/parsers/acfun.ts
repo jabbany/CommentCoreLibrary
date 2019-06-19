@@ -1,4 +1,4 @@
-import { CommentData, AnimationMode, Animatable, Waypoint }
+import { CommentData, AnimationMode, UpdateablePosition, Waypoint }
   from '../core/interfaces';
 import { Parser, ParserConfig, ParserTypes, Format } from './interfaces';
 
@@ -15,6 +15,8 @@ interface CommentSingle {
 
 interface MovementParams {
   l?:number;
+  x?:number;
+  y?:number;
 }
 
 interface CommentParams {
@@ -158,13 +160,6 @@ class AcFunJsonParser implements Parser<CommentSingle, CommentSingle[]> {
         if (typeof params.z !== 'undefined' && Array.isArray(params.z)) {
           data.animation.mode = 'path';
           data.animation.path = [];
-          let lastState:Animatable = {
-            position: data.position,
-            orientation: data.orientation,
-            color: data.color,
-            alpha: data.alpha,
-            size: data.size
-          };
           for (let m = 0; m < params.z.length; m++) {
             let movement = params.z[m];
             let duration = (typeof movement.l === 'number') ?
@@ -174,10 +169,20 @@ class AcFunJsonParser implements Parser<CommentSingle, CommentSingle[]> {
               duration: duration,
               interpolation:'linear'
             };
-            // Diff against the last state
+
+            if (movement.x !== null || movement.y !== null) {
+              // We moved
+              let newPos:UpdateablePosition = {};
+              if (movement.x !== null) {
+                newPos.x = movement.x;
+              }
+              if (movement.y !== null) {
+                newPos.y = movement.y;
+              }
+              point.position = newPos;
+            }
 
             data.animation.path.push(point);
-            lastState = point;
           }
         }
 
@@ -214,7 +219,7 @@ export class AcFunFormat implements Format {
   constructor(config:ParserConfig) {
     this._config = config;
   }
-  public getParser(type:ParserTypes):Parser<any, any> {
+  public getParser(_type:ParserTypes):Parser<any, any> {
     return new AcFunJsonParser(this._config);
   }
 }
