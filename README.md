@@ -16,24 +16,22 @@ Developers willing to incorporate similar comment streaming functionalities
 inside their own projects (whether web based or not) are encouraged to learn
 from and extend from the CommentCoreLibrary.
 
-## Testing
+## Demo
 We have a live demo [here](http://jabbany.github.io/CommentCoreLibrary/demo).
 Feel free to [open tickets](CONTRIBUTING.md) if this demo test has bugs.
 
 ## License
-The CommentCoreLibrary is licensed under the permissive MIT License. If you wish
-to use this in any project, you can simply include the following line:
-
-    CommentCoreLibrary (//github.com/jabbany/CommentCoreLibrary) - Licensed under the MIT license
+CommentCoreLibrary is licensed under the permissive [MIT License](LICENSE).
 
 ## Installing
-With [bower](http://bower.io/):
-`bower install comment-core-library`
+With [yarn](https://yarnpkg.com/):
+`yarn add comment-core-library`
 
 With [npm](https://www.npmjs.org/):
 `npm install comment-core-library`
 
-For Rails, installing with [rails-assets](https://rails-assets.org/) is recommended
+For Rails, installing with [rails-assets](https://rails-assets.org/) is
+recommended
 
 In Gemfile:
 ```ruby
@@ -42,6 +40,13 @@ source 'https://rails-assets.org'
 
 gem 'rails-assets-comment-core-library'
 ```
+
+### Front-end Framework Integration
+To use this library with [React](https://reactjs.org/), please use the
+`react-ccl` package instead.
+
+To use this library with [Vue](https://vuejs.org/), please use the `vue-ccl`
+package instead.
 
 ## Examples and Documentation
 - [Documentation](docs/) can be found inside the `docs/` folder.

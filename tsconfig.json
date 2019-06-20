@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "module": "umd",
+    "moduleResolution": "node",
+    "allowJs": false,
+    "rootDir": "src/",
+    "outDir": "compiled_src/",
+    "strict": true,
+    "isolatedModules": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true
+  },
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    ".git",
+    "node_modules",
+    "src/css/**/*",
+    "src/scripting/**/*"
+  ]
+}
