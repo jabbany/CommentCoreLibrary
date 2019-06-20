@@ -17,10 +17,7 @@ module.exports = (grunt) ->
 
   # ==== Below this point is logic to generate compile configurations ====
   # You probably do not need to edit anything below here
-
-  grunt.loadNpmTasks "grunt-ts"
   grunt.loadNpmTasks 'grunt-contrib-coffee'
-  grunt.loadNpmTasks 'grunt-contrib-jasmine'
 
   grunt.initConfig(
     clean:
@@ -96,42 +93,6 @@ module.exports = (grunt) ->
         mocha:   true
       all:
         src: ['src/*.js']
-
-    # Jasmine test
-    jasmine:
-      coverage:
-        src: ['src/**/*.js', 'compiled_src/**/*.js']
-        options:
-          specs: ['compiled_spec/*_spec.js']
-          helpers: ['compiled_spec/*_helper.js']
-          vendor: [
-            'node_modules/jquery/dist/jquery.js'
-            'node_modules/sinon/pkg/sinon.js'
-            'node_modules/jasmine-sinon/lib/jasmine-sinon.js'
-          ]
-          # Don't use this, it doesnt work anymore
-          #template: require('grunt-template-jasmine-istanbul')
-          #templateOptions:
-          #  report: 'coverage'
-          #  coverage: 'coverage/coverage.json'
-      ci:
-        src: ['dist/CommentCoreLibrary.js']
-        options:
-          specs: ['compiled_spec/*_spec.js']
-          helpers: ['compiled_spec/*_helper.js']
-          vendor: [
-            'node_modules/jquery/dist/jquery.js'
-            'node_modules/sinon/pkg/sinon.js'
-            'node_modules/jasmine-sinon/lib/jasmine-sinon.js'
-          ]
-          # Don't use this, it doesnt work anymore
-          #template: require('grunt-template-jasmine-istanbul')
-          #templateOptions:
-          #  report:
-          #    type: 'lcovonly'
-          #    options:
-          #      dir:  'coverage'
-          #  coverage: 'coverage/coverage.json'
 
     coffee:
       glob_to_multiple:

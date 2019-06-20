@@ -1,12 +1,13 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
     "target": "es5",
+    "module": "umd",
     "moduleResolution": "node",
-    "outDir": "compiled_src/",
+    "allowJs": false,
     "rootDir": "src/",
-    "sourceMap": true,
+    "outDir": "compiled_src/",
     "strict": true,
+    "isolatedModules": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noImplicitReturns": true,
