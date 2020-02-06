@@ -615,10 +615,33 @@ function bindVideo(video, cm) {
   });
 };
 
+function bindLiveTests(){
+  $('test-live-1').addEventListener('click', function(){
+    window.cm.start();
+    var comment = {
+      'text': "common danmaku",
+      'mode': 1,
+      'color': 0xffffff,
+    };
+    window.cm.send(comment);
+  })
+  $('test-live-2').addEventListener('click', function(){
+    window.cm.start();
+    var comment = {
+      'text': "blue background danmaku",
+      'mode': 1,
+      'color': 0xffffff,
+      'css_class': 'blue-background'
+    };
+    window.cm.send(comment);
+  })
+}
+
 window.addEventListener("load", function() {
   bind();
   bindWindow();
   bindTests();
+  bindLiveTests();
   bindResize();
   bindDebugger();
 });

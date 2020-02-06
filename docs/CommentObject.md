@@ -119,6 +119,9 @@ Parent: 此弹幕归属的上层管理器
 ### dom &lt;HTMLDivElement/Canvas/etc.&gt;
 DOM Correspondance: 对应的渲染元素，根据不同情况是不一样的。默认是 DIV 元素。
 
+### css_class &lt;String&gt;
+CSS Class: 渲染元素的css类，可指定多个类名，用空格分隔。
+
 ## Methods 方法
 
 ### constructor(cm:CommentManager, data:Object) 
