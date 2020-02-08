@@ -631,7 +631,7 @@ function bindLiveTests(){
       'text': "blue background danmaku",
       'mode': 1,
       'color': 0xffffff,
-      'css_class': 'blue-background'
+      'className': 'blue-background'
     };
     window.cm.send(comment);
   })

@@ -410,7 +410,7 @@ var CoreComment = (function () {
         this._shadow = true;
         this._font = '';
         this._transform = null;
-        this._css_class = '';
+        this._className = '';
         if (!parent) {
             throw new Error('Comment not bound to comment manager.');
         }
@@ -499,8 +499,8 @@ var CoreComment = (function () {
                 }
             }
         }
-        if (init.hasOwnProperty('css_class')) {
-            this._css_class = init['css_class'];
+        if (init.hasOwnProperty('className')) {
+            this._className = init['className'];
         }
     }
     CoreComment.prototype._toggleClass = function (className, toggle) {
@@ -533,8 +533,8 @@ var CoreComment = (function () {
             this.dom = document.createElement('div');
         }
         this.dom.className = this.parent.options.global.className;
-        if (this._css_class !== "") {
-            this.dom.className += " " + this._css_class;
+        if (this._className !== "") {
+            this.dom.className += " " + this._className;
         }
         this.dom.appendChild(document.createTextNode(this.text));
         this.dom.textContent = this.text;

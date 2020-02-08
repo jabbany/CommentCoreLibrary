@@ -55,12 +55,12 @@ class CoreComment implements IComment {
   private _shadow:boolean = true;
   private _font:string = '';
   private _transform:CommentUtils.Matrix3D = null;
-  private _css_class:string = '';
+  private _className:string = '';
 
   public parent:ICommentManager;
   public dom:HTMLDivElement;
 
-  public css_class:String;
+  public className:String;
 
   constructor(parent:ICommentManager, init:Object = {}) {
     if (!parent) {
@@ -149,8 +149,8 @@ class CoreComment implements IComment {
         }
       }
     }
-    if (init.hasOwnProperty('css_class')) {
-      this._css_class = init['css_class'];
+    if (init.hasOwnProperty('className')) {
+      this._className = init['className'];
     }
   }
 
@@ -185,8 +185,8 @@ class CoreComment implements IComment {
       this.dom = document.createElement('div');
     }
     this.dom.className = this.parent.options.global.className;
-    if (this._css_class !== "") {
-      this.dom.className += " " + this._css_class;
+    if (this._className !== "") {
+      this.dom.className += " " + this._className;
     }
     this.dom.appendChild(document.createTextNode(this.text));
     this.dom.textContent = this.text;
