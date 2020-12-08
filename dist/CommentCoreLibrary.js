@@ -249,16 +249,22 @@ var CommentManager = (function() {
     } else {
       this._lastPosition = time;
     }
+    var batch = [];
     for (;this.position < this.timeline.length;this.position++) {
-      if (this.timeline[this.position]['stime']<=time) {
-        if (this.options.limit > 0 && this.runline.length >= this.options.limit) {
+      if (this.timeline[this.position]['stime'] <= time) {
+        if (this.options.limit > 0 &&
+          this.runline.length + batch.length >= this.options.limit) {
+
           continue; // Skip comments but still move the position pointer
         } else if (this.validate(this.timeline[this.position])) {
-          this.send(this.timeline[this.position]);
+          batch.push(this.timeline[this.position]);
         }
       } else {
         break;
       }
+    }
+    if (batch.length > 0) {
+      this.send(batch);
     }
   };
 
@@ -266,46 +272,57 @@ var CommentManager = (function() {
     // TODO: Implement rescaling
   };
 
-  CommentManager.prototype.send = function (data) {
+  CommentManager.prototype._preprocess = function (data) {
     if (data.mode === 8) {
+      // This comment is not managed by the comment manager
       console.log(data);
       if (this.scripting) {
         console.log(this.scripting.eval(data.code));
       }
-      return;
+      return null;
     }
     if (this.filter != null) {
       data = this.filter.doModify(data);
-      if (data == null) {
-        return;
-      }
     }
-    var cmt = this.factory.create(this, data);
+    return data;
+  }
+
+  CommentManager.prototype._allocateSpace = function (cmt) {
     switch (cmt.mode) {
       default:
-      case 1:
-        this.csa.scroll.add(cmt);
-        break;
-      case 2:
-        this.csa.scrollbtm.add(cmt);
-        break;
-      case 4:
-        this.csa.bottom.add(cmt);
-        break;
-      case 5:
-        this.csa.top.add(cmt);
-        break;
-      case 6:
-        this.csa.reverse.add(cmt);
-        break;
+      case 1: { this.csa.scroll.add(cmt); } break;
+      case 2: { this.csa.scrollbtm.add(cmt); } break;
+      case 4: { this.csa.bottom.add(cmt); } break;
+      case 5: { this.csa.top.add(cmt); } break;
+      case 6: { this.csa.reverse.add(cmt); } break;
       case 7:
-      case 17:
-        /* Do NOT manage these comments! */
-        break;
+      case 17: {/* Do NOT manage these comments! */} break;
     }
-    cmt.y = cmt.y;
-    this.dispatchEvent("enterComment", cmt);
-    this.runline.push(cmt);
+  }
+
+  CommentManager.prototype.send = function (data) {
+    if (!Array.isArray(data)) {
+      data = [ data ];
+    }
+    // Validate all the comments
+    data = data.map(
+      this._preprocess.bind(this)).filter(function (item) {
+        return item !== null;
+      });
+    if (data.length === 0) {
+      return;
+    }
+    data.map((function (item) {
+      // Create and insert the comments into the DOM
+      return this.factory.create(this, item);
+    }).bind(this)).map((function (cmt) {
+      this._allocateSpace(cmt);
+      return cmt;
+    }).bind(this)).forEach((function (cmt) {
+      cmt.y = cmt.y;
+      this.dispatchEvent("enterComment", cmt);
+      this.runline.push(cmt);
+    }).bind(this));
   };
 
   CommentManager.prototype.finish = function (cmt) {
@@ -355,7 +372,6 @@ var CommentManager = (function() {
   };
 
   return CommentManager;
-
 })();
 
 var __extends = (this && this.__extends) || (function () {
@@ -390,6 +406,7 @@ var CoreComment = (function () {
         this._shadow = true;
         this._font = '';
         this._transform = null;
+        this._className = '';
         if (!parent) {
             throw new Error('Comment not bound to comment manager.');
         }
@@ -478,7 +495,31 @@ var CoreComment = (function () {
                 }
             }
         }
+        if (init.hasOwnProperty('className')) {
+            this._className = init['className'];
+        }
     }
+    CoreComment.prototype._toggleClass = function (className, toggle) {
+        if (toggle === void 0) { toggle = false; }
+        if (!this.dom) {
+            return;
+        }
+        if (this.dom.classList) {
+            this.dom.classList.toggle(className, toggle);
+        }
+        else {
+            var classList = this.dom.className.split(' ');
+            var index = classList.indexOf(className);
+            if (index >= 0 && !toggle) {
+                classList.splice(index, 1);
+                this.dom.className = classList.join(' ');
+            }
+            else if (index < 0 && toggle) {
+                classList.push(className);
+                this.dom.className = classList.join(' ');
+            }
+        }
+    };
     CoreComment.prototype.init = function (recycle) {
         if (recycle === void 0) { recycle = null; }
         if (recycle !== null) {
@@ -488,6 +529,9 @@ var CoreComment = (function () {
             this.dom = document.createElement('div');
         }
         this.dom.className = this.parent.options.global.className;
+        if (this._className !== "") {
+            this.dom.className += " " + this._className;
+        }
         this.dom.appendChild(document.createTextNode(this.text));
         this.dom.textContent = this.text;
         this.dom.innerText = this.text;
@@ -663,7 +707,7 @@ var CoreComment = (function () {
             color = color.length >= 6 ? color : new Array(6 - color.length + 1).join('0') + color;
             this.dom.style.color = '#' + color;
             if (this._color === 0) {
-                this.dom.className = this.parent.options.global.className + ' rshadow';
+                this._toggleClass('reverse-shadow', true);
             }
         },
         enumerable: true,
@@ -703,7 +747,7 @@ var CoreComment = (function () {
         set: function (s) {
             this._shadow = s;
             if (!this._shadow) {
-                this.dom.className = this.parent.options.global.className + ' noshadow';
+                this._toggleClass('no-shadow', true);
             }
         },
         enumerable: true,
@@ -769,7 +813,11 @@ var CoreComment = (function () {
     };
     CoreComment.prototype.animate = function () {
         if (this._alphaMotion) {
-            this.alpha = (this.dur - this.ttl) * (this._alphaMotion['to'] - this._alphaMotion['from']) / this.dur + this._alphaMotion['from'];
+            this.alpha =
+                (this.dur - this.ttl) *
+                    (this._alphaMotion['to'] - this._alphaMotion['from']) /
+                    this.dur +
+                    this._alphaMotion['from'];
         }
         if (this.motion.length === 0) {
             return;
@@ -1196,6 +1244,11 @@ var CssScrollComment = (function (_super) {
         _this._dirtyCSS = true;
         return _this;
     }
+    CssScrollComment.prototype.init = function (recycle) {
+        if (recycle === void 0) { recycle = null; }
+        _super.prototype.init.call(this, recycle);
+        this._toggleClass('css-optimize', true);
+    };
     Object.defineProperty(CssScrollComment.prototype, "x", {
         get: function () {
             return (this.ttl / this.dur) * (this.parent.width + this.width) - this.width;

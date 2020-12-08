@@ -10,6 +10,7 @@
     "type": "git",
     "url": "https://github.com/jabbany/CommentCoreLibrary.git"
   },
+  "homepage": "https://github.com/jabbany/CommentCoreLibrary#readme",
   "author": "Jim Chen <knh.jabbany@gmail.com>",
   "license": "MIT",
   "keywords": [
@@ -21,25 +22,31 @@
     "danmu"
   ],
   "main": "dist/CommentCoreLibrary.js",
-  "version": "0.11.0",
+  "version": "0.11.1",
   "devDependencies": {
-    "coveralls": "^3.0.1",
-    "grunt": "^1.0.3",
+    "coveralls": "^3.0.3",
+    "grunt": "^1.0.4",
     "grunt-autoprefixer": "^3.0.4",
-    "grunt-contrib-clean": "^1.0.0",
-    "grunt-contrib-coffee": "^2.0.0",
+    "grunt-contrib-clean": "^2.0.0",
+    "grunt-contrib-coffee": "^2.1.0",
     "grunt-contrib-concat": "^1.0.1",
     "grunt-contrib-copy": "^1.0.0",
-    "grunt-contrib-cssmin": "^2.2.1",
-    "grunt-contrib-jasmine": "^2.0.1",
-    "grunt-contrib-jshint": "^1.0.0",
-    "grunt-contrib-uglify": "^3.3.0",
+    "grunt-contrib-cssmin": "^3.0.0",
+    "grunt-contrib-jasmine": "^2.0.3",
+    "grunt-contrib-jshint": "^2.1.0",
+    "grunt-contrib-uglify": "^4.0.1",
     "grunt-contrib-watch": "^1.1.0",
-    "grunt-ts": "^6.0.0-beta.19",
+    "grunt-ts": "^6.0.0-beta.22",
     "jasmine-sinon": "^0.4.0",
-    "jquery": "^3.3.1",
-    "load-grunt-tasks": "^4.0.0",
-    "sinon": "^6.0.0",
-    "typescript": "^2.9.2"
+    "jquery": "^3.4.1",
+    "load-grunt-tasks": "^5.0.0",
+    "sinon": "^7.3.2",
+    "typescript": "^3.4.5"
+  },
+  "scripts": {
+    "build": "npm install && grunt",
+    "start": "grunt watch",
+    "test": "grunt && grunt test",
+    "ci": "grunt ci"
   }
 }

@@ -4,10 +4,10 @@ dist: trusty
 addons:
   chrome: stable
 node_js:
-  - "10.3.0"
+  - "12.2.0"
 before_install:
   - npm install npm -g
 before_script:
   - npm install -g grunt-cli
 script:
-  - grunt ci
+  - npm run-script ci

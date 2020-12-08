@@ -1,7 +1,6 @@
 # CommentCoreLibrary 弹幕核心通用构件
 [![NPM version](https://badge.fury.io/js/comment-core-library.svg)](http://badge.fury.io/js/comment-core-library)
 [![Bower version](https://badge.fury.io/bo/comment-core-library.svg)](http://badge.fury.io/bo/comment-core-library)
-[![Built with Grunt](https://cdn.gruntjs.com/builtwith.png)](http://gruntjs.com/)
 [![License](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
 [![Build Status: Linux](https://travis-ci.org/jabbany/CommentCoreLibrary.svg?branch=master)](https://travis-ci.org/jabbany/CommentCoreLibrary)
 [![Coverage Status](https://img.shields.io/coveralls/jabbany/CommentCoreLibrary.svg)](https://coveralls.io/r/jabbany/CommentCoreLibrary?branch=master)
@@ -56,5 +55,3 @@ We encourage any contributions to this project, please read
 Also, feel free to have a look at our sister project
 [ABPlayerHTML5](https://github.com/jabbany/ABPlayerHTML5) for a reference
 implementation of a video player with CommentCoreLibrary.
-
-
