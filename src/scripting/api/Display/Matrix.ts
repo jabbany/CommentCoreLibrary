@@ -13,7 +13,7 @@ module Display {
       this.y = y;
     }
 
-    set length(l:number) {
+    set length(_l:number) {
       __trace('Point.length is read-only', 'err');
     }
 
@@ -416,7 +416,7 @@ module Display {
       get: function () {
         return 'Vector<int>';
       },
-      set: function (value) {
+      set: function (_value) {
         __trace('as3Type should not be set.', 'warn');
       }
     });
@@ -435,7 +435,7 @@ module Display {
       get: function () {
         return 'Vector<number>';
       },
-      set: function (value) {
+      set: function (_value) {
         __trace('as3Type should not be set.', 'warn');
       }
     });

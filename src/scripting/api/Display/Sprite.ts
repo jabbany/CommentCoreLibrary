@@ -21,7 +21,7 @@ module Display {
       return this._graphics;
     }
 
-    set graphics(g:Graphics) {
+    set graphics(_g:Graphics) {
       __trace('Sprite.graphics is read-only.', 'warn');
     }
 
@@ -55,13 +55,24 @@ module Display {
    * @author Jim Chen
    */
   export class RootSprite extends Sprite {
+    private _metaRoot:Runtime.IMetaObject;
     constructor() {
       super('__root');
+      this._metaRoot = Runtime.getObject('__root');
     }
 
     get parent():DisplayObject {
       __trace('SecurityError: No access above root sprite.','err');
       return null;
+    }
+
+    public addEventListener(eventName:string, listener:Function):void {
+      __trace('Listener[' + eventName + '] on root sprite inadvisible', 'warn');
+      this._metaRoot.addEventListener(eventName, listener);
+    }
+
+    public removeEventListener(eventName:string, listener:Function):void {
+      this._metaRoot.removeEventListener(eventName, listener, false);
     }
   }
 

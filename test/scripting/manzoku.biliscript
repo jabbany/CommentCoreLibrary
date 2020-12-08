@@ -1,6 +1,6 @@
 var count = 0;
 var bar = $.createShape({lifeTime:11,x:14});
-bar.graphics.beginGradientFill("linear", [0x009e96,0x005752], [0.8,0.8], [0x00, 0xFF], $.createMatrix(), "pad"); 
+bar.graphics.beginGradientFill("linear", [0x009e96,0x005752], [0.8,0.8], [0x00, 0xFF], $.createMatrix(), "pad");
 bar.graphics.drawRect(0,340,512,24);
 bar.graphics.endFill();
 var mask = $.createShape({
@@ -10,7 +10,7 @@ motion:{
 y:0,
 lifeTime:11
 });
- mask.graphics.beginGradientFill("linear", [0x000000,0x000000], [1,1], [0x00, 0xFF], $.createMatrix(), "pad"); 
+ mask.graphics.beginGradientFill("linear", [0x000000,0x000000], [1,1], [0x00, 0xFF], $.createMatrix(), "pad");
  mask.graphics.drawRect(0,340,512,24);
  mask.graphics.endFill();
 

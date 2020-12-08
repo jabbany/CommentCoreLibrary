@@ -1,5 +1,6 @@
 /// <reference path="../OOAPI.d.ts" />
 /// <reference path="DisplayObject.ts" />
+/// <reference path="ByteArray.ts" />
 
 module Display {
 
@@ -45,68 +46,63 @@ module Display {
    * @author Jim Chen
    */
   export class Bitmap extends DisplayObject {
+    private _bitmapData:BitmapData | null = null;
 
-	}
-
-  export class ByteArray extends Array<number> {
-    private _readPosition:number = 0;
-
-    constructor(...params) {
-      super(...params);
+    constructor(bitmapData:BitmapData | null = null) {
+      super(Runtime.generateId('obj-bmp'));
+      this._bitmapData = bitmapData;
     }
 
-    get bytesAvailable():number {
-      return this.length - this._readPosition;
+    get width():number {
+      console.log(this._bitmapData);
+      return this._bitmapData !== null ?
+        this._bitmapData.width * this.scaleX : 0;
     }
 
-    set bytesAvailable(n:number) {
-      __trace('ByteArray.bytesAvailable is read-only', 'warn');
+    get height():number {
+      return this._bitmapData !== null ?
+        this._bitmapData.height * this.scaleY : 0;
     }
 
-    public clear():void {
-      this.length = 0;
-      this._readPosition = 0;
-    }
-
-    public compress(algorithm:string = 'zlib'):void {
-      __trace('ByteArray.compress not implemented', 'warn');
-    }
-
-    public uncompress(algorithm:string = 'zlib'):void {
-      __trace('ByteArray.uncompress not implemented', 'warn');
-    }
-
-    public deflate():void {
-      __trace('ByteArray.deflate not implemented', 'warn');
-    }
-
-    public inflate():void {
-      __trace('ByteArray.inflate not implemented', 'warn');
-    }
-
-    public readUTFBytes(length:number):string {
-      // Get length
-      var subArray:Array<number> = this.slice(this._readPosition, length);
-      this._readPosition += Math.min(length, this.length - this._readPosition);
-      var str:string = '';
-      subArray.forEach((cc) => {
-        str += String.fromCharCode(cc);
-      })
-      return str;
-    }
-
-    public writeUTFBytes(value:string):void {
-      for (var i = 0; i < value.length; i++) {
-        Array.prototype.push.apply(this, [value.charCodeAt(i)]);
+    set width(w:number) {
+      if (this._bitmapData !== null && this._bitmapData.width > 0) {
+        this.scaleX = w / this._bitmapData.width;
       }
     }
-  }
+
+    set height(h:number) {
+      if (this._bitmapData !== null && this._bitmapData.height > 0) {
+        this.scaleY = h / this._bitmapData.height;
+      }
+    }
+
+    public getBitmapData():BitmapData {
+      return this._bitmapData;
+    }
+
+    public setBitmapData(bitmapData:BitmapData):void {
+      if (typeof bitmapData !== 'undefined') {
+        this._bitmapData = bitmapData;
+        // Propagate up
+        this.methodCall('setBitmapData', bitmapData.getId());
+      }
+    }
+
+    public serialize():Object {
+      var serialized:Object = super.serialize();
+      serialized["class"] = 'Bitmap';
+      if (this._bitmapData !== null) {
+        serialized["bitmapData"] = this._bitmapData.getId();
+      }
+      return serialized;
+    }
+	}
 
   /**
    * BitmapData Polyfill class
    * @author Jim Chen
    */
-  export class BitmapData {
+  export class BitmapData implements Runtime.RegisterableObject {
     private _id:string;
     private _rect:Rectangle;
     private _locked:boolean = false;
@@ -119,13 +115,19 @@ module Display {
       height:number,
       transparent:boolean = true,
       fillColor:number = 0xffffffff,
-      id:string = Runtime.generateId()) {
+      id:string = Runtime.generateId('obj-bmp-data')) {
 
       this._id = id;
       this._rect = new Rectangle(0, 0, width, height);
       this._transparent = transparent;
       this._fillColor = fillColor;
+
+      this._dirtyArea = new DirtyArea();
+
       this._fill();
+
+      // Register this
+      Runtime.registerObject(this);
     }
 
     private _fill():void {
@@ -161,17 +163,18 @@ module Display {
               change.x + j]);
         }
       }
-      this._call('updateBox', {
+      this._methodCall('updateBox', {
         'box': change.serialize(),
         'values': region
       });
+      this._dirtyArea.reset();
     }
 
-    private _call(method:string, args:any):void {
-      __pchannel('Runtime:CallMethod', {
-        'id': this.getId(),
-        'name': name,
-        'value': args,
+    private _methodCall(methodName:string, params:any):void {
+      __pchannel("Runtime:CallMethod", {
+        "id": this._id,
+        "method": methodName,
+        "params": params
       });
     }
 
@@ -187,16 +190,46 @@ module Display {
       return this._rect;
     }
 
-    set height(height:number) {
+    set height(_height:number) {
       __trace('BitmapData.height is read-only', 'warn');
     }
 
-    set width(width:number) {
+    set width(_width:number) {
       __trace('BitmapData.height is read-only', 'warn');
     }
 
-    set rect(rect:Rectangle) {
+    set rect(_rect:Rectangle) {
       __trace('BitmapData.rect is read-only', 'warn');
+    }
+
+    public draw(source:DisplayObject|BitmapData,
+      matrix:Matrix = null,
+      colorTransform:ColorTransform = null,
+      blendMode:string = null,
+      clipRect:Rectangle = null,
+      smoothing:boolean = false):void {
+      if (!(source instanceof BitmapData)) {
+        __trace('Drawing non BitmapData is not supported!', 'err');
+        return;
+      }
+      if (matrix !== null) {
+        __trace('Matrix transforms not supported yet.', 'warn');
+      }
+      if (colorTransform !== null) {
+        __trace('Color transforms not supported yet.', 'warn');
+      }
+      if (blendMode !== null && blendMode !== 'normal') {
+        __trace('Blend mode [' + blendMode + '] not supported yet.', 'warn');
+      }
+      if (smoothing !== false) {
+        __trace('Smoothign not supported!', 'warn');
+      }
+      this.lock();
+      if (clipRect === null) {
+        clipRect = new Rectangle(0, 0, source.width, source.height);
+      }
+      this.setPixels(clipRect, source.getPixels(clipRect));
+      this.unlock();
     }
 
     public getPixel(x:number, y:number):number {
@@ -210,7 +243,7 @@ module Display {
       }
       try {
         return this._transparent ? this._byteArray[y * this._rect.width + x] :
-          this._byteArray[y * this._rect.width + x] + 0xff000000;
+          (this._byteArray[y * this._rect.width + x] & 0x00ffffff) + 0xff000000;
       } catch (e) {
         return this._fillColor;
       }
@@ -225,25 +258,27 @@ module Display {
       }
       var region:ByteArray = new ByteArray();
       for (var i = 0; i < rect.height; i++) {
-        Array.prototype.push.apply(region,
-          this._byteArray.slice((rect.y + i) * this._rect.width + rect.x,
-            (rect.y + i) * this._rect.width + rect.x + rect.width));
+        this._byteArray.slice((rect.y + i) * this._rect.width + rect.x,
+          (rect.y + i) * this._rect.width + rect.x + rect.width).forEach(function (v) {
+            region.push(v)
+          });
       }
       return region;
     }
 
     public setPixel(x:number, y:number, color:number):void {
-      this.setPixel32(x, y, color);
+      // Force alpha channel to be full
+      this.setPixel32(x, y, (color & 0x00ffffff) + 0xff000000);
     }
 
     public setPixel32(x:number, y:number, color:number):void {
       if (!this._transparent) {
-        color = color & 0x00ffffff;
-      } else {
-        color = color & 0xffffffff;
+        // Force alpha channel
+        color = (color & 0x00ffffff) + 0xff000000;
       }
       this._byteArray[y * this._rect.width + x] = color;
       this._dirtyArea.expand(x, y);
+      this._updateBox();
     }
 
     public setPixels(rect:Rectangle, input:Array<number>):void {
@@ -255,6 +290,11 @@ module Display {
         throw new Error('setPixels expected ' + (rect.width * rect.height) +
           ' pixels, but actually got ' + input.length);
       }
+      if (!this._transparent) {
+        input = input.map(function (color) {
+          return (color & 0x00ffffff) + 0xff000000;
+        });
+      }
       for (var i = 0; i < rect.width; i++) {
         for (var j = 0; j < rect.height; j++) {
           this._byteArray[(rect.y + j) * this.width + (rect.x + i)] =
@@ -262,6 +302,20 @@ module Display {
             this._dirtyArea.expand(i, j);
         }
       }
+      this._updateBox();
+    }
+
+    public getVector(rect:Rectangle):Array<number> {
+      if (this._rect.equals(rect)) {
+        return this._byteArray;
+      }
+      var vector:Array<number> = [];
+      for (var j = rect.y; j < rect.y + rect.height; j++) {
+        for (var i = rect.x; i < rect.x + rect.width; i++) {
+          vector.push(rect[j * this._rect.width + i]);
+        }
+      }
+      return vector;
     }
 
     public lock():void {
@@ -277,14 +331,33 @@ module Display {
       }
     }
 
+    public dispatchEvent(_event:string, _data?:any):void {
+
+    }
+
     public getId():string {
       return this._id;
     }
 
     public serialize():Object {
       return {
-        'class':'BitmapData'
+        'class':'BitmapData',
+        'width': this._rect.width,
+        'height': this._rect.height,
+        'fill': this._fillColor
       };
+    }
+
+    public unload():void {
+      this._methodCall('unload', null);
+    }
+
+    public clone():BitmapData {
+      var data = new BitmapData(this.width, this.height,
+        this._transparent, this._fillColor);
+      data._byteArray = this._byteArray.slice(0);
+      data._updateBox(data._rect);
+      return data;
     }
   }
 }

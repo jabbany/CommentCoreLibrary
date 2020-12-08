@@ -27,7 +27,7 @@ alpha:{fromValue:0,toValue:0.2,lifeTime:1}}
  g.graphics.beginFill(0x996600);
  g.graphics.drawRect(0,0,540,383);
  g.graphics.endFill()
- 
+
 /*马猴烧酒组*/
 var s = $.createShape({lifeTime:10,motionGroup:[
 {x:{fromValue:5,toValue:0,lifeTime:2},alpha:{fromValue:0,toValue:1,lifeTime:2}},

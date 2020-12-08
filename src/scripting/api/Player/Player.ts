@@ -31,7 +31,7 @@ module Player{
 
   Object.defineProperty(Player, 'state', {
     get: function() { return _state; },
-    set: function(value) {
+    set: function(_value) {
       __trace('Player.state is read-only', 'warn');
     }
   });
@@ -43,7 +43,7 @@ module Player{
         return _time + _lastUpdate.elapsed;
       }
     },
-    set: function(value) {
+    set: function(_value) {
       __trace('Player.time is read-only', 'warn');
     }
   });
@@ -51,7 +51,7 @@ module Player{
     get: function() {
       return _commentList;
     },
-    set: function(value) {
+    set: function(_value) {
       __trace('Player.commentData is read-only', 'warn');
     }
   });
@@ -59,39 +59,39 @@ module Player{
     get: function() {
       return _refreshRate;
     },
-    set: function(value) {
+    set: function(_value) {
       __trace("Player.refreshRate deprecated. Please use Display.frameRate",
         "warn");
     }
   });
   Object.defineProperty(Player, 'width', {
     get: function() { return _width; },
-    set: function(value) {
+    set: function(_value) {
       __trace("Player.width is read-only", "warn");
     }
   });
   Object.defineProperty(Player, 'height', {
     get: function() { return _height; },
-    set: function(value) {
+    set: function(_value) {
       __trace("Player.height is read-only", "warn");
     }
   });
   Object.defineProperty(Player, 'videoWidth', {
     get: function() { return _videoWidth; },
-    set: function(value) {
+    set: function(_value) {
       __trace("Player.videoWidth is read-only", "warn");
     }
   });
   Object.defineProperty(Player, 'videoHeight', {
     get: function() { return _videoHeight; },
-    set: function(value) {
+    set: function(_value) {
       __trace("Player.videoHeight is read-only", "warn");
     }
   });
   Object.defineProperty(Player, 'version', {
     get: function() {
       return 'CCLPlayer/1.0 HTML5/* (bilibili, like BSE, like flash)'; },
-    set: function(value) {
+    set: function(_value) {
       __trace('Player.version is read-only', 'warn');
     }
   });
@@ -150,25 +150,44 @@ module Player{
 
   export function commentTrigger(callback:Function, timeout:number):void{
     if (!Runtime.hasObject('__player')) {
-      __trace('Your environment does not support player triggers.', 'warn');
+      __trace('Your environment does not support player triggers.', 'err');
       return;
     }
-    __trace('Comment trigger: not implemented', 'warn');
-  }
-
-  export function keyTrigger(callback:Function, timeout:number):void{
-    if (!Runtime.hasObject('__player')) {
-      __trace('Your environment does not support key triggers.', 'warn');
+    if (timeout < 0) {
       return;
     }
+    var listener = function (comment:CommentData) {
+      callback(comment);
+    };
     var player:Runtime.IMetaObject =
       Runtime.getObject<Runtime.IMetaObject>('__player');
-    player.addEventListener('keydown', function (key) {
-      callback(key.keyCode);
-    });
+    player.addEventListener('comment', listener);
+    //TODO: remove the listener after timeout
+    //player.removeEventListener('comment', listener);
   }
 
-  export function setMask(mask:any):void{
+  export function keyTrigger(callback:Function,
+    timeout:number = 1000,
+    triggerOnUp:boolean = false):void{
+    if (!Runtime.hasObject('__player')) {
+      __trace('Your environment does not support key triggers.', 'err');
+      return;
+    }
+    if (timeout < 0) {
+      return;
+    }
+    var eventName:string = 'key' + (triggerOnUp ? 'up' : 'down');
+    var listener:(number)=>void = function (key) {
+      callback(key.keyCode);
+    };
+    var player:Runtime.IMetaObject =
+      Runtime.getObject<Runtime.IMetaObject>('__player');
+    player.addEventListener(eventName, listener);
+    //TODO: remove the listener after the timeout
+    //player.removeEventListener(eventName, listener);
+  }
+
+  export function setMask(_mask:any):void{
     __trace('Masking not supported yet', 'warn');
   }
 

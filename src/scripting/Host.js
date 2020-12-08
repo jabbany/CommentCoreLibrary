@@ -29,14 +29,14 @@ var CCLScripting = function(workerUrl){
 		return;
 	}
 
-	CCLScripting.prototype.ScriptingContext = function(scripter, stage){
+	CCLScripting.prototype.ScriptingContext = function (scripter, stage) {
 		// Here in the Scripting Context we also have a objects
 		var objects = {};
 		this.registerObject = function(objectId, serialized){
-			if(typeof this.Unpack[serialized["class"]] === "function"){
+			if(typeof this.Unpack[serialized["class"]] === "function") {
 				objects[objectId] = new this.Unpack[serialized["class"]](stage,
 					serialized, this);
-			}else{
+			} else {
 				scripter.logger.error("Cannot unpack class \"" +
 					serialized["class"] + "\". No valid unpacker found");
 				return;

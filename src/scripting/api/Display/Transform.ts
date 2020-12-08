@@ -45,8 +45,6 @@ module Display {
 
     constructor(parent:Transformable) {
       this._parent = parent;
-      this._perspectiveProjection = new PerspectiveProjection(parent);
-      this._colorTransform = new ColorTransform();
     }
 
     set parent(p:Transformable) {
@@ -62,7 +60,21 @@ module Display {
     }
 
     get perspectiveProjection():PerspectiveProjection {
+      if (typeof this._perspectiveProjection === 'undefined') {
+        this._perspectiveProjection = new PerspectiveProjection(this._parent);
+      }
       return this._perspectiveProjection;
+    }
+
+    set colorTransform(colorTransform:ColorTransform) {
+      this._colorTransform = colorTransform;
+    }
+
+    get colorTransform():ColorTransform {
+      if (typeof this._colorTransform === 'undefined') {
+        this._colorTransform = new ColorTransform();
+      }
+      return this._colorTransform;
     }
 
     set matrix3D(m:Display.Matrix3D) {

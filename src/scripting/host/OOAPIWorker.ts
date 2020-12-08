@@ -1,4 +1,4 @@
-import { OOAPIMessage } from './OOAPI.d.ts';
+import { OOAPIMessage } from './OOAPI';
 
 export type ChannelListener = (e:OOAPIMessage) => void;
 

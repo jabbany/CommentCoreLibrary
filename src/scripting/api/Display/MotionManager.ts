@@ -70,6 +70,10 @@ module Display {
       if (!this._isRunning) {
         return;
       }
+      // Ignore timer events if this has 0 duration (infinite)
+      if (this._dur === 0) {
+        return;
+      }
       this._ttl -= this._timeKeeper.elapsed;
       this._timeKeeper.reset();
       if (this._ttl <= 0) {
@@ -111,7 +115,7 @@ module Display {
       }
     }
 
-    public forecasting(time:number):boolean {
+    public forecasting(_time:number):boolean {
       __trace('MotionManager.forecasting always returns false', 'warn');
       return false;
     }
@@ -171,11 +175,11 @@ module Display {
       return Tween.parallel.apply(Tween, tweens);
     }
 
-    public initTween(motion:Object, repeat:boolean):void {
+    public initTween(motion:Object, _repeat:boolean):void {
       this._tween = this.motionSetToTween(motion);
     }
 
-    public initTweenGroup(motionGroup:Array<Object>, lifeTime:number):void {
+    public initTweenGroup(motionGroup:Array<Object>, _lifeTime:number):void {
       var tweens:Array<Tween.ITween> = [];
       for (var i = 0; i < motionGroup.length; i++) {
         tweens.push(this.motionSetToTween(motionGroup[i]));

@@ -63,6 +63,9 @@ window.addEventListener('load',function(){
 	$("debug-3dsphere").addEventListener("click", function(){
 		fetchFile("../../test/scripting/3dsphere.biliscript");
 	});
+  $("debug-mc4k").addEventListener("click", function(){
+		fetchFile("../../test/scripting/minecraft4k.biliscript");
+	});
 	$("debug-custom").addEventListener("click", function(){
 		var file = prompt("Please input test file name:");
 		if(file !== null && file !== ""){

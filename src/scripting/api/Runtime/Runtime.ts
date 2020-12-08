@@ -12,7 +12,7 @@
 */
 module Runtime {
   type ObjectRegistry = {[objectName: string]: RegisterableObject};
-  type IMetaObject = RegisterableObject & Listenable;
+  export type IMetaObject = RegisterableObject & Listenable;
   /**
    * Global interface for Listenable objects
    */
@@ -25,7 +25,7 @@ module Runtime {
     removeEventListener(
       event:string,
       listener:Function,
-      useCapture:boolean
+      useCapture?:boolean
     ):void;
     hasEventListener(event:string):boolean;
   }
@@ -43,7 +43,7 @@ module Runtime {
   /**
    * Meta object that serves only to receive and send events
    */
-  class MetaObject implements RegisterableObject, Listenable {
+  class MetaObject implements IMetaObject {
     private _name:string;
     private _listeners:{[name:string]: Array<Function>} = {};
 
@@ -56,8 +56,8 @@ module Runtime {
 
     public addEventListener(event:string,
       listener:Function,
-      useCapture:boolean = false,
-      priority:number = 0):void {
+      _useCapture:boolean = false,
+      _priority:number = 0):void {
 
       if (!(event in this._listeners)) {
         this._listeners[event] = [];
@@ -67,7 +67,7 @@ module Runtime {
 
     public removeEventListener(event:string,
       listener:Function,
-      useCapture:boolean = false):void {
+      _useCapture:boolean = false):void {
 
       if (!(event in this._listeners)) {
         return;
@@ -120,7 +120,7 @@ module Runtime {
     get: function () {
       return _registeredObjects;
     },
-    set: function (value) {
+    set: function (_value) {
       __trace('Runtime.registeredObjects is read-only', 'warn');
     }
   });
@@ -222,10 +222,9 @@ module Runtime {
     }
   }
 
-  function _getId(type:string = 'obj', container:string = 'rt'):string {
-    var randomSeed:number = Math.random()
-    var randomSegment:string = '';
-    return;
+  function _makeId (type:string = "obj"):string {
+    return type + ":" + Date.now() + "|" +
+      Runtime.NotCrypto.random(16) + ":" + objCount;
   }
 
   /**
@@ -234,11 +233,9 @@ module Runtime {
    * @returns {string} - objectid that has not been registered
    */
   export function generateId(type:string = "obj"):string {
-    var id:string = [type, ':', Date.now(), '|',
-      Runtime.NotCrypto.random(16), ':', objCount].join();
+    var id:string = _makeId(type);
     while (Runtime.hasObject(id)) {
-      id = type + ":" + Date.now() + "|" +
-        Runtime.NotCrypto.random(16) + ":" + objCount;
+      id = _makeId(type);
     }
     return id;
   };

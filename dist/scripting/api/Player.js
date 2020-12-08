@@ -42,6 +42,7 @@ var Player;
     var Sound = (function () {
         function Sound(type, onload) {
             this._isPlaying = false;
+            this._id = Runtime.generateId('obj-snd');
             this.onload = onload;
             this._source = type;
         }
@@ -49,13 +50,27 @@ var Player;
             this._source = url;
         };
         Sound.prototype.play = function () {
+            if (this._isPlaying) {
+                return;
+            }
         };
         Sound.prototype.remove = function () {
         };
         Sound.prototype.stop = function () {
+            if (!this._isPlaying) {
+                return;
+            }
         };
         Sound.prototype.loadPercent = function () {
             return 0;
+        };
+        Sound.prototype.getId = function () {
+            return this._id;
+        };
+        Sound.prototype.dispatchEvent = function (_eventName, _params) {
+        };
+        Sound.prototype.unload = function () {
+            this.stop();
         };
         Sound.prototype.serialize = function () {
             return {
@@ -65,6 +80,11 @@ var Player;
         };
         return Sound;
     }());
+    function createSound(sample, onload) {
+        if (onload === void 0) { onload = null; }
+        return new Sound(sample, onload);
+    }
+    Player.createSound = createSound;
 })(Player || (Player = {}));
 var Player;
 (function (Player) {
@@ -79,7 +99,7 @@ var Player;
     var _lastUpdate = new Runtime.TimeKeeper();
     Object.defineProperty(Player, 'state', {
         get: function () { return _state; },
-        set: function (value) {
+        set: function (_value) {
             __trace('Player.state is read-only', 'warn');
         }
     });
@@ -92,7 +112,7 @@ var Player;
                 return _time + _lastUpdate.elapsed;
             }
         },
-        set: function (value) {
+        set: function (_value) {
             __trace('Player.time is read-only', 'warn');
         }
     });
@@ -100,7 +120,7 @@ var Player;
         get: function () {
             return _commentList;
         },
-        set: function (value) {
+        set: function (_value) {
             __trace('Player.commentData is read-only', 'warn');
         }
     });
@@ -108,31 +128,31 @@ var Player;
         get: function () {
             return _refreshRate;
         },
-        set: function (value) {
+        set: function (_value) {
             __trace("Player.refreshRate deprecated. Please use Display.frameRate", "warn");
         }
     });
     Object.defineProperty(Player, 'width', {
         get: function () { return _width; },
-        set: function (value) {
+        set: function (_value) {
             __trace("Player.width is read-only", "warn");
         }
     });
     Object.defineProperty(Player, 'height', {
         get: function () { return _height; },
-        set: function (value) {
+        set: function (_value) {
             __trace("Player.height is read-only", "warn");
         }
     });
     Object.defineProperty(Player, 'videoWidth', {
         get: function () { return _videoWidth; },
-        set: function (value) {
+        set: function (_value) {
             __trace("Player.videoWidth is read-only", "warn");
         }
     });
     Object.defineProperty(Player, 'videoHeight', {
         get: function () { return _videoHeight; },
-        set: function (value) {
+        set: function (_value) {
             __trace("Player.videoHeight is read-only", "warn");
         }
     });
@@ -140,7 +160,7 @@ var Player;
         get: function () {
             return 'CCLPlayer/1.0 HTML5/* (bilibili, like BSE, like flash)';
         },
-        set: function (value) {
+        set: function (_value) {
             __trace('Player.version is read-only', 'warn');
         }
     });
@@ -178,24 +198,38 @@ var Player;
     Player.jump = jump;
     function commentTrigger(callback, timeout) {
         if (!Runtime.hasObject('__player')) {
-            __trace('Your environment does not support player triggers.', 'warn');
+            __trace('Your environment does not support player triggers.', 'err');
             return;
         }
-        __trace('Comment trigger: not implemented', 'warn');
+        if (timeout < 0) {
+            return;
+        }
+        var listener = function (comment) {
+            callback(comment);
+        };
+        var player = Runtime.getObject('__player');
+        player.addEventListener('comment', listener);
     }
     Player.commentTrigger = commentTrigger;
-    function keyTrigger(callback, timeout) {
+    function keyTrigger(callback, timeout, triggerOnUp) {
+        if (timeout === void 0) { timeout = 1000; }
+        if (triggerOnUp === void 0) { triggerOnUp = false; }
         if (!Runtime.hasObject('__player')) {
-            __trace('Your environment does not support key triggers.', 'warn');
+            __trace('Your environment does not support key triggers.', 'err');
             return;
         }
-        var player = Runtime.getObject('__player');
-        player.addEventListener('keydown', function (key) {
+        if (timeout < 0) {
+            return;
+        }
+        var eventName = 'key' + (triggerOnUp ? 'up' : 'down');
+        var listener = function (key) {
             callback(key.keyCode);
-        });
+        };
+        var player = Runtime.getObject('__player');
+        player.addEventListener(eventName, listener);
     }
     Player.keyTrigger = keyTrigger;
-    function setMask(mask) {
+    function setMask(_mask) {
         __trace('Masking not supported yet', 'warn');
     }
     Player.setMask = setMask;

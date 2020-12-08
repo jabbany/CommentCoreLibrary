@@ -1,5 +1,4 @@
 /// <reference path="../OOAPI.d.ts" />
-
 /// <reference path="Timer.ts" />
 
 module Runtime {
@@ -39,7 +38,9 @@ module Runtime {
     }
 
     public clearEl():void {
-      __trace("ScriptManager.clearEl not implemented.", "warn");
+      // Remove all elements drawn
+      __trace("ScriptManager.clearEl may not be properly implemented.", "warn");
+      Runtime.clear();
     }
 
     public clearTrigger():void {
@@ -47,15 +48,20 @@ module Runtime {
     }
 
     public pushEl(el:any):void {
-      __trace("ScriptManager.pushEl not implemented.", "warn");
+      __trace("ScriptManager.pushEl is not properly implemented.", "warn");
+      if (el['motionManager']) {
+        <IMotionManager> el['motionManager'].start();
+      }
+      el['visible'] = true;
     }
 
     public popEl(el:any):void {
       __trace("ScriptManager.popEl is not properly implemented.", "warn");
       // TODO: Create some kind of thing to register motion managers properly
       if (el['motionManager']) {
-        <IMotionManager> el['motionManager'].stop();
+        <IMotionManager> el['motionManager'].play();
       }
+      el['visible'] = false;
     }
 
     public pushTimer(t:Timer):void {

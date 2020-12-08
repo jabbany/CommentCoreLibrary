@@ -155,7 +155,7 @@ module Runtime{
       this._repeatCount = repeatCount;
     }
 
-    set isRunning(b:boolean) {
+    set isRunning(_b:boolean) {
       __trace('Timer.isRunning is read-only', 'warn');
     }
 
@@ -250,7 +250,7 @@ module Runtime{
   var internalTimer:Timer = new Timer(40);
   var enterFrameDispatcher:Function = function () {
     for (var object in Runtime.registeredObjects) {
-      if (object.substring(0, 2) === '__') {
+      if (object.substring(0, 2) === '__' && object !== '__root') {
         continue;
       }
       try {

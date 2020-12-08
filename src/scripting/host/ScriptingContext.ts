@@ -4,7 +4,7 @@
  * @author Jim Chen
  */
 
-import { StageElement, IScriptingContext } from "./IScripter.ts";
+import { StageElement, IScriptingContext } from "./IScripter";
 
 export module KagerouScripting {
   interface IDimensions {

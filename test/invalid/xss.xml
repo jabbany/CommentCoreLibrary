@@ -1,1 +1,3 @@
 <img src="" onerror="alert()">
+<img src="" onerror='alert()'>
+<img src=a onerror=alert()>

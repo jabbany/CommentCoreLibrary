@@ -21,7 +21,7 @@ var Display;
             get: function () {
                 return Math.sqrt(this.x * this.x + this.y * this.y);
             },
-            set: function (l) {
+            set: function (_l) {
                 __trace('Point.length is read-only', 'err');
             },
             enumerable: true,
@@ -355,7 +355,7 @@ var Display;
             get: function () {
                 return 'Vector<int>';
             },
-            set: function (value) {
+            set: function (_value) {
                 __trace('as3Type should not be set.', 'warn');
             }
         });
@@ -367,7 +367,7 @@ var Display;
             get: function () {
                 return 'Vector<number>';
             },
-            set: function (value) {
+            set: function (_value) {
                 __trace('as3Type should not be set.', 'warn');
             }
         });
@@ -490,8 +490,6 @@ var Display;
             this._matrix = new Display.Matrix();
             this._matrix3d = null;
             this._parent = parent;
-            this._perspectiveProjection = new PerspectiveProjection(parent);
-            this._colorTransform = new Display.ColorTransform();
         }
         Object.defineProperty(Transform.prototype, "parent", {
             get: function () {
@@ -505,10 +503,26 @@ var Display;
         });
         Object.defineProperty(Transform.prototype, "perspectiveProjection", {
             get: function () {
+                if (typeof this._perspectiveProjection === 'undefined') {
+                    this._perspectiveProjection = new PerspectiveProjection(this._parent);
+                }
                 return this._perspectiveProjection;
             },
             set: function (projection) {
                 this._perspectiveProjection = projection;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(Transform.prototype, "colorTransform", {
+            get: function () {
+                if (typeof this._colorTransform === 'undefined') {
+                    this._colorTransform = new Display.ColorTransform();
+                }
+                return this._colorTransform;
+            },
+            set: function (colorTransform) {
+                this._colorTransform = colorTransform;
             },
             enumerable: true,
             configurable: true
@@ -1192,7 +1206,7 @@ var Display;
             get: function () {
                 return false;
             },
-            set: function (value) {
+            set: function (_value) {
                 __trace("DisplayObject.cacheAsBitmap is not supported", "warn");
             },
             enumerable: true,
@@ -1220,7 +1234,7 @@ var Display;
             get: function () {
                 return Display.root;
             },
-            set: function (s) {
+            set: function (_s) {
                 __trace("DisplayObject.root is read-only.", "warn");
             },
             enumerable: true,
@@ -1230,7 +1244,7 @@ var Display;
             get: function () {
                 return Display.root;
             },
-            set: function (s) {
+            set: function (_s) {
                 __trace("DisplayObject.stage is read-only.", "warn");
             },
             enumerable: true,
@@ -1430,7 +1444,7 @@ var Display;
                 __trace("DisplayObject.loaderInfo is not supported", "warn");
                 return {};
             },
-            set: function (name) {
+            set: function (_name) {
                 __trace("DisplayObject.loaderInfo is read-only", "warn");
             },
             enumerable: true,
@@ -1440,7 +1454,7 @@ var Display;
             get: function () {
                 return this._parent !== null ? this._parent : Display.root;
             },
-            set: function (p) {
+            set: function (_p) {
                 __trace("DisplayObject.parent is read-only", "warn");
             },
             enumerable: true,
@@ -1773,7 +1787,7 @@ var Display;
             get: function () {
                 return this._graphics;
             },
-            set: function (g) {
+            set: function (_g) {
                 __trace('Sprite.graphics is read-only.', 'warn');
             },
             enumerable: true,
@@ -1812,7 +1826,9 @@ var Display;
     var RootSprite = (function (_super) {
         __extends(RootSprite, _super);
         function RootSprite() {
-            return _super.call(this, '__root') || this;
+            var _this = _super.call(this, '__root') || this;
+            _this._metaRoot = Runtime.getObject('__root');
+            return _this;
         }
         Object.defineProperty(RootSprite.prototype, "parent", {
             get: function () {
@@ -1822,6 +1838,13 @@ var Display;
             enumerable: true,
             configurable: true
         });
+        RootSprite.prototype.addEventListener = function (eventName, listener) {
+            __trace('Listener[' + eventName + '] on root sprite inadvisible', 'warn');
+            this._metaRoot.addEventListener(eventName, listener);
+        };
+        RootSprite.prototype.removeEventListener = function (eventName, listener) {
+            this._metaRoot.removeEventListener(eventName, listener, false);
+        };
         return RootSprite;
     }(Sprite));
     Display.RootSprite = RootSprite;
@@ -1859,6 +1882,146 @@ var Display;
 })(Display || (Display = {}));
 var Display;
 (function (Display) {
+    var ByteArray = (function (_super) {
+        __extends(ByteArray, _super);
+        function ByteArray() {
+            var params = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                params[_i] = arguments[_i];
+            }
+            var _this = _super.apply(this, params) || this;
+            _this._readPosition = 0;
+            try {
+                Object['setPrototypeOf'](_this, ByteArray.prototype);
+            }
+            catch (e) { }
+            return _this;
+        }
+        Object.defineProperty(ByteArray.prototype, "bytesAvailable", {
+            get: function () {
+                return this.length - this._readPosition;
+            },
+            set: function (_n) {
+                __trace('ByteArray.bytesAvailable is read-only', 'warn');
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(ByteArray.prototype, "position", {
+            get: function () {
+                return this._readPosition;
+            },
+            set: function (p) {
+                this._readPosition = p;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        ByteArray.prototype.clear = function () {
+            this.length = 0;
+            this._readPosition = 0;
+        };
+        ByteArray.prototype.compress = function (algorithm) {
+            if (algorithm === void 0) { algorithm = 'zlib'; }
+            __trace('ByteArray.compress[' + algorithm + '] not implemented', 'warn');
+            this._readPosition = 0;
+        };
+        ByteArray.prototype.uncompress = function (algorithm) {
+            if (algorithm === void 0) { algorithm = 'zlib'; }
+            __trace('ByteArray.uncompress[' + algorithm +
+                '] not implemented', 'warn');
+            this._readPosition = 0;
+        };
+        ByteArray.prototype.deflate = function () {
+            __trace('ByteArray.deflate not implemented', 'warn');
+        };
+        ByteArray.prototype.inflate = function () {
+            __trace('ByteArray.inflate not implemented', 'warn');
+        };
+        ByteArray.prototype.readUTFBytes = function (length) {
+            var subArray = this.slice(this._readPosition, length);
+            this._readPosition += Math.min(length, this.length - this._readPosition);
+            var str = '';
+            subArray.forEach(function (cc) {
+                str += String.fromCharCode(cc);
+            });
+            return str;
+        };
+        ByteArray.prototype.readUnsignedByte = function () {
+            return this[this._readPosition] & 0xff;
+        };
+        ByteArray.prototype.readUnsignedShort = function () {
+            var top = this.readUnsignedByte(), bottom = this.readUnsignedByte();
+            return ((top << 8) + bottom) & 0xffff;
+        };
+        ByteArray.prototype.readUnsignedInt = function () {
+            var a = this.readUnsignedByte(), b = this.readUnsignedByte(), c = this.readUnsignedByte(), d = this.readUnsignedByte();
+            return ((a << 24) + (b << 16) + (c << 8) + d) & 0xffffffff;
+        };
+        ByteArray.prototype.readByte = function () {
+            return this.readUnsignedByte() - 128;
+        };
+        ByteArray.prototype.readShort = function () {
+            return this.readUnsignedShort() - 0x7fff;
+        };
+        ByteArray.prototype.readBoolean = function () {
+            return this.readUnsignedByte() !== 0;
+        };
+        ByteArray.prototype.readFloat = function () {
+            var source = this.readUnsignedInt();
+            var fval = 0.0;
+            var x = (source & 0x80000000) ? -1 : 1;
+            var m = ((source >> 23) & 0xff);
+            var s = (source & 0x7fffff);
+            switch (x) {
+                case 0:
+                    break;
+                case 0xFF:
+                    if (m) {
+                        fval = NaN;
+                    }
+                    else if (s > 0) {
+                        fval = Number.POSITIVE_INFINITY;
+                    }
+                    else {
+                        fval = Number.NEGATIVE_INFINITY;
+                    }
+                    break;
+                default:
+                    x -= 127;
+                    m += 0x800000;
+                    fval = s * (m / 8388608.0) * Math.pow(2, x);
+                    break;
+            }
+            return fval;
+        };
+        ByteArray.prototype.writeByte = function (value) {
+            this.push(value & 0xff);
+        };
+        ByteArray.prototype.writeBytes = function (bytes, offset, length) {
+            if (offset === void 0) { offset = 0; }
+            if (length === void 0) { length = 0; }
+            for (var i = offset; i < Math.min(bytes.length - offset, length); i++) {
+                this.writeByte(bytes[i]);
+            }
+        };
+        ByteArray.prototype.writeUTFBytes = function (value) {
+            var bytesString = unescape(encodeURIComponent(value));
+            for (var i = 0; i < value.length; i++) {
+                this.push(bytesString.charCodeAt(i));
+            }
+        };
+        ByteArray.prototype.clone = function () {
+            var cloned = new ByteArray();
+            this.forEach(function (item) { cloned.push(item); });
+            return cloned;
+        };
+        return ByteArray;
+    }(Array));
+    Display.ByteArray = ByteArray;
+})(Display || (Display = {}));
+var Display;
+(function (Display) {
     var DirtyArea = (function () {
         function DirtyArea() {
             this._xBegin = null;
@@ -1892,79 +2055,73 @@ var Display;
     }());
     var Bitmap = (function (_super) {
         __extends(Bitmap, _super);
-        function Bitmap() {
-            return _super !== null && _super.apply(this, arguments) || this;
-        }
-        return Bitmap;
-    }(Display.DisplayObject));
-    Display.Bitmap = Bitmap;
-    var ByteArray = (function (_super) {
-        __extends(ByteArray, _super);
-        function ByteArray() {
-            var params = [];
-            for (var _i = 0; _i < arguments.length; _i++) {
-                params[_i] = arguments[_i];
-            }
-            var _this = _super.apply(this, params) || this;
-            _this._readPosition = 0;
+        function Bitmap(bitmapData) {
+            if (bitmapData === void 0) { bitmapData = null; }
+            var _this = _super.call(this, Runtime.generateId('obj-bmp')) || this;
+            _this._bitmapData = null;
+            _this._bitmapData = bitmapData;
             return _this;
         }
-        Object.defineProperty(ByteArray.prototype, "bytesAvailable", {
+        Object.defineProperty(Bitmap.prototype, "width", {
             get: function () {
-                return this.length - this._readPosition;
+                console.log(this._bitmapData);
+                return this._bitmapData !== null ?
+                    this._bitmapData.width * this.scaleX : 0;
             },
-            set: function (n) {
-                __trace('ByteArray.bytesAvailable is read-only', 'warn');
+            set: function (w) {
+                if (this._bitmapData !== null && this._bitmapData.width > 0) {
+                    this.scaleX = w / this._bitmapData.width;
+                }
             },
             enumerable: true,
             configurable: true
         });
-        ByteArray.prototype.clear = function () {
-            this.length = 0;
-            this._readPosition = 0;
+        Object.defineProperty(Bitmap.prototype, "height", {
+            get: function () {
+                return this._bitmapData !== null ?
+                    this._bitmapData.height * this.scaleY : 0;
+            },
+            set: function (h) {
+                if (this._bitmapData !== null && this._bitmapData.height > 0) {
+                    this.scaleY = h / this._bitmapData.height;
+                }
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Bitmap.prototype.getBitmapData = function () {
+            return this._bitmapData;
         };
-        ByteArray.prototype.compress = function (algorithm) {
-            if (algorithm === void 0) { algorithm = 'zlib'; }
-            __trace('ByteArray.compress not implemented', 'warn');
-        };
-        ByteArray.prototype.uncompress = function (algorithm) {
-            if (algorithm === void 0) { algorithm = 'zlib'; }
-            __trace('ByteArray.uncompress not implemented', 'warn');
-        };
-        ByteArray.prototype.deflate = function () {
-            __trace('ByteArray.deflate not implemented', 'warn');
-        };
-        ByteArray.prototype.inflate = function () {
-            __trace('ByteArray.inflate not implemented', 'warn');
-        };
-        ByteArray.prototype.readUTFBytes = function (length) {
-            var subArray = this.slice(this._readPosition, length);
-            this._readPosition += Math.min(length, this.length - this._readPosition);
-            var str = '';
-            subArray.forEach(function (cc) {
-                str += String.fromCharCode(cc);
-            });
-            return str;
-        };
-        ByteArray.prototype.writeUTFBytes = function (value) {
-            for (var i = 0; i < value.length; i++) {
-                Array.prototype.push.apply(this, [value.charCodeAt(i)]);
+        Bitmap.prototype.setBitmapData = function (bitmapData) {
+            if (typeof bitmapData !== 'undefined') {
+                this._bitmapData = bitmapData;
+                this.methodCall('setBitmapData', bitmapData.getId());
             }
         };
-        return ByteArray;
-    }(Array));
-    Display.ByteArray = ByteArray;
+        Bitmap.prototype.serialize = function () {
+            var serialized = _super.prototype.serialize.call(this);
+            serialized["class"] = 'Bitmap';
+            if (this._bitmapData !== null) {
+                serialized["bitmapData"] = this._bitmapData.getId();
+            }
+            return serialized;
+        };
+        return Bitmap;
+    }(Display.DisplayObject));
+    Display.Bitmap = Bitmap;
     var BitmapData = (function () {
         function BitmapData(width, height, transparent, fillColor, id) {
             if (transparent === void 0) { transparent = true; }
             if (fillColor === void 0) { fillColor = 0xffffffff; }
-            if (id === void 0) { id = Runtime.generateId(); }
+            if (id === void 0) { id = Runtime.generateId('obj-bmp-data'); }
             this._locked = false;
             this._id = id;
             this._rect = new Display.Rectangle(0, 0, width, height);
             this._transparent = transparent;
             this._fillColor = fillColor;
+            this._dirtyArea = new DirtyArea();
             this._fill();
+            Runtime.registerObject(this);
         }
         BitmapData.prototype._fill = function () {
             this._byteArray = [];
@@ -1994,23 +2151,24 @@ var Display;
                         change.x + j]);
                 }
             }
-            this._call('updateBox', {
+            this._methodCall('updateBox', {
                 'box': change.serialize(),
                 'values': region
             });
+            this._dirtyArea.reset();
         };
-        BitmapData.prototype._call = function (method, args) {
-            __pchannel('Runtime:CallMethod', {
-                'id': this.getId(),
-                'name': name,
-                'value': args,
+        BitmapData.prototype._methodCall = function (methodName, params) {
+            __pchannel("Runtime:CallMethod", {
+                "id": this._id,
+                "method": methodName,
+                "params": params
             });
         };
         Object.defineProperty(BitmapData.prototype, "height", {
             get: function () {
                 return this._rect.height;
             },
-            set: function (height) {
+            set: function (_height) {
                 __trace('BitmapData.height is read-only', 'warn');
             },
             enumerable: true,
@@ -2020,7 +2178,7 @@ var Display;
             get: function () {
                 return this._rect.width;
             },
-            set: function (width) {
+            set: function (_width) {
                 __trace('BitmapData.height is read-only', 'warn');
             },
             enumerable: true,
@@ -2030,12 +2188,41 @@ var Display;
             get: function () {
                 return this._rect;
             },
-            set: function (rect) {
+            set: function (_rect) {
                 __trace('BitmapData.rect is read-only', 'warn');
             },
             enumerable: true,
             configurable: true
         });
+        BitmapData.prototype.draw = function (source, matrix, colorTransform, blendMode, clipRect, smoothing) {
+            if (matrix === void 0) { matrix = null; }
+            if (colorTransform === void 0) { colorTransform = null; }
+            if (blendMode === void 0) { blendMode = null; }
+            if (clipRect === void 0) { clipRect = null; }
+            if (smoothing === void 0) { smoothing = false; }
+            if (!(source instanceof BitmapData)) {
+                __trace('Drawing non BitmapData is not supported!', 'err');
+                return;
+            }
+            if (matrix !== null) {
+                __trace('Matrix transforms not supported yet.', 'warn');
+            }
+            if (colorTransform !== null) {
+                __trace('Color transforms not supported yet.', 'warn');
+            }
+            if (blendMode !== null && blendMode !== 'normal') {
+                __trace('Blend mode [' + blendMode + '] not supported yet.', 'warn');
+            }
+            if (smoothing !== false) {
+                __trace('Smoothign not supported!', 'warn');
+            }
+            this.lock();
+            if (clipRect === null) {
+                clipRect = new Display.Rectangle(0, 0, source.width, source.height);
+            }
+            this.setPixels(clipRect, source.getPixels(clipRect));
+            this.unlock();
+        };
         BitmapData.prototype.getPixel = function (x, y) {
             return this.getPixel32(x, y) & 0x00ffffff;
         };
@@ -2046,7 +2233,7 @@ var Display;
             }
             try {
                 return this._transparent ? this._byteArray[y * this._rect.width + x] :
-                    this._byteArray[y * this._rect.width + x] + 0xff000000;
+                    (this._byteArray[y * this._rect.width + x] & 0x00ffffff) + 0xff000000;
             }
             catch (e) {
                 return this._fillColor;
@@ -2057,26 +2244,26 @@ var Display;
                 throw new Error('Expected a region to acquire pixels.');
             }
             if (rect.width === 0 || rect.height === 0) {
-                return new ByteArray();
+                return new Display.ByteArray();
             }
-            var region = new ByteArray();
+            var region = new Display.ByteArray();
             for (var i = 0; i < rect.height; i++) {
-                Array.prototype.push.apply(region, this._byteArray.slice((rect.y + i) * this._rect.width + rect.x, (rect.y + i) * this._rect.width + rect.x + rect.width));
+                this._byteArray.slice((rect.y + i) * this._rect.width + rect.x, (rect.y + i) * this._rect.width + rect.x + rect.width).forEach(function (v) {
+                    region.push(v);
+                });
             }
             return region;
         };
         BitmapData.prototype.setPixel = function (x, y, color) {
-            this.setPixel32(x, y, color);
+            this.setPixel32(x, y, (color & 0x00ffffff) + 0xff000000);
         };
         BitmapData.prototype.setPixel32 = function (x, y, color) {
             if (!this._transparent) {
-                color = color & 0x00ffffff;
-            }
-            else {
-                color = color & 0xffffffff;
+                color = (color & 0x00ffffff) + 0xff000000;
             }
             this._byteArray[y * this._rect.width + x] = color;
             this._dirtyArea.expand(x, y);
+            this._updateBox();
         };
         BitmapData.prototype.setPixels = function (rect, input) {
             if (rect.width === 0 || rect.height === 0) {
@@ -2086,6 +2273,11 @@ var Display;
                 throw new Error('setPixels expected ' + (rect.width * rect.height) +
                     ' pixels, but actually got ' + input.length);
             }
+            if (!this._transparent) {
+                input = input.map(function (color) {
+                    return (color & 0x00ffffff) + 0xff000000;
+                });
+            }
             for (var i = 0; i < rect.width; i++) {
                 for (var j = 0; j < rect.height; j++) {
                     this._byteArray[(rect.y + j) * this.width + (rect.x + i)] =
@@ -2093,6 +2285,19 @@ var Display;
                     this._dirtyArea.expand(i, j);
                 }
             }
+            this._updateBox();
+        };
+        BitmapData.prototype.getVector = function (rect) {
+            if (this._rect.equals(rect)) {
+                return this._byteArray;
+            }
+            var vector = [];
+            for (var j = rect.y; j < rect.y + rect.height; j++) {
+                for (var i = rect.x; i < rect.x + rect.width; i++) {
+                    vector.push(rect[j * this._rect.width + i]);
+                }
+            }
+            return vector;
         };
         BitmapData.prototype.lock = function () {
             this._locked = true;
@@ -2107,13 +2312,27 @@ var Display;
                 this._updateBox(changeRect);
             }
         };
+        BitmapData.prototype.dispatchEvent = function (_event, _data) {
+        };
         BitmapData.prototype.getId = function () {
             return this._id;
         };
         BitmapData.prototype.serialize = function () {
             return {
-                'class': 'BitmapData'
+                'class': 'BitmapData',
+                'width': this._rect.width,
+                'height': this._rect.height,
+                'fill': this._fillColor
             };
+        };
+        BitmapData.prototype.unload = function () {
+            this._methodCall('unload', null);
+        };
+        BitmapData.prototype.clone = function () {
+            var data = new BitmapData(this.width, this.height, this._transparent, this._fillColor);
+            data._byteArray = this._byteArray.slice(0);
+            data._updateBox(data._rect);
+            return data;
         };
         return BitmapData;
     }());
@@ -2172,6 +2391,9 @@ var Display;
             if (!this._isRunning) {
                 return;
             }
+            if (this._dur === 0) {
+                return;
+            }
             this._ttl -= this._timeKeeper.elapsed;
             this._timeKeeper.reset();
             if (this._ttl <= 0) {
@@ -2209,7 +2431,7 @@ var Display;
                 this._tween.stop();
             }
         };
-        MotionManager.prototype.forecasting = function (time) {
+        MotionManager.prototype.forecasting = function (_time) {
             __trace('MotionManager.forecasting always returns false', 'warn');
             return false;
         };
@@ -2255,10 +2477,10 @@ var Display;
             }
             return Tween.parallel.apply(Tween, tweens);
         };
-        MotionManager.prototype.initTween = function (motion, repeat) {
+        MotionManager.prototype.initTween = function (motion, _repeat) {
             this._tween = this.motionSetToTween(motion);
         };
-        MotionManager.prototype.initTweenGroup = function (motionGroup, lifeTime) {
+        MotionManager.prototype.initTweenGroup = function (motionGroup, _lifeTime) {
             var tweens = [];
             for (var i = 0; i < motionGroup.length; i++) {
                 tweens.push(this.motionSetToTween(motionGroup[i]));
@@ -2277,7 +2499,7 @@ var Display;
     var CommentBitmap = (function (_super) {
         __extends(CommentBitmap, _super);
         function CommentBitmap(params) {
-            var _this = _super.call(this) || this;
+            var _this = _super.call(this, 'bitmapData' in params ? params['bitmapData'] : undefined) || this;
             _this._mM = new Display.MotionManager(_this);
             _this.initStyle(params);
             Runtime.registerObject(_this);
@@ -2289,7 +2511,7 @@ var Display;
             get: function () {
                 return this._mM;
             },
-            set: function (m) {
+            set: function (_m) {
                 __trace("IComment.motionManager is read-only", "warn");
             },
             enumerable: true,
@@ -2301,6 +2523,12 @@ var Display;
             }
         };
         CommentBitmap.prototype.initStyle = function (style) {
+            if (typeof style === 'undefined' || style === null) {
+                style = {};
+            }
+            if ("lifeTime" in style) {
+                this._mM.dur = style["lifeTime"] * 1000;
+            }
         };
         return CommentBitmap;
     }(Display.Bitmap));
@@ -2361,7 +2589,7 @@ var Display;
             get: function () {
                 return this._mM;
             },
-            set: function (m) {
+            set: function (_m) {
                 __trace("IComment.motionManager is read-only", "warn");
             },
             enumerable: true,
@@ -2423,7 +2651,7 @@ var Display;
             get: function () {
                 return this._mM;
             },
-            set: function (m) {
+            set: function (_m) {
                 __trace("IComment.motionManager is read-only", "warn");
             },
             enumerable: true,
@@ -2495,7 +2723,7 @@ var Display;
             get: function () {
                 return this._mM;
             },
-            set: function (m) {
+            set: function (_m) {
                 __trace("IComment.motionManager is read-only", "warn");
             },
             enumerable: true,
@@ -2530,20 +2758,20 @@ var Display;
 var Display;
 (function (Display) {
     var TextFormat = (function () {
-        function TextFormat(font, size, color, bold, italic, underline, url, target, align, leftMargin, rightMargin, indent, leading) {
+        function TextFormat(font, size, color, bold, italic, underline, _url, _target, _align, _leftMargin, _rightMargin, _indent, _leading) {
             if (font === void 0) { font = "SimHei"; }
             if (size === void 0) { size = 25; }
             if (color === void 0) { color = 0xFFFFFF; }
             if (bold === void 0) { bold = false; }
             if (italic === void 0) { italic = false; }
             if (underline === void 0) { underline = false; }
-            if (url === void 0) { url = ""; }
-            if (target === void 0) { target = ""; }
-            if (align === void 0) { align = "left"; }
-            if (leftMargin === void 0) { leftMargin = 0; }
-            if (rightMargin === void 0) { rightMargin = 0; }
-            if (indent === void 0) { indent = 0; }
-            if (leading === void 0) { leading = 0; }
+            if (_url === void 0) { _url = ""; }
+            if (_target === void 0) { _target = ""; }
+            if (_align === void 0) { _align = "left"; }
+            if (_leftMargin === void 0) { _leftMargin = 0; }
+            if (_rightMargin === void 0) { _rightMargin = 0; }
+            if (_indent === void 0) { _indent = 0; }
+            if (_leading === void 0) { _leading = 0; }
             this.font = font;
             this.size = size;
             this.color = color;
@@ -2569,7 +2797,7 @@ var Display;
         function TextField(text, color) {
             if (text === void 0) { text = ""; }
             if (color === void 0) { color = 0; }
-            var _this = _super.call(this) || this;
+            var _this = _super.call(this, Runtime.generateId('obj-textfield')) || this;
             _this._background = false;
             _this._backgroundColor = 0xffffff;
             _this._border = false;
@@ -2598,7 +2826,7 @@ var Display;
             get: function () {
                 return this.text.length;
             },
-            set: function (l) {
+            set: function (_l) {
                 __trace("TextField.length is read-only.", "warn");
             },
             enumerable: true,
@@ -2619,7 +2847,7 @@ var Display;
             get: function () {
                 return this._text.length * this._textFormat.size;
             },
-            set: function (w) {
+            set: function (_w) {
                 __trace("TextField.textWidth is read-only", "warn");
             },
             enumerable: true,
@@ -2629,7 +2857,7 @@ var Display;
             get: function () {
                 return this._textFormat.size;
             },
-            set: function (h) {
+            set: function (_h) {
                 __trace("TextField.textHeight is read-only", "warn");
             },
             enumerable: true,
@@ -2782,7 +3010,7 @@ var Display;
             get: function () {
                 return this._mM;
             },
-            set: function (m) {
+            set: function (_m) {
                 __trace("IComment.motionManager is read-only", "warn");
             },
             enumerable: true,
@@ -2842,7 +3070,7 @@ var Display;
         get: function () {
             return _root;
         },
-        set: function (value) {
+        set: function (_value) {
             __trace("Display.root is read-only", "warn");
         }
     });
@@ -2850,7 +3078,7 @@ var Display;
         get: function () {
             return {};
         },
-        set: function (value) {
+        set: function (_value) {
             __trace("Display.loaderInfo is disabled", "warn");
         }
     });
@@ -2858,7 +3086,7 @@ var Display;
         get: function () {
             return _root;
         },
-        set: function (value) {
+        set: function (_value) {
             __trace("Display.stage is read-only", "warn");
         }
     });
@@ -2866,7 +3094,7 @@ var Display;
         get: function () {
             return "CCLDisplay/1.0 HTML5/* (bilibili, like BSE, like flash, AS3 compatible) KagerouEngine/v1";
         },
-        set: function (value) {
+        set: function (_value) {
             __trace("Display.version is read-only", "warn");
         }
     });
@@ -2874,7 +3102,7 @@ var Display;
         get: function () {
             return _width;
         },
-        set: function (value) {
+        set: function (_value) {
             __trace("Display.width is read-only", "warn");
         }
     });
@@ -2882,7 +3110,7 @@ var Display;
         get: function () {
             return _height;
         },
-        set: function (value) {
+        set: function (_value) {
             __trace("Display.height is read-only", "warn");
         }
     });
@@ -2890,7 +3118,7 @@ var Display;
         get: function () {
             return _fullScreenWidth;
         },
-        set: function (value) {
+        set: function (_value) {
             __trace("Display.fullScreenWidth is read-only", "warn");
         }
     });
@@ -2898,7 +3126,7 @@ var Display;
         get: function () {
             return _fullScreenHeight;
         },
-        set: function (value) {
+        set: function (_value) {
             __trace("Display.fullScreenHeight is read-only", "warn");
         }
     });

@@ -218,7 +218,7 @@ var Runtime;
             get: function () {
                 return this._timer >= 0;
             },
-            set: function (b) {
+            set: function (_b) {
                 __trace('Timer.isRunning is read-only', 'warn');
             },
             enumerable: true,
@@ -302,7 +302,7 @@ var Runtime;
     var internalTimer = new Timer(40);
     var enterFrameDispatcher = function () {
         for (var object in Runtime.registeredObjects) {
-            if (object.substring(0, 2) === '__') {
+            if (object.substring(0, 2) === '__' && object !== '__root') {
                 continue;
             }
             try {
@@ -347,19 +347,25 @@ var Runtime;
             Runtime.getTimer().clearAll('interval');
         };
         ScriptManagerImpl.prototype.clearEl = function () {
-            __trace("ScriptManager.clearEl not implemented.", "warn");
+            __trace("ScriptManager.clearEl may not be properly implemented.", "warn");
+            Runtime.clear();
         };
         ScriptManagerImpl.prototype.clearTrigger = function () {
             __trace("ScriptManager.clearTrigger not implemented.", "warn");
         };
         ScriptManagerImpl.prototype.pushEl = function (el) {
-            __trace("ScriptManager.pushEl not implemented.", "warn");
+            __trace("ScriptManager.pushEl is not properly implemented.", "warn");
+            if (el['motionManager']) {
+                el['motionManager'].start();
+            }
+            el['visible'] = true;
         };
         ScriptManagerImpl.prototype.popEl = function (el) {
             __trace("ScriptManager.popEl is not properly implemented.", "warn");
             if (el['motionManager']) {
-                el['motionManager'].stop();
+                el['motionManager'].play();
             }
+            el['visible'] = false;
         };
         ScriptManagerImpl.prototype.pushTimer = function (t) {
             __trace("ScriptManager.pushTimer not implemented.", "warn");
@@ -483,7 +489,8 @@ var Runtime;
             });
         }
         else {
-            callback(new Error('Could not load unknown library [' + libraryName + ']'), null);
+            callback(new Error('Could not load unknown library [' +
+                libraryName + ']'), null);
         }
     }
     Runtime.requestLibrary = requestLibrary;
@@ -498,16 +505,16 @@ var Runtime;
             }
             this._name = name;
         }
-        MetaObject.prototype.addEventListener = function (event, listener, useCapture, priority) {
-            if (useCapture === void 0) { useCapture = false; }
-            if (priority === void 0) { priority = 0; }
+        MetaObject.prototype.addEventListener = function (event, listener, _useCapture, _priority) {
+            if (_useCapture === void 0) { _useCapture = false; }
+            if (_priority === void 0) { _priority = 0; }
             if (!(event in this._listeners)) {
                 this._listeners[event] = [];
             }
             this._listeners[event].push(listener);
         };
-        MetaObject.prototype.removeEventListener = function (event, listener, useCapture) {
-            if (useCapture === void 0) { useCapture = false; }
+        MetaObject.prototype.removeEventListener = function (event, listener, _useCapture) {
+            if (_useCapture === void 0) { _useCapture = false; }
             if (!(event in this._listeners)) {
                 return;
             }
@@ -550,7 +557,7 @@ var Runtime;
         get: function () {
             return _registeredObjects;
         },
-        set: function (value) {
+        set: function (_value) {
             __trace('Runtime.registeredObjects is read-only', 'warn');
         }
     });
@@ -619,20 +626,16 @@ var Runtime;
             delete _registeredObjects[objectId];
         }
     }
-    function _getId(type, container) {
-        if (type === void 0) { type = 'obj'; }
-        if (container === void 0) { container = 'rt'; }
-        var randomSeed = Math.random();
-        var randomSegment = '';
-        return;
+    function _makeId(type) {
+        if (type === void 0) { type = "obj"; }
+        return type + ":" + Date.now() + "|" +
+            Runtime.NotCrypto.random(16) + ":" + objCount;
     }
     function generateId(type) {
         if (type === void 0) { type = "obj"; }
-        var id = [type, ':', Date.now(), '|',
-            Runtime.NotCrypto.random(16), ':', objCount].join();
+        var id = _makeId(type);
         while (Runtime.hasObject(id)) {
-            id = type + ":" + Date.now() + "|" +
-                Runtime.NotCrypto.random(16) + ":" + objCount;
+            id = _makeId(type);
         }
         return id;
     }

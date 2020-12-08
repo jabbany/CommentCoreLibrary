@@ -64,7 +64,7 @@ declare module Runtime {
     removeEventListener(
       event:string,
       listener:Function,
-      useCapture:boolean
+      useCapture?:boolean
     ):void;
     hasEventListener(event:string):boolean;
   }

@@ -11,7 +11,7 @@ module Display {
     private _mM:MotionManager = new MotionManager(this);
 
     constructor(params:Object) {
-      super();
+      super('bitmapData' in params ? params['bitmapData'] : undefined);
       this.initStyle(params);
       Runtime.registerObject(this);
       this.bindParent(params);
@@ -22,7 +22,7 @@ module Display {
       return this._mM;
     }
 
-    set motionManager(m) {
+    set motionManager(_m) {
       __trace("IComment.motionManager is read-only", "warn");
     }
 
@@ -33,7 +33,12 @@ module Display {
     }
 
     public initStyle(style:Object):void {
-
+      if (typeof style === 'undefined' || style === null) {
+        style = {};
+      }
+      if ("lifeTime" in style) {
+        this._mM.dur = style["lifeTime"] * 1000;
+      }
     }
   }
 

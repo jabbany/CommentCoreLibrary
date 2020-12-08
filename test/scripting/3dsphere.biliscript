@@ -3,14 +3,14 @@
  * MIT License ( http://www.opensource.org/licenses/mit-license.php )
  * Downloaded from: http://wonderfl.net/c/qGQZ
  * Downloaded from: https://github.com/biliscript-syndicate/examples/blob/master/Sphere.as
- * 
+ *
  * --Modified slightly to remove unnecessary code & hardcode screen size/lifeTime
  * --Modified so that GlowFilter is added too.
  */
 
-/** 
+/**
 * // Updated script so that we are much more efficient!
-* Works well with filters off at 200, 40, 9 
+* Works well with filters off at 200, 40, 9
 * or with filters on at 200, 40, 9 too!
 **/
 /*** CONFIG ****/
@@ -45,7 +45,7 @@ var rules = [
     {r:0, g:0xff, b:0xff, dr:0, dg: -1, db:0 },
     {r:0, g:0, b:0xff, dr: +1, dg:0, db:0 },
     {r:0xff, g:0, b:0xff, dr:0, dg:0, db: -1 }
-];		
+];
 function getColor(value) {
     var d = (value = value % 0x5fa) % 0xff;
     var r = rules[(value / 0xff) | 0];
@@ -60,7 +60,7 @@ function init() {
     var frh = radius * 2 / (stripes * 2 +1);
     var yc = -radius;
     var rad, last, yUp, yDown, rUp, rDown, i;
-	
+
     for (var s = 0; s < stripes; s++) {
         yUp = yc += frh ;
         yDown = yc += frh;
@@ -125,7 +125,7 @@ function render() {
          	screen.filters = [$.createGlowFilter(mrgb,1,40,40,20)];
          }
     }
-    
+
     if (wireframe)
         screen.graphics.lineStyle(0.4, fill?0xffffff:color,1);
     if (fill)

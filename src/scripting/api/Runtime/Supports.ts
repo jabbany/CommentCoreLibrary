@@ -37,7 +37,8 @@ module Runtime{
         'type': 'noop'
       });
     } else {
-      callback(new Error('Could not load unknown library [' + libraryName + ']'), null);
+      callback(new Error('Could not load unknown library [' +
+        libraryName + ']'), null);
     }
   }
 }

@@ -20,13 +20,13 @@ module Display {
       bold:boolean = false,
       italic:boolean = false,
       underline:boolean = false,
-      url:string = "",
-      target:string = "",
-      align:string = "left",
-      leftMargin:number = 0,
-      rightMargin:number = 0,
-      indent:number = 0,
-      leading:number = 0) {
+      _url:string = "",
+      _target:string = "",
+      _align:string = "left",
+      _leftMargin:number = 0,
+      _rightMargin:number = 0,
+      _indent:number = 0,
+      _leading:number = 0) {
 
       this.font = font;
       this.size = size;
@@ -62,7 +62,7 @@ module Display {
     private _borderColor:number = 0;
 
     constructor(text:string = "", color:number = 0) {
-      super();
+      super(Runtime.generateId('obj-textfield'));
       this._text = text;
       this._textFormat = new TextFormat();
       this._textFormat.color = color;
@@ -85,7 +85,7 @@ module Display {
       return this.text.length;
     }
 
-    set length(l:number) {
+    set length(_l:number) {
       __trace("TextField.length is read-only.", "warn");
     }
 
@@ -98,11 +98,11 @@ module Display {
       this.text = text.replace(/<\/?[^>]+(>|$)/g, '');
     }
 
-    set textWidth(w:number) {
+    set textWidth(_w:number) {
       __trace("TextField.textWidth is read-only", "warn");
     }
 
-    set textHeight(h:number) {
+    set textHeight(_h:number) {
       __trace("TextField.textHeight is read-only", "warn");
     }
 

@@ -35,7 +35,7 @@ module Display {
     get: function () {
       return _root;
     },
-    set: function (value) {
+    set: function (_value) {
       __trace("Display.root is read-only", "warn");
     }
   });
@@ -43,7 +43,7 @@ module Display {
     get: function () {
       return {};
     },
-    set: function (value) {
+    set: function (_value) {
       __trace("Display.loaderInfo is disabled", "warn");
     }
   });
@@ -51,7 +51,7 @@ module Display {
     get: function () {
       return _root;
     },
-    set: function (value) {
+    set: function (_value) {
       __trace("Display.stage is read-only", "warn");
     }
   });
@@ -59,7 +59,7 @@ module Display {
     get: function () {
       return "CCLDisplay/1.0 HTML5/* (bilibili, like BSE, like flash, AS3 compatible) KagerouEngine/v1";
     },
-    set: function (value) {
+    set: function (_value) {
       __trace("Display.version is read-only", "warn");
     }
   });
@@ -67,7 +67,7 @@ module Display {
     get: function () {
       return _width;
     },
-    set: function (value) {
+    set: function (_value) {
       __trace("Display.width is read-only", "warn");
     }
   });
@@ -75,7 +75,7 @@ module Display {
     get: function () {
       return _height;
     },
-    set: function (value) {
+    set: function (_value) {
       __trace("Display.height is read-only", "warn");
     }
   });
@@ -83,7 +83,7 @@ module Display {
     get: function () {
       return _fullScreenWidth;
     },
-    set: function (value) {
+    set: function (_value) {
       __trace("Display.fullScreenWidth is read-only", "warn");
     }
   });
@@ -91,7 +91,7 @@ module Display {
     get: function () {
       return _fullScreenHeight;
     },
-    set: function (value) {
+    set: function (_value) {
       __trace("Display.fullScreenHeight is read-only", "warn");
     }
   });

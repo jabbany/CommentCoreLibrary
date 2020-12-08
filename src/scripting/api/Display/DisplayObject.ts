@@ -358,7 +358,7 @@ module Display {
       return this._boundingBox;
     }
 
-    public set cacheAsBitmap(value:boolean) {
+    public set cacheAsBitmap(_value:boolean) {
       __trace("DisplayObject.cacheAsBitmap is not supported", "warn");
     }
 
@@ -386,7 +386,7 @@ module Display {
       return Display.root;
     }
 
-    public set root(s:DisplayObject) {
+    public set root(_s:DisplayObject) {
       __trace("DisplayObject.root is read-only.","warn");
     }
 
@@ -394,7 +394,7 @@ module Display {
       return Display.root;
     }
 
-    public set stage(s:DisplayObject) {
+    public set stage(_s:DisplayObject) {
       __trace("DisplayObject.stage is read-only.","warn");
     }
 
@@ -566,7 +566,7 @@ module Display {
       return this._name;
     }
 
-    public set loaderInfo(name:any) {
+    public set loaderInfo(_name:any) {
       __trace("DisplayObject.loaderInfo is read-only", "warn");
     }
 
@@ -575,7 +575,7 @@ module Display {
       return {};
     }
 
-    public set parent(p:DisplayObject) {
+    public set parent(_p:DisplayObject) {
       __trace("DisplayObject.parent is read-only", "warn");
     }
 

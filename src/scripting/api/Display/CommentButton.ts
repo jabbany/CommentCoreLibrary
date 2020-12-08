@@ -24,7 +24,7 @@ module Display {
       return this._mM;
     }
 
-    set motionManager(m:MotionManager) {
+    set motionManager(_m:MotionManager) {
       __trace("IComment.motionManager is read-only", "warn");
     }
 
