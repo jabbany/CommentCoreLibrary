@@ -11,7 +11,11 @@
 - [AcFun HTML5弹幕播放器](http://www.acfun.tv)
     
     AcFun的HTML5弹幕播放器弹幕呈现库采用CCL
-    
+
+- [阿里云播放器SDK AliyunPlayer Web](https://github.com/aliyunvideo/AliyunPlayer_Web/blob/master/customComponents/src/components/AliplayerDanmuComponent/)
+
+    阿里云视频点播（ApsaraVideo VoD）是集音视频采集、编辑、上传、自动化转码处理、媒体资源管理、高效云剪辑处理、分发加速、视频播放于一体的一站式音视频点播解决方案。
+
 - [Missevan M站 弹幕音频](http://www.missevan.cn)
     
     采用CCL为音频（而非视频）配上弹幕轨道，在开放页面上滚动弹幕
