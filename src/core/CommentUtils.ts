@@ -17,22 +17,31 @@ module CommentUtils {
       return new Matrix3D([xscale, 0, 0, 0, 0, yscale, 0, 0, 0, 0, zscale, 0, 0, 0, 0, 1]);
     };
 
+    /**
+     * Create a 3d rotation matrix from degrees of rotation specified
+     * This uses eulerAngles as the orientation
+     *
+     * @param {number} xrot Rotate along x-axis
+     * @param {number} yrot Rotate along y-axis
+     * @param {number} zrot Rotate along z-axis
+     * @return {Matrix3D} Rotation matrix
+     */
     public static createRotationMatrix:Function = function (xrot:number, yrot:number, zrot:number):Matrix3D {
-      // Courtesy of @StarBrilliant, re-adapted for general case
-      // TODO: add support for xrot
-      var DEG2RAD = Math.PI/180;
+      const COS = Math.cos;
+      const SIN = Math.sin;
+      const DEG2RAD = Math.PI/180;
+
+      var xr = xrot * DEG2RAD;
       var yr = yrot * DEG2RAD;
       var zr = zrot * DEG2RAD;
-      var COS = Math.cos;
-      var SIN = Math.sin;
+
       var matrix = [
-        COS(yr) * COS(zr)    , COS(yr) * SIN(zr)    , SIN(yr) , 0,
-        (-SIN(zr))           , COS(zr)              , 0       , 0,
-        (-SIN(yr) * COS(zr)) , (-SIN(yr) * SIN(zr)) , COS(yr) , 0,
-        0                    , 0                    , 0       , 1
+        COS(yr) * COS(zr)                               , COS(yr) * SIN(zr)                               , - SIN(yr)         , 0,
+        SIN(xr) * SIN(yr) * COS(zr) - COS(xr) * SIN(zr) , SIN(xr) * SIN(yr) * SIN(zr) + COS(xr) * COS(zr) , SIN(xr) * COS(yr) , 0,
+        COS(xr) * SIN(yr) * COS(zr) + SIN(xr) * SIN(zr) , COS(xr) * SIN(yr) * SIN(zr) - SIN(xr) * COS(zr) , COS(xr) * COS(yr) , 0,
+        0                                               , 0                                               , 0                 , 1
       ];
-      // Do some rounding
-      return new Matrix3D(matrix.map(v => Math.round(v * 1e10) * 1e-10));
+      return new Matrix3D(matrix);
     };
 
     /**
@@ -54,7 +63,7 @@ module CommentUtils {
       return this._internalArray.slice(0);
     }
 
-    set flatArray(array:Array<number>) {
+    set flatArray(_array:Array<number>) {
       throw new Error('Not permitted. Matrices are immutable.');
     }
 

@@ -528,14 +528,11 @@ var CoreComment = (function () {
         else {
             this.dom = document.createElement('div');
         }
-        this.dom.className = this.parent.options.global.className;
-        if (this._className !== "") {
-            this.dom.className += " " + this._className;
-        }
         this.dom.appendChild(document.createTextNode(this.text));
         this.dom.textContent = this.text;
         this.dom.innerText = this.text;
         this.size = this._size;
+        this.className = this._className;
         if (this._color != 0xffffff) {
             this.color = this._color;
         }
@@ -660,7 +657,7 @@ var CoreComment = (function () {
     });
     Object.defineProperty(CoreComment.prototype, "width", {
         get: function () {
-            if (this._width === null || this._width === undefined) {
+            if (typeof this._width === 'undefined' || this._width === null) {
                 this._width = this.dom.offsetWidth;
             }
             return this._width;
@@ -674,7 +671,7 @@ var CoreComment = (function () {
     });
     Object.defineProperty(CoreComment.prototype, "height", {
         get: function () {
-            if (this._height === null || this._height === undefined) {
+            if (typeof this._height === 'undefined' || this._height === null) {
                 this._height = this.dom.offsetHeight;
             }
             return this._height;
@@ -719,7 +716,8 @@ var CoreComment = (function () {
         },
         set: function (a) {
             this._alpha = a;
-            this.dom.style.opacity = Math.min(this._alpha, this.parent.options.global.opacity) + '';
+            this.dom.style.opacity =
+                Math.min(this._alpha, this.parent.options.global.opacity) + '';
         },
         enumerable: true,
         configurable: true
@@ -778,6 +776,17 @@ var CoreComment = (function () {
             if (this.dom !== null) {
                 this.dom.style.transform = this._transform.toCss();
             }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(CoreComment.prototype, "className", {
+        get: function () {
+            return this._className;
+        },
+        set: function (className) {
+            this._className = className;
+            this.dom.className = this.parent.options.global.className + ' ' + className;
         },
         enumerable: true,
         configurable: true
@@ -1152,7 +1161,7 @@ var CommentUtils;
             get: function () {
                 return this._internalArray.slice(0);
             },
-            set: function (array) {
+            set: function (_array) {
                 throw new Error('Not permitted. Matrices are immutable.');
             },
             enumerable: true,
@@ -1198,18 +1207,19 @@ var CommentUtils;
             return new Matrix3D([xscale, 0, 0, 0, 0, yscale, 0, 0, 0, 0, zscale, 0, 0, 0, 0, 1]);
         };
         Matrix3D.createRotationMatrix = function (xrot, yrot, zrot) {
-            var DEG2RAD = Math.PI / 180;
-            var yr = yrot * DEG2RAD;
-            var zr = zrot * DEG2RAD;
             var COS = Math.cos;
             var SIN = Math.sin;
+            var DEG2RAD = Math.PI / 180;
+            var xr = xrot * DEG2RAD;
+            var yr = yrot * DEG2RAD;
+            var zr = zrot * DEG2RAD;
             var matrix = [
-                COS(yr) * COS(zr), COS(yr) * SIN(zr), SIN(yr), 0,
-                (-SIN(zr)), COS(zr), 0, 0,
-                (-SIN(yr) * COS(zr)), (-SIN(yr) * SIN(zr)), COS(yr), 0,
+                COS(yr) * COS(zr), COS(yr) * SIN(zr), -SIN(yr), 0,
+                SIN(xr) * SIN(yr) * COS(zr) - COS(xr) * SIN(zr), SIN(xr) * SIN(yr) * SIN(zr) + COS(xr) * COS(zr), SIN(xr) * COS(yr), 0,
+                COS(xr) * SIN(yr) * COS(zr) + SIN(xr) * SIN(zr), COS(xr) * SIN(yr) * SIN(zr) - SIN(xr) * COS(zr), COS(xr) * COS(yr), 0,
                 0, 0, 0, 1
             ];
-            return new Matrix3D(matrix.map(function (v) { return Math.round(v * 1e10) * 1e-10; }));
+            return new Matrix3D(matrix);
         };
         return Matrix3D;
     }());
@@ -1226,17 +1236,6 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-var CssCompatLayer = (function () {
-    function CssCompatLayer() {
-    }
-    CssCompatLayer.transform = function (dom, trans) {
-        dom.style.transform = trans;
-        dom.style["webkitTransform"] = trans;
-        dom.style["msTransform"] = trans;
-        dom.style["oTransform"] = trans;
-    };
-    return CssCompatLayer;
-}());
 var CssScrollComment = (function (_super) {
     __extends(CssScrollComment, _super);
     function CssScrollComment() {
@@ -1249,30 +1248,29 @@ var CssScrollComment = (function (_super) {
         _super.prototype.init.call(this, recycle);
         this._toggleClass('css-optimize', true);
     };
+    CssScrollComment.prototype._calculateX = function () {
+        var width = (typeof this._width === 'undefined') ? 0 : this.width;
+        var x = (this.ttl / this.dur) * (this.parent.width + width) - width;
+        return (!this.absolute) ? (x / this.parent.width) : x;
+    };
     Object.defineProperty(CssScrollComment.prototype, "x", {
         get: function () {
-            return (this.ttl / this.dur) * (this.parent.width + this.width) - this.width;
+            return this._calculateX();
         },
         set: function (x) {
-            if (this._x !== null && typeof this._x === "number") {
-                var dx = x - this._x;
-                this._x = x;
-                CssCompatLayer.transform(this.dom, "translateX(" +
-                    (this.axis % 2 === 0 ? dx : -dx) + "px)");
+            if (!this.absolute) {
+                x *= this.parent.width;
+            }
+            var dx = x - this._calculateX();
+            this.dom.style.transform =
+                "translateX(" + (this.axis % 2 === 0 ? dx : -dx) + "px)" +
+                    (this._transform === null || this._transform.isIdentity() ?
+                        '' : (' ' + this._transform.toCss()));
+            if (this.axis % 2 === 0) {
+                this.dom.style.left = this._calculateX() + 'px';
             }
             else {
-                this._x = x;
-                if (!this.absolute) {
-                    this._x *= this.parent.width;
-                }
-                if (this.axis % 2 === 0) {
-                    this.dom.style.left =
-                        (this._x + (this.align % 2 === 0 ? 0 : -this.width)) + 'px';
-                }
-                else {
-                    this.dom.style.right =
-                        (this._x + (this.align % 2 === 0 ? -this.width : 0)) + 'px';
-                }
+                this.dom.style.right = this._calculateX() + 'px';
             }
         },
         enumerable: true,
@@ -1281,21 +1279,24 @@ var CssScrollComment = (function (_super) {
     CssScrollComment.prototype.update = function () {
         if (this._dirtyCSS) {
             this.dom.style.transition = "transform " + this.ttl + "ms linear";
-            this.x = -this.width;
+            this.x = -this.dom.offsetWidth;
             this._dirtyCSS = false;
         }
     };
     CssScrollComment.prototype.invalidate = function () {
         _super.prototype.invalidate.call(this);
         this._dirtyCSS = true;
+        if (!this.dom) {
+            return;
+        }
+        else {
+            this.dom.style.transition = '';
+            this.x = this.x;
+        }
     };
     CssScrollComment.prototype.stop = function () {
         _super.prototype.stop.call(this);
-        this.dom.style.transition = '';
-        this.x = this._x;
-        this._x = null;
-        this.x = this.x;
-        this._dirtyCSS = true;
+        this.invalidate();
     };
     return CssScrollComment;
 }(ScrollComment));

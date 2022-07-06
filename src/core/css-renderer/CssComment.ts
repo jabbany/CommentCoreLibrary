@@ -6,18 +6,7 @@
  * @description Comment abstraction based on CSS3 implementation
  */
 /// <reference path="../Comment.ts" />
-class CssCompatLayer {
-  public static transform(dom:HTMLDivElement, trans:string):void{
-    dom.style.transform = trans;
-    dom.style["webkitTransform"] = trans;
-    dom.style["msTransform"] = trans;
-    dom.style["oTransform"] = trans;
-  }
-}
 
-/**
- * An add-in class to support CSS-based scrolling comments
- */
 class CssScrollComment extends ScrollComment {
   // Marker for whether we need to re-create the CSS or not
   private _dirtyCSS:boolean = true;
@@ -27,40 +16,46 @@ class CssScrollComment extends ScrollComment {
     this._toggleClass('css-optimize', true);
   }
 
-  set x(x:number) {
-    if (this._x !== null && typeof this._x === "number") {
-      // This is run when starting
-      var dx:number = x - this._x;
-      this._x = x;
-      CssCompatLayer.transform(this.dom, "translateX(" +
-        (this.axis % 2 === 0 ? dx : -dx) + "px)");
-    } else {
-      // This is run when stopping
-      this._x = x;
-      if (!this.absolute) {
-        this._x *= this.parent.width;
-      }
-      // Got the x-value, now figure out where things are
-      if (this.axis % 2 === 0) {
-        // x-axis towards right
-        this.dom.style.left =
-          (this._x + (this.align % 2 === 0 ? 0 : -this.width)) + 'px';
-      } else {
-        // x-axis towards left
-        this.dom.style.right =
-          (this._x + (this.align % 2 === 0 ? -this.width : 0)) + 'px';
-      }
-    }
+  protected _calculateX():number {
+    var width = (typeof this._width === 'undefined') ? 0 : this.width;
+    var x = (this.ttl / this.dur) * (this.parent.width + width) - width;
+    return (!this.absolute) ? (x / this.parent.width) : x;
   }
 
   get x():number{
-    // X always goes from {parent.width to -this.width}
-    return (this.ttl / this.dur) * (this.parent.width + this.width) - this.width;
+    return this._calculateX();
+  }
+
+  set x(x:number) {
+    /*
+      Re-pivot x to animate from the current _x location.
+     */
+    // Convert to pixel space
+    if (!this.absolute) {
+       x *= this.parent.width;
+    }
+    var dx:number = x - this._calculateX();
+    this.dom.style.transform =
+      "translateX(" + (this.axis % 2 === 0 ? dx : -dx) + "px)" +
+      (this._transform === null || this._transform.isIdentity() ?
+        '' : (' ' + this._transform.toCss()));
+
+    if (this.axis % 2 === 0) {
+      // x-axis towards right
+      this.dom.style.left = this._calculateX() + 'px';
+    } else {
+      // x-axis towards left
+      this.dom.style.right = this._calculateX() + 'px';
+    }
   }
 
   public update():void{
+    /*
+      This is called by the update manager
+      Since CSS updates are very different, super should not be called.
+    */
     if (this._dirtyCSS) {
-      // Start moving
+      // Recreate the CSS
       this.dom.style.transition = "transform " + this.ttl + "ms linear";
       this.x = - this.width;
       this._dirtyCSS = false;
@@ -70,6 +65,14 @@ class CssScrollComment extends ScrollComment {
   public invalidate():void{
     super.invalidate();
     this._dirtyCSS = true;
+
+    if (!this.dom) {
+      return; // DOM not created yet, do nothing
+    } else {
+      // Clear the transition to prepare for a rewrite
+      this.dom.style.transition = '';
+      this.x = this.x;
+    }
   }
 
   /**
@@ -77,14 +80,6 @@ class CssScrollComment extends ScrollComment {
    */
   public stop():void{
     super.stop();
-    this.dom.style.transition = '';
-    // This clears translation (sets translate to 0px)
-    this.x = this._x;
-    // Set to null to force writing an absolute x position
-    this._x = null;
-    // Write down the current expected x as absolute
-    this.x = this.x;
-    // Make the CSS dirty so that next update will start the movement
-    this._dirtyCSS = true;
+    this.invalidate();
   }
 }

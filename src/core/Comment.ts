@@ -27,8 +27,7 @@ class CoreComment implements IComment {
   private _motionEnd:Array<number>;
   private _alphaMotion:Object = null;
 
-  public _x:number;
-  public _y:number;
+
 
   /**
    * Absolute coordinates. Use absolute coordinates if true otherwise use percentages.
@@ -46,21 +45,22 @@ class CoreComment implements IComment {
    */
   public axis:number = 0;
 
-  public _alpha:number = 1;
-  public _size:number = 25;
-  private _width:number;
-  private _height:number;
-  private _color:number = 0xffffff;
-  private _border:boolean = false;
-  private _shadow:boolean = true;
-  private _font:string = '';
-  private _transform:CommentUtils.Matrix3D = null;
-  private _className:string = '';
+  protected _x:number;
+  protected _y:number;
+
+  protected _alpha:number = 1;
+  protected _size:number = 25;
+  protected _width:number;
+  protected _height:number;
+  protected _color:number = 0xffffff;
+  protected _border:boolean = false;
+  protected _shadow:boolean = true;
+  protected _font:string = '';
+  protected _transform:CommentUtils.Matrix3D = null;
+  protected _className:string = '';
 
   public parent:ICommentManager;
   public dom:HTMLDivElement;
-
-  public className:String;
 
   constructor(parent:ICommentManager, init:Object = {}) {
     if (!parent) {
@@ -184,14 +184,14 @@ class CoreComment implements IComment {
     } else {
       this.dom = document.createElement('div');
     }
-    this.dom.className = this.parent.options.global.className;
-    if (this._className !== "") {
-      this.dom.className += " " + this._className;
-    }
+
     this.dom.appendChild(document.createTextNode(this.text));
     this.dom.textContent = this.text;
     this.dom.innerText = this.text;
+
     this.size = this._size;
+    this.className = this._className;
+
     if (this._color != 0xffffff) {
       this.color = this._color;
     }
@@ -275,14 +275,14 @@ class CoreComment implements IComment {
   }
 
   get width():number {
-    if (this._width === null || this._width === undefined) {
+    if (typeof this._width === 'undefined' || this._width === null) {
       this._width = this.dom.offsetWidth;
     }
     return this._width;
   }
 
   get height():number {
-    if (this._height === null || this._height === undefined) {
+    if (typeof this._height === 'undefined' || this._height === null) {
       this._height = this.dom.offsetHeight;
     }
     return this._height;
@@ -314,6 +314,10 @@ class CoreComment implements IComment {
 
   get transform():Array<number> {
     return this._transform.flatArray;
+  }
+
+  get className():string {
+    return this._className;
   }
 
   set x(x:number) {
@@ -367,7 +371,8 @@ class CoreComment implements IComment {
 
   set alpha(a:number) {
     this._alpha = a;
-    this.dom.style.opacity = Math.min(this._alpha, this.parent.options.global.opacity) + '';
+    this.dom.style.opacity =
+      Math.min(this._alpha, this.parent.options.global.opacity) + '';
   }
 
   set border(b:boolean) {
@@ -400,6 +405,11 @@ class CoreComment implements IComment {
     if (this.dom !== null) {
       this.dom.style.transform = this._transform.toCss();
     }
+  }
+
+  set className(className:string) {
+    this._className = className;
+    this.dom.className = this.parent.options.global.className + ' ' + className;
   }
 
   /**
