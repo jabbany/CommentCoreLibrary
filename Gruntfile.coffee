@@ -1,4 +1,4 @@
-module.exports = (grunt) ->
+module.exports = (grunt)
   require('load-grunt-tasks') grunt , {
     pattern: ['grunt-*', '!grunt-template-jasmine-istanbul']
   }
@@ -77,7 +77,7 @@ module.exports = (grunt) ->
   ts_config =
     options:
       target: 'es5'
-      sourceMap: false
+      sourceMap: true
       rootDir: 'src/'
   for key,value of CMP_CORE_TS
     ts_config[key] = value
