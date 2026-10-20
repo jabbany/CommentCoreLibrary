@@ -2,9 +2,9 @@
  * General Host Engine for CCLScripter
  * Author: Jim Chen
  */
-import { StageElement, Logger, IPlayer, IScripter } from './IScripter.ts';
+import type { StageElement, Logger, IPlayer, IScripter } from './IScripter';
 
-import { BridgedSandbox } from './BridgedSandbox.ts';
+import { BridgedSandbox } from './BridgedSandbox';
 
 export class CCLScripter implements IScripter {
 	public backendVersion:string = 'KagerouEngine/v1';

@@ -1,7 +1,7 @@
 /**
  * Partially Compliant CommentData Adapter
  */
-class CommentData {
+export class CommentData {
   private _dbid = 0;
 
   constructor(comment:Object) {

@@ -5,36 +5,35 @@
  * @author Jim Chen
  **/
 
-var CommonDanmakuFormat = (function () {
-  var CommonDanmakuFormat = {};
-  var _check = function (comment) {
-    // Sanity check to see if we should be parsing these comments or not
-    if (typeof comment.mode !== 'number' || typeof comment.stime !== 'number') {
-      return false;
-    }
-    if (comment.mode === 8 && !(typeof comment.code === 'string')) {
-      return false;
-    }
-    if (typeof comment.text !== 'string') {
-      return false;
-    }
-    return true;
-  };
+var _check = function (comment) {
+  // Sanity check to see if we should be parsing these comments or not
+  if (typeof comment.mode !== 'number' || typeof comment.stime !== 'number') {
+    return false;
+  }
+  if (comment.mode === 8 && !(typeof comment.code === 'string')) {
+    return false;
+  }
+  if (typeof comment.text !== 'string') {
+    return false;
+  }
+  return true;
+};
 
-  CommonDanmakuFormat.JSONParser = function () { };
-  CommonDanmakuFormat.JSONParser.prototype.parseOne = function (comment) {
+export class JSONParser {
+  public parseOne(comment:any):any {
     // Refuse to parse the comment does not pass sanity check
     return _check(comment) ? comment : null;
-  };
+  }
 
-  CommonDanmakuFormat.JSONParser.prototype.parseMany = function (comments) {
+  public parseMany(comments:Array<any>):Array<any> {
     // Refuse to parse if any comment does not pass sanity check
     return comments.every(_check) ? comments : null;
-  };
+  }
+}
 
-  CommonDanmakuFormat.XMLParser = function () { };
-  CommonDanmakuFormat.XMLParser.prototype.parseOne = function (comment) {
-    var data = {}
+export class XMLParser {
+  public parseOne(comment:Element):any {
+    var data:any = {}
     try {
       data.stime = parseInt(comment.getAttribute('stime'));
       data.mode = parseInt(comment.getAttribute('mode'));
@@ -45,11 +44,12 @@ var CommonDanmakuFormat = (function () {
       return null;
     }
     return data;
-  };
+  }
 
-  CommonDanmakuFormat.XMLParser.prototype.parseMany = function (commentsElem) {
+  public parseMany(commentsElem:Element | Document):Array<any> {
+    var comments;
     try {
-      var comments = commentsElem.getElementsByTagName('comment');
+      comments = commentsElem.getElementsByTagName('comment');
     } catch (e) {
       return null;
     }
@@ -61,7 +61,5 @@ var CommonDanmakuFormat = (function () {
       }
     }
     return commentList;
-  };
-
-  return CommonDanmakuFormat;
-})();
+  }
+}

@@ -308,3 +308,5 @@ var CCLScripting = function(workerUrl){
 		self.getContext().registerObject("__root", {"class":"SpriteRoot"});
 	};
 })();
+
+export { CCLScripting };

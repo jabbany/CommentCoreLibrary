@@ -6,11 +6,12 @@
  * @description Factory to allow creation of different kinds of comments with
  *        different underlying abstractions.
  */
-/// <reference path="Core.d.ts" />
-/// <reference path="Comment.ts" />
-/// <reference path="css-renderer/CssComment.ts" />
+import type { ICommentManager, ICommentFactory, IComment } from './Core';
+import { CoreComment, ScrollComment } from './Comment';
+import * as CommentUtils from './CommentUtils';
+import { CssScrollComment } from './css-renderer/CssComment';
 
-class CommentFactory implements ICommentFactory {
+export class CommentFactory implements ICommentFactory {
   private _bindings:{[key:number]:Function;} = {};
 
   private static _simpleCssScrollingInitializer (manager:ICommentManager, data:Object):IComment {

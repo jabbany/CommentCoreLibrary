@@ -3,60 +3,61 @@
  * Takes in an XMLDoc/LooseXMLDoc and parses that into a Generic Comment List
  * @license MIT License
  **/
-var BilibiliFormat = (function () {
-  var BilibiliFormat = {};
 
-  // Fix comments to be valid
-  var _format = function (text) {
-    return text.replace(/\t/,"\\t");
-  };
+// Fix comments to be valid
+var _format = function (text) {
+  return text.replace(/\t/,"\\t");
+};
 
-  // Fix Mode7 comments when they are bad
-  var _formatmode7 = function (text) {
-    if (text.charAt(0) === '[') {
-      switch (text.charAt(text.length - 1)) {
-        case ']':
-          return text;
-        case '"':
-          return text + ']';
-        case ',':
-          return text.substring(0, text.length - 1) + '"]';
-        default:
-          return _formatmode7(text.substring(0, text.length - 1));
-      }
-    } else {
-      return text;
+// Fix Mode7 comments when they are bad
+var _formatmode7 = function (text) {
+  if (text.charAt(0) === '[') {
+    switch (text.charAt(text.length - 1)) {
+      case ']':
+        return text;
+      case '"':
+        return text + ']';
+      case ',':
+        return text.substring(0, text.length - 1) + '"]';
+      default:
+        return _formatmode7(text.substring(0, text.length - 1));
     }
-  };
-
-  // Try to escape unsafe HTML code. DO NOT trust that this handles all cases
-  // Please do not allow insecure DOM parsing unless you can trust your input source.
-  var _escapeUnsafe = function (text) {
-    text = text.replace(new RegExp('</([^d])','g'), '</disabled $1');
-    text = text.replace(new RegExp('</(\S{2,})','g'), '</disabled $1');
-    text = text.replace(new RegExp('<([^d/]\W*?)','g'), '<disabled $1');
-    text = text.replace(new RegExp('<([^/ ]{2,}\W*?)','g'), '<disabled $1');
+  } else {
     return text;
-  };
+  }
+};
 
-  BilibiliFormat.XMLParser = function (params) {
-    this._attemptFix = true;
-    this._logBadComments = true;
+// Try to escape unsafe HTML code. DO NOT trust that this handles all cases
+// Please do not allow insecure DOM parsing unless you can trust your input source.
+var _escapeUnsafe = function (text) {
+  text = text.replace(new RegExp('</([^d])','g'), '</disabled $1');
+  text = text.replace(new RegExp('</(\S{2,})','g'), '</disabled $1');
+  text = text.replace(new RegExp('<([^d/]\W*?)','g'), '<disabled $1');
+  text = text.replace(new RegExp('<([^/ ]{2,}\W*?)','g'), '<disabled $1');
+  return text;
+};
+
+export class XMLParser {
+  private _attemptFix:boolean = true;
+  private _logBadComments:boolean = true;
+
+  constructor(params?:any) {
     if (typeof params === 'object') {
       this._attemptFix = params.attemptFix === false ? false : true;
       this._logBadComments = params.logBadComments === false ? false : true;
     }
   }
 
-  BilibiliFormat.XMLParser.prototype.parseOne = function (elem) {
+  public parseOne(elem:Element):any {
+    var params;
     try {
-      var params = elem.getAttribute('p').split(',');
+      params = elem.getAttribute('p').split(',');
     } catch (e) {
       // Probably not XML
       return null;
     }
     var text = elem.textContent;
-    var comment = {};
+    var comment:any = {};
     comment.stime = Math.round(parseFloat(params[0])*1000);
     comment.size = parseInt(params[2]);
     comment.color = parseInt(params[3]);
@@ -210,13 +211,13 @@ var BilibiliFormat = (function () {
       }
     }
     if (comment.text !== null && typeof comment.text === 'string') {
-      comment.text = comment.text.replace(/\u25a0/g,"\u2588");
+      comment.text = comment.text.replace(/■/g,"█");
     }
     return comment;
-  };
+  }
 
-  BilibiliFormat.XMLParser.prototype.parseMany = function (xmldoc) {
-    var elements = [];
+  public parseMany(xmldoc:Element | Document):Array<any> {
+    var elements:ArrayLike<Element> = [];
     try {
       elements = xmldoc.getElementsByTagName('d');
     } catch (e) {
@@ -231,12 +232,16 @@ var BilibiliFormat = (function () {
       }
     }
     return commentList;
-  };
+  }
+}
 
-  BilibiliFormat.TextParser = function (params) {
-    this._allowInsecureDomParsing = true;
-    this._attemptEscaping = true;
-    this._canSecureNativeParse = false;
+export class TextParser {
+  private _allowInsecureDomParsing:boolean = true;
+  private _attemptEscaping:boolean = true;
+  private _canSecureNativeParse:boolean = false;
+  private _xmlParser:XMLParser;
+
+  constructor(params?:any) {
     if (typeof params === 'object') {
       this._allowInsecureDomParsing = params.allowInsecureDomParsing === false ? false : true;
       this._attemptEscaping = params.attemptEscaping === false ? false : true;
@@ -249,11 +254,11 @@ var BilibiliFormat = (function () {
       this._canSecureNativeParse = true;
     }
     if (this._allowInsecureDomParsing || this._canSecureNativeParse) {
-      this._xmlParser = new BilibiliFormat.XMLParser(params);
+      this._xmlParser = new XMLParser(params);
     }
-  };
+  }
 
-  BilibiliFormat.TextParser.prototype.parseOne = function (comment) {
+  public parseOne(comment:string):any {
     // Attempt to parse a single tokenized tag
     if (this._allowInsecureDomParsing) {
       var source = comment;
@@ -270,14 +275,14 @@ var BilibiliFormat = (function () {
       }
     } else if (this._canSecureNativeParse) {
       var domParser = new DOMParser();
-      return this._xmlParser.parseOne(
-        domParser.parseFromString(comment, 'application/xml'));
+      return this._xmlParser.parseOne(<any> (
+        domParser.parseFromString(comment, 'application/xml')));
     } else {
       throw new Error('Secure native js parsing not implemented yet.');
     }
-  };
+  }
 
-  BilibiliFormat.TextParser.prototype.parseMany = function (comment) {
+  public parseMany(comment:string):Array<any> {
     // Attempt to parse a comment list
     if (this._allowInsecureDomParsing) {
       var source = comment;
@@ -294,7 +299,5 @@ var BilibiliFormat = (function () {
     } else {
       throw new Error('Secure native js parsing not implemented yet.');
     }
-  };
-
-  return BilibiliFormat;
-})();
+  }
+}

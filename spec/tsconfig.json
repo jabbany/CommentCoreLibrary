@@ -1,0 +1,13 @@
+{
+  // Type checking for the specs, which run on Node.js (vitest + jsdom)
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "lib": ["esnext", "dom"],
+    "types": ["node"],
+    // Specs import the library through its public API (see vitest.config.mts)
+    "paths": {
+      "comment-core-library": ["../src/index.ts"]
+    }
+  },
+  "include": ["**/*.ts"]
+}

@@ -1,9 +1,10 @@
-import { StageElement, IScripter, ISandbox, IScriptingContext, IPlayer } from "./IScripter.ts";
-import { OOAPIMessage, LogMessage } from './OOAPI.d.ts';
+import type { StageElement, IScripter, ISandbox, IScriptingContext, IPlayer } from "./IScripter";
+import type { OOAPIMessage, LogMessage } from './OOAPI';
 
-import { OOAPIWorker } from './OOAPIWorker.ts';
-import { KagerouScripting } from './ScriptingContext.ts';
-import { SmartQueue, UpdateItem } from './Queue/SmartQueue.ts';
+import { OOAPIWorker } from './OOAPIWorker';
+import * as KagerouScripting from './ScriptingContext';
+import { SmartQueue } from './Queue/SmartQueue';
+import type { UpdateItem } from './Queue/SmartQueue';
 
 interface SandboxEvent extends UpdateItem {
 

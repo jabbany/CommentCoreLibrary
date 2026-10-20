@@ -5,9 +5,10 @@
  * @license MIT License
  * @description Comment abstraction based on DOM implementation
  */
-/// <reference path='Core.d.ts' />
-/// <reference path='CommentUtils.ts' />
-class CoreComment implements IComment {
+import type { ICommentManager, IComment, IMotion } from './Core';
+import * as CommentUtils from './CommentUtils';
+
+export class CoreComment implements IComment {
   public static LINEAR:Function = function (t:number, b:number, c:number, d:number):number {
     return t * c / d + b;
   };
@@ -518,7 +519,7 @@ class CoreComment implements IComment {
   }
 }
 
-class ScrollComment extends CoreComment {
+export class ScrollComment extends CoreComment {
   constructor(parent:ICommentManager, data:Object) {
     super(parent, data);
     this.dur *= this.parent.options.scroll.scale;

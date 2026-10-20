@@ -5,9 +5,10 @@
  * @license MIT License
  * @description Comment abstraction based on CSS3 implementation
  */
-/// <reference path="../Comment.ts" />
+import type { IComment } from '../Core';
+import { ScrollComment } from '../Comment';
 
-class CssScrollComment extends ScrollComment {
+export class CssScrollComment extends ScrollComment {
   // Marker for whether we need to re-create the CSS or not
   private _dirtyCSS:boolean = true;
 

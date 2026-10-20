@@ -3,21 +3,21 @@
  * Takes in JSON and parses it based on current documentation for AcFun comments
  * @license MIT License
  **/
-var AcfunFormat = (function () {
-  var AcfunFormat = {};
 
-  AcfunFormat.JSONParser = function (params) {
-    this._logBadComments = true;
-    this._logNotImplemented = false;
+export class JSONParser {
+  private _logBadComments:boolean = true;
+  private _logNotImplemented:boolean = false;
+
+  constructor(params?:any) {
     if (typeof params === 'object') {
       this._logBadComments = params.logBadComments === false ? false : true;
       this._logNotImplemented = params.logNotImplemented === true ? true : false;
     }
-  };
+  }
 
-  AcfunFormat.JSONParser.prototype.parseOne = function (comment) {
+  public parseOne(comment:any):any {
     // Read a comment and generate a correct comment object
-    var data = {};
+    var data:any = {};
     if (typeof comment !== 'object' || comment == null || !comment.hasOwnProperty('c')) {
       // This cannot be parsed. The comment contains no config data
       return null;
@@ -35,10 +35,11 @@ var AcfunFormat = (function () {
         // Do some text normalization on low complexity comments
         data.text = comment.m.replace(/(\/n|\\n|\n|\r\n|\\r)/g,"\n");
         data.text = data.text.replace(/\r/g,"\n");
-        data.text = data.text.replace(/\s/g,"\u00a0");
+        data.text = data.text.replace(/\s/g," ");
       } else {
+        var x;
         try {
-          var x = JSON.parse(comment.m);
+          x = JSON.parse(comment.m);
         } catch (e) {
           if (this._logBadComments) {
             console.warn('Error parsing internal data for comment');
@@ -48,7 +49,7 @@ var AcfunFormat = (function () {
         }
         data.position = "relative";
         data.text = x.n; /*.replace(/\r/g,"\n");*/
-        data.text = data.text.replace(/\ /g,"\u00a0");
+        data.text = data.text.replace(/\ /g," ");
         if (typeof x.a === 'number') {
           data.opacity = x.a;
         } else {
@@ -94,7 +95,7 @@ var AcfunFormat = (function () {
           for (var m = 0; m < x.z.length; m++) {
             var dur = x.z[m].l != null ? (x.z[m].l * 1000) : 500;
             moveDuration += dur;
-            var motion = {};
+            var motion:any = {};
             if (x.z[m].hasOwnProperty('rx') && typeof x.z[m].rx === 'number') {
               // TODO: Support this
               if (this._logNotImplemented) {
@@ -186,9 +187,9 @@ var AcfunFormat = (function () {
       }
       return null;
     }
-  };
+  }
 
-  AcfunFormat.JSONParser.prototype.parseMany = function (comments) {
+  public parseMany(comments:Array<any>):Array<any> {
     if (!Array.isArray(comments)) {
       return null;
     }
@@ -200,13 +201,17 @@ var AcfunFormat = (function () {
       }
     }
     return list;
-  };
+  }
+}
 
-  AcfunFormat.TextParser = function (param) {
-    this._jsonParser = new AcfunFormat.JSONParser(param);
+export class TextParser {
+  private _jsonParser:JSONParser;
+
+  constructor(param?:any) {
+    this._jsonParser = new JSONParser(param);
   }
 
-  AcfunFormat.TextParser.prototype.parseOne = function (comment) {
+  public parseOne(comment:string):any {
     try {
       return this._jsonParser.parseOne(JSON.parse(comment));
     } catch (e) {
@@ -215,7 +220,7 @@ var AcfunFormat = (function () {
     }
   }
 
-  AcfunFormat.TextParser.prototype.parseMany = function (comment) {
+  public parseMany(comment:string):Array<any> {
     try {
       return this._jsonParser.parseMany(JSON.parse(comment));
     } catch (e) {
@@ -223,6 +228,4 @@ var AcfunFormat = (function () {
       return null;
     }
   }
-
-  return AcfunFormat;
-})();
+}

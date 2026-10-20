@@ -1,9 +1,8 @@
 # 弹幕核心通用构件 CommentCoreLibrary
 [![NPM version](https://badge.fury.io/js/comment-core-library.svg)](http://badge.fury.io/js/comment-core-library)
 [![Bower version](https://badge.fury.io/bo/comment-core-library.svg)](http://badge.fury.io/bo/comment-core-library)
-[![Built with Grunt](https://cdn.gruntjs.com/builtwith.png)](http://gruntjs.com/)
 [![License](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
-[![Build Status: Linux](https://travis-ci.org/jabbany/CommentCoreLibrary.svg?branch=master)](https://travis-ci.org/jabbany/CommentCoreLibrary)
+[![Build Status](https://github.com/jabbany/CommentCoreLibrary/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/jabbany/CommentCoreLibrary/actions/workflows/ci.yml)
 [![Coverage Status](https://img.shields.io/coveralls/jabbany/CommentCoreLibrary.svg)](https://coveralls.io/r/jabbany/CommentCoreLibrary?branch=master)
 
 其它语言: [English](README.md)
@@ -29,7 +28,7 @@
 ## 使用
 - 有关本项目的[文档](docs/) 可以在 `docs/` 文件夹里面找到。
 - 一些实验性模块在 `experimental/` 里。
-- 测试数据在 `test/` 里。
+- 测试数据在 `spec/fixtures/` 里。
 
 ## 做出贡献
 非常欢迎提交问题报告和意见建议，同时你也可以在GitHub上Fork本工程，并发送Pull请求来提交

@@ -7,7 +7,7 @@
   ],
   "main": ["dist/CommentCoreLibrary.js","dist/style.css"],
   "ignore": [ 
-  	"test/**/*",
+  	"spec/**/*",
   	"experimental/**/*",
   	"demo/**/*"
   ],

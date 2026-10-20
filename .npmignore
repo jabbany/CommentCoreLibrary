@@ -1,13 +1,16 @@
 # Non-package items
 /spec
-/test
 /docs
 /demo
 /experimental
+/build
+/.github
+
+# Build and test configuration
+/rollup.config.mjs
+/tsconfig*.json
+/vitest*.config.mts
+/pnpm-workspace.yaml
 
 # Temporary files
-.tscache
-/compiled_spec
-/compiled_src
 /coverage
-

@@ -1,127 +1,127 @@
-/// <reference path="DisplayObject.ts" />
-/// <reference path="Graphics.ts" />
+import * as Runtime from '../Runtime/Runtime';
+import { DisplayObject } from './DisplayObject';
+import { Graphics } from './Graphics';
+import { Point } from './Matrix';
 
-module Display {
-  /**
-   * Sprite Polyfill for AS3. Is also a UIComponent.
-   * @author Jim Chen
-   */
-  export class Sprite extends DisplayObject {
-    private _graphics:Graphics;
-    private _mouseEnabled:boolean = true;
-    private _mousePosition:Point = new Point(0, 0);
-    private _useHandCursor:boolean = false;
+/**
+ * Sprite Polyfill for AS3. Is also a UIComponent.
+ * @author Jim Chen
+ */
+export class Sprite extends DisplayObject {
+  private _graphics:Graphics;
+  private _mouseEnabled:boolean = true;
+  private _mousePosition:Point = new Point(0, 0);
+  private _useHandCursor:boolean = false;
 
-    constructor(id?:string) {
-      super(id);
-      this._graphics = new Graphics(this);
-    }
+  constructor(id?:string) {
+    super(id);
+    this._graphics = new Graphics(this);
+  }
 
-    get graphics():Graphics {
-      return this._graphics;
-    }
+  get graphics():Graphics {
+    return this._graphics;
+  }
 
-    set graphics(_g:Graphics) {
-      __trace('Sprite.graphics is read-only.', 'warn');
-    }
+  set graphics(_g:Graphics) {
+    __trace('Sprite.graphics is read-only.', 'warn');
+  }
 
-    get mouseEnabled():boolean {
-      return this._mouseEnabled;
-    }
+  get mouseEnabled():boolean {
+    return this._mouseEnabled;
+  }
 
-    set mouseEnabled(enabled:boolean) {
-      this._mouseEnabled = enabled;
-      this.propertyUpdate('mouseEnabled', enabled);
-    }
+  set mouseEnabled(enabled:boolean) {
+    this._mouseEnabled = enabled;
+    this.propertyUpdate('mouseEnabled', enabled);
+  }
 
-    get useHandCursor():boolean {
-      return this._useHandCursor;
-    }
+  get useHandCursor():boolean {
+    return this._useHandCursor;
+  }
 
-    set useHandCursor(use:boolean) {
-      this._useHandCursor = use;
-      this.propertyUpdate('useHandCursor', use);
-    }
+  set useHandCursor(use:boolean) {
+    this._useHandCursor = use;
+    this.propertyUpdate('useHandCursor', use);
+  }
 
-    public serialize():Object {
-      var serialized:Object = super.serialize();
-      serialized['class'] = 'Sprite';
-      return serialized;
-    }
+  public serialize():Object {
+    var serialized:Object = super.serialize();
+    serialized['class'] = 'Sprite';
+    return serialized;
+  }
+}
+
+/**
+ * Special sprite used for the root sprite
+ * @author Jim Chen
+ */
+export class RootSprite extends Sprite {
+  private _metaRoot:Runtime.IMetaObject;
+  constructor() {
+    super('__root');
+    this._metaRoot = Runtime.getObject('__root');
+  }
+
+  get parent():DisplayObject {
+    __trace('SecurityError: No access above root sprite.','err');
+    return null;
+  }
+
+  public addEventListener(eventName:string, listener:Function):void {
+    __trace('Listener[' + eventName + '] on root sprite inadvisible', 'warn');
+    this._metaRoot.addEventListener(eventName, listener);
+  }
+
+  public removeEventListener(eventName:string, listener:Function):void {
+    this._metaRoot.removeEventListener(eventName, listener, false);
+  }
+}
+
+export class UIComponent extends Sprite {
+  private _styles:{[name:string]:any} = {};
+
+  constructor(id?:string) {
+    super(id);
   }
 
   /**
-   * Special sprite used for the root sprite
-   * @author Jim Chen
+   * Clears the style for the UIComponent which this is
+   * @param style - style to clear
    */
-  export class RootSprite extends Sprite {
-    private _metaRoot:Runtime.IMetaObject;
-    constructor() {
-      super('__root');
-      this._metaRoot = Runtime.getObject('__root');
-    }
-
-    get parent():DisplayObject {
-      __trace('SecurityError: No access above root sprite.','err');
-      return null;
-    }
-
-    public addEventListener(eventName:string, listener:Function):void {
-      __trace('Listener[' + eventName + '] on root sprite inadvisible', 'warn');
-      this._metaRoot.addEventListener(eventName, listener);
-    }
-
-    public removeEventListener(eventName:string, listener:Function):void {
-      this._metaRoot.removeEventListener(eventName, listener, false);
-    }
+  public clearStyle(style:string):void {
+    delete this._styles[style];
   }
 
-  export class UIComponent extends Sprite {
-    private _styles:{[name:string]:any} = {};
+  /**
+   * Get the style for the UIComponent which this is
+   * @param style - style to set
+   * @return value - value of that style
+   */
+  public getStyle(style:string):any {
+    return this._styles[style];
+  }
 
-    constructor(id?:string) {
-      super(id);
-    }
+  /**
+   * Set the style for the UIComponent which this is
+   * @param styleProp - style to set
+   * @param value - value to set the style to
+   */
+  public setStyle(styleProp:string, value:any):void {
+    __trace("UIComponent.setStyle not implemented", "warn");
+    this._styles[styleProp] = value;
+  }
 
-    /**
-     * Clears the style for the UIComponent which this is
-     * @param style - style to clear
-     */
-    public clearStyle(style:string):void {
-      delete this._styles[style];
-    }
+  public setFocus():void {
+    this.methodCall("setFocus", null);
+  }
 
-    /**
-     * Get the style for the UIComponent which this is
-     * @param style - style to set
-     * @return value - value of that style
-     */
-    public getStyle(style:string):any {
-      return this._styles[style];
-    }
+  public setSize(width:number, height:number):void {
+    this.width = width;
+    this.height = height;
+  }
 
-    /**
-     * Set the style for the UIComponent which this is
-     * @param styleProp - style to set
-     * @param value - value to set the style to
-     */
-    public setStyle(styleProp:string, value:any):void {
-      __trace("UIComponent.setStyle not implemented", "warn");
-      this._styles[styleProp] = value;
-    }
-
-    public setFocus():void {
-      this.methodCall("setFocus", null);
-    }
-
-    public setSize(width:number, height:number):void {
-      this.width = width;
-      this.height = height;
-    }
-
-    public move(x:number, y:number):void {
-      this.x = x;
-      this.y =y;
-    }
+  public move(x:number, y:number):void {
+    this.x = x;
+    this.y =y;
   }
 }

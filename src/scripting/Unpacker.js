@@ -1,3 +1,5 @@
+import { CCLScripting } from './Host';
+
 /** Define some Unpackers **/
 (function(){
 	/** This is the DOM Manipulation Library **/

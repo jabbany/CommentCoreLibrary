@@ -5,97 +5,111 @@
  *
  * Copyright (c) 2014 Jim Chen
  */
-var CommentManager = (function() {
-  var _defaultComparator = function (a,b) {
-    if (a.stime > b.stime) {
-      return 2;
-    } else if (a.stime < b.stime) {
-      return -2;
-    } else {
-      if (a.date > b.date) {
+import type { CCLOptions, ICommentManager, ICommentFactory, IComment,
+  IScriptingEngine } from './core/Core';
+import * as BinArray from './Array';
+import { CommentFactory } from './core/CommentFactory';
+import { CommentSpaceAllocator, AnchorCommentSpaceAllocator } from './core/CommentSpaceAllocator';
+import { CommentFilter } from './filter/CommentFilter';
+
+var _defaultComparator = function (a, b) {
+  if (a.stime > b.stime) {
+    return 2;
+  } else if (a.stime < b.stime) {
+    return -2;
+  } else {
+    if (a.date > b.date) {
+      return 1;
+    } else if (a.date < b.date) {
+      return -1;
+    } else if (a.dbid != null && b.dbid != null) {
+      if (a.dbid > b.dbid) {
         return 1;
-      } else if (a.date < b.date) {
+      } else if (a.dbid < b.dbid) {
         return -1;
-      } else if (a.dbid != null && b.dbid != null) {
-        if (a.dbid > b.dbid) {
-          return 1;
-        } else if (a.dbid < b.dbid) {
-          return -1;
-        }
-        return 0;
-      } else {
-        return 0;
       }
+      return 0;
+    } else {
+      return 0;
     }
+  }
+};
+
+export class CommentManager implements ICommentManager {
+  private _timer:number = 0;
+  private _listeners:{[event:string]:Array<Function>} = {};
+  private _lastPosition:number = 0;
+
+  public stage:HTMLElement;
+  public options:CCLOptions = {
+    global:{
+      opacity:1,
+      scale:1,
+      className:"cmt"
+    },
+    scroll:{
+      opacity:1,
+      scale:1
+    },
+    limit: 0,
+    seekTrigger: 2000
+  };
+  public timeline:Array<any> = [];
+  public runline:Array<IComment> = [];
+  public position:number = 0;
+
+  public factory:ICommentFactory = null;
+  public filter:CommentFilter = null;
+  public scripting:IScriptingEngine;
+  public csa:{[name:string]:CommentSpaceAllocator} = {
+    scroll: new CommentSpaceAllocator(0,0),
+    top: new AnchorCommentSpaceAllocator(0,0),
+    bottom: new AnchorCommentSpaceAllocator(0,0),
+    reverse: new CommentSpaceAllocator(0,0),
+    scrollbtm: new CommentSpaceAllocator(0,0)
   };
 
-  function CommentManager(stageObject){
-    var __timer = 0;
+  public width:number;
+  public height:number;
 
-    this._listeners = {};
-    this._lastPosition = 0;
-
+  constructor(stageObject:HTMLElement) {
     this.stage = stageObject;
-    this.options = {
-      global:{
-        opacity:1,
-        scale:1,
-        className:"cmt"
-      },
-      scroll:{
-        opacity:1,
-        scale:1
-      },
-      limit: 0,
-      seekTrigger: 2000
-    };
-    this.timeline = [];
-    this.runline = [];
-    this.position = 0;
-
-    this.factory = null;
-    this.filter = null;
-    this.csa = {
-      scroll: new CommentSpaceAllocator(0,0),
-      top: new AnchorCommentSpaceAllocator(0,0),
-      bottom: new AnchorCommentSpaceAllocator(0,0),
-      reverse: new CommentSpaceAllocator(0,0),
-      scrollbtm: new CommentSpaceAllocator(0,0)
-    };
 
     /** Precompute the offset width **/
     this.width = this.stage.offsetWidth;
     this.height = this.stage.offsetHeight;
-    this._startTimer = function () {
-      if (__timer > 0) {
-        return;
-      }
-      var lastTPos = new Date().getTime();
-      var cmMgr = this;
-      __timer = window.setInterval(function () {
-        var elapsed = new Date().getTime() - lastTPos;
-        lastTPos = new Date().getTime();
-        cmMgr.onTimerEvent(elapsed,cmMgr);
-      },10);
-    };
-    this._stopTimer = function () {
-      window.clearInterval(__timer);
-      __timer = 0;
-    };
+  }
+
+  private _startTimer():void {
+    if (this._timer > 0) {
+      return;
+    }
+    var lastTPos = new Date().getTime();
+    var cmMgr = this;
+    this._timer = window.setInterval(function () {
+      var elapsed = new Date().getTime() - lastTPos;
+      lastTPos = new Date().getTime();
+      cmMgr.onTimerEvent(elapsed,cmMgr);
+    },10);
+  }
+
+  private _stopTimer():void {
+    window.clearInterval(this._timer);
+    this._timer = 0;
   }
 
   /** Public **/
-  CommentManager.prototype.stop = function(){
+  public stop():void {
     this._stopTimer();
     // Send stop signal to all comments
     this.runline.forEach(function (c) { c.stop(); });
-  };
+  }
 
-  CommentManager.prototype.start = function(){
+  public start():void {
     this._startTimer();
-  };
+  }
 
-  CommentManager.prototype.seek = function(time){
+  public seek(time:number):void {
     this.position = BinArray.bsearch(this.timeline, time, function(a,b){
       if (a < b.stime) {
         return -1
@@ -105,37 +119,37 @@ var CommentManager = (function() {
         return 0;
       }
     });
-  };
+  }
 
-  CommentManager.prototype.validate = function(cmt){
+  public validate(cmt:any):boolean {
     if (cmt == null) {
       return false;
     }
     return this.filter.doValidate(cmt);
-  };
+  }
 
-  CommentManager.prototype.load = function(a){
+  public load(a:Array<any>):void {
     this.timeline = a;
     this.timeline.sort(_defaultComparator);
     this.dispatchEvent("load");
-  };
+  }
 
-  CommentManager.prototype.insert = function(c){
+  public insert(c:any):void {
     var index = BinArray.binsert(this.timeline, c, _defaultComparator);
     if (index <= this.position) {
       this.position++;
     }
     this.dispatchEvent("insert");
-  };
+  }
 
-  CommentManager.prototype.clear = function () {
+  public clear():void {
     while (this.runline.length > 0) {
       this.runline[0].finish();
     }
     this.dispatchEvent("clear");
-  };
+  }
 
-  CommentManager.prototype.setBounds = function () {
+  public setBounds():void {
     this.width = this.stage.offsetWidth;
     this.height= this.stage.offsetHeight;
     this.dispatchEvent("resize");
@@ -144,10 +158,10 @@ var CommentManager = (function() {
     }
     // Update 3d perspective
     this.stage.style.perspective = this.width / Math.tan(55 * Math.PI/180) / 2 + "px";
-    this.stage.style.webkitPerspective = this.width / Math.tan(55 * Math.PI/180) / 2 + "px";
-  };
+    this.stage.style['webkitPerspective'] = this.width / Math.tan(55 * Math.PI/180) / 2 + "px";
+  }
 
-  CommentManager.prototype.init = function (renderer) {
+  public init(renderer?:string):void {
     this.setBounds();
     if (this.filter == null) {
       this.filter = new CommentFilter(); //Only create a filter if none exist
@@ -163,9 +177,9 @@ var CommentManager = (function() {
           break;
       }
     }
-  };
+  }
 
-  CommentManager.prototype.time = function (time) {
+  public time(time:number):void {
     time = time - 1;
     if (this.position >= this.timeline.length ||
       Math.abs(this._lastPosition - time) >= this.options.seekTrigger) {
@@ -195,13 +209,13 @@ var CommentManager = (function() {
     if (batch.length > 0) {
       this.send(batch);
     }
-  };
+  }
 
-  CommentManager.prototype.rescale = function () {
+  public rescale():void {
     // TODO: Implement rescaling
-  };
+  }
 
-  CommentManager.prototype._preprocess = function (data) {
+  private _preprocess(data:any):any {
     if (data.mode === 8) {
       // This comment is not managed by the comment manager
       console.log(data);
@@ -216,7 +230,7 @@ var CommentManager = (function() {
     return data;
   }
 
-  CommentManager.prototype._allocateSpace = function (cmt) {
+  private _allocateSpace(cmt:IComment):void {
     switch (cmt.mode) {
       default:
       case 1: { this.csa.scroll.add(cmt); } break;
@@ -229,7 +243,7 @@ var CommentManager = (function() {
     }
   }
 
-  CommentManager.prototype.send = function (data) {
+  public send(data:any):void {
     if (!Array.isArray(data)) {
       data = [ data ];
     }
@@ -252,9 +266,9 @@ var CommentManager = (function() {
       this.dispatchEvent("enterComment", cmt);
       this.runline.push(cmt);
     }).bind(this));
-  };
+  }
 
-  CommentManager.prototype.finish = function (cmt) {
+  public finish(cmt:IComment):void {
     this.dispatchEvent("exitComment", cmt);
     this.stage.removeChild(cmt.dom);
     var index = this.runline.indexOf(cmt);
@@ -270,17 +284,17 @@ var CommentManager = (function() {
       case 6: {this.csa.reverse.remove(cmt);} break;
       case 7: break;
     }
-  };
+  }
 
-  CommentManager.prototype.addEventListener = function (event, listener) {
+  public addEventListener(event:string, listener:Function):void {
     if (typeof this._listeners[event] !== "undefined") {
       this._listeners[event].push(listener);
     } else {
       this._listeners[event] = [listener];
     }
-  };
+  }
 
-  CommentManager.prototype.dispatchEvent = function (event, data) {
+  public dispatchEvent(event:string, data?:any):void {
     if (typeof this._listeners[event] !== "undefined") {
       for (var i = 0; i < this._listeners[event].length; i++) {
         try {
@@ -290,15 +304,13 @@ var CommentManager = (function() {
         }
       }
     }
-  };
+  }
 
   /** Static Functions **/
-  CommentManager.prototype.onTimerEvent = function (timePassed,cmObj) {
+  public onTimerEvent(timePassed:number, cmObj:CommentManager):void {
     for (var i= 0;i < cmObj.runline.length; i++) {
       var cmt = cmObj.runline[i];
       cmt.time(timePassed);
     }
-  };
-
-  return CommentManager;
-})();
+  }
+}

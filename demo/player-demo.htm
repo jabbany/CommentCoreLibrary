@@ -56,7 +56,7 @@
             togglePlayback();
         });
         var cp = (new CommentProvider()).addStaticSource(
-            CommentProvider.XMLProvider("GET", "../test/comment.xml"), 
+            CommentProvider.XMLProvider("GET", "../spec/fixtures/comment.xml"), 
             CommentProvider.SOURCE_XML).addParser(
             new BilibiliFormat.XMLParser(), 
             CommentProvider.SOURCE_XML).addTarget(cm);

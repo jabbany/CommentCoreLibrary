@@ -21,32 +21,49 @@
     "browser",
     "danmu"
   ],
-  "main": "dist/CommentCoreLibrary.js",
   "version": "0.11.1",
+  "main": "dist/CommentCoreLibrary.js",
+  "module": "dist/CommentCoreLibrary.mjs",
+  "types": "dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/CommentCoreLibrary.mjs",
+      "default": "./dist/CommentCoreLibrary.js"
+    },
+    "./css/*": "./dist/css/*",
+    "./scripting/*": "./dist/scripting/*",
+    "./package.json": "./package.json"
+  },
+  "packageManager": "pnpm@12.14.0",
+  "engines": {
+    "node": "^22.22.2 || ^24.15.0 || >=26.0.0"
+  },
   "devDependencies": {
-    "coveralls": "^3.0.3",
-    "grunt": "^1.0.4",
-    "grunt-autoprefixer": "^3.0.4",
-    "grunt-contrib-clean": "^2.0.0",
-    "grunt-contrib-coffee": "^2.1.0",
-    "grunt-contrib-concat": "^1.0.1",
-    "grunt-contrib-copy": "^1.0.0",
-    "grunt-contrib-cssmin": "^3.0.0",
-    "grunt-contrib-jasmine": "^2.0.3",
-    "grunt-contrib-jshint": "^2.1.0",
-    "grunt-contrib-uglify": "^4.0.1",
-    "grunt-contrib-watch": "^1.1.0",
-    "grunt-ts": "^6.0.0-beta.22",
-    "jasmine-sinon": "^0.4.0",
-    "jquery": "^3.4.1",
-    "load-grunt-tasks": "^5.0.0",
-    "sinon": "^7.3.2",
-    "typescript": "^3.4.5"
+    "@swc/core": "^1.16.18",
+    "@swc/helpers": "^0.5.23",
+    "@types/node": "^22.20.5",
+    "@vitest/coverage-v8": "^5.0.5",
+    "acorn": "^8.19.0",
+    "jsdom": "^30.1.3",
+    "lightningcss": "^1.33.0",
+    "rollup": "^4.64.10",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.5"
   },
   "scripts": {
-    "build": "npm install && grunt",
-    "start": "grunt watch",
-    "test": "grunt && grunt test",
-    "ci": "grunt ci"
+    "clean": "node build/clean.mjs",
+    "build": "pnpm clean && rollup -c && pnpm build:types",
+    "build:core": "rollup -c --configTarget core && pnpm build:types",
+    "build:scripting": "rollup -c --configTarget scripting",
+    "build:types": "tsc -p tsconfig.types.json",
+    "watch": "rollup -c -w",
+    "start": "rollup -c -w",
+    "typecheck": "tsc -p tsconfig.json && tsc -p spec/tsconfig.json",
+    "check:es5": "node build/check-es5.mjs",
+    "test": "vitest run --coverage",
+    "test:watch": "vitest",
+    "test:dist": "vitest run --config vitest.dist.config.mts",
+    "verify": "pnpm typecheck && pnpm build && pnpm check:es5 && pnpm test && pnpm test:dist"
   }
 }

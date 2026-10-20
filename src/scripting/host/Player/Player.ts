@@ -2,7 +2,7 @@
  * Reference implementation for player
  * @author Jim Chen
  **/
-import { IPlayer } from '../IScripter.ts';
+import type { IPlayer } from '../IScripter';
 
 export class Player implements IPlayer {
 

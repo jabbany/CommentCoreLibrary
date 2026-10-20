@@ -5,35 +5,14 @@
  * @description Definitions file for interfaces used in CCL
  */
 
-/**
- * Definintions for binary array tools
- */
-interface IBinArray {
-  /**
-   * Binary insert into array
-   * @param arr - target array
-   * @param inserted - element to be inserted
-   * @param how - comparison function
-   */
-  binsert(arr:Array<any>, inserted:any, how:Function):number;
-  /**
-   * Binary loose search
-   * @param arr - array to look in
-   * @param what - object to try to find
-   * @param how - comparison function
-   */
-  bsearch(arr:Array<any>, what:any, how:Function):number;
-}
-declare var BinArray:IBinArray;
-
-interface IScriptingEngine {
-  eval(code:String);
+export interface IScriptingEngine {
+  eval(code:string):any;
 }
 
 /**
  * Options for CommentCoreLibrary
  */
-interface CCLOptions {
+export interface CCLOptions {
   global: {
     scale: number;
     opacity: number;
@@ -43,13 +22,17 @@ interface CCLOptions {
     scale:number;
     opacity:number;
   }
-  scripting:{
-    mode:Array<number>;
-    engine:IScriptingEngine;
-  }
+  /**
+   * Maximum number of comments on the runline. 0 means unlimited
+   */
+  limit:number;
+  /**
+   * Time difference (ms) between two time() calls that triggers a seek
+   */
+  seekTrigger:number;
 }
 
-interface ICommentManager {
+export interface ICommentManager {
   stage:any;
   width:number;
   height:number;
@@ -79,14 +62,14 @@ interface ICommentManager {
   finish(c:IComment):void;
 }
 
-interface ICommentFactory {
+export interface ICommentFactory {
   create(manager:ICommentManager, comment:Object):IComment;
 }
 
 /**
  * Easable motion on a certain parameter
  */
-interface IMotion {
+export interface IMotion {
   from:number;
   to:number;
   delay:number;
@@ -95,8 +78,9 @@ interface IMotion {
   easing:Function;
 }
 
-interface IComment {
+export interface IComment {
   dom:any;
+  mode:number;
   stime:number;
   dur:number;
   ttl:number;

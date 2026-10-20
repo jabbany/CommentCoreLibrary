@@ -3,34 +3,34 @@ $ = function(a) {
   return document.getElementById(a);
 };
 var tests = {
-  "test-1": "test/test.xml",
-  "test-2": "test/test2.xml",
-  "test-3": "test/rokubunnoichi.xml",
-  "test-4": "test/mikunoshoushitsu.xml",
-  "test-5": "test/unowen.xml",
-  "test-6": "test/comment.xml",
-  "test-7": "test/extended.xml",
-  "test-8": "test/boss.xml",
-  "test-9": "test/utsukushiki_mono.xml",
-  "test-s": "test/scripting/kanpai.xml",
+  "test-1": "spec/fixtures/test.xml",
+  "test-2": "spec/fixtures/test2.xml",
+  "test-3": "spec/fixtures/rokubunnoichi.xml",
+  "test-4": "spec/fixtures/mikunoshoushitsu.xml",
+  "test-5": "spec/fixtures/unowen.xml",
+  "test-6": "spec/fixtures/comment.xml",
+  "test-7": "spec/fixtures/extended.xml",
+  "test-8": "spec/fixtures/boss.xml",
+  "test-9": "spec/fixtures/utsukushiki_mono.xml",
+  "test-s": "spec/fixtures/scripting/kanpai.xml",
   "test-ac-1": {
-    "f": 'test/ACFun.json',
+    "f": 'spec/fixtures/ACFun.json',
     "p": "acfun"
   },
   "test-ac-2": {
-    "f": 'test/ac940133.json',
+    "f": 'spec/fixtures/ac940133.json',
     "p": "acfun"
   },
   "test-ts-1": {
-    "f": "test/invalid/no_closing.xml",
+    "f": "spec/fixtures/invalid/no_closing.xml",
     "p": "bilibili-text"
   },
   "test-ts-2": {
-    "f": "test/invalid/syntax_error.xml",
+    "f": "spec/fixtures/invalid/syntax_error.xml",
     "p": "bilibili-text"
   },
   "test-ts-3": {
-    "f": "test/invalid/xss.xml",
+    "f": "spec/fixtures/invalid/xss.xml",
     "p": "bilibili-text"
   }
 };

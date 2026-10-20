@@ -34,8 +34,9 @@ Instead, you should obtain CCL using one of the following ways:
 
     If you want to develop and extend CCL, you are advised to clone the
     repository `git clone https://github.com/jabbany/CommentCoreLibrary.git`.
-    You should also have `grunt` installed to enable compiling the project.
-    Make sure to update the node modules when you first clone the repository.
+    You should also have Node.js and `pnpm` installed to compile the project.
+    Run `pnpm install` when you first clone the repository and `pnpm build`
+    to compile it (see [BUILDING.md](../BUILDING.md)).
 
 ### Embedding CCL
 The compiled output of CCL is located in the `dist/` directory. The two most

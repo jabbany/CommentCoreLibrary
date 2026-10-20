@@ -4,21 +4,35 @@
  * @license MIT
  * @author Jim Chen
 **/
+import { CommentManager } from './CommentManager';
+import * as Promises from './Promises';
 
-var CommentProvider = (function () {
+/**
+ * Parser that turns source data into comment data
+ */
+export interface CommentParser {
+  parseOne(data:any):any;
+  parseMany(data:any):Array<any>;
+}
 
-  function CommentProvider () {
-    this._started = false;
-    this._destroyed = false;
-    this._staticSources = {};
-    this._dynamicSources = {};
-    this._parsers = {}
-    this._targets = [];
-  }
+/**
+ * Source that dispatches 'receive' events with incoming comment data
+ */
+export interface DynamicSource {
+  addEventListener(event:string, listener:Function):void;
+}
 
-  CommentProvider.SOURCE_JSON = 'JSON';
-  CommentProvider.SOURCE_XML = 'XML';
-  CommentProvider.SOURCE_TEXT = 'TEXT';
+export class CommentProvider {
+  public static SOURCE_JSON:string = 'JSON';
+  public static SOURCE_XML:string = 'XML';
+  public static SOURCE_TEXT:string = 'TEXT';
+
+  private _started:boolean = false;
+  private _destroyed:boolean = false;
+  private _staticSources:{[type:string]:Array<Promise<any>>} = {};
+  private _dynamicSources:{[type:string]:Array<DynamicSource>} = {};
+  private _parsers:{[type:string]:Array<CommentParser>} = {};
+  private _targets:Array<CommentManager> = [];
 
   /**
    * Provider for HTTP content. This returns a promise that resolves to TEXT.
@@ -32,7 +46,9 @@ var CommentProvider = (function () {
    * @return {Promise} that resolves or rejects based on the success or failure
    *         of the request
    **/
-  CommentProvider.BaseHttpProvider = function (method, url, responseType, args, body) {
+  public static BaseHttpProvider(method:string, url:string,
+    responseType?:string, args?:Object, body?:any):Promise<any> {
+
     return new Promise(function (resolve, reject) {
       var xhr = new XMLHttpRequest();
       var uri = url;
@@ -63,8 +79,8 @@ var CommentProvider = (function () {
       xhr.open(method, uri);
 
       // Limit the response type based on input
-      xhr.responseType = typeof responseType === "string" ?
-        responseType : "";
+      xhr.responseType = <XMLHttpRequestResponseType> (
+        typeof responseType === "string" ? responseType : "");
 
       if (typeof body !== 'undefined') {
         xhr.send(body);
@@ -72,7 +88,7 @@ var CommentProvider = (function () {
         xhr.send();
       }
     });
-  };
+  }
 
   /**
    * Provider for JSON content. This returns a promise that resolves to JSON.
@@ -85,12 +101,14 @@ var CommentProvider = (function () {
    * @return {Promise} that resolves or rejects based on the success or failure
    *         of the request
    **/
-  CommentProvider.JSONProvider = function (method, url, args, body) {
+  public static JSONProvider(method:string, url:string, args?:Object,
+    body?:any):Promise<any> {
+
     return CommentProvider.BaseHttpProvider(
       method, url, "json", args, body).then(function (response) {
       return response;
     });
-  };
+  }
 
   /**
    * Provider for XML content. This returns a promise that resolves to Document.
@@ -103,12 +121,14 @@ var CommentProvider = (function () {
    * @return {Promise} that resolves or rejects based on the success or failure
    *         of the request
    **/
-  CommentProvider.XMLProvider = function (method, url, args, body) {
+  public static XMLProvider(method:string, url:string, args?:Object,
+    body?:any):Promise<any> {
+
     return CommentProvider.BaseHttpProvider(
       method, url, "document", args, body).then(function (response) {
       return response;
     });
-  };
+  }
 
   /**
    * Provider for text content. This returns a promise that resolves to Text.
@@ -121,12 +141,14 @@ var CommentProvider = (function () {
    * @return {Promise} that resolves or rejects based on the success or failure
    *     of the request
    **/
-  CommentProvider.TextProvider = function (method, url, args, body) {
+  public static TextProvider(method:string, url:string, args?:Object,
+    body?:any):Promise<any> {
+
     return CommentProvider.BaseHttpProvider(
       method, url, "text", args, body).then(function (response) {
       return response;
     });
-  };
+  }
 
   /**
    * Attaches a static source to the corresponding type.
@@ -137,7 +159,7 @@ var CommentProvider = (function () {
    * @param {Type} type - Type that the provider resolves to
    * @return {CommentProvider} this
    **/
-  CommentProvider.prototype.addStaticSource = function (source, type) {
+  public addStaticSource(source:Promise<any>, type:string):CommentProvider {
     if (this._destroyed) {
       throw new Error(
         'Comment provider has been destroyed, ' +
@@ -148,7 +170,7 @@ var CommentProvider = (function () {
     }
     this._staticSources[type].push(source);
     return this;
-  };
+  }
 
   /**
    * Attaches a dynamic source to the corresponding type
@@ -158,7 +180,7 @@ var CommentProvider = (function () {
    * @param {Type} type - Type that the provider resolves to
    * @return {CommentProvider} this
    **/
-  CommentProvider.prototype.addDynamicSource = function (source, type) {
+  public addDynamicSource(source:DynamicSource, type:string):CommentProvider {
     if (this._destroyed) {
       throw new Error(
         'Comment provider has been destroyed, ' +
@@ -169,7 +191,7 @@ var CommentProvider = (function () {
     }
     this._dynamicSources[type].push(source);
     return this;
-  };
+  }
 
   /**
    * Attaches a target comment manager so that we can stream comments to it
@@ -177,7 +199,7 @@ var CommentProvider = (function () {
    * @param {CommentManager} commentManager - Comment Manager instance to attach to
    * @return {CommentProvider} this
    **/
-  CommentProvider.prototype.addTarget = function (commentManager) {
+  public addTarget(commentManager:CommentManager):CommentProvider {
     if (this._destroyed) {
       throw new Error(
         'Comment provider has been destroyed, '
@@ -189,7 +211,7 @@ var CommentProvider = (function () {
     }
     this._targets.push(commentManager);
     return this;
-  };
+  }
 
   /**
    * Adds a parser for an incoming data type. If multiple parsers are added,
@@ -199,7 +221,7 @@ var CommentProvider = (function () {
    * @param {Type} type - Type that the provider resolves to
    * @return {CommentProvider} this
    **/
-  CommentProvider.prototype.addParser = function (parser, type) {
+  public addParser(parser:CommentParser, type:string):CommentProvider {
     if (this._destroyed) {
       throw new Error(
         'Comment provider has been destroyed, ' +
@@ -210,9 +232,9 @@ var CommentProvider = (function () {
     }
     this._parsers[type].unshift(parser);
     return this;
-  };
+  }
 
-  CommentProvider.prototype.applyParsersOne = function (data, type) {
+  public applyParsersOne(data:any, type:string):Promise<any> {
     return new Promise(function (resolve, reject) {
       if (!(type in this._parsers)) {
         reject(new Error('No parsers defined for "' + type + '"'));
@@ -233,9 +255,9 @@ var CommentProvider = (function () {
       }
       reject(new Error("Ran out of parsers for they target type"));
     }.bind(this));
-  };
+  }
 
-  CommentProvider.prototype.applyParsersList = function (data, type) {
+  public applyParsersList(data:any, type:string):Promise<Array<any>> {
     return new Promise(function (resolve, reject) {
       if (!(type in this._parsers)) {
         reject(new Error('No parsers defined for "' + type + '"'));
@@ -256,7 +278,7 @@ var CommentProvider = (function () {
       }
       reject(new Error("Ran out of parsers for the target type"));
     }.bind(this));
-  };
+  }
 
   /**
    * (Re)loads static comments
@@ -264,7 +286,7 @@ var CommentProvider = (function () {
    * @return {Promise} that is resolved when the static sources have been
    *     loaded
    */
-  CommentProvider.prototype.load = function () {
+  public load():Promise<Array<any>> {
     if (this._destroyed) {
       throw new Error('Cannot load sources on a destroyed provider.');
     }
@@ -286,7 +308,7 @@ var CommentProvider = (function () {
       }
       return Promise.resolve(commentList);
     }.bind(this));
-  };
+  }
 
   /**
    * Commit the changes and boot up the provider
@@ -294,7 +316,7 @@ var CommentProvider = (function () {
    * @return {Promise} that is resolved when all the static sources are loaded
    *     and all the dynamic sources are hooked up
    **/
-  CommentProvider.prototype.start = function () {
+  public start():Promise<Array<any>> {
     if (this._destroyed) {
       throw new Error('Cannot start a provider that has been destroyed.');
     }
@@ -304,16 +326,17 @@ var CommentProvider = (function () {
       for (var type in this._dynamicSources) {
         this._dynamicSources[type].forEach(function (source) {
           source.addEventListener('receive', function (data) {
-            for (var i = 0; i < this._targets.length; i++) {
-              this._targets[i].send(
-                this.applyParserOne(data, type));
-            }
+            this.applyParsersOne(data, type).then(function (comment) {
+              for (var i = 0; i < this._targets.length; i++) {
+                this._targets[i].send(comment);
+              }
+            }.bind(this));
           }.bind(this));
         }.bind(this));
       }
       return Promise.resolve(commentList);
     }.bind(this));
-  };
+  }
 
   /**
    * Send out comments to both dynamic sources and POST targets.
@@ -328,9 +351,9 @@ var CommentProvider = (function () {
    *     POST targets are considered accepted if they return a successful
    *     HTTP response code.
    **/
-  CommentProvider.prototype.send = function (commentData, requireAll) {
+  public send(commentData:any, requireAll?:boolean):Promise<any> {
     throw new Error('Not implemented');
-  };
+  }
 
   /**
    * Stop providing dynamic comments to the targets
@@ -338,14 +361,12 @@ var CommentProvider = (function () {
    * @return Promise that is resolved when all bindings between dynamic
    *     sources have been successfully unloaded.
    **/
-  CommentProvider.prototype.destroy = function () {
+  public destroy():Promise<void> {
     if (this._destroyed) {
       return Promise.resolve();
     }
     // TODO: implement debinding for sources
     this._destroyed = true;
     return Promise.resolve();
-  };
-
-  return CommentProvider;
-})();
+  }
+}
