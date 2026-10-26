@@ -26,3 +26,44 @@ jobs:
         uses: coverallsapp/github-action@v2
         with:
           file: coverage/lcov.info
+
+  # Publishes the demos and docs to GitHub Pages (Settings > Pages > Source
+  # must be set to "GitHub Actions")
+  pages:
+    needs: verify
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      # The demos load ../dist and the test data in spec/fixtures
+      - name: Assemble site
+        run: |
+          mkdir -p site/spec
+          cp -r demo dist docs experimental README.md README.zh_CN.md LICENSE site/
+          cp -r spec/fixtures site/spec/
+      - uses: actions/configure-pages@v5
+      # Renders the Markdown docs (as the old gh-pages branch did)
+      - uses: actions/jekyll-build-pages@v1
+        with:
+          source: site
+          destination: _site
+      - uses: actions/upload-pages-artifact@v4
+      - id: deploy
+        uses: actions/deploy-pages@v4

@@ -58,6 +58,9 @@ CommentCoreLibrary在运行时没有任何依赖关系，开发环境的依赖�
 本地调试的话，可以在本地架设Web Server。默认的 `demo` 文件夹下也有一套简易的调试界面。同时你还
 可以参考这个界面来实现你自己的嵌入调试。
 
+推送到 `master` 后，持续集成会自动编译并把 `demo`、`docs` 等发布到
+[GitHub Pages](http://jabbany.github.io/CommentCoreLibrary/demo)（`.github/workflows/ci.yml`）。
+
 ### 代码弹幕（Scripting Engine）
 代码弹幕支持分为两部分，都通过 `pnpm build:scripting` 编译：
 
