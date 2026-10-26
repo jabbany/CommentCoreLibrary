@@ -3,46 +3,46 @@
 }
 
 .abp .container {
-  border: 0;
-  bottom: 0;
-  display: block;
-  left: 0;
-  margin: 0;
-  overflow: hidden;
-  position: absolute;
-  right: 0;
-  top: 0;
   touch-callout: none;
-  -webkit-transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-          transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
   -webkit-user-select: none;
-     -moz-user-select: none;
-      -ms-user-select: none;
-          user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
   z-index: 9999;
+  border: 0;
+  margin: 0;
+  display: block;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  overflow: hidden;
+  -webkit-transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+  transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
 }
 
 .abp .container .cmt {
   color: #fff;
-  font-family: SimHei, SimSun, Heiti, "MS Mincho", "Meiryo", "Microsoft YaHei", monospace;
-  font-size: 25px;
   letter-spacing: 0;
-  line-height: 100%;
-  margin: 0;
-  padding: 3px 0 0 0;
-  position: absolute;
-  text-decoration: none;
-  text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+  text-shadow: -1px 0 #000, 0 1px #000, 1px 0 #000, 0 -1px #000;
   -webkit-text-size-adjust: none;
-      -ms-text-size-adjust: none;
-          text-size-adjust: none;
-  -webkit-transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-          transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-  -webkit-transform-origin: 0% 0%;
-      -ms-transform-origin: 0% 0%;
-          transform-origin: 0% 0%;
+  -moz-text-size-adjust: none;
+  -ms-text-size-adjust: none;
+  text-size-adjust: none;
+  -webkit-transform-origin: 0 0;
+  transform-origin: 0 0;
   white-space: pre;
   word-break: keep-all;
+  margin: 0;
+  padding: 3px 0 0;
+  font-family: SimHei, SimSun, Heiti, MS Mincho, Meiryo, Microsoft YaHei, monospace;
+  font-size: 25px;
+  line-height: 100%;
+  text-decoration: none;
+  position: absolute;
+  -webkit-transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+  transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
 }
 
 .abp .container .cmt.no-shadow {
@@ -50,35 +50,34 @@
 }
 
 .abp .container .cmt.reverse-shadow {
-  text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
+  text-shadow: -1px 0 #fff, 0 1px #fff, 1px 0 #fff, 0 -1px #fff;
 }
 
 .abp .container .cmt.css-optimize {
   will-change: transform;
 }
 
-/** Aliases for Chinese named fonts because they don't work on *nix **/
-@font-face{
-  font-family: '\9ED1\4F53';
-  src:local('SimHei');
+@font-face {
+  font-family: 黑体;
+  src: local(SimHei);
 }
 
-@font-face{
-  font-family: '\5B8B\4F53';
-  src:local('SimSun');
+@font-face {
+  font-family: 宋体;
+  src: local(SimSun);
 }
 
-@font-face{
-  font-family: '\534E\6587\6977\4F53';
-  src:local('SimKai');
+@font-face {
+  font-family: 华文楷体;
+  src: local(SimKai);
 }
 
-@font-face{
-  font-family: '\5E7C\5706';
-  src:local('YouYuan');
+@font-face {
+  font-family: 幼圆;
+  src: local(YouYuan);
 }
 
-@font-face{
-  font-family: '\5FAE\8F6F\96C5\9ED1';
-  src:local('Microsoft YaHei');
+@font-face {
+  font-family: 微软雅黑;
+  src: local(Microsoft YaHei);
 }

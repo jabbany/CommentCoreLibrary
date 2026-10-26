@@ -1,0 +1,4 @@
+# @swc/core ships a postinstall that only falls back to a WASM build when the
+# native binary (an optional dependency) is missing, so it does not need to run.
+allowBuilds:
+  '@swc/core': false

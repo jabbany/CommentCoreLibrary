@@ -27,6 +27,15 @@
 管理器的弹幕是否在运行。`false` 表示没有在运行，`true` 表示在运行。可以通过 start/stop
 控制。这个参数只反映运行列表里面弹幕的运行状态，而不是视频的。
 
+### timer &lt;ITimer&gt;
+驱动运行列表里弹幕的时钟，默认为 `IntervalTimer`（每 10ms 一次的 `setInterval`）。可以在管理器
+停止时换成 `AnimationFrameTimer`，使用 `requestAnimationFrame` 每帧更新一次，页面在后台时会自动暂停：
+
+    cm.timer = new CommentCoreLibrary.AnimationFrameTimer();
+
+也可以使用任何实现了 `start(callback)` 和 `stop()` 的对象，`callback` 的参数是距离上次调用经过的
+时间（ms）。
+
 ### width &lt;Number&gt;
 舞台的长度像素值，用于计算弹幕位置。此数只有在 init 之后才有效。
 
@@ -62,6 +71,10 @@ rendererType 决定了渲染引擎类型，默认为CSS3渲染:
 
 注意：stop不会停止 `time` 方法的调用，所以在实现暂停时应配合停止 time 调用，否则下次启动时
 停止期间的弹幕会一并开始移动。
+
+### destroy()
+销毁管理器：停止弹幕，清除运行列表和时间轴，派发 `destroy` 事件后删除所有事件监听器。适合在
+React / Vue 等框架中卸载组件时调用。舞台元素本身不会被删除。
 
 ### clear()
 清除舞台。清除正在运行的管理器管辖内的所有弹幕（runline里的）。不清除 timeline。

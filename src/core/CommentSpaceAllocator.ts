@@ -5,17 +5,37 @@
  * @license MIT License
  * @description Comment space allocation units for static and movable comments
  */
-/// <reference path="Core.d.ts" />
-interface ISpaceAllocator {
-  add(c:IComment):void;
-  remove(c:IComment):void;
+import * as BinArray from '../Array';
+
+/**
+ * The parts of a comment that space allocators use. Allocators only position
+ * items and do not depend on how they are rendered.
+ */
+export interface ISpaceItem {
+  stime:number;
+  ttl:number;
+  /**
+   * Index of the pool the item is allocated in. Set by the allocator.
+   */
+  cindex:number;
+  x:number;
+  y:number;
+  readonly bottom:number;
+  readonly right:number;
+  readonly width:number;
+  readonly height:number;
+}
+
+export interface ISpaceAllocator {
+  add(c:ISpaceItem):void;
+  remove(c:ISpaceItem):void;
   setBounds(w:number, h:number):void;
 }
 
-class CommentSpaceAllocator implements ISpaceAllocator {
+export class CommentSpaceAllocator implements ISpaceAllocator {
   public _width:number;
   public _height:number;
-  private _pools:Array<Array<IComment>> = [
+  private _pools:Array<Array<ISpaceItem>> = [
     []
   ];
   /**
@@ -43,7 +63,7 @@ class CommentSpaceAllocator implements ISpaceAllocator {
    * @param check - Checked comment
    * @returns {boolean} checked collides with exisiting
    */
-  public willCollide(existing:IComment, check:IComment):boolean {
+  public willCollide(existing:ISpaceItem, check:ISpaceItem):boolean {
     return existing.stime + existing.ttl >= check.stime + check.ttl / 2;
   }
 
@@ -55,7 +75,7 @@ class CommentSpaceAllocator implements ISpaceAllocator {
    * @param pool - The pool to test in.
    * @returns {boolean} whether or not a valid path exists in the tested pool.
    */
-  public pathCheck(y:number, comment:IComment, pool:Array<IComment>):boolean {
+  public pathCheck(y:number, comment:ISpaceItem, pool:Array<ISpaceItem>):boolean {
     var bottom = y + comment.height;
     var right = comment.right;
     for (var i = 0; i < pool.length; i++) {
@@ -84,7 +104,7 @@ class CommentSpaceAllocator implements ISpaceAllocator {
    * @param cindex - Pool index
    * @returns {number} Y offset assigned
    */
-  public assign(comment:IComment, cindex:number):number {
+  public assign(comment:ISpaceItem, cindex:number):number {
     while (this._pools.length <= cindex) {
       this._pools.push([]);
     }
@@ -119,7 +139,7 @@ class CommentSpaceAllocator implements ISpaceAllocator {
    * recorded, check the cindex value.
    * @param comment
    */
-  public add(comment:IComment):void {
+  public add(comment:ISpaceItem):void {
     if (comment.height > this._height) {
       comment.cindex = -2;
       comment.y = 0;
@@ -142,7 +162,7 @@ class CommentSpaceAllocator implements ISpaceAllocator {
    * if the comment is not found
    * @param comment
    */
-  public remove(comment:IComment):void {
+  public remove(comment:ISpaceItem):void {
     if (comment.cindex < 0) {
       return;
     }
@@ -169,17 +189,17 @@ class CommentSpaceAllocator implements ISpaceAllocator {
   }
 }
 
-class AnchorCommentSpaceAllocator extends CommentSpaceAllocator {
-  public add(comment:IComment):void {
+export class AnchorCommentSpaceAllocator extends CommentSpaceAllocator {
+  public add(comment:ISpaceItem):void {
     super.add(comment);
     comment.x = (this._width - comment.width) / 2;
   }
 
-  public willCollide(a:IComment, b:IComment):boolean {
+  public willCollide(a:ISpaceItem, b:ISpaceItem):boolean {
     return true;
   }
 
-  public pathCheck(y:number, comment:IComment, pool:Array<IComment>):boolean {
+  public pathCheck(y:number, comment:ISpaceItem, pool:Array<ISpaceItem>):boolean {
     var bottom = y + comment.height;
     for (var i = 0; i < pool.length; i++) {
       if (pool[i].y > bottom || pool[i].bottom < y) {

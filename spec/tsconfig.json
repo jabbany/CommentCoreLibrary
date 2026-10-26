@@ -1,0 +1,18 @@
+{
+  // Type checking for the specs, which run on Node.js (vitest + jsdom)
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "lib": ["esnext", "dom"],
+    "types": ["node"],
+    // Specs poke at internals and pass loosely typed fixtures. The library
+    // itself is checked strictly by ../tsconfig.json
+    "strict": false,
+    "noImplicitReturns": false,
+    "noFallthroughCasesInSwitch": false,
+    // Specs import the library through its public API (see vitest.config.mts)
+    "paths": {
+      "comment-core-library": ["../src/index.ts"]
+    }
+  },
+  "include": ["**/*.ts"]
+}

@@ -1,123 +1,29 @@
 /**
  * Display Module that is (mostly) API-compatible with BiliScriptEngine
  * @author Jim Chen
+ * @description The read-only properties of the module (root, width, ...) are
+ *    defined on the Display global (see ../Display.ts)
  */
-/// <reference path="../OOAPI.d.ts" />
+export * from './Matrix';
+export * from './DisplayObject';
+export * from './Transform';
+export * from './ColorTransform';
+export * from './Filter';
+export * from './Graphics';
+export * from './Shape';
+export * from './Sprite';
+export * from './TextField';
+export * from './ByteArray';
+export * from './Bitmap';
+export * from './MotionManager';
+export * from './CommentBitmap';
+export * from './CommentButton';
+export * from './CommentCanvas';
+export * from './CommentField';
+export * from './CommentShape';
+export type * from './IComment';
+export type * from './ISerializable';
 
-/// <reference path="Matrix.ts" />
-/// <reference path="Sprite.ts" />
-/// <reference path="DisplayObject.ts" />
-/// <reference path="CommentBitmap.ts" />
-/// <reference path="CommentButton.ts" />
-/// <reference path="CommentCanvas.ts" />
-/// <reference path="CommentShape.ts" />
-/// <reference path="CommentField.ts" />
-
-module Display {
-  export var root:DisplayObject;
-  export var loaderInfo:Object;
-  export var stage:DisplayObject;
-  export var version:string;
-  export var width:number;
-  export var height:number;
-  export var fullScreenWidth:number;
-  export var fullScreenHeight:number;
-  export var frameRate:number;
-
-  var _root:DisplayObject = new RootSprite();
-  var _width:number = 0;
-  var _height:number = 0;
-  var _fullScreenWidth:number = 0;
-  var _fullScreenHeight:number = 0;
-  var _frameRate:number = 24;
-
-  Object.defineProperty(Display, 'root', {
-    get: function () {
-      return _root;
-    },
-    set: function (_value) {
-      __trace("Display.root is read-only", "warn");
-    }
-  });
-  Object.defineProperty(Display, 'loaderInfo', {
-    get: function () {
-      return {};
-    },
-    set: function (_value) {
-      __trace("Display.loaderInfo is disabled", "warn");
-    }
-  });
-  Object.defineProperty(Display, 'stage', {
-    get: function () {
-      return _root;
-    },
-    set: function (_value) {
-      __trace("Display.stage is read-only", "warn");
-    }
-  });
-  Object.defineProperty(Display, 'version', {
-    get: function () {
-      return "CCLDisplay/1.0 HTML5/* (bilibili, like BSE, like flash, AS3 compatible) KagerouEngine/v1";
-    },
-    set: function (_value) {
-      __trace("Display.version is read-only", "warn");
-    }
-  });
-  Object.defineProperty(Display, 'width', {
-    get: function () {
-      return _width;
-    },
-    set: function (_value) {
-      __trace("Display.width is read-only", "warn");
-    }
-  });
-  Object.defineProperty(Display, 'height', {
-    get: function () {
-      return _height;
-    },
-    set: function (_value) {
-      __trace("Display.height is read-only", "warn");
-    }
-  });
-  Object.defineProperty(Display, 'fullScreenWidth', {
-    get: function () {
-      return _fullScreenWidth;
-    },
-    set: function (_value) {
-      __trace("Display.fullScreenWidth is read-only", "warn");
-    }
-  });
-  Object.defineProperty(Display, 'fullScreenHeight', {
-    get: function () {
-      return _fullScreenHeight;
-    },
-    set: function (_value) {
-      __trace("Display.fullScreenHeight is read-only", "warn");
-    }
-  });
-  Object.defineProperty(Display, 'frameRate', {
-    get: function () {
-      return _frameRate;
-    },
-    set: function (value) {
-      _frameRate = value;
-      __pchannel("Display:SetFrameRate", value);
-    }
-  });
-
-  export function toString() {
-    return "[display Display]";
-  }
-
-  /** Update Listeners **/
-  __schannel("Update:DimensionUpdate", function (payload) {
-    _width = payload["stageWidth"];
-    _height = payload["stageHeight"];
-    if (payload.hasOwnProperty("screenWidth") && payload.hasOwnProperty("screenHeight")) {
-      _fullScreenWidth = payload["screenWidth"];
-      _fullScreenHeight = payload["screenHeight"];
-    }
-  });
+export function toString() {
+  return "[display Display]";
 }
-
-var $ = Display;

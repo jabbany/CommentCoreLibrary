@@ -12,10 +12,11 @@ __OOAPI.createChannel("::eval", 1, Math.round(Math.random() * 100000));
 __OOAPI.createChannel("::debug", 1, Math.round(Math.random() * 100000));
 
 // Load the BSE Abstraction Runtime
+//  Modules must be loaded after the modules they depend on
 importScripts('api/Runtime.js',
-    'api/Player.js',
-    'api/Display.js',
     'api/Tween.js',
+    'api/Display.js',
+    'api/Player.js',
     'api/Utils.js',
     'api/Global.js',
     'api/Function.js');

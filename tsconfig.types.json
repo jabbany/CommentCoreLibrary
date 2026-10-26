@@ -1,0 +1,13 @@
+{
+  // Emits type declarations for the core library (dist/types)
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "rootDir": "src",
+    "outDir": "dist/types"
+  },
+  "include": [],
+  "files": ["src/index.ts"]
+}

@@ -1,26 +1,23 @@
-/// <reference path="MotionManager.ts" />
+import type { MotionManager } from './MotionManager';
 
-module Display {
+/**
+ * IComment Common Comment Contract
+ */
+export interface IComment {
+  /**
+   * The {MotionManager} being used for the comment
+   */
+  motionManager:MotionManager;
 
   /**
-   * IComment Common Comment Contract
+   * Method to remove the comment object from its parent (or the root if it
+   * is parented at the root).
    */
-  export interface IComment {
-    /**
-     * The {MotionManager} being used for the comment
-     */
-    motionManager:MotionManager;
+  remove():void;
 
-    /**
-     * Method to remove the comment object from its parent (or the root if it
-     * is parented at the root).
-     */
-    remove():void;
-
-    /**
-     * Initialize a style for the class
-     * @param params
-     */
-    initStyle(params:Object):void;
-  }
+  /**
+   * Initialize a style for the class
+   * @param params
+   */
+  initStyle(params:Object):void;
 }

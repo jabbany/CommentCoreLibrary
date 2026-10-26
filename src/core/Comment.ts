@@ -5,9 +5,11 @@
  * @license MIT License
  * @description Comment abstraction based on DOM implementation
  */
-/// <reference path='Core.d.ts' />
-/// <reference path='CommentUtils.ts' />
-class CoreComment implements IComment {
+import type { ICommentManager, IComment, ICommentData, IAlphaMotion,
+  MotionGroup } from './Core';
+import * as CommentUtils from './CommentUtils';
+
+export class CoreComment implements IComment {
   public static LINEAR:Function = function (t:number, b:number, c:number, d:number):number {
     return t * c / d + b;
   };
@@ -19,13 +21,13 @@ class CoreComment implements IComment {
   public dur:number = 4000;
   public cindex:number = -1;
 
-  public motion:Array<Object> = [];
+  public motion:Array<MotionGroup> = [];
   public movable:boolean = true;
 
-  private _curMotion:number;
-  private _motionStart:Array<number>;
-  private _motionEnd:Array<number>;
-  private _alphaMotion:Object = null;
+  private _curMotion:number = 0;
+  private _motionStart:Array<number> = [];
+  private _motionEnd:Array<number> = [];
+  private _alphaMotion:IAlphaMotion | null = null;
 
 
 
@@ -45,59 +47,61 @@ class CoreComment implements IComment {
    */
   public axis:number = 0;
 
-  protected _x:number;
-  protected _y:number;
+  // Positions and dimensions are null (or undefined) until they are set or
+  // measured from the DOM
+  protected _x?:number | null;
+  protected _y?:number | null;
 
   protected _alpha:number = 1;
   protected _size:number = 25;
-  protected _width:number;
-  protected _height:number;
+  protected _width?:number | null;
+  protected _height?:number | null;
   protected _color:number = 0xffffff;
   protected _border:boolean = false;
   protected _shadow:boolean = true;
   protected _font:string = '';
-  protected _transform:CommentUtils.Matrix3D = null;
+  protected _transform:CommentUtils.Matrix3D | null = null;
   protected _className:string = '';
 
   public parent:ICommentManager;
-  public dom:HTMLDivElement;
+  // Created by init()
+  public dom!:HTMLDivElement;
 
-  constructor(parent:ICommentManager, init:Object = {}) {
+  constructor(parent:ICommentManager, init:Partial<ICommentData> = {}) {
     if (!parent) {
       throw new Error('Comment not bound to comment manager.');
     } else {
       this.parent = parent;
     }
-    if (init.hasOwnProperty('stime')) {
-      this.stime = init['stime'];
+    if (init.stime !== undefined) {
+      this.stime = init.stime;
     }
-    if (init.hasOwnProperty('mode')) {
-      this.mode = init['mode'];
+    if (init.mode !== undefined) {
+      this.mode = init.mode;
     } else {
       this.mode = 1;
     }
-    if (init.hasOwnProperty('dur')) {
-      this.dur = init['dur'];
+    if (init.dur !== undefined) {
+      this.dur = init.dur;
       this.ttl = this.dur;
     }
     this.dur *= this.parent.options.global.scale;
     this.ttl *= this.parent.options.global.scale;
-    if (init.hasOwnProperty('text')) {
-      this.text = init['text'];
+    if (init.text !== undefined) {
+      this.text = init.text;
     }
-    if (init.hasOwnProperty('motion')) {
-      this._motionStart = [];
-      this._motionEnd = [];
-      this.motion = init['motion'];
+    if (init.motion !== undefined) {
+      var motion = init.motion;
+      this.motion = motion;
       var head = 0;
-      for (var i = 0; i < init['motion'].length; i++) {
+      for (var i = 0; i < motion.length; i++) {
         this._motionStart.push(head);
         var maxDur = 0;
-        for (var k in init['motion'][i]) {
-          var m = <IMotion> init['motion'][i][k];
+        for (var k in motion[i]) {
+          var m = motion[i][k];
           maxDur = Math.max(m.dur + m.delay, maxDur);
           if (m.easing === null || m.easing === undefined) {
-            init['motion'][i][k]['easing'] = CoreComment.LINEAR;
+            m.easing = CoreComment.LINEAR;
           }
         }
         head += maxDur;
@@ -105,52 +109,50 @@ class CoreComment implements IComment {
       }
       this._curMotion = 0;
     }
-    if (init.hasOwnProperty('color')) {
-      this._color = init['color'];
+    if (init.color !== undefined) {
+      this._color = init.color;
     }
-    if (init.hasOwnProperty('size')) {
-      this._size = init['size'];
+    if (init.size !== undefined) {
+      this._size = init.size;
     }
-    if (init.hasOwnProperty('border')) {
-      this._border = init['border'];
+    if (init.border !== undefined) {
+      this._border = init.border;
     }
-    if (init.hasOwnProperty('opacity')) {
-      this._alpha = init['opacity'];
+    if (init.opacity !== undefined) {
+      this._alpha = init.opacity;
     }
-    if (init.hasOwnProperty('alpha')) {
-      this._alphaMotion = init['alpha'];
+    if (init.alpha !== undefined) {
+      this._alphaMotion = init.alpha;
     }
-    if (init.hasOwnProperty('font')) {
-      this._font = init['font'];
+    if (init.font !== undefined) {
+      this._font = init.font;
     }
-    if (init.hasOwnProperty('x')) {
-      this._x = init['x'];
+    if (init.x !== undefined) {
+      this._x = init.x;
     }
-    if (init.hasOwnProperty('y')) {
-      this._y = init['y'];
+    if (init.y !== undefined) {
+      this._y = init.y;
     }
-    if (init.hasOwnProperty('shadow')) {
-      this._shadow = init['shadow'];
+    if (init.shadow !== undefined) {
+      this._shadow = init.shadow;
     }
-    if (init.hasOwnProperty('align')) {
-      this.align = init['align'];
+    if (init.align !== undefined) {
+      this.align = init.align;
     }
-    if (init.hasOwnProperty('axis')) {
-      this.axis = init['axis'];
+    if (init.axis !== undefined) {
+      this.axis = init.axis;
     }
-    if (init.hasOwnProperty('transform')) {
-      this._transform = new CommentUtils.Matrix3D(init['transform']);
+    if (init.transform !== undefined) {
+      this._transform = new CommentUtils.Matrix3D(init.transform);
     }
-    if (init.hasOwnProperty('position')) {
-      if (init['position'] === 'relative') {
-        this.absolute = false;
-        if (this.mode < 7) {
-          console.warn('Using relative position for CSA comment.');
-        }
+    if (init.position === 'relative') {
+      this.absolute = false;
+      if (this.mode < 7) {
+        console.warn('Using relative position for CSA comment.');
       }
     }
-    if (init.hasOwnProperty('className')) {
-      this._className = init['className'];
+    if (init.className !== undefined) {
+      this._className = init.className;
     }
   }
 
@@ -178,7 +180,7 @@ class CoreComment implements IComment {
    * Initializes the DOM element (or canvas) backing the comment
    * This method takes the place of 'initCmt' in the old CCL
    */
-  public init(recycle:IComment = null):void {
+  public init(recycle:IComment | null = null):void {
     if (recycle !== null) {
       this.dom = <HTMLDivElement> recycle.dom;
     } else {
@@ -202,11 +204,12 @@ class CoreComment implements IComment {
     if (this._font !== '') {
       this.font = this._font;
     }
+    // A null position is placed at 0 (as null coerces to 0)
     if (this._x !== undefined) {
-      this.x = this._x;
+      this.x = this._x !== null ? this._x : 0;
     }
     if (this._y !== undefined) {
-      this.y = this._y;
+      this.y = this._y !== null ? this._y : 0;
     }
     if (this._alpha !== 1 || this.parent.options.global.opacity < 1) {
       this.alpha = this._alpha;
@@ -313,6 +316,10 @@ class CoreComment implements IComment {
   }
 
   get transform():Array<number> {
+    if (this._transform === null) {
+      // No transform is the identity transform
+      return CommentUtils.Matrix3D.identity().flatArray;
+    }
     return this._transform.flatArray;
   }
 
@@ -454,11 +461,14 @@ class CoreComment implements IComment {
    * @param currentMotion - motion object
    * @private
    */
-  private _execMotion(currentMotion:Object, time:number):void {
+  private _execMotion(currentMotion:MotionGroup, time:number):void {
+    // Motions animate properties by name (x, y, alpha, ...)
+    var target:{[prop:string]:any} = this;
     for (var prop in currentMotion) {
       if (currentMotion.hasOwnProperty(prop)) {
-        var m = <IMotion> currentMotion[prop];
-        this[prop] = m.easing(
+        var m = currentMotion[prop];
+        var easing = m.easing ? m.easing : CoreComment.LINEAR;
+        target[prop] = easing(
           Math.min(Math.max(time - m.delay, 0), m.dur),
           m.from,
           m.to - m.from,
@@ -475,9 +485,9 @@ class CoreComment implements IComment {
     if (this._alphaMotion) {
       this.alpha =
         (this.dur - this.ttl) *
-          (this._alphaMotion['to'] - this._alphaMotion['from']) /
+          (this._alphaMotion.to - this._alphaMotion.from) /
           this.dur +
-          this._alphaMotion['from'];
+          this._alphaMotion.from;
     }
     if (this.motion.length === 0) {
       return;
@@ -518,8 +528,8 @@ class CoreComment implements IComment {
   }
 }
 
-class ScrollComment extends CoreComment {
-  constructor(parent:ICommentManager, data:Object) {
+export class ScrollComment extends CoreComment {
+  constructor(parent:ICommentManager, data:Partial<ICommentData>) {
     super(parent, data);
     this.dur *= this.parent.options.scroll.scale;
     this.ttl *= this.parent.options.scroll.scale;
@@ -531,7 +541,7 @@ class ScrollComment extends CoreComment {
       this.parent.options.scroll.opacity) + '';
   }
 
-  public init(recycle:IComment = null):void {
+  public init(recycle:IComment | null = null):void {
     super.init(recycle);
     this.x = this.parent.width;
     if (this.parent.options.scroll.opacity < 1) {

@@ -16,5 +16,5 @@ tab_width    = 2
 [*.css]
 indent_style = space
 
-[*.coffee]
+[*.ts]
 indent_style = space

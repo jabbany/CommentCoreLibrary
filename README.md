@@ -1,8 +1,7 @@
 # CommentCoreLibrary 弹幕核心通用构件
 [![NPM version](https://badge.fury.io/js/comment-core-library.svg)](http://badge.fury.io/js/comment-core-library)
-[![Bower version](https://badge.fury.io/bo/comment-core-library.svg)](http://badge.fury.io/bo/comment-core-library)
 [![License](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
-[![Build Status: Linux](https://travis-ci.org/jabbany/CommentCoreLibrary.svg?branch=master)](https://travis-ci.org/jabbany/CommentCoreLibrary)
+[![Build Status](https://github.com/jabbany/CommentCoreLibrary/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/jabbany/CommentCoreLibrary/actions/workflows/ci.yml)
 [![Coverage Status](https://img.shields.io/coveralls/jabbany/CommentCoreLibrary.svg)](https://coveralls.io/r/jabbany/CommentCoreLibrary?branch=master)
 
 Other Languages: [简体中文](README.zh_CN.md)
@@ -27,26 +26,13 @@ to use this in any project, you can simply include the following line:
     CommentCoreLibrary (//github.com/jabbany/CommentCoreLibrary) - Licensed under the MIT license
 
 ## Installing
-With [bower](http://bower.io/):
-`bower install comment-core-library`
-
 With [npm](https://www.npmjs.org/):
 `npm install comment-core-library`
-
-For Rails, installing with [rails-assets](https://rails-assets.org/) is recommended
-
-In Gemfile:
-```ruby
-# Add https://rails-assets.org as the new gem source
-source 'https://rails-assets.org'
-
-gem 'rails-assets-comment-core-library'
-```
 
 ## Examples and Documentation
 - [Documentation](docs/) can be found inside the `docs/` folder.
 - Experimental modules are in `experimental/`.
-- You may test using test data found in `test/`.
+- You may test using test data found in `spec/fixtures/`.
 
 ## Contributing
 We encourage any contributions to this project, please read

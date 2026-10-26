@@ -1,0 +1,319 @@
+/**
+ * AcFun Format Parser
+ * Takes in JSON and parses it based on current documentation for AcFun comments
+ * @license MIT License
+ **/
+import type { ICommentData, MotionGroup } from '../core/Core';
+
+/**
+ * Comment as found in AcFun JSON (see docs/data-formats/acfun-json.md)
+ */
+export interface AcfunComment {
+  /**
+   * Comma separated: stime (s), color, mode, size, hash, date
+   */
+  c:string;
+  /**
+   * Comment text. For advanced comments (mode 7) this is a JSON encoded
+   * AcfunAdvancedParams object
+   */
+  m:string;
+}
+
+/**
+ * One step of movement of an advanced comment
+ */
+export interface AcfunMovement {
+  /**
+   * Duration (s)
+   */
+  l?:number;
+  x?:number;
+  y?:number;
+  /**
+   * Alpha
+   */
+  t?:number;
+  /**
+   * Color
+   */
+  c?:number;
+  /**
+   * Rotation around the x, y and z axes (deg)
+   */
+  rx?:number;
+  e?:number;
+  d?:number;
+}
+
+/**
+ * Parameters of an advanced comment (mode 7)
+ */
+export interface AcfunAdvancedParams {
+  /**
+   * Text
+   */
+  n:string;
+  /**
+   * Alpha
+   */
+  a?:number;
+  /**
+   * Position (in 1/1000 of the stage size)
+   */
+  p?:{x:number, y:number};
+  /**
+   * Anchor: 0-8 for top-left to bottom-right, row by row
+   */
+  c?:number;
+  /**
+   * Shadow
+   */
+  b?:boolean;
+  /**
+   * Duration (s)
+   */
+  l?:number;
+  z?:Array<AcfunMovement>;
+  /**
+   * Font (f) and filters (l)
+   */
+  w?:{f?:string, l?:Array<any>};
+  /**
+   * Rotation around the z axis (deg)
+   */
+  r?:number;
+  /**
+   * Rotation around the y axis (deg)
+   */
+  k?:number;
+}
+
+/**
+ * Clamps alpha values to [0, 1]
+ */
+var _clampAlpha = function (alpha:number):number {
+  return Math.min(Math.max(alpha, 0), 1);
+};
+
+export class JSONParser {
+  private _logBadComments:boolean = true;
+  private _logNotImplemented:boolean = false;
+
+  constructor(params?:any) {
+    if (typeof params === 'object') {
+      this._logBadComments = params.logBadComments === false ? false : true;
+      this._logNotImplemented = params.logNotImplemented === true ? true : false;
+    }
+  }
+
+  public parseOne(comment:AcfunComment):ICommentData | null {
+    // Read a comment and generate a correct comment object
+    var data = <ICommentData> {};
+    if (typeof comment !== 'object' || comment == null || !comment.hasOwnProperty('c')) {
+      // This cannot be parsed. The comment contains no config data
+      return null;
+    }
+    var config = comment['c'].split(',');
+    if (config.length >= 6) {
+      data.stime = parseFloat(config[0]) * 1000;
+      data.color = parseInt(config[1])
+      data.mode = parseInt(config[2]);
+      data.size = parseInt(config[3]);
+      data.hash = config[4];
+      data.date = parseInt(config[5]);
+      data.position = "absolute";
+      if (data.mode !== 7) {
+        // Do some text normalization on low complexity comments
+        data.text = comment.m.replace(/(\/n|\\n|\n|\r\n|\\r)/g,"\n");
+        data.text = data.text.replace(/\r/g,"\n");
+        data.text = data.text.replace(/\s/g,"\u00a0");
+      } else {
+        var x:AcfunAdvancedParams;
+        try {
+          x = JSON.parse(comment.m);
+        } catch (e) {
+          if (this._logBadComments) {
+            console.warn('Error parsing internal data for comment');
+            console.log('[Dbg] ' + comment.m);
+          }
+          return null; // Can't actually parse this!
+        }
+        data.position = "relative";
+        data.text = x.n; /*.replace(/\r/g,"\n");*/
+        data.text = data.text.replace(/\ /g,"\u00a0");
+        if (typeof x.a === 'number') {
+          data.opacity = _clampAlpha(x.a);
+        } else {
+          data.opacity = 1;
+        }
+        if (typeof x.p === 'object') {
+          // Relative position
+          data.x = x.p.x / 1000;
+          data.y = x.p.y / 1000;
+        } else {
+          data.x = 0;
+          data.y = 0;
+        }
+        if (typeof x.c === 'number') {
+          switch (x.c) {
+            case 0: data.align = 0; break;
+            case 2: data.align = 1; break;
+            case 6: data.align = 2; break;
+            case 8: data.align = 3; break;
+            default:
+              if (this._logNotImplemented) {
+                console.log('Cannot handle aligning to center! AlignMode=' + x.c);
+              }
+          }
+        }
+        // Use default axis
+        data.axis = 0;
+        data.shadow = x.b;
+        data.dur = 4000;
+        if (typeof x.l === 'number') {
+          data.dur = x.l * 1000;
+        }
+        if (x.z != null && x.z.length > 0) {
+          data.movable = true;
+          data.motion = [];
+          var moveDuration = 0;
+          var last = {
+            x: data.x,
+            y: data.y,
+            alpha: data.opacity,
+            color: data.color
+          };
+          for (var m = 0; m < x.z.length; m++) {
+            var step = x.z[m];
+            var dur = step.l != null ? (step.l * 1000) : 500;
+            moveDuration += dur;
+            var motion:MotionGroup = {};
+            if (typeof step.rx === 'number') {
+              // TODO: Support this
+              if (this._logNotImplemented) {
+                console.log('Encountered animated x-axis rotation. Ignoring.');
+              }
+            }
+            if (typeof step.e === 'number') {
+              // TODO: Support this
+              if (this._logNotImplemented) {
+                console.log('Encountered animated y-axis rotation. Ignoring.');
+              }
+            }
+            if (typeof step.d === 'number') {
+              // TODO: Support this
+              if (this._logNotImplemented) {
+                console.log('Encountered animated z-axis rotation. Ignoring.');
+              }
+            }
+            if (typeof step.x === 'number') {
+              motion.x = {
+                from: last.x,
+                to: step.x / 1000,
+                dur: dur,
+                delay: 0
+              };
+              last.x = motion.x.to;
+            }
+            if (typeof step.y === 'number') {
+              motion.y = {
+                from: last.y,
+                to: step.y / 1000,
+                dur: dur,
+                delay: 0
+              };
+              last.y = motion.y.to;
+            }
+            if (typeof step.t === 'number' && step.t !== last.alpha) {
+              motion.alpha = {
+                from: last.alpha,
+                to: _clampAlpha(step.t),
+                dur: dur,
+                delay: 0
+              };
+              last.alpha = motion.alpha.to;
+            }
+            if (typeof step.c === 'number' && step.c !== last.color) {
+              motion.color = {
+                from: last.color,
+                to: step.c,
+                dur: dur,
+                delay: 0
+              };
+              last.color = motion.color.to;
+            }
+            data.motion.push(motion);
+          }
+          data.dur = moveDuration;
+        }
+        var style = x.w;
+        if (typeof style === 'object' && style !== null) {
+          if (typeof style.f === 'string') {
+            data.font = style.f;
+          }
+          if (Array.isArray(style.l) && style.l.length > 0) {
+            // Filters
+            if (this._logNotImplemented) {
+              console.log('[Dbg] Filters not supported! ' +
+                JSON.stringify(style.l));
+            }
+          }
+        }
+        if (x.r != null && x.k != null) {
+          data.rX = x.r;
+          data.rY = x.k;
+        }
+
+      }
+      return data;
+    } else {
+      // Not enough arguments.
+      if (this._logBadComments) {
+        console.warn('Dropping this comment due to insufficient parameters. Got: ' + config.length);
+        console.log('[Dbg] ' + comment['c']);
+      }
+      return null;
+    }
+  }
+
+  public parseMany(comments:Array<AcfunComment>):Array<ICommentData> | null {
+    if (!Array.isArray(comments)) {
+      return null;
+    }
+    var list:Array<ICommentData> = [];
+    for (var i = 0; i < comments.length; i++) {
+      var comment = this.parseOne(comments[i]);
+      if (comment !== null) {
+        list.push(comment);
+      }
+    }
+    return list;
+  }
+}
+
+export class TextParser {
+  private _jsonParser:JSONParser;
+
+  constructor(param?:any) {
+    this._jsonParser = new JSONParser(param);
+  }
+
+  public parseOne(comment:string):ICommentData | null {
+    try {
+      return this._jsonParser.parseOne(JSON.parse(comment));
+    } catch (e) {
+      console.warn(e);
+      return null;
+    }
+  }
+
+  public parseMany(comment:string):Array<ICommentData> | null {
+    try {
+      return this._jsonParser.parseMany(JSON.parse(comment));
+    } catch (e) {
+      console.warn(e);
+      return null;
+    }
+  }
+}

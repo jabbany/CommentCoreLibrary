@@ -1,111 +1,124 @@
 # チュートリアル
-[English](Tutorial.md) | [简体中文](Tutorial.zh_CN.md)（**翻訳中**）
+[English](Tutorial.md) | [简体中文](Tutorial.zh_CN.md)
 
-このチュートリアルはWebアプリ開発の初心者向けの簡単なチュートリアルです。
+このチュートリアルは、Web や JavaScript の開発経験がまだ少ない開発者向けの入門ガイドです。Web 開発に
+慣れている方は、CCL の設計ドキュメントを直接お読みください。
 
 ## はじめに
-架设并开发 CCL 其实不难，首先你要确保你有一个服务器开发环境，比如在本机上安装的 Apache 或者你能访
-问到的在云端安装的 nginx 等等。请先通过浏览器测试你能正确访问该服务器。如果你在本地开发，请尝试访问
+CCL の導入と開発はそれほど難しくありません。まず、ローカルにインストールした Apache や、アクセス
+可能なクラウド上の nginx など、Web サーバーの開発環境を用意してください。次に、ブラウザからその
+サーバーに正しくアクセスできることを確認します。ローカルで開発している場合は、
 
     http://localhost/
 
-来测试连同性。
+にアクセスして接続を確認してください。
 
-**ご注意：** 请注意确保你在服务器环境下开发 CCL ，在开发时如果遇到各种资源无法载入，请确保您的地址栏
-是以 `http:` 或者 `https:` 开头的而不是 `file:` 等等。
+**ご注意：** CCL の開発は必ずサーバー環境上で行ってください。開発中にリソースが読み込めない場合は、
+アドレスバーの URL が `file:` などではなく `http:` または `https:` で始まっていることを確認してください。
 
-**ノート：** Linuxを使い場合如果你在linux下开发，任何一个静态Web服务器软件都可。Windows下开发的话，仅作为推荐参考
-可以试试 XAMPP。
+**ノート：** Linux で開発する場合は、どの静的 Web サーバーソフトウェアでも構いません。Windows で
+開発する場合は、参考までに XAMPP をお勧めします。
 
-### ライブラリをダウンロードそしてインストールする
-Github 有提供以 Zip 方式下载CCL的选项，但是我们不推荐你这样做。正确使用 CCL 二次开发有两种推荐
-的方法：
+### ライブラリの入手
+GitHub から CCL を Zip 形式でダウンロードすることもできますが、開発や更新が難しくなるため
+お勧めしません。CCL を利用・拡張するには、次のいずれかの方法をお勧めします。
 
-- 作为外部库通过 npm 或者 bower 引入： 只需运行 `npm install comment-core-library --save`
-    即可获取最新版的稳定CCL库。通过 `node_modules/comment-core-library/dist/`
-    可以引用需要的文件。
-- 直接 Clone 下 Git 代码仓库： 通过 `git clone https://github.com/jabbany/CommentCoreLibrary.git`
-    即可 Clone下 CCL 的全代码库。建议把工作目录放到 Web 开发服务器下的子文件夹内，如 `/var/www/`
-    或者 `D:\webroot\htdocs`下之类的。之后进入 CommentCoreLibrary 文件夹，
-    运行 `npm install grunt-cli -g` 和 `npm install`
-    （注意：可能需要管理员权限） 即可开始开发
+- 外部ライブラリとして npm から導入する： `npm install comment-core-library --save`
+    を実行するだけで、最新の安定版 CCL を入手できます。必要なファイルは
+    `node_modules/comment-core-library/dist/` から参照できます。
+- Git リポジトリを直接クローンする： `git clone https://github.com/jabbany/CommentCoreLibrary.git`
+    を実行すると、CCL のリポジトリ全体をクローンできます。作業ディレクトリは `/var/www/` や
+    `D:\webroot\htdocs` など、Web 開発サーバー配下のサブフォルダに置くことをお勧めします。その後、
+    CommentCoreLibrary フォルダに移動して `pnpm install` を実行すれば、開発を始められます
+    （ビルド方法は [BUILDING.md](../BUILDING.md) を参照してください）。
 
-第一个方式主要用于希望直接挂载 CCL 功能的二次开发，而第二种方式则面向对 CCL 本生的开发有兴趣的人。
+一つ目の方法は、CCL の機能を自分のプロジェクトに組み込みたい場合に向いています。二つ目の方法は、
+CCL 自体の開発に興味がある方向けです。
 
 ### 正しい使い方
-CCL编译好的代码在 `dist/` 目录下。有两个文件非常重要： `CommentCoreLibrary.js` 和 `style.css`。
-这两个分别负责CCL的JS引擎部分和CSS呈现部分，不能省略。相对的还有俩 `.min.js`和 `.min.css` 文件
-是上述文件的压缩版。压缩版代码都在一行，较不方便对行号调试，建议开发时采用未压缩版，架设时则可以采取
-压缩版。
+ビルド済みの CCL は `dist/` ディレクトリにあります。特に重要なファイルは `CommentCoreLibrary.js` と
+`style.css` の二つです。それぞれ CCL の JavaScript エンジン部分と CSS による表示部分を担っており、
+どちらも省略できません。また、これらを圧縮した `.min.js` と `.min.css` もあります。圧縮版はコードが
+一行にまとめられていて行番号でのデバッグがしにくいため、開発時は非圧縮版を使い、本番環境では圧縮版を
+使うことをお勧めします。
 
-引用方法为，在对应的HTML文件头部添加
+読み込むには、HTML ファイルのヘッダーに次のように追加します。
 
-    <head>
-        ... 其他头部信息 ...
-        <link rel="stylesheet" href="dist/css/style.css" />
-        <script src="dist/CommentCoreLibrary.js"></script>
-        ... 其他头部信息 ...
-    </head>
+````HTML
+<head>
+    ... その他のヘッダー情報 ...
+    <link rel="stylesheet" href="dist/css/style.css" />
+    <script src="dist/CommentCoreLibrary.js"></script>
+    ... その他のヘッダー情報 ...
+</head>
+````
 
-注意文件路径调整合理。
+ファイルのパスは環境に合わせて適切に調整してください。
 
-之后在相应需要弹幕的位置，放置如下 HTML DOM结构：
+次に、弾幕を表示したい場所に、次のような HTML の DOM 構造を配置します。
 
-    <div id='my-player' class='abp'>
-        <div id='my-comment-stage' class='container'></div>
-    </div>
+````HTML
+<div id='my-player' class='abp'>
+    <div id='my-comment-stage' class='container'></div>
+</div>
+````
 
-其中弹幕结构会在 `container` 这个 div 里插入。采用双层嵌套可以允许你的弹幕 container 于实际容器
-的大小不同，用于实现避开字幕等等功能。
+弾幕は `container` の div の中に挿入されます。二重の入れ子構造にすることで、弾幕の container を
+実際のコンテナとは異なるサイズにでき、字幕を避けて表示するといったことが可能になります。
 
 ### API
-调用API目前来说比较容易，在建立好页面dom之后，只要绑定 CommentManager 即可。
+API の呼び出しは簡単です。ページの DOM を用意したら、CommentManager を結び付けるだけです。
 
-    var CM = new CommentManager(document.getElementById('my-comment-stage'));
-    CM.init(); // 初始化
+````JavaScript
+var CM = new CommentManager(document.getElementById('my-comment-stage'));
+CM.init(); // 初期化
+````
 
-之后 `CM` 实例会提供如下功能：
+その後、`CM` インスタンスで次の機能が使えます。
 
-    // 载入弹幕列表
-    var danmakuList = [
-        {
-            "mode":1,
-            "text":"Hello World",
-            "stime":0,
-            "size":25,
-            "color":0xffffff
-        }
-    ];
-    CM.load(danmakuList);
-
-    // 插入弹幕
-    var someDanmakuAObj = {
+````JavaScript
+// 弾幕リストを読み込む
+var danmakuList = [
+    {
         "mode":1,
-        "text":"Hello CommentCoreLibrary",
-        "stime":1000,
-        "size":30,
-        "color":0xff0000
-    };
-    CM.insert(someDanmakuAObj);
+        "text":"Hello World",
+        "stime":0,
+        "size":25,
+        "color":0xffffff
+    }
+];
+CM.load(danmakuList);
 
-    // 启动播放弹幕（在未启动状态下弹幕不会移动）
-    CM.start();
+// 弾幕を挿入する
+var someDanmakuAObj = {
+    "mode":1,
+    "text":"Hello CommentCoreLibrary",
+    "stime":1000,
+    "size":30,
+    "color":0xff0000
+};
+CM.insert(someDanmakuAObj);
 
-    // 停止播放（停止弹幕移动）
-    CM.stop();
+// 弾幕の再生を開始する（開始していない状態では弾幕は動きません）
+CM.start();
 
-    // 更新时间轴时间
-    CM.time(500);
-    CM.time(1000);
+// 再生を停止する（弾幕の動きを止めます）
+CM.stop();
 
-具体使用的参考可以参考 `demo/tutorial`。内有大部分此示例的代码。
+// タイムラインの時刻を更新する
+CM.time(500);
+CM.time(1000);
+````
+
+詳しい使い方は `demo/tutorial` を参考にしてください。この例のコードの大部分が含まれています。
 
 ### コミュニティ
 
 
 ### 弾幕送信
-コメントコアライブラリは送信機能がありませんですが、ユーザのコメントを記録するが欲しい場合、
-自分でサーバをセットすることは簡単にできます。
+CommentCoreLibrary には弾幕を送信する機能はありませんが、ユーザーのコメントを記録したい場合は、
+自分でサーバーを用意すれば簡単に実装できます。具体的な実装は、ご自身のサーバーの要件に合わせて
+決めてください。
 
 ### 弾幕受信と生放送
-リアルライムで弾幕データを表現する方法の例は[ここ](DoingItRight.md)に書いています。
+リアルタイムで弾幕データを表示する方法の例は[こちら](DoingItRight.md)にまとめています。

@@ -1,0 +1,23 @@
+{
+  // Type checking only. JavaScript is emitted by SWC (see rollup.config.mjs)
+  // since TypeScript no longer supports ES5 output.
+  // This covers the core library. The scripting engine has its own, less
+  // strict configuration (tsconfig.scripting.json).
+  "compilerOptions": {
+    "target": "es2015",
+    // Only ES5 runtime APIs (plus Promise) may be used so the output runs on
+    // ES5 browsers without polyfills.
+    "lib": ["es5", "es2015.promise", "dom"],
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "verbatimModuleSyntax": true,
+    "noEmit": true,
+    "strict": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "skipLibCheck": true,
+    "types": []
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["src/scripting/**"]
+}

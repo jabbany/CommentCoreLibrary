@@ -25,8 +25,8 @@ Instead, you should obtain CCL using one of the following ways:
 
 - Using CCL as a library:
 
-    CCL is indexed on both `npm` and `bower`. To incorporate CCL into a node
-    priject, one can simply `npm install comment-core-library --save` to acquire
+    CCL is indexed on `npm`. To incorporate CCL into a node
+    project, one can simply `npm install comment-core-library --save` to acquire
     the latest STABLE release of CCL. Distributable files (compiled versions)
     will be accessible here: `node_modules/comment-core-library/dist/`
 
@@ -34,8 +34,9 @@ Instead, you should obtain CCL using one of the following ways:
 
     If you want to develop and extend CCL, you are advised to clone the
     repository `git clone https://github.com/jabbany/CommentCoreLibrary.git`.
-    You should also have `grunt` installed to enable compiling the project.
-    Make sure to update the node modules when you first clone the repository.
+    You should also have Node.js and `pnpm` installed to compile the project.
+    Run `pnpm install` when you first clone the repository and `pnpm build`
+    to compile it (see [BUILDING.md](../BUILDING.md)).
 
 ### Embedding CCL
 The compiled output of CCL is located in the `dist/` directory. The two most
@@ -50,7 +51,7 @@ To include CCL, you can use:
 ````HTML
 <head>
     ... other header records ...
-    <link rel="stylesheet" href="dist/style.css" />
+    <link rel="stylesheet" href="dist/css/style.css" />
     <script src="dist/CommentCoreLibrary.js"></script>
     ... other header records ...
 </head>
@@ -123,7 +124,7 @@ CM.time(500);
 CM.time(1000);
 ````
 
-For more detailed use and examples, please view `demo/intro`.
+For more detailed use and examples, please view `demo/tutorial`.
 
 ### Sending Comments
 CCL does not include any inherent comment sending capabilities and it is up to
