@@ -5,7 +5,7 @@
  * @license MIT License
  * @description Comment abstraction based on DOM implementation
  */
-import type { ICommentManager, IComment } from './Core';
+import type { ICommentManager, IComment, ICommentData } from './Core';
 import * as CommentUtils from './CommentUtils';
 export declare class CoreComment implements IComment {
     static LINEAR: Function;
@@ -50,7 +50,7 @@ export declare class CoreComment implements IComment {
     protected _className: string;
     parent: ICommentManager;
     dom: HTMLDivElement;
-    constructor(parent: ICommentManager, init?: Object);
+    constructor(parent: ICommentManager, init?: Partial<ICommentData>);
     protected _toggleClass(className: string, toggle?: boolean): void;
     /**
      * Initializes the DOM element (or canvas) backing the comment
@@ -126,7 +126,7 @@ export declare class CoreComment implements IComment {
     toString(): string;
 }
 export declare class ScrollComment extends CoreComment {
-    constructor(parent: ICommentManager, data: Object);
+    constructor(parent: ICommentManager, data: Partial<ICommentData>);
     set alpha(a: number);
     init(recycle?: IComment): void;
     update(): void;

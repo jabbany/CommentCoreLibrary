@@ -25,6 +25,9 @@
   "main": "dist/CommentCoreLibrary.js",
   "module": "dist/CommentCoreLibrary.mjs",
   "types": "dist/types/index.d.ts",
+  "sideEffects": [
+    "*.css"
+  ],
   "exports": {
     ".": {
       "types": "./dist/types/index.d.ts",

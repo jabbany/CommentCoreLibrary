@@ -4,15 +4,23 @@
  * @license MIT
  * @author Jim Chen
 **/
-import { CommentManager } from './CommentManager';
+import type { ICommentData } from './core/Core';
 import * as Promises from './Promises';
 
 /**
  * Parser that turns source data into comment data
  */
 export interface CommentParser {
-  parseOne(data:any):any;
-  parseMany(data:any):Array<any>;
+  parseOne(data:any):ICommentData;
+  parseMany(data:any):Array<ICommentData>;
+}
+
+/**
+ * Target that comments are streamed to (e.g. a CommentManager)
+ */
+export interface CommentTarget {
+  load(timeline:Array<ICommentData>):void;
+  send(data:ICommentData | Array<ICommentData>):void;
 }
 
 /**
@@ -32,7 +40,7 @@ export class CommentProvider {
   private _staticSources:{[type:string]:Array<Promise<any>>} = {};
   private _dynamicSources:{[type:string]:Array<DynamicSource>} = {};
   private _parsers:{[type:string]:Array<CommentParser>} = {};
-  private _targets:Array<CommentManager> = [];
+  private _targets:Array<CommentTarget> = [];
 
   /**
    * Provider for HTTP content. This returns a promise that resolves to TEXT.
@@ -196,18 +204,21 @@ export class CommentProvider {
   /**
    * Attaches a target comment manager so that we can stream comments to it
    *
-   * @param {CommentManager} commentManager - Comment Manager instance to attach to
+   * @param {CommentTarget} commentManager - Comment Manager instance (or any
+   *         object with load and send methods) to attach to
    * @return {CommentProvider} this
    **/
-  public addTarget(commentManager:CommentManager):CommentProvider {
+  public addTarget(commentManager:CommentTarget):CommentProvider {
     if (this._destroyed) {
       throw new Error(
         'Comment provider has been destroyed, '
         +'cannot attach more targets.');
     }
-    if (!(commentManager instanceof CommentManager)) {
+    if (commentManager == null || typeof commentManager.load !== 'function' ||
+      typeof commentManager.send !== 'function') {
+
       throw new Error(
-        'Expected the target to be an instance of CommentManager.');
+        'Expected the target to be a CommentManager (with load and send).');
     }
     this._targets.push(commentManager);
     return this;
@@ -234,7 +245,7 @@ export class CommentProvider {
     return this;
   }
 
-  public applyParsersOne(data:any, type:string):Promise<any> {
+  public applyParsersOne(data:any, type:string):Promise<ICommentData> {
     return new Promise(function (resolve, reject) {
       if (!(type in this._parsers)) {
         reject(new Error('No parsers defined for "' + type + '"'));
@@ -257,7 +268,7 @@ export class CommentProvider {
     }.bind(this));
   }
 
-  public applyParsersList(data:any, type:string):Promise<Array<any>> {
+  public applyParsersList(data:any, type:string):Promise<Array<ICommentData>> {
     return new Promise(function (resolve, reject) {
       if (!(type in this._parsers)) {
         reject(new Error('No parsers defined for "' + type + '"'));
@@ -286,7 +297,7 @@ export class CommentProvider {
    * @return {Promise} that is resolved when the static sources have been
    *     loaded
    */
-  public load():Promise<Array<any>> {
+  public load():Promise<Array<ICommentData>> {
     if (this._destroyed) {
       throw new Error('Cannot load sources on a destroyed provider.');
     }
@@ -316,7 +327,7 @@ export class CommentProvider {
    * @return {Promise} that is resolved when all the static sources are loaded
    *     and all the dynamic sources are hooked up
    **/
-  public start():Promise<Array<any>> {
+  public start():Promise<Array<ICommentData>> {
     if (this._destroyed) {
       throw new Error('Cannot start a provider that has been destroyed.');
     }

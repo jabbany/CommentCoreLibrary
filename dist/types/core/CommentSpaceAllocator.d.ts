@@ -1,14 +1,24 @@
 /**
- * Basic Space Allocation Unit
- *
- * @author Jim Chen (jabbany)
- * @license MIT License
- * @description Comment space allocation units for static and movable comments
+ * The parts of a comment that space allocators use. Allocators only position
+ * items and do not depend on how they are rendered.
  */
-import type { IComment } from './Core';
+export interface ISpaceItem {
+    stime: number;
+    ttl: number;
+    /**
+     * Index of the pool the item is allocated in. Set by the allocator.
+     */
+    cindex: number;
+    x: number;
+    y: number;
+    readonly bottom: number;
+    readonly right: number;
+    readonly width: number;
+    readonly height: number;
+}
 export interface ISpaceAllocator {
-    add(c: IComment): void;
-    remove(c: IComment): void;
+    add(c: ISpaceItem): void;
+    remove(c: ISpaceItem): void;
     setBounds(w: number, h: number): void;
 }
 export declare class CommentSpaceAllocator implements ISpaceAllocator {
@@ -35,7 +45,7 @@ export declare class CommentSpaceAllocator implements ISpaceAllocator {
      * @param check - Checked comment
      * @returns {boolean} checked collides with exisiting
      */
-    willCollide(existing: IComment, check: IComment): boolean;
+    willCollide(existing: ISpaceItem, check: ISpaceItem): boolean;
     /**
      * Validates sufficient space for a "bullet path" for the comment.
      *
@@ -44,7 +54,7 @@ export declare class CommentSpaceAllocator implements ISpaceAllocator {
      * @param pool - The pool to test in.
      * @returns {boolean} whether or not a valid path exists in the tested pool.
      */
-    pathCheck(y: number, comment: IComment, pool: Array<IComment>): boolean;
+    pathCheck(y: number, comment: ISpaceItem, pool: Array<ISpaceItem>): boolean;
     /**
      * Finds a good y-coordinate for comment such that minimal collision happens.
      * This method will also add the comment to the allocated pool and assign a proper cindex
@@ -53,20 +63,20 @@ export declare class CommentSpaceAllocator implements ISpaceAllocator {
      * @param cindex - Pool index
      * @returns {number} Y offset assigned
      */
-    assign(comment: IComment, cindex: number): number;
+    assign(comment: ISpaceItem, cindex: number): number;
     /**
      * Adds a comment to the space allocator. Will also assign the
      * comment's y values. Note that added comments may not be actually
      * recorded, check the cindex value.
      * @param comment
      */
-    add(comment: IComment): void;
+    add(comment: ISpaceItem): void;
     /**
      * Remove the comment from the space allocator. Will silently fail
      * if the comment is not found
      * @param comment
      */
-    remove(comment: IComment): void;
+    remove(comment: ISpaceItem): void;
     /**
      * Set the bounds (width, height) of the allocator. Normally this
      * should be as big as the stage DOM object. But you can manually set
@@ -78,7 +88,7 @@ export declare class CommentSpaceAllocator implements ISpaceAllocator {
     setBounds(width: number, height: number): void;
 }
 export declare class AnchorCommentSpaceAllocator extends CommentSpaceAllocator {
-    add(comment: IComment): void;
-    willCollide(a: IComment, b: IComment): boolean;
-    pathCheck(y: number, comment: IComment, pool: Array<IComment>): boolean;
+    add(comment: ISpaceItem): void;
+    willCollide(a: ISpaceItem, b: ISpaceItem): boolean;
+    pathCheck(y: number, comment: ISpaceItem, pool: Array<ISpaceItem>): boolean;
 }

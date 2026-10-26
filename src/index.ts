@@ -15,6 +15,7 @@ export { CoreComment, ScrollComment } from './core/Comment';
 export { CssScrollComment } from './core/css-renderer/CssComment';
 export { CommentFactory } from './core/CommentFactory';
 export { CommentSpaceAllocator, AnchorCommentSpaceAllocator } from './core/CommentSpaceAllocator';
+export { IntervalTimer, AnimationFrameTimer } from './core/Timer';
 export * as CommentUtils from './core/CommentUtils';
 
 // Modules
@@ -27,5 +28,7 @@ export * as CommonDanmakuFormat from './parsers/CommonDanmakuFormat';
 
 // Types
 export type * from './core/Core';
-export type { CommentParser, DynamicSource } from './CommentProvider';
+export type { ISpaceAllocator, ISpaceItem } from './core/CommentSpaceAllocator';
+export type { CommentParser, CommentTarget, DynamicSource } from './CommentProvider';
 export type { FilterRule } from './filter/CommentFilter';
+export type { AcfunComment, AcfunAdvancedParams, AcfunMovement } from './parsers/AcfunFormat';

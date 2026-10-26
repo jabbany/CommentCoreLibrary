@@ -137,6 +137,13 @@ describe('CommentProvider', () => {
 
       it('rejects if target is not CommentManager', () => {
         expect(() => provider.addTarget({})).toThrow();
+        expect(() => provider.addTarget(null)).toThrow();
+      });
+
+      it('accepts any target with load and send', () => {
+        var target = { load: vi.fn(), send: vi.fn() };
+        provider.addTarget(target);
+        expect(provider._targets).toContain(target);
       });
 
       it('rejects if provider is shut down', () => {

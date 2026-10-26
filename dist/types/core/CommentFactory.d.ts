@@ -6,7 +6,7 @@
  * @description Factory to allow creation of different kinds of comments with
  *        different underlying abstractions.
  */
-import type { ICommentManager, ICommentFactory, IComment } from './Core';
+import type { ICommentManager, ICommentFactory, IComment, ICommentData } from './Core';
 export declare class CommentFactory implements ICommentFactory {
     private _bindings;
     private static _simpleCssScrollingInitializer;
@@ -18,6 +18,6 @@ export declare class CommentFactory implements ICommentFactory {
     static defaultCanvasRenderFactory(): ICommentFactory;
     static defaultSvgRenderFactory(): ICommentFactory;
     bind(mode: number, factory: Function): void;
-    canCreate(comment: Object): boolean;
-    create(manager: ICommentManager, comment: Object): IComment;
+    canCreate(comment: ICommentData): boolean;
+    create(manager: ICommentManager, comment: ICommentData): IComment;
 }

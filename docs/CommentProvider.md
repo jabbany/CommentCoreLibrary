@@ -55,7 +55,8 @@ Adds a dynamic provider and bind it. 添加并绑定一个动态源。
 
 ### addTarget(commentManager:CommentManager):this
 Adds a target to broadcast comment load data to. This allows hooking multiple 
-comment managers to the same source. 绑定一个目标弹幕管理器。可以绑定多个弹幕管理器到同一个
+comment managers to the same source. Any object with `load(list)` and
+`send(comment)` methods can be used as a target. 绑定一个目标弹幕管理器。可以绑定多个弹幕管理器到同一个
 弹幕源系列
 
 ### addParser(parser:IParser, type:String):this

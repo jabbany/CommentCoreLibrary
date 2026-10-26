@@ -52,8 +52,8 @@ describe('CommentManager', () => {
       manager.init();
     });
 
-    ('addEventListener clear dispatchEvent finish init ' +
-      'insert load onTimerEvent rescale seek send ' +
+    ('addEventListener clear destroy dispatchEvent finish init ' +
+      'insert load onTimerEvent remove removeEventListener rescale seek send ' +
       'setBounds start stop time validate').split(/\s/).forEach((method) => {
 
       it('has method: \'' + method + '\'', () => {
@@ -165,6 +165,85 @@ describe('CommentManager', () => {
       });
     });
 
+    describe('.isRunning', () => {
+      it('reflects start and stop', () => {
+        expect(manager.isRunning).toBe(false);
+        manager.start();
+        expect(manager.isRunning).toBe(true);
+        manager.stop();
+        expect(manager.isRunning).toBe(false);
+      });
+    });
+
+    describe('.timer', () => {
+      it('uses the given timer to drive comments', () => {
+        var tick = null;
+        manager.timer = {
+          start: vi.fn((callback) => { tick = callback; }),
+          stop: vi.fn()
+        };
+        manager.send(cmt);
+        var spy = vi.spyOn(manager.runline[0], 'time');
+        manager.start();
+        tick(16);
+        expect(spy).toHaveBeenCalledWith(16);
+        manager.stop();
+        expect(manager.timer.stop).toHaveBeenCalled();
+      });
+    });
+
+    describe('.destroy', () => {
+      it('stops and releases comments, timeline and listeners', () => {
+        var callback = vi.fn();
+        manager.addEventListener('myCustomEvent', callback);
+        manager.load([c1, c2]);
+        manager.send(cmt);
+        manager.start();
+        manager.destroy();
+        expect(manager.isRunning).toBe(false);
+        expect(manager.runline.length).toBe(0);
+        expect(manager.timeline.length).toBe(0);
+        expect(stage.childNodes.length).toBe(0);
+        manager.dispatchEvent('myCustomEvent');
+        expect(callback).not.toHaveBeenCalled();
+      });
+
+      it('dispatches destroy event', () => {
+        var callback = vi.fn();
+        manager.addEventListener('destroy', callback);
+        manager.destroy();
+        expect(callback).toHaveBeenCalledOnce();
+      });
+    });
+
+    describe('.remove', () => {
+      it('removes a comment instance from the timeline', () => {
+        manager.load([c3, c4, c5]);
+        manager.remove(c4);
+        expect(manager.timeline).toEqual([c3, c5]);
+        expect(manager.timeline.indexOf(c4)).toBe(-1);
+      });
+
+      it('removes comments matching a filter function', () => {
+        manager.load([c1, c2, c3]);
+        manager.remove((data) => data.stime === 2);
+        expect(manager.timeline).toEqual([c1]);
+      });
+
+      it('only removes when the filter returns true', () => {
+        manager.load([c1, c2]);
+        manager.remove(() => 1);
+        expect(manager.timeline.length).toBe(2);
+      });
+
+      it('keeps the position pointer on the same comment', () => {
+        manager.load([c1, c3, c4]);
+        manager.position = 2;
+        manager.remove(c1);
+        expect(manager.timeline[manager.position]).toBe(c4);
+      });
+    });
+
     describe('.clear', () => {
       it('clears', () => {
         manager.send(cmt);
@@ -239,6 +318,30 @@ describe('CommentManager', () => {
         manager.addEventListener('myCustomEvent', callback);
         manager.dispatchEvent('myCustomEvent', 'foo');
         expect(callback).toHaveBeenCalledWith('foo');
+      });
+
+      it('removes event listeners', () => {
+        var callback = vi.fn();
+        manager.addEventListener('myCustomEvent', callback);
+        manager.removeEventListener('myCustomEvent', callback);
+        manager.dispatchEvent('myCustomEvent');
+        expect(callback).not.toHaveBeenCalled();
+      });
+
+      it('ignores removing unknown listeners', () => {
+        expect(() => manager.removeEventListener('unknownEvent', () => {}))
+          .not.toThrow();
+      });
+
+      it('lets listeners remove themselves while dispatching', () => {
+        var second = vi.fn();
+        var first = () => {
+          manager.removeEventListener('myCustomEvent', first);
+        };
+        manager.addEventListener('myCustomEvent', first);
+        manager.addEventListener('myCustomEvent', second);
+        manager.dispatchEvent('myCustomEvent');
+        expect(second).toHaveBeenCalledOnce();
       });
     });
   });

@@ -109,5 +109,36 @@ describe('CommentSpaceAllocators', () => {
       });
       // TODO: We need more extensive test cases
     });
+
+    describe('with plain space items', () => {
+      var item = (width, height) => ({
+        stime: 0, ttl: 4000, cindex: -1, x: 0, y: 0,
+        width: width, height: height,
+        get bottom() { return this.y + this.height; },
+        get right() { return this.x + this.width; }
+      });
+
+      it('stacks overlapping items', () => {
+        var a = item(100, 20), b = item(100, 20);
+        anchorCSA.add(a);
+        anchorCSA.add(b);
+        expect(a.y).toBe(0);
+        expect(b.y).toBe(21);
+        expect(b.cindex).toBe(0);
+      });
+
+      it('centers anchored items', () => {
+        var a = item(100, 20);
+        anchorCSA.add(a);
+        expect(a.x).toBe(150);
+      });
+
+      it('does not allocate items taller than the stage', () => {
+        var a = item(100, 400);
+        scrollCSA.add(a);
+        expect(a.cindex).toBe(-2);
+        expect(a.y).toBe(0);
+      });
+    });
   });
 });

@@ -5,7 +5,7 @@
  * @license MIT License
  * @description Comment abstraction based on DOM implementation
  */
-import type { ICommentManager, IComment, IMotion } from './Core';
+import type { ICommentManager, IComment, ICommentData, IMotion } from './Core';
 import * as CommentUtils from './CommentUtils';
 
 export class CoreComment implements IComment {
@@ -63,7 +63,7 @@ export class CoreComment implements IComment {
   public parent:ICommentManager;
   public dom:HTMLDivElement;
 
-  constructor(parent:ICommentManager, init:Object = {}) {
+  constructor(parent:ICommentManager, init:Partial<ICommentData> = {}) {
     if (!parent) {
       throw new Error('Comment not bound to comment manager.');
     } else {
@@ -520,7 +520,7 @@ export class CoreComment implements IComment {
 }
 
 export class ScrollComment extends CoreComment {
-  constructor(parent:ICommentManager, data:Object) {
+  constructor(parent:ICommentManager, data:Partial<ICommentData>) {
     super(parent, data);
     this.dur *= this.parent.options.scroll.scale;
     this.ttl *= this.parent.options.scroll.scale;

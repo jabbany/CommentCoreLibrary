@@ -10,7 +10,8 @@ var dist = (file) => require.resolve('../../dist/' + file);
 var EXPORTS = [
   'BinArray', 'CommentManager', 'CoreComment', 'ScrollComment',
   'CssScrollComment', 'CommentFactory', 'CommentSpaceAllocator',
-  'AnchorCommentSpaceAllocator', 'CommentUtils', 'CommentFilter',
+  'AnchorCommentSpaceAllocator', 'IntervalTimer', 'AnimationFrameTimer',
+  'CommentUtils', 'CommentFilter',
   'CommentProvider', 'Promises', 'BilibiliFormat', 'AcfunFormat',
   'CommonDanmakuFormat'
 ];

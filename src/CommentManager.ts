@@ -6,10 +6,11 @@
  * Copyright (c) 2014 Jim Chen
  */
 import type { CCLOptions, ICommentManager, ICommentFactory, IComment,
-  IScriptingEngine } from './core/Core';
+  ICommentData, IScriptingEngine, ITimer } from './core/Core';
 import * as BinArray from './Array';
 import { CommentFactory } from './core/CommentFactory';
 import { CommentSpaceAllocator, AnchorCommentSpaceAllocator } from './core/CommentSpaceAllocator';
+import { IntervalTimer } from './core/Timer';
 import { CommentFilter } from './filter/CommentFilter';
 
 var _defaultComparator = function (a, b) {
@@ -36,7 +37,7 @@ var _defaultComparator = function (a, b) {
 };
 
 export class CommentManager implements ICommentManager {
-  private _timer:number = 0;
+  private _running:boolean = false;
   private _listeners:{[event:string]:Array<Function>} = {};
   private _lastPosition:number = 0;
 
@@ -54,10 +55,15 @@ export class CommentManager implements ICommentManager {
     limit: 0,
     seekTrigger: 2000
   };
-  public timeline:Array<any> = [];
+  public timeline:Array<ICommentData> = [];
   public runline:Array<IComment> = [];
   public position:number = 0;
 
+  /**
+   * Clock that drives the running comments. Replace it (e.g. with an
+   * AnimationFrameTimer) while the manager is stopped.
+   */
+  public timer:ITimer = new IntervalTimer();
   public factory:ICommentFactory = null;
   public filter:CommentFilter = null;
   public scripting:IScriptingEngine;
@@ -81,32 +87,48 @@ export class CommentManager implements ICommentManager {
   }
 
   private _startTimer():void {
-    if (this._timer > 0) {
-      return;
-    }
-    var lastTPos = new Date().getTime();
     var cmMgr = this;
-    this._timer = window.setInterval(function () {
-      var elapsed = new Date().getTime() - lastTPos;
-      lastTPos = new Date().getTime();
-      cmMgr.onTimerEvent(elapsed,cmMgr);
-    },10);
+    this.timer.start(function (elapsed) {
+      cmMgr.onTimerEvent(elapsed, cmMgr);
+    });
   }
 
   private _stopTimer():void {
-    window.clearInterval(this._timer);
-    this._timer = 0;
+    this.timer.stop();
+  }
+
+  /**
+   * Whether the comments on the runline are moving (see start / stop)
+   */
+  get isRunning():boolean {
+    return this._running;
   }
 
   /** Public **/
   public stop():void {
     this._stopTimer();
+    this._running = false;
     // Send stop signal to all comments
     this.runline.forEach(function (c) { c.stop(); });
   }
 
   public start():void {
     this._startTimer();
+    this._running = true;
+  }
+
+  /**
+   * Stops the manager and releases everything it holds: running comments,
+   * the timeline and event listeners. Dispatches 'destroy' before the
+   * listeners are removed.
+   */
+  public destroy():void {
+    this.stop();
+    this.clear();
+    this.timeline = [];
+    this.position = 0;
+    this.dispatchEvent('destroy');
+    this._listeners = {};
   }
 
   public seek(time:number):void {
@@ -121,25 +143,51 @@ export class CommentManager implements ICommentManager {
     });
   }
 
-  public validate(cmt:any):boolean {
+  public validate(cmt:ICommentData):boolean {
     if (cmt == null) {
       return false;
     }
     return this.filter.doValidate(cmt);
   }
 
-  public load(a:Array<any>):void {
+  public load(a:Array<ICommentData>):void {
     this.timeline = a;
     this.timeline.sort(_defaultComparator);
     this.dispatchEvent("load");
   }
 
-  public insert(c:any):void {
+  public insert(c:ICommentData):void {
     var index = BinArray.binsert(this.timeline, c, _defaultComparator);
     if (index <= this.position) {
       this.position++;
     }
     this.dispatchEvent("insert");
+  }
+
+  /**
+   * Removes comments from the timeline. Comments that are already running
+   * are not affected.
+   * @param target - the comment data instance to remove, or a function that
+   *    returns true (strictly) for every comment that should be removed
+   */
+  public remove(target:ICommentData | ((data:ICommentData) => boolean)):void {
+    var filter:(data:ICommentData) => boolean;
+    if (typeof target === 'function') {
+      filter = target;
+    } else {
+      filter = function (data) {
+        return data === target;
+      };
+    }
+    for (var i = this.timeline.length - 1; i >= 0; i--) {
+      if (filter(this.timeline[i]) === true) {
+        this.timeline.splice(i, 1);
+        if (i < this.position) {
+          this.position--;
+        }
+      }
+    }
+    this.dispatchEvent("remove");
   }
 
   public clear():void {
@@ -215,7 +263,7 @@ export class CommentManager implements ICommentManager {
     // TODO: Implement rescaling
   }
 
-  private _preprocess(data:any):any {
+  private _preprocess(data:ICommentData):ICommentData {
     if (data.mode === 8) {
       // This comment is not managed by the comment manager
       if (this.scripting) {
@@ -245,19 +293,19 @@ export class CommentManager implements ICommentManager {
     }
   }
 
-  public send(data:any):void {
-    if (!Array.isArray(data)) {
-      data = [ data ];
-    }
+  public send(data:ICommentData | Array<ICommentData>):void {
+    var list:Array<ICommentData> = Array.isArray(data) ? data : [ data ];
     // Validate all the comments
-    data = data.map(
-      this._preprocess.bind(this)).filter(function (item) {
-        return item !== null;
-      });
-    if (data.length === 0) {
+    var cmMgr = this;
+    list = list.map(function (item) {
+      return cmMgr._preprocess(item);
+    }).filter(function (item) {
+      return item !== null;
+    });
+    if (list.length === 0) {
       return;
     }
-    data.map((function (item) {
+    list.map((function (item) {
       // Create and insert the comments into the DOM
       return this.factory.create(this, item);
     }).bind(this)).map((function (cmt) {
@@ -296,11 +344,23 @@ export class CommentManager implements ICommentManager {
     }
   }
 
+  public removeEventListener(event:string, listener:Function):void {
+    if (typeof this._listeners[event] === "undefined") {
+      return;
+    }
+    var index = this._listeners[event].indexOf(listener);
+    if (index >= 0) {
+      this._listeners[event].splice(index, 1);
+    }
+  }
+
   public dispatchEvent(event:string, data?:any):void {
     if (typeof this._listeners[event] !== "undefined") {
-      for (var i = 0; i < this._listeners[event].length; i++) {
+      // Copy so listeners can remove themselves while being dispatched
+      var listeners = this._listeners[event].slice();
+      for (var i = 0; i < listeners.length; i++) {
         try {
-          this._listeners[event][i](data);
+          listeners[i](data);
         } catch (e) {
           console.error(e.stack);
         }

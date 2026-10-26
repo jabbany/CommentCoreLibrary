@@ -4,13 +4,20 @@
  * @license MIT
  * @author Jim Chen
 **/
-import { CommentManager } from './CommentManager';
+import type { ICommentData } from './core/Core';
 /**
  * Parser that turns source data into comment data
  */
 export interface CommentParser {
-    parseOne(data: any): any;
-    parseMany(data: any): Array<any>;
+    parseOne(data: any): ICommentData;
+    parseMany(data: any): Array<ICommentData>;
+}
+/**
+ * Target that comments are streamed to (e.g. a CommentManager)
+ */
+export interface CommentTarget {
+    load(timeline: Array<ICommentData>): void;
+    send(data: ICommentData | Array<ICommentData>): void;
 }
 /**
  * Source that dispatches 'receive' events with incoming comment data
@@ -99,10 +106,11 @@ export declare class CommentProvider {
     /**
      * Attaches a target comment manager so that we can stream comments to it
      *
-     * @param {CommentManager} commentManager - Comment Manager instance to attach to
+     * @param {CommentTarget} commentManager - Comment Manager instance (or any
+     *         object with load and send methods) to attach to
      * @return {CommentProvider} this
      **/
-    addTarget(commentManager: CommentManager): CommentProvider;
+    addTarget(commentManager: CommentTarget): CommentProvider;
     /**
      * Adds a parser for an incoming data type. If multiple parsers are added,
      * parsers added later take precedence.
@@ -112,22 +120,22 @@ export declare class CommentProvider {
      * @return {CommentProvider} this
      **/
     addParser(parser: CommentParser, type: string): CommentProvider;
-    applyParsersOne(data: any, type: string): Promise<any>;
-    applyParsersList(data: any, type: string): Promise<Array<any>>;
+    applyParsersOne(data: any, type: string): Promise<ICommentData>;
+    applyParsersList(data: any, type: string): Promise<Array<ICommentData>>;
     /**
      * (Re)loads static comments
      *
      * @return {Promise} that is resolved when the static sources have been
      *     loaded
      */
-    load(): Promise<Array<any>>;
+    load(): Promise<Array<ICommentData>>;
     /**
      * Commit the changes and boot up the provider
      *
      * @return {Promise} that is resolved when all the static sources are loaded
      *     and all the dynamic sources are hooked up
      **/
-    start(): Promise<Array<any>>;
+    start(): Promise<Array<ICommentData>>;
     /**
      * Send out comments to both dynamic sources and POST targets.
      *

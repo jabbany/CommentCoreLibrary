@@ -3,6 +3,7 @@
  * Takes in an XMLDoc/LooseXMLDoc and parses that into a Generic Comment List
  * @license MIT License
  **/
+import type { ICommentData } from '../core/Core';
 
 // Fix comments to be valid
 var _format = function (text) {
@@ -48,7 +49,7 @@ export class XMLParser {
     }
   }
 
-  public parseOne(elem:Element):any {
+  public parseOne(elem:Element):ICommentData {
     var params;
     try {
       params = elem.getAttribute('p').split(',');
@@ -216,7 +217,7 @@ export class XMLParser {
     return comment;
   }
 
-  public parseMany(xmldoc:Element | Document):Array<any> {
+  public parseMany(xmldoc:Element | Document):Array<ICommentData> {
     var elements:ArrayLike<Element> = [];
     try {
       elements = xmldoc.getElementsByTagName('d');
@@ -258,7 +259,7 @@ export class TextParser {
     }
   }
 
-  public parseOne(comment:string):any {
+  public parseOne(comment:string):ICommentData {
     // Attempt to parse a single tokenized tag
     if (this._allowInsecureDomParsing) {
       var source = comment;
@@ -282,7 +283,7 @@ export class TextParser {
     }
   }
 
-  public parseMany(comment:string):Array<any> {
+  public parseMany(comment:string):Array<ICommentData> {
     // Attempt to parse a comment list
     if (this._allowInsecureDomParsing) {
       var source = comment;

@@ -4,6 +4,7 @@
  * @license MIT
  * @author Jim Chen
  **/
+import type { ICommentData } from '../core/Core';
 
 var _check = function (comment) {
   // Sanity check to see if we should be parsing these comments or not
@@ -20,20 +21,20 @@ var _check = function (comment) {
 };
 
 export class JSONParser {
-  public parseOne(comment:any):any {
+  public parseOne(comment:any):ICommentData {
     // Refuse to parse the comment does not pass sanity check
     return _check(comment) ? comment : null;
   }
 
-  public parseMany(comments:Array<any>):Array<any> {
+  public parseMany(comments:Array<any>):Array<ICommentData> {
     // Refuse to parse if any comment does not pass sanity check
     return comments.every(_check) ? comments : null;
   }
 }
 
 export class XMLParser {
-  public parseOne(comment:Element):any {
-    var data:any = {}
+  public parseOne(comment:Element):ICommentData {
+    var data = <ICommentData> {};
     try {
       data.stime = parseInt(comment.getAttribute('stime'));
       data.mode = parseInt(comment.getAttribute('mode'));
@@ -46,7 +47,7 @@ export class XMLParser {
     return data;
   }
 
-  public parseMany(commentsElem:Element | Document):Array<any> {
+  public parseMany(commentsElem:Element | Document):Array<ICommentData> {
     var comments;
     try {
       comments = commentsElem.getElementsByTagName('comment');

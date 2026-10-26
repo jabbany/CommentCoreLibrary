@@ -32,6 +32,22 @@ export interface CCLOptions {
   seekTrigger:number;
 }
 
+/**
+ * Clock that drives the comments of a CommentManager
+ */
+export interface ITimer {
+  /**
+   * Starts calling the callback with the time (ms) elapsed since the last call.
+   * Has no effect if the timer is already running.
+   * @param callback - called on every tick
+   */
+  start(callback:(elapsed:number) => void):void;
+  /**
+   * Stops the timer
+   */
+  stop():void;
+}
+
 export interface ICommentManager {
   stage:any;
   width:number;
@@ -63,7 +79,7 @@ export interface ICommentManager {
 }
 
 export interface ICommentFactory {
-  create(manager:ICommentManager, comment:Object):IComment;
+  create(manager:ICommentManager, comment:ICommentData):IComment;
 }
 
 /**
@@ -74,8 +90,85 @@ export interface IMotion {
   to:number;
   delay:number;
   dur:number;
-  ttl:number;
-  easing:Function;
+  ttl?:number;
+  /**
+   * Easing function (t, b, c, d). Defaults to linear
+   */
+  easing?:Function;
+}
+
+/**
+ * Group of motions that run at the same time, keyed by the comment property
+ * they animate (e.g. x, y, alpha)
+ */
+export type MotionGroup = {[prop:string]:IMotion};
+
+/**
+ * Change of alpha over the whole lifetime of the comment
+ */
+export interface IAlphaMotion {
+  from:number;
+  to:number;
+}
+
+/**
+ * Abstract comment data. This is what parsers produce and what the
+ * CommentManager timeline holds.
+ */
+export interface ICommentData {
+  /**
+   * Time (ms) on the timeline when the comment is shown
+   */
+  stime:number;
+  /**
+   * Comment type (1, 2, 6 scrolling; 4 bottom; 5 top; 7 positioned;
+   * 8 scripting; 17 extended)
+   */
+  mode:number;
+  text?:string;
+  /**
+   * Duration (ms) the comment stays on screen
+   */
+  dur?:number;
+  size?:number;
+  color?:number;
+  border?:boolean;
+  shadow?:boolean;
+  font?:string;
+  opacity?:number;
+  alpha?:IAlphaMotion;
+  x?:number;
+  y?:number;
+  /**
+   * Alignment. 0=tl, 2=bl, 1=tr, 3=br
+   */
+  align?:number;
+  /**
+   * Axis. 0=dr, 1=dl, 2=ur, 3=ul
+   */
+  axis?:number;
+  /**
+   * Coordinates are in pixels (absolute) or fractions of the stage (relative)
+   */
+  position?:'absolute' | 'relative';
+  movable?:boolean;
+  motion?:Array<MotionGroup>;
+  /**
+   * 4x4 transform matrix as a flat array
+   */
+  transform?:Array<number>;
+  rX?:number;
+  rY?:number;
+  rZ?:number;
+  className?:string;
+  /**
+   * Source code of scripting comments (mode 8)
+   */
+  code?:string;
+  date?:number | string;
+  dbid?:number | string;
+  hash?:string;
+  pool?:number;
 }
 
 export interface IComment {

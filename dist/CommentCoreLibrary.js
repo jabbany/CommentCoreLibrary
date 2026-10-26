@@ -985,7 +985,7 @@
       CommentFactory._advancedCoreInitializer = function _advancedCoreInitializer(manager, data) {
           var cmt = new CoreComment(manager, data);
           cmt.init();
-          cmt.transform = Matrix3D.createRotationMatrix(0, data['rY'], data['rZ']).flatArray;
+          cmt.transform = Matrix3D.createRotationMatrix(0, data.rY, data.rZ).flatArray;
           manager.stage.appendChild(cmt.dom);
           return cmt;
       };
@@ -1184,6 +1184,97 @@
   }(CommentSpaceAllocator);
 
   /**
+   * Comment Timers
+   *
+   * @author Jim Chen
+   * @license MIT License
+   * @description Clocks that drive the comments of a CommentManager
+   */ /**
+   * Timer based on setInterval. Ticks at a fixed interval, also when the page
+   * is in the background.
+   */ var IntervalTimer = /*#__PURE__*/ function() {
+      function IntervalTimer(interval) {
+          if (interval === void 0) interval = 10;
+          this._handle = 0;
+          this._interval = interval;
+      }
+      var _proto = IntervalTimer.prototype;
+      _proto.start = function start(callback) {
+          if (this._handle > 0) {
+              return;
+          }
+          var last = new Date().getTime();
+          this._handle = window.setInterval(function() {
+              var now = new Date().getTime();
+              var elapsed = now - last;
+              last = now;
+              callback(elapsed);
+          }, this._interval);
+      };
+      _proto.stop = function stop() {
+          window.clearInterval(this._handle);
+          this._handle = 0;
+      };
+      return IntervalTimer;
+  }();
+  /**
+   * Timer based on requestAnimationFrame. Ticks once per rendered frame and
+   * pauses while the page is in the background. Falls back to setTimeout in
+   * browsers without requestAnimationFrame.
+   */ var AnimationFrameTimer = /*#__PURE__*/ function() {
+      function AnimationFrameTimer() {
+          this._handle = 0;
+          // Identifies the running tick loop so that a stopped loop never reschedules
+          this._token = null;
+      }
+      var _proto = AnimationFrameTimer.prototype;
+      _proto.start = function start(callback) {
+          if (this._token !== null) {
+              return;
+          }
+          var token = {};
+          var last = new Date().getTime();
+          var timer = this;
+          var tick = function tick1() {
+              if (timer._token !== token) {
+                  return;
+              }
+              var now = new Date().getTime();
+              var elapsed = now - last;
+              last = now;
+              callback(elapsed);
+              if (timer._token === token) {
+                  timer._handle = AnimationFrameTimer._request(tick);
+              }
+          };
+          this._token = token;
+          this._handle = AnimationFrameTimer._request(tick);
+      };
+      _proto.stop = function stop() {
+          if (this._token === null) {
+              return;
+          }
+          AnimationFrameTimer._cancel(this._handle);
+          this._handle = 0;
+          this._token = null;
+      };
+      AnimationFrameTimer._request = function _request(callback) {
+          if (typeof window.requestAnimationFrame === 'function') {
+              return window.requestAnimationFrame(callback);
+          }
+          return window.setTimeout(callback, 16);
+      };
+      AnimationFrameTimer._cancel = function _cancel(handle) {
+          if (typeof window.cancelAnimationFrame === 'function') {
+              window.cancelAnimationFrame(handle);
+          } else {
+              window.clearTimeout(handle);
+          }
+      };
+      return AnimationFrameTimer;
+  }();
+
+  /**
    * Comment Filters Module Simplified
    * @license MIT
    * @author Jim Chen
@@ -1377,7 +1468,7 @@
   };
   var CommentManager = /*#__PURE__*/ function() {
       function CommentManager(stageObject) {
-          this._timer = 0;
+          this._running = false;
           this._listeners = {};
           this._lastPosition = 0;
           this.options = {
@@ -1396,6 +1487,10 @@
           this.timeline = [];
           this.runline = [];
           this.position = 0;
+          /**
+     * Clock that drives the running comments. Replace it (e.g. with an
+     * AnimationFrameTimer) while the manager is stopped.
+     */ this.timer = new IntervalTimer();
           this.factory = null;
           this.filter = null;
           this.csa = {
@@ -1411,23 +1506,17 @@
       }
       var _proto = CommentManager.prototype;
       _proto._startTimer = function _startTimer() {
-          if (this._timer > 0) {
-              return;
-          }
-          var lastTPos = new Date().getTime();
           var cmMgr = this;
-          this._timer = window.setInterval(function() {
-              var elapsed = new Date().getTime() - lastTPos;
-              lastTPos = new Date().getTime();
+          this.timer.start(function(elapsed) {
               cmMgr.onTimerEvent(elapsed, cmMgr);
-          }, 10);
+          });
       };
       _proto._stopTimer = function _stopTimer() {
-          window.clearInterval(this._timer);
-          this._timer = 0;
+          this.timer.stop();
       };
       /** Public **/ _proto.stop = function stop() {
           this._stopTimer();
+          this._running = false;
           // Send stop signal to all comments
           this.runline.forEach(function(c) {
               c.stop();
@@ -1435,6 +1524,19 @@
       };
       _proto.start = function start() {
           this._startTimer();
+          this._running = true;
+      };
+      /**
+     * Stops the manager and releases everything it holds: running comments,
+     * the timeline and event listeners. Dispatches 'destroy' before the
+     * listeners are removed.
+     */ _proto.destroy = function destroy() {
+          this.stop();
+          this.clear();
+          this.timeline = [];
+          this.position = 0;
+          this.dispatchEvent('destroy');
+          this._listeners = {};
       };
       _proto.seek = function seek(time) {
           this.position = bsearch(this.timeline, time, function(a, b) {
@@ -1464,6 +1566,30 @@
               this.position++;
           }
           this.dispatchEvent("insert");
+      };
+      /**
+     * Removes comments from the timeline. Comments that are already running
+     * are not affected.
+     * @param target - the comment data instance to remove, or a function that
+     *    returns true (strictly) for every comment that should be removed
+     */ _proto.remove = function remove(target) {
+          var filter;
+          if (typeof target === 'function') {
+              filter = target;
+          } else {
+              filter = function filter(data) {
+                  return data === target;
+              };
+          }
+          for(var i = this.timeline.length - 1; i >= 0; i--){
+              if (filter(this.timeline[i]) === true) {
+                  this.timeline.splice(i, 1);
+                  if (i < this.position) {
+                      this.position--;
+                  }
+              }
+          }
+          this.dispatchEvent("remove");
       };
       _proto.clear = function clear() {
           while(this.runline.length > 0){
@@ -1578,19 +1704,20 @@
           }
       };
       _proto.send = function send(data) {
-          if (!Array.isArray(data)) {
-              data = [
-                  data
-              ];
-          }
+          var list = Array.isArray(data) ? data : [
+              data
+          ];
           // Validate all the comments
-          data = data.map(this._preprocess.bind(this)).filter(function(item) {
+          var cmMgr = this;
+          list = list.map(function(item) {
+              return cmMgr._preprocess(item);
+          }).filter(function(item) {
               return item !== null;
           });
-          if (data.length === 0) {
+          if (list.length === 0) {
               return;
           }
-          data.map((function(item) {
+          list.map((function(item) {
               // Create and insert the comments into the DOM
               return this.factory.create(this, item);
           }).bind(this)).map((function(cmt) {
@@ -1649,11 +1776,22 @@
               ];
           }
       };
+      _proto.removeEventListener = function removeEventListener(event, listener) {
+          if (typeof this._listeners[event] === "undefined") {
+              return;
+          }
+          var index = this._listeners[event].indexOf(listener);
+          if (index >= 0) {
+              this._listeners[event].splice(index, 1);
+          }
+      };
       _proto.dispatchEvent = function dispatchEvent(event, data) {
           if (typeof this._listeners[event] !== "undefined") {
-              for(var i = 0; i < this._listeners[event].length; i++){
+              // Copy so listeners can remove themselves while being dispatched
+              var listeners = this._listeners[event].slice();
+              for(var i = 0; i < listeners.length; i++){
                   try {
-                      this._listeners[event][i](data);
+                      listeners[i](data);
                   } catch (e) {
                       console.error(e.stack);
                   }
@@ -1666,16 +1804,18 @@
               cmt.time(timePassed);
           }
       };
+      _create_class(CommentManager, [
+          {
+              key: "isRunning",
+              get: /**
+     * Whether the comments on the runline are moving (see start / stop)
+     */ function get() {
+                  return this._running;
+              }
+          }
+      ]);
       return CommentManager;
   }();
-
-  function _instanceof(left, right) {
-      "@swc/helpers - instanceof";
-
-      if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
-          return !!right[Symbol.hasInstance](left);
-      } else return left instanceof right;
-  }
 
   /**
    * Promises extra functionality
@@ -1776,14 +1916,15 @@
       /**
      * Attaches a target comment manager so that we can stream comments to it
      *
-     * @param {CommentManager} commentManager - Comment Manager instance to attach to
+     * @param {CommentTarget} commentManager - Comment Manager instance (or any
+     *         object with load and send methods) to attach to
      * @return {CommentProvider} this
      **/ _proto.addTarget = function addTarget(commentManager) {
           if (this._destroyed) {
               throw new Error('Comment provider has been destroyed, ' + 'cannot attach more targets.');
           }
-          if (!_instanceof(commentManager, CommentManager)) {
-              throw new Error('Expected the target to be an instance of CommentManager.');
+          if (commentManager == null || typeof commentManager.load !== 'function' || typeof commentManager.send !== 'function') {
+              throw new Error('Expected the target to be a CommentManager (with load and send).');
           }
           this._targets.push(commentManager);
           return this;
@@ -2032,11 +2173,7 @@
       return obj && typeof Symbol !== "undefined" && obj.constructor === Symbol ? "symbol" : typeof obj;
   }
 
-  /**
-   * Bilibili Format Parser
-   * Takes in an XMLDoc/LooseXMLDoc and parses that into a Generic Comment List
-   * @license MIT License
-   **/ // Fix comments to be valid
+  // Fix comments to be valid
   var _format = function _format(text) {
       return text.replace(/\t/, "\\t");
   };
@@ -2334,10 +2471,11 @@
   };
 
   /**
-   * AcFun Format Parser
-   * Takes in JSON and parses it based on current documentation for AcFun comments
-   * @license MIT License
-   **/ var JSONParser$1 = /*#__PURE__*/ function() {
+   * Clamps alpha values to [0, 1]
+   */ var _clampAlpha = function _clampAlpha(alpha) {
+      return Math.min(Math.max(alpha, 0), 1);
+  };
+  var JSONParser$1 = /*#__PURE__*/ function() {
       function JSONParser(params) {
           this._logBadComments = true;
           this._logNotImplemented = false;
@@ -2375,7 +2513,7 @@
                   } catch (e) {
                       if (this._logBadComments) {
                           console.warn('Error parsing internal data for comment');
-                          console.log('[Dbg] ' + data.text);
+                          console.log('[Dbg] ' + comment.m);
                       }
                       return null; // Can't actually parse this!
                   }
@@ -2383,7 +2521,7 @@
                   data.text = x.n; /*.replace(/\r/g,"\n");*/ 
                   data.text = data.text.replace(/\ /g, "\u00a0");
                   if (typeof x.a === 'number') {
-                      data.opacity = x.a;
+                      data.opacity = _clampAlpha(x.a);
                   } else {
                       data.opacity = 1;
                   }
@@ -2475,7 +2613,7 @@
                           if (x.z[m].hasOwnProperty('t') && typeof x.z[m].t === 'number' && x.z[m].t !== last.alpha) {
                               motion.alpha = {
                                   from: last.alpha,
-                                  to: x.z[m].t,
+                                  to: _clampAlpha(x.z[m].t),
                                   dur: dur,
                                   delay: 0
                               };
@@ -2492,7 +2630,7 @@
                           }
                           data.motion.push(motion);
                       }
-                      data.dur = moveDuration + (data.moveDelay ? data.moveDelay : 0);
+                      data.dur = moveDuration;
                   }
                   if (x.hasOwnProperty('w')) {
                       if (x.w.hasOwnProperty('f')) {
@@ -2641,6 +2779,7 @@
 
   exports.AcfunFormat = AcfunFormat;
   exports.AnchorCommentSpaceAllocator = AnchorCommentSpaceAllocator;
+  exports.AnimationFrameTimer = AnimationFrameTimer;
   exports.BilibiliFormat = BilibiliFormat;
   exports.BinArray = Array$1;
   exports.CommentFactory = CommentFactory;
@@ -2652,6 +2791,7 @@
   exports.CommonDanmakuFormat = CommonDanmakuFormat;
   exports.CoreComment = CoreComment;
   exports.CssScrollComment = CssScrollComment;
+  exports.IntervalTimer = IntervalTimer;
   exports.Promises = Promises;
   exports.ScrollComment = ScrollComment;
 

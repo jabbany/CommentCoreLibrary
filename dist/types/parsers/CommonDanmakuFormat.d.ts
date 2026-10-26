@@ -4,11 +4,12 @@
  * @license MIT
  * @author Jim Chen
  **/
+import type { ICommentData } from '../core/Core';
 export declare class JSONParser {
-    parseOne(comment: any): any;
-    parseMany(comments: Array<any>): Array<any>;
+    parseOne(comment: any): ICommentData;
+    parseMany(comments: Array<any>): Array<ICommentData>;
 }
 export declare class XMLParser {
-    parseOne(comment: Element): any;
-    parseMany(commentsElem: Element | Document): Array<any>;
+    parseOne(comment: Element): ICommentData;
+    parseMany(commentsElem: Element | Document): Array<ICommentData>;
 }
