@@ -23,7 +23,7 @@ export function any<T>(promises:Array<Promise<T>> | T):Promise<T> {
   return new Promise<T>(function (resolve, reject) {
     var hasResolved = false;
     var hasCompleted = 0;
-    var errors = [];
+    var errors:Array<any> = [];
     for (var i = 0; i < promises.length; i++) {
       promises[i].then(function (value) {
         hasCompleted++;

@@ -62,7 +62,7 @@
     "build:types": "tsc -p tsconfig.types.json",
     "watch": "rollup -c -w",
     "start": "rollup -c -w",
-    "typecheck": "tsc -p tsconfig.json && tsc -p spec/tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json && tsc -p tsconfig.scripting.json && tsc -p spec/tsconfig.json",
     "check:ascii": "node build/check-ascii.mjs",
     "check:es5": "node build/check-es5.mjs",
     "test": "vitest run --coverage",

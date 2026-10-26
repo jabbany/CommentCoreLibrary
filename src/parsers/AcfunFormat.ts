@@ -107,7 +107,7 @@ export class JSONParser {
     }
   }
 
-  public parseOne(comment:AcfunComment):ICommentData {
+  public parseOne(comment:AcfunComment):ICommentData | null {
     // Read a comment and generate a correct comment object
     var data = <ICommentData> {};
     if (typeof comment !== 'object' || comment == null || !comment.hasOwnProperty('c')) {
@@ -185,62 +185,59 @@ export class JSONParser {
             color: data.color
           };
           for (var m = 0; m < x.z.length; m++) {
-            var dur = x.z[m].l != null ? (x.z[m].l * 1000) : 500;
+            var step = x.z[m];
+            var dur = step.l != null ? (step.l * 1000) : 500;
             moveDuration += dur;
             var motion:MotionGroup = {};
-            if (x.z[m].hasOwnProperty('rx') && typeof x.z[m].rx === 'number') {
+            if (typeof step.rx === 'number') {
               // TODO: Support this
               if (this._logNotImplemented) {
                 console.log('Encountered animated x-axis rotation. Ignoring.');
               }
             }
-            if (x.z[m].hasOwnProperty('e') && typeof x.z[m].e === 'number') {
+            if (typeof step.e === 'number') {
               // TODO: Support this
               if (this._logNotImplemented) {
                 console.log('Encountered animated y-axis rotation. Ignoring.');
               }
             }
-            if (x.z[m].hasOwnProperty('d') && typeof x.z[m].d === 'number') {
+            if (typeof step.d === 'number') {
               // TODO: Support this
               if (this._logNotImplemented) {
                 console.log('Encountered animated z-axis rotation. Ignoring.');
               }
             }
-            if (x.z[m].hasOwnProperty('x') && typeof x.z[m].x === 'number') {
+            if (typeof step.x === 'number') {
               motion.x = {
                 from: last.x,
-                to: x.z[m].x / 1000,
+                to: step.x / 1000,
                 dur: dur,
                 delay: 0
               };
+              last.x = motion.x.to;
             }
-            if (x.z[m].hasOwnProperty('y') && typeof x.z[m].y === 'number') {
+            if (typeof step.y === 'number') {
               motion.y = {
                 from: last.y,
-                to: x.z[m].y / 1000,
+                to: step.y / 1000,
                 dur: dur,
                 delay: 0
               };
+              last.y = motion.y.to;
             }
-            last.x = motion.hasOwnProperty('x') ? motion.x.to : last.x;
-            last.y = motion.hasOwnProperty('y') ? motion.y.to : last.y;
-            if (x.z[m].hasOwnProperty('t') &&
-              typeof x.z[m].t === 'number' &&
-              x.z[m].t !== last.alpha) {
+            if (typeof step.t === 'number' && step.t !== last.alpha) {
               motion.alpha = {
                 from: last.alpha,
-                to: _clampAlpha(x.z[m].t),
+                to: _clampAlpha(step.t),
                 dur: dur,
                 delay: 0
               };
               last.alpha = motion.alpha.to;
             }
-            if (x.z[m].hasOwnProperty('c') &&
-              typeof x.z[m].c === 'number' &&
-              x.z[m].c !== last.color) {
+            if (typeof step.c === 'number' && step.c !== last.color) {
               motion.color = {
                 from: last.color,
-                to:x.z[m].c,
+                to: step.c,
                 dur: dur,
                 delay: 0
               };
@@ -250,17 +247,16 @@ export class JSONParser {
           }
           data.dur = moveDuration;
         }
-        if (x.hasOwnProperty('w')) {
-          if (x.w.hasOwnProperty('f')) {
-            data.font = x.w.f;
+        var style = x.w;
+        if (typeof style === 'object' && style !== null) {
+          if (typeof style.f === 'string') {
+            data.font = style.f;
           }
-          if (x.w.hasOwnProperty('l') && Array.isArray(x.w.l)) {
-            if (x.w.l.length > 0) {
-              // Filters
-              if (this._logNotImplemented) {
-                console.log('[Dbg] Filters not supported! ' +
-                  JSON.stringify(x.w.l));
-              }
+          if (Array.isArray(style.l) && style.l.length > 0) {
+            // Filters
+            if (this._logNotImplemented) {
+              console.log('[Dbg] Filters not supported! ' +
+                JSON.stringify(style.l));
             }
           }
         }
@@ -281,11 +277,11 @@ export class JSONParser {
     }
   }
 
-  public parseMany(comments:Array<AcfunComment>):Array<ICommentData> {
+  public parseMany(comments:Array<AcfunComment>):Array<ICommentData> | null {
     if (!Array.isArray(comments)) {
       return null;
     }
-    var list = [];
+    var list:Array<ICommentData> = [];
     for (var i = 0; i < comments.length; i++) {
       var comment = this.parseOne(comments[i]);
       if (comment !== null) {
@@ -303,7 +299,7 @@ export class TextParser {
     this._jsonParser = new JSONParser(param);
   }
 
-  public parseOne(comment:string):ICommentData {
+  public parseOne(comment:string):ICommentData | null {
     try {
       return this._jsonParser.parseOne(JSON.parse(comment));
     } catch (e) {
@@ -312,7 +308,7 @@ export class TextParser {
     }
   }
 
-  public parseMany(comment:string):Array<ICommentData> {
+  public parseMany(comment:string):Array<ICommentData> | null {
     try {
       return this._jsonParser.parseMany(JSON.parse(comment));
     } catch (e) {

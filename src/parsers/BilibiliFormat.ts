@@ -3,15 +3,15 @@
  * Takes in an XMLDoc/LooseXMLDoc and parses that into a Generic Comment List
  * @license MIT License
  **/
-import type { ICommentData } from '../core/Core';
+import type { ICommentData, MotionGroup } from '../core/Core';
 
 // Fix comments to be valid
-var _format = function (text) {
+var _format = function (text:string):string {
   return text.replace(/\t/,"\\t");
 };
 
 // Fix Mode7 comments when they are bad
-var _formatmode7 = function (text) {
+var _formatmode7 = function (text:string):string {
   if (text.charAt(0) === '[') {
     switch (text.charAt(text.length - 1)) {
       case ']':
@@ -30,7 +30,7 @@ var _formatmode7 = function (text) {
 
 // Try to escape unsafe HTML code. DO NOT trust that this handles all cases
 // Please do not allow insecure DOM parsing unless you can trust your input source.
-var _escapeUnsafe = function (text) {
+var _escapeUnsafe = function (text:string):string {
   text = text.replace(new RegExp('</([^d])','g'), '</disabled $1');
   text = text.replace(new RegExp('</(\S{2,})','g'), '</disabled $1');
   text = text.replace(new RegExp('<([^d/]\W*?)','g'), '<disabled $1');
@@ -49,10 +49,14 @@ export class XMLParser {
     }
   }
 
-  public parseOne(elem:Element):ICommentData {
-    var params;
+  public parseOne(elem:Element):ICommentData | null {
+    var params:Array<string>;
     try {
-      params = elem.getAttribute('p').split(',');
+      var p = elem.getAttribute('p');
+      if (p === null) {
+        return null;
+      }
+      params = p.split(',');
     } catch (e) {
       // Probably not XML
       return null;
@@ -98,7 +102,7 @@ export class XMLParser {
           if (extendedParams.length >= 11) {
             comment.movable = true;
             var singleStepDur = 500;
-            var motion = {
+            var motion:MotionGroup | null = {
               'x': {
                 'from': comment.x,
                 'to': parseFloat(extendedParams[7]),
@@ -217,7 +221,7 @@ export class XMLParser {
     return comment;
   }
 
-  public parseMany(xmldoc:Element | Document):Array<ICommentData> {
+  public parseMany(xmldoc:Element | Document):Array<ICommentData> | null {
     var elements:ArrayLike<Element> = [];
     try {
       elements = xmldoc.getElementsByTagName('d');
@@ -225,7 +229,7 @@ export class XMLParser {
       // TODO: handle XMLDOC errors.
       return null; // Bail, I can't handle
     }
-    var commentList = [];
+    var commentList:Array<ICommentData> = [];
     for (var i = 0; i < elements.length; i++) {
       var comment = this.parseOne(elements[i]);
       if (comment !== null) {
@@ -254,12 +258,10 @@ export class TextParser {
     if (typeof DOMParser !== 'undefined' && DOMParser !== null) {
       this._canSecureNativeParse = true;
     }
-    if (this._allowInsecureDomParsing || this._canSecureNativeParse) {
-      this._xmlParser = new XMLParser(params);
-    }
+    this._xmlParser = new XMLParser(params);
   }
 
-  public parseOne(comment:string):ICommentData {
+  public parseOne(comment:string):ICommentData | null {
     // Attempt to parse a single tokenized tag
     if (this._allowInsecureDomParsing) {
       var source = comment;
@@ -283,7 +285,7 @@ export class TextParser {
     }
   }
 
-  public parseMany(comment:string):Array<ICommentData> {
+  public parseMany(comment:string):Array<ICommentData> | null {
     // Attempt to parse a comment list
     if (this._allowInsecureDomParsing) {
       var source = comment;

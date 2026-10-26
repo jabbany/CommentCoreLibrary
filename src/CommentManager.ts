@@ -13,20 +13,24 @@ import { CommentSpaceAllocator, AnchorCommentSpaceAllocator } from './core/Comme
 import { IntervalTimer } from './core/Timer';
 import { CommentFilter } from './filter/CommentFilter';
 
-var _defaultComparator = function (a, b) {
+var _defaultComparator = function (a:ICommentData, b:ICommentData):number {
+  // date and dbid may be numbers, strings or missing. They are compared with
+  // the plain JavaScript operators (missing values are never greater or less)
+  var aDate:any = a.date, bDate:any = b.date;
+  var aId:any = a.dbid, bId:any = b.dbid;
   if (a.stime > b.stime) {
     return 2;
   } else if (a.stime < b.stime) {
     return -2;
   } else {
-    if (a.date > b.date) {
+    if (aDate > bDate) {
       return 1;
-    } else if (a.date < b.date) {
+    } else if (aDate < bDate) {
       return -1;
-    } else if (a.dbid != null && b.dbid != null) {
-      if (a.dbid > b.dbid) {
+    } else if (aId != null && bId != null) {
+      if (aId > bId) {
         return 1;
-      } else if (a.dbid < b.dbid) {
+      } else if (aId < bId) {
         return -1;
       }
       return 0;
@@ -64,9 +68,9 @@ export class CommentManager implements ICommentManager {
    * AnimationFrameTimer) while the manager is stopped.
    */
   public timer:ITimer = new IntervalTimer();
-  public factory:ICommentFactory = null;
-  public filter:CommentFilter = null;
-  public scripting:IScriptingEngine;
+  public factory:ICommentFactory | null = null;
+  public filter:CommentFilter | null = null;
+  public scripting:IScriptingEngine | null = null;
   public csa:{[name:string]:CommentSpaceAllocator} = {
     scroll: new CommentSpaceAllocator(0,0),
     top: new AnchorCommentSpaceAllocator(0,0),
@@ -146,6 +150,9 @@ export class CommentManager implements ICommentManager {
   public validate(cmt:ICommentData):boolean {
     if (cmt == null) {
       return false;
+    }
+    if (this.filter === null) {
+      throw new Error('CommentManager has no filter. Call init() first.');
     }
     return this.filter.doValidate(cmt);
   }
@@ -263,11 +270,11 @@ export class CommentManager implements ICommentManager {
     // TODO: Implement rescaling
   }
 
-  private _preprocess(data:ICommentData):ICommentData {
+  private _preprocess(data:ICommentData):ICommentData | null {
     if (data.mode === 8) {
       // This comment is not managed by the comment manager
       if (this.scripting) {
-        this.scripting.eval(data.code);
+        this.scripting.eval(typeof data.code === 'string' ? data.code : '');
       } else {
         console.warn('CCL: Dropped scripting comment since no scripting ' +
           'engine is attached.');
@@ -294,28 +301,34 @@ export class CommentManager implements ICommentManager {
   }
 
   public send(data:ICommentData | Array<ICommentData>):void {
-    var list:Array<ICommentData> = Array.isArray(data) ? data : [ data ];
+    var input:Array<ICommentData> = Array.isArray(data) ? data : [ data ];
     // Validate all the comments
     var cmMgr = this;
-    list = list.map(function (item) {
-      return cmMgr._preprocess(item);
-    }).filter(function (item) {
-      return item !== null;
+    var list:Array<ICommentData> = [];
+    input.forEach(function (item) {
+      var processed = cmMgr._preprocess(item);
+      if (processed !== null) {
+        list.push(processed);
+      }
     });
     if (list.length === 0) {
       return;
     }
-    list.map((function (item) {
+    if (this.factory === null) {
+      throw new Error('CommentManager has no comment factory. Call init() first.');
+    }
+    var factory:ICommentFactory = this.factory;
+    list.map(function (item) {
       // Create and insert the comments into the DOM
-      return this.factory.create(this, item);
-    }).bind(this)).map((function (cmt) {
-      this._allocateSpace(cmt);
+      return factory.create(cmMgr, item);
+    }).map(function (cmt) {
+      cmMgr._allocateSpace(cmt);
       return cmt;
-    }).bind(this)).forEach((function (cmt) {
+    }).forEach(function (cmt) {
       cmt.y = cmt.y;
-      this.dispatchEvent("enterComment", cmt);
-      this.runline.push(cmt);
-    }).bind(this));
+      cmMgr.dispatchEvent("enterComment", cmt);
+      cmMgr.runline.push(cmt);
+    });
   }
 
   public finish(cmt:IComment):void {
@@ -362,7 +375,7 @@ export class CommentManager implements ICommentManager {
         try {
           listeners[i](data);
         } catch (e) {
-          console.error(e.stack);
+          console.error(e instanceof Error ? e.stack : e);
         }
       }
     }

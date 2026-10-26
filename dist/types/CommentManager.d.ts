@@ -22,9 +22,9 @@ export declare class CommentManager implements ICommentManager {
      * AnimationFrameTimer) while the manager is stopped.
      */
     timer: ITimer;
-    factory: ICommentFactory;
-    filter: CommentFilter;
-    scripting: IScriptingEngine;
+    factory: ICommentFactory | null;
+    filter: CommentFilter | null;
+    scripting: IScriptingEngine | null;
     csa: {
         [name: string]: CommentSpaceAllocator;
     };

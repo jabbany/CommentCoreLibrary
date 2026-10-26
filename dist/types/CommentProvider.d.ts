@@ -9,8 +9,14 @@ import type { ICommentData } from './core/Core';
  * Parser that turns source data into comment data
  */
 export interface CommentParser {
-    parseOne(data: any): ICommentData;
-    parseMany(data: any): Array<ICommentData>;
+    /**
+     * Returns null if the data cannot be parsed
+     */
+    parseOne(data: any): ICommentData | null;
+    /**
+     * Returns null if the data cannot be parsed
+     */
+    parseMany(data: any): Array<ICommentData> | null;
 }
 /**
  * Target that comments are streamed to (e.g. a CommentManager)
@@ -47,7 +53,9 @@ export declare class CommentProvider {
      * @return {Promise} that resolves or rejects based on the success or failure
      *         of the request
      **/
-    static BaseHttpProvider(method: string, url: string, responseType?: string, args?: Object, body?: any): Promise<any>;
+    static BaseHttpProvider(method: string, url: string, responseType?: string, args?: {
+        [key: string]: any;
+    }, body?: any): Promise<any>;
     /**
      * Provider for JSON content. This returns a promise that resolves to JSON.
      *

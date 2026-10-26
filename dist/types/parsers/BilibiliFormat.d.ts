@@ -8,8 +8,8 @@ export declare class XMLParser {
     private _attemptFix;
     private _logBadComments;
     constructor(params?: any);
-    parseOne(elem: Element): ICommentData;
-    parseMany(xmldoc: Element | Document): Array<ICommentData>;
+    parseOne(elem: Element): ICommentData | null;
+    parseMany(xmldoc: Element | Document): Array<ICommentData> | null;
 }
 export declare class TextParser {
     private _allowInsecureDomParsing;
@@ -17,6 +17,6 @@ export declare class TextParser {
     private _canSecureNativeParse;
     private _xmlParser;
     constructor(params?: any);
-    parseOne(comment: string): ICommentData;
-    parseMany(comment: string): Array<ICommentData>;
+    parseOne(comment: string): ICommentData | null;
+    parseMany(comment: string): Array<ICommentData> | null;
 }

@@ -11,8 +11,14 @@ import * as Promises from './Promises';
  * Parser that turns source data into comment data
  */
 export interface CommentParser {
-  parseOne(data:any):ICommentData;
-  parseMany(data:any):Array<ICommentData>;
+  /**
+   * Returns null if the data cannot be parsed
+   */
+  parseOne(data:any):ICommentData | null;
+  /**
+   * Returns null if the data cannot be parsed
+   */
+  parseMany(data:any):Array<ICommentData> | null;
 }
 
 /**
@@ -55,7 +61,7 @@ export class CommentProvider {
    *         of the request
    **/
   public static BaseHttpProvider(method:string, url:string,
-    responseType?:string, args?:Object, body?:any):Promise<any> {
+    responseType?:string, args?:{[key:string]:any}, body?:any):Promise<any> {
 
     return new Promise(function (resolve, reject) {
       var xhr = new XMLHttpRequest();
@@ -246,15 +252,16 @@ export class CommentProvider {
   }
 
   public applyParsersOne(data:any, type:string):Promise<ICommentData> {
-    return new Promise(function (resolve, reject) {
-      if (!(type in this._parsers)) {
+    var parsers = this._parsers;
+    return new Promise<ICommentData>(function (resolve, reject) {
+      if (!(type in parsers)) {
         reject(new Error('No parsers defined for "' + type + '"'));
         return;
       }
-      for (var i = 0; i < this._parsers[type].length; i++) {
-        var output = null;
+      for (var i = 0; i < parsers[type].length; i++) {
+        var output:ICommentData | null = null;
         try {
-          output = this._parsers[type][i].parseOne(data);
+          output = parsers[type][i].parseOne(data);
         } catch (e) {
           // TODO: log this failure
           console.error(e);
@@ -265,19 +272,20 @@ export class CommentProvider {
         }
       }
       reject(new Error("Ran out of parsers for they target type"));
-    }.bind(this));
+    });
   }
 
   public applyParsersList(data:any, type:string):Promise<Array<ICommentData>> {
-    return new Promise(function (resolve, reject) {
-      if (!(type in this._parsers)) {
+    var parsers = this._parsers;
+    return new Promise<Array<ICommentData>>(function (resolve, reject) {
+      if (!(type in parsers)) {
         reject(new Error('No parsers defined for "' + type + '"'));
         return;
       }
-      for (var i = 0; i < this._parsers[type].length; i++) {
-        var output = null;
+      for (var i = 0; i < parsers[type].length; i++) {
+        var output:Array<ICommentData> | null = null;
         try {
-          output = this._parsers[type][i].parseMany(data);
+          output = parsers[type][i].parseMany(data);
         } catch (e) {
           // TODO: log this failure
           console.error(e);
@@ -288,7 +296,7 @@ export class CommentProvider {
         }
       }
       reject(new Error("Ran out of parsers for the target type"));
-    }.bind(this));
+    });
   }
 
   /**
@@ -301,24 +309,25 @@ export class CommentProvider {
     if (this._destroyed) {
       throw new Error('Cannot load sources on a destroyed provider.');
     }
-    var promises = [];
+    var provider = this;
+    var promises:Array<Promise<Array<ICommentData>>> = [];
     // TODO: This race logic needs to be rethought to provide redundancy
     for (var type in this._staticSources) {
       promises.push(Promises.any(this._staticSources[type])
         .then(function (data) {
-          return this.applyParsersList(data, type);
-        }.bind(this)));
+          return provider.applyParsersList(data, type);
+        }));
     }
     if (promises.length === 0) {
       // No static loaders
       return Promise.resolve([]);
     }
     return Promises.any(promises).then(function (commentList) {
-      for (var i = 0; i < this._targets.length; i++) {
-        this._targets[i].load(commentList);
+      for (var i = 0; i < provider._targets.length; i++) {
+        provider._targets[i].load(commentList);
       }
       return Promise.resolve(commentList);
-    }.bind(this));
+    });
   }
 
   /**
@@ -332,21 +341,22 @@ export class CommentProvider {
       throw new Error('Cannot start a provider that has been destroyed.');
     }
     this._started = true;
+    var provider = this;
     return this.load().then(function (commentList) {
       // Bind the dynamic sources
-      for (var type in this._dynamicSources) {
-        this._dynamicSources[type].forEach(function (source) {
-          source.addEventListener('receive', function (data) {
-            this.applyParsersOne(data, type).then(function (comment) {
-              for (var i = 0; i < this._targets.length; i++) {
-                this._targets[i].send(comment);
+      for (var type in provider._dynamicSources) {
+        provider._dynamicSources[type].forEach(function (source) {
+          source.addEventListener('receive', function (data:any) {
+            provider.applyParsersOne(data, type).then(function (comment) {
+              for (var i = 0; i < provider._targets.length; i++) {
+                provider._targets[i].send(comment);
               }
-            }.bind(this));
-          }.bind(this));
-        }.bind(this));
+            });
+          });
+        });
       }
       return Promise.resolve(commentList);
-    }.bind(this));
+    });
   }
 
   /**

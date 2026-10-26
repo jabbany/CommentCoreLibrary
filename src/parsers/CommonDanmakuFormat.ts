@@ -6,7 +6,7 @@
  **/
 import type { ICommentData } from '../core/Core';
 
-var _check = function (comment) {
+var _check = function (comment:any):boolean {
   // Sanity check to see if we should be parsing these comments or not
   if (typeof comment.mode !== 'number' || typeof comment.stime !== 'number') {
     return false;
@@ -20,26 +20,32 @@ var _check = function (comment) {
   return true;
 };
 
+// Reads an attribute. Missing attributes read as '' (which parses to NaN)
+var _attribute = function (elem:Element, name:string):string {
+  var value = elem.getAttribute(name);
+  return value !== null ? value : '';
+};
+
 export class JSONParser {
-  public parseOne(comment:any):ICommentData {
+  public parseOne(comment:any):ICommentData | null {
     // Refuse to parse the comment does not pass sanity check
     return _check(comment) ? comment : null;
   }
 
-  public parseMany(comments:Array<any>):Array<ICommentData> {
+  public parseMany(comments:Array<any>):Array<ICommentData> | null {
     // Refuse to parse if any comment does not pass sanity check
     return comments.every(_check) ? comments : null;
   }
 }
 
 export class XMLParser {
-  public parseOne(comment:Element):ICommentData {
+  public parseOne(comment:Element):ICommentData | null {
     var data = <ICommentData> {};
     try {
-      data.stime = parseInt(comment.getAttribute('stime'));
-      data.mode = parseInt(comment.getAttribute('mode'));
-      data.size = parseInt(comment.getAttribute('size'));
-      data.color = parseInt(comment.getAttribute('color'));
+      data.stime = parseInt(_attribute(comment, 'stime'));
+      data.mode = parseInt(_attribute(comment, 'mode'));
+      data.size = parseInt(_attribute(comment, 'size'));
+      data.color = parseInt(_attribute(comment, 'color'));
       data.text = comment.textContent;
     } catch (e) {
       return null;
@@ -47,14 +53,14 @@ export class XMLParser {
     return data;
   }
 
-  public parseMany(commentsElem:Element | Document):Array<ICommentData> {
+  public parseMany(commentsElem:Element | Document):Array<ICommentData> | null {
     var comments;
     try {
       comments = commentsElem.getElementsByTagName('comment');
     } catch (e) {
       return null;
     }
-    var commentList = [];
+    var commentList:Array<ICommentData> = [];
     for (var i = 0; i < comments.length; i++) {
       var comment = this.parseOne(comments[i]);
       if (comment !== null) {

@@ -32,7 +32,7 @@ function _match (rule:FilterRule, cmtData:any):boolean {
   var path = rule.subject.split('.');
   var extracted = cmtData;
   while (path.length > 0) {
-    var item = path.shift();
+    var item = <string> path.shift();
     if (item === '') {
       continue;
     }

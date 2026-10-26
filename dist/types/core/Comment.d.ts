@@ -5,7 +5,7 @@
  * @license MIT License
  * @description Comment abstraction based on DOM implementation
  */
-import type { ICommentManager, IComment, ICommentData } from './Core';
+import type { ICommentManager, IComment, ICommentData, MotionGroup } from './Core';
 import * as CommentUtils from './CommentUtils';
 export declare class CoreComment implements IComment {
     static LINEAR: Function;
@@ -15,7 +15,7 @@ export declare class CoreComment implements IComment {
     ttl: number;
     dur: number;
     cindex: number;
-    motion: Array<Object>;
+    motion: Array<MotionGroup>;
     movable: boolean;
     private _curMotion;
     private _motionStart;
@@ -36,17 +36,17 @@ export declare class CoreComment implements IComment {
      * @type {number} 0=dr, 1=dl, 2=ur, 3=ul
      */
     axis: number;
-    protected _x: number;
-    protected _y: number;
+    protected _x?: number | null;
+    protected _y?: number | null;
     protected _alpha: number;
     protected _size: number;
-    protected _width: number;
-    protected _height: number;
+    protected _width?: number | null;
+    protected _height?: number | null;
     protected _color: number;
     protected _border: boolean;
     protected _shadow: boolean;
     protected _font: string;
-    protected _transform: CommentUtils.Matrix3D;
+    protected _transform: CommentUtils.Matrix3D | null;
     protected _className: string;
     parent: ICommentManager;
     dom: HTMLDivElement;
@@ -56,7 +56,7 @@ export declare class CoreComment implements IComment {
      * Initializes the DOM element (or canvas) backing the comment
      * This method takes the place of 'initCmt' in the old CCL
      */
-    init(recycle?: IComment): void;
+    init(recycle?: IComment | null): void;
     get x(): number;
     get y(): number;
     get bottom(): number;
@@ -128,6 +128,6 @@ export declare class CoreComment implements IComment {
 export declare class ScrollComment extends CoreComment {
     constructor(parent: ICommentManager, data: Partial<ICommentData>);
     set alpha(a: number);
-    init(recycle?: IComment): void;
+    init(recycle?: IComment | null): void;
     update(): void;
 }

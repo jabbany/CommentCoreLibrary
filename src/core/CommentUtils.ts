@@ -6,7 +6,7 @@
  * @description Useful utility classes
  */
 export class Matrix3D {
-  private _internalArray:Array<number> = null;
+  private _internalArray:Array<number>;
 
   public static identity:Function = function ():Matrix3D {
     return new Matrix3D([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);

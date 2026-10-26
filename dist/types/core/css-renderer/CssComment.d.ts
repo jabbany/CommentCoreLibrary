@@ -9,7 +9,7 @@ import type { IComment } from '../Core';
 import { ScrollComment } from '../Comment';
 export declare class CssScrollComment extends ScrollComment {
     private _dirtyCSS;
-    init(recycle?: IComment): void;
+    init(recycle?: IComment | null): void;
     protected _calculateX(): number;
     get x(): number;
     set x(x: number);

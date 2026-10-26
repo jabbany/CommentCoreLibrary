@@ -95,12 +95,12 @@ export declare class JSONParser {
     private _logBadComments;
     private _logNotImplemented;
     constructor(params?: any);
-    parseOne(comment: AcfunComment): ICommentData;
-    parseMany(comments: Array<AcfunComment>): Array<ICommentData>;
+    parseOne(comment: AcfunComment): ICommentData | null;
+    parseMany(comments: Array<AcfunComment>): Array<ICommentData> | null;
 }
 export declare class TextParser {
     private _jsonParser;
     constructor(param?: any);
-    parseOne(comment: string): ICommentData;
-    parseMany(comment: string): Array<ICommentData>;
+    parseOne(comment: string): ICommentData | null;
+    parseMany(comment: string): Array<ICommentData> | null;
 }

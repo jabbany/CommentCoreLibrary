@@ -86,6 +86,14 @@ function _create_class(Constructor, protoProps, staticProps) {
     return Constructor;
 }
 
+function _instanceof(left, right) {
+    "@swc/helpers - instanceof";
+
+    if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) {
+        return !!right[Symbol.hasInstance](left);
+    } else return left instanceof right;
+}
+
 function _set_prototype_of(o, p) {
     _set_prototype_of = Object.setPrototypeOf || function setPrototypeOf(o, p) {
         o.__proto__ = p;
@@ -114,7 +122,6 @@ function _inherits(subClass, superClass) {
  * @description Useful utility classes
  */ var Matrix3D = /*#__PURE__*/ function() {
     function Matrix3D(array) {
-        this._internalArray = null;
         if (!Array.isArray(array)) {
             throw new Error('Not an array. Cannot construct matrix.');
         }
@@ -293,6 +300,9 @@ var CoreComment = /*#__PURE__*/ function() {
         this.cindex = -1;
         this.motion = [];
         this.movable = true;
+        this._curMotion = 0;
+        this._motionStart = [];
+        this._motionEnd = [];
         this._alphaMotion = null;
         /**
    * Absolute coordinates. Use absolute coordinates if true otherwise use percentages.
@@ -319,36 +329,35 @@ var CoreComment = /*#__PURE__*/ function() {
         } else {
             this.parent = parent;
         }
-        if (init.hasOwnProperty('stime')) {
-            this.stime = init['stime'];
+        if (init.stime !== undefined) {
+            this.stime = init.stime;
         }
-        if (init.hasOwnProperty('mode')) {
-            this.mode = init['mode'];
+        if (init.mode !== undefined) {
+            this.mode = init.mode;
         } else {
             this.mode = 1;
         }
-        if (init.hasOwnProperty('dur')) {
-            this.dur = init['dur'];
+        if (init.dur !== undefined) {
+            this.dur = init.dur;
             this.ttl = this.dur;
         }
         this.dur *= this.parent.options.global.scale;
         this.ttl *= this.parent.options.global.scale;
-        if (init.hasOwnProperty('text')) {
-            this.text = init['text'];
+        if (init.text !== undefined) {
+            this.text = init.text;
         }
-        if (init.hasOwnProperty('motion')) {
-            this._motionStart = [];
-            this._motionEnd = [];
-            this.motion = init['motion'];
+        if (init.motion !== undefined) {
+            var motion = init.motion;
+            this.motion = motion;
             var head = 0;
-            for(var i = 0; i < init['motion'].length; i++){
+            for(var i = 0; i < motion.length; i++){
                 this._motionStart.push(head);
                 var maxDur = 0;
-                for(var k in init['motion'][i]){
-                    var m = init['motion'][i][k];
+                for(var k in motion[i]){
+                    var m = motion[i][k];
                     maxDur = Math.max(m.dur + m.delay, maxDur);
                     if (m.easing === null || m.easing === undefined) {
-                        init['motion'][i][k]['easing'] = CoreComment.LINEAR;
+                        m.easing = CoreComment.LINEAR;
                     }
                 }
                 head += maxDur;
@@ -356,52 +365,50 @@ var CoreComment = /*#__PURE__*/ function() {
             }
             this._curMotion = 0;
         }
-        if (init.hasOwnProperty('color')) {
-            this._color = init['color'];
+        if (init.color !== undefined) {
+            this._color = init.color;
         }
-        if (init.hasOwnProperty('size')) {
-            this._size = init['size'];
+        if (init.size !== undefined) {
+            this._size = init.size;
         }
-        if (init.hasOwnProperty('border')) {
-            this._border = init['border'];
+        if (init.border !== undefined) {
+            this._border = init.border;
         }
-        if (init.hasOwnProperty('opacity')) {
-            this._alpha = init['opacity'];
+        if (init.opacity !== undefined) {
+            this._alpha = init.opacity;
         }
-        if (init.hasOwnProperty('alpha')) {
-            this._alphaMotion = init['alpha'];
+        if (init.alpha !== undefined) {
+            this._alphaMotion = init.alpha;
         }
-        if (init.hasOwnProperty('font')) {
-            this._font = init['font'];
+        if (init.font !== undefined) {
+            this._font = init.font;
         }
-        if (init.hasOwnProperty('x')) {
-            this._x = init['x'];
+        if (init.x !== undefined) {
+            this._x = init.x;
         }
-        if (init.hasOwnProperty('y')) {
-            this._y = init['y'];
+        if (init.y !== undefined) {
+            this._y = init.y;
         }
-        if (init.hasOwnProperty('shadow')) {
-            this._shadow = init['shadow'];
+        if (init.shadow !== undefined) {
+            this._shadow = init.shadow;
         }
-        if (init.hasOwnProperty('align')) {
-            this.align = init['align'];
+        if (init.align !== undefined) {
+            this.align = init.align;
         }
-        if (init.hasOwnProperty('axis')) {
-            this.axis = init['axis'];
+        if (init.axis !== undefined) {
+            this.axis = init.axis;
         }
-        if (init.hasOwnProperty('transform')) {
-            this._transform = new Matrix3D(init['transform']);
+        if (init.transform !== undefined) {
+            this._transform = new Matrix3D(init.transform);
         }
-        if (init.hasOwnProperty('position')) {
-            if (init['position'] === 'relative') {
-                this.absolute = false;
-                if (this.mode < 7) {
-                    console.warn('Using relative position for CSA comment.');
-                }
+        if (init.position === 'relative') {
+            this.absolute = false;
+            if (this.mode < 7) {
+                console.warn('Using relative position for CSA comment.');
             }
         }
-        if (init.hasOwnProperty('className')) {
-            this._className = init['className'];
+        if (init.className !== undefined) {
+            this._className = init.className;
         }
     }
     var _proto = CoreComment.prototype;
@@ -450,11 +457,12 @@ var CoreComment = /*#__PURE__*/ function() {
         if (this._font !== '') {
             this.font = this._font;
         }
+        // A null position is placed at 0 (as null coerces to 0)
         if (this._x !== undefined) {
-            this.x = this._x;
+            this.x = this._x !== null ? this._x : 0;
         }
         if (this._y !== undefined) {
-            this.y = this._y;
+            this.y = this._y !== null ? this._y : 0;
         }
         if (this._alpha !== 1 || this.parent.options.global.opacity < 1) {
             this.alpha = this._alpha;
@@ -503,10 +511,13 @@ var CoreComment = /*#__PURE__*/ function() {
    * @param currentMotion - motion object
    * @private
    */ _proto._execMotion = function _execMotion(currentMotion, time) {
+        // Motions animate properties by name (x, y, alpha, ...)
+        var target = this;
         for(var prop in currentMotion){
             if (currentMotion.hasOwnProperty(prop)) {
                 var m = currentMotion[prop];
-                this[prop] = m.easing(Math.min(Math.max(time - m.delay, 0), m.dur), m.from, m.to - m.from, m.dur);
+                var easing = m.easing ? m.easing : CoreComment.LINEAR;
+                target[prop] = easing(Math.min(Math.max(time - m.delay, 0), m.dur), m.from, m.to - m.from, m.dur);
             }
         }
     };
@@ -515,7 +526,7 @@ var CoreComment = /*#__PURE__*/ function() {
    * groups.
    */ _proto.animate = function animate() {
         if (this._alphaMotion) {
-            this.alpha = (this.dur - this.ttl) * (this._alphaMotion['to'] - this._alphaMotion['from']) / this.dur + this._alphaMotion['from'];
+            this.alpha = (this.dur - this.ttl) * (this._alphaMotion.to - this._alphaMotion.from) / this.dur + this._alphaMotion.from;
         }
         if (this.motion.length === 0) {
             return;
@@ -749,6 +760,10 @@ var CoreComment = /*#__PURE__*/ function() {
         {
             key: "transform",
             get: function get() {
+                if (this._transform === null) {
+                    // No transform is the identity transform
+                    return Matrix3D.identity().flatArray;
+                }
                 return this._transform.flatArray;
             },
             set: function set(array) {
@@ -1439,19 +1454,23 @@ var CommentFilter = /*#__PURE__*/ function() {
 }();
 
 var _defaultComparator = function _defaultComparator(a, b) {
+    // date and dbid may be numbers, strings or missing. They are compared with
+    // the plain JavaScript operators (missing values are never greater or less)
+    var aDate = a.date, bDate = b.date;
+    var aId = a.dbid, bId = b.dbid;
     if (a.stime > b.stime) {
         return 2;
     } else if (a.stime < b.stime) {
         return -2;
     } else {
-        if (a.date > b.date) {
+        if (aDate > bDate) {
             return 1;
-        } else if (a.date < b.date) {
+        } else if (aDate < bDate) {
             return -1;
-        } else if (a.dbid != null && b.dbid != null) {
-            if (a.dbid > b.dbid) {
+        } else if (aId != null && bId != null) {
+            if (aId > bId) {
                 return 1;
-            } else if (a.dbid < b.dbid) {
+            } else if (aId < bId) {
                 return -1;
             }
             return 0;
@@ -1487,6 +1506,7 @@ var CommentManager = /*#__PURE__*/ function() {
    */ this.timer = new IntervalTimer();
         this.factory = null;
         this.filter = null;
+        this.scripting = null;
         this.csa = {
             scroll: new CommentSpaceAllocator(0, 0),
             top: new AnchorCommentSpaceAllocator(0, 0),
@@ -1546,6 +1566,9 @@ var CommentManager = /*#__PURE__*/ function() {
     _proto.validate = function validate(cmt) {
         if (cmt == null) {
             return false;
+        }
+        if (this.filter === null) {
+            throw new Error('CommentManager has no filter. Call init() first.');
         }
         return this.filter.doValidate(cmt);
     };
@@ -1653,7 +1676,7 @@ var CommentManager = /*#__PURE__*/ function() {
         if (data.mode === 8) {
             // This comment is not managed by the comment manager
             if (this.scripting) {
-                this.scripting.eval(data.code);
+                this.scripting.eval(typeof data.code === 'string' ? data.code : '');
             } else {
                 console.warn('CCL: Dropped scripting comment since no scripting ' + 'engine is attached.');
             }
@@ -1698,30 +1721,36 @@ var CommentManager = /*#__PURE__*/ function() {
         }
     };
     _proto.send = function send(data) {
-        var list = Array.isArray(data) ? data : [
+        var input = Array.isArray(data) ? data : [
             data
         ];
         // Validate all the comments
         var cmMgr = this;
-        list = list.map(function(item) {
-            return cmMgr._preprocess(item);
-        }).filter(function(item) {
-            return item !== null;
+        var list = [];
+        input.forEach(function(item) {
+            var processed = cmMgr._preprocess(item);
+            if (processed !== null) {
+                list.push(processed);
+            }
         });
         if (list.length === 0) {
             return;
         }
-        list.map((function(item) {
+        if (this.factory === null) {
+            throw new Error('CommentManager has no comment factory. Call init() first.');
+        }
+        var factory = this.factory;
+        list.map(function(item) {
             // Create and insert the comments into the DOM
-            return this.factory.create(this, item);
-        }).bind(this)).map((function(cmt) {
-            this._allocateSpace(cmt);
+            return factory.create(cmMgr, item);
+        }).map(function(cmt) {
+            cmMgr._allocateSpace(cmt);
             return cmt;
-        }).bind(this)).forEach((function(cmt) {
+        }).forEach(function(cmt) {
             cmt.y = cmt.y;
-            this.dispatchEvent("enterComment", cmt);
-            this.runline.push(cmt);
-        }).bind(this));
+            cmMgr.dispatchEvent("enterComment", cmt);
+            cmMgr.runline.push(cmt);
+        });
     };
     _proto.finish = function finish(cmt) {
         this.dispatchEvent("exitComment", cmt);
@@ -1787,7 +1816,7 @@ var CommentManager = /*#__PURE__*/ function() {
                 try {
                     listeners[i](data);
                 } catch (e) {
-                    console.error(e.stack);
+                    console.error(_instanceof(e, Error) ? e.stack : e);
                 }
             }
         }
@@ -1941,15 +1970,16 @@ var CommentProvider = /*#__PURE__*/ function() {
         return this;
     };
     _proto.applyParsersOne = function applyParsersOne(data, type) {
-        return new Promise((function(resolve, reject) {
-            if (!(type in this._parsers)) {
+        var parsers = this._parsers;
+        return new Promise(function(resolve, reject) {
+            if (!(type in parsers)) {
                 reject(new Error('No parsers defined for "' + type + '"'));
                 return;
             }
-            for(var i = 0; i < this._parsers[type].length; i++){
+            for(var i = 0; i < parsers[type].length; i++){
                 var output = null;
                 try {
-                    output = this._parsers[type][i].parseOne(data);
+                    output = parsers[type][i].parseOne(data);
                 } catch (e) {
                     // TODO: log this failure
                     console.error(e);
@@ -1960,18 +1990,19 @@ var CommentProvider = /*#__PURE__*/ function() {
                 }
             }
             reject(new Error("Ran out of parsers for they target type"));
-        }).bind(this));
+        });
     };
     _proto.applyParsersList = function applyParsersList(data, type) {
-        return new Promise((function(resolve, reject) {
-            if (!(type in this._parsers)) {
+        var parsers = this._parsers;
+        return new Promise(function(resolve, reject) {
+            if (!(type in parsers)) {
                 reject(new Error('No parsers defined for "' + type + '"'));
                 return;
             }
-            for(var i = 0; i < this._parsers[type].length; i++){
+            for(var i = 0; i < parsers[type].length; i++){
                 var output = null;
                 try {
-                    output = this._parsers[type][i].parseMany(data);
+                    output = parsers[type][i].parseMany(data);
                 } catch (e) {
                     // TODO: log this failure
                     console.error(e);
@@ -1982,7 +2013,7 @@ var CommentProvider = /*#__PURE__*/ function() {
                 }
             }
             reject(new Error("Ran out of parsers for the target type"));
-        }).bind(this));
+        });
     };
     /**
    * (Re)loads static comments
@@ -1993,23 +2024,24 @@ var CommentProvider = /*#__PURE__*/ function() {
         if (this._destroyed) {
             throw new Error('Cannot load sources on a destroyed provider.');
         }
+        var provider = this;
         var promises = [];
         // TODO: This race logic needs to be rethought to provide redundancy
         for(var type in this._staticSources){
-            promises.push(any(this._staticSources[type]).then((function(data) {
-                return this.applyParsersList(data, type);
-            }).bind(this)));
+            promises.push(any(this._staticSources[type]).then(function(data) {
+                return provider.applyParsersList(data, type);
+            }));
         }
         if (promises.length === 0) {
             // No static loaders
             return Promise.resolve([]);
         }
-        return any(promises).then((function(commentList) {
-            for(var i = 0; i < this._targets.length; i++){
-                this._targets[i].load(commentList);
+        return any(promises).then(function(commentList) {
+            for(var i = 0; i < provider._targets.length; i++){
+                provider._targets[i].load(commentList);
             }
             return Promise.resolve(commentList);
-        }).bind(this));
+        });
     };
     /**
    * Commit the changes and boot up the provider
@@ -2021,21 +2053,22 @@ var CommentProvider = /*#__PURE__*/ function() {
             throw new Error('Cannot start a provider that has been destroyed.');
         }
         this._started = true;
-        return this.load().then((function(commentList) {
+        var provider = this;
+        return this.load().then(function(commentList) {
             // Bind the dynamic sources
-            for(var type in this._dynamicSources){
-                this._dynamicSources[type].forEach((function(source) {
-                    source.addEventListener('receive', (function(data) {
-                        this.applyParsersOne(data, type).then((function(comment) {
-                            for(var i = 0; i < this._targets.length; i++){
-                                this._targets[i].send(comment);
+            for(var type in provider._dynamicSources){
+                provider._dynamicSources[type].forEach(function(source) {
+                    source.addEventListener('receive', function(data) {
+                        provider.applyParsersOne(data, type).then(function(comment) {
+                            for(var i = 0; i < provider._targets.length; i++){
+                                provider._targets[i].send(comment);
                             }
-                        }).bind(this));
-                    }).bind(this));
-                }).bind(this));
+                        });
+                    });
+                });
             }
             return Promise.resolve(commentList);
-        }).bind(this));
+        });
     };
     /**
    * Send out comments to both dynamic sources and POST targets.
@@ -2210,7 +2243,11 @@ var XMLParser$1 = /*#__PURE__*/ function() {
     _proto.parseOne = function parseOne(elem) {
         var params;
         try {
-            params = elem.getAttribute('p').split(',');
+            var p = elem.getAttribute('p');
+            if (p === null) {
+                return null;
+            }
+            params = p.split(',');
         } catch (e) {
             // Probably not XML
             return null;
@@ -2411,9 +2448,7 @@ var TextParser$1 = /*#__PURE__*/ function() {
         if (typeof DOMParser !== 'undefined' && DOMParser !== null) {
             this._canSecureNativeParse = true;
         }
-        if (this._allowInsecureDomParsing || this._canSecureNativeParse) {
-            this._xmlParser = new XMLParser$1(params);
-        }
+        this._xmlParser = new XMLParser$1(params);
     }
     var _proto = TextParser.prototype;
     _proto.parseOne = function parseOne(comment) {
@@ -2565,58 +2600,59 @@ var JSONParser$1 = /*#__PURE__*/ function() {
                         color: data.color
                     };
                     for(var m = 0; m < x.z.length; m++){
-                        var dur = x.z[m].l != null ? x.z[m].l * 1000 : 500;
+                        var step = x.z[m];
+                        var dur = step.l != null ? step.l * 1000 : 500;
                         moveDuration += dur;
                         var motion = {};
-                        if (x.z[m].hasOwnProperty('rx') && typeof x.z[m].rx === 'number') {
+                        if (typeof step.rx === 'number') {
                             // TODO: Support this
                             if (this._logNotImplemented) {
                                 console.log('Encountered animated x-axis rotation. Ignoring.');
                             }
                         }
-                        if (x.z[m].hasOwnProperty('e') && typeof x.z[m].e === 'number') {
+                        if (typeof step.e === 'number') {
                             // TODO: Support this
                             if (this._logNotImplemented) {
                                 console.log('Encountered animated y-axis rotation. Ignoring.');
                             }
                         }
-                        if (x.z[m].hasOwnProperty('d') && typeof x.z[m].d === 'number') {
+                        if (typeof step.d === 'number') {
                             // TODO: Support this
                             if (this._logNotImplemented) {
                                 console.log('Encountered animated z-axis rotation. Ignoring.');
                             }
                         }
-                        if (x.z[m].hasOwnProperty('x') && typeof x.z[m].x === 'number') {
+                        if (typeof step.x === 'number') {
                             motion.x = {
                                 from: last.x,
-                                to: x.z[m].x / 1000,
+                                to: step.x / 1000,
                                 dur: dur,
                                 delay: 0
                             };
+                            last.x = motion.x.to;
                         }
-                        if (x.z[m].hasOwnProperty('y') && typeof x.z[m].y === 'number') {
+                        if (typeof step.y === 'number') {
                             motion.y = {
                                 from: last.y,
-                                to: x.z[m].y / 1000,
+                                to: step.y / 1000,
                                 dur: dur,
                                 delay: 0
                             };
+                            last.y = motion.y.to;
                         }
-                        last.x = motion.hasOwnProperty('x') ? motion.x.to : last.x;
-                        last.y = motion.hasOwnProperty('y') ? motion.y.to : last.y;
-                        if (x.z[m].hasOwnProperty('t') && typeof x.z[m].t === 'number' && x.z[m].t !== last.alpha) {
+                        if (typeof step.t === 'number' && step.t !== last.alpha) {
                             motion.alpha = {
                                 from: last.alpha,
-                                to: _clampAlpha(x.z[m].t),
+                                to: _clampAlpha(step.t),
                                 dur: dur,
                                 delay: 0
                             };
                             last.alpha = motion.alpha.to;
                         }
-                        if (x.z[m].hasOwnProperty('c') && typeof x.z[m].c === 'number' && x.z[m].c !== last.color) {
+                        if (typeof step.c === 'number' && step.c !== last.color) {
                             motion.color = {
                                 from: last.color,
-                                to: x.z[m].c,
+                                to: step.c,
                                 dur: dur,
                                 delay: 0
                             };
@@ -2626,16 +2662,15 @@ var JSONParser$1 = /*#__PURE__*/ function() {
                     }
                     data.dur = moveDuration;
                 }
-                if (x.hasOwnProperty('w')) {
-                    if (x.w.hasOwnProperty('f')) {
-                        data.font = x.w.f;
+                var style = x.w;
+                if ((typeof style === "undefined" ? "undefined" : _type_of(style)) === 'object' && style !== null) {
+                    if (typeof style.f === 'string') {
+                        data.font = style.f;
                     }
-                    if (x.w.hasOwnProperty('l') && Array.isArray(x.w.l)) {
-                        if (x.w.l.length > 0) {
-                            // Filters
-                            if (this._logNotImplemented) {
-                                console.log('[Dbg] Filters not supported! ' + JSON.stringify(x.w.l));
-                            }
+                    if (Array.isArray(style.l) && style.l.length > 0) {
+                        // Filters
+                        if (this._logNotImplemented) {
+                            console.log('[Dbg] Filters not supported! ' + JSON.stringify(style.l));
                         }
                     }
                 }
@@ -2717,6 +2752,11 @@ var AcfunFormat = {
     }
     return true;
 };
+// Reads an attribute. Missing attributes read as '' (which parses to NaN)
+var _attribute = function _attribute(elem, name) {
+    var value = elem.getAttribute(name);
+    return value !== null ? value : '';
+};
 var JSONParser = /*#__PURE__*/ function() {
     function JSONParser() {}
     var _proto = JSONParser.prototype;
@@ -2736,10 +2776,10 @@ var XMLParser = /*#__PURE__*/ function() {
     _proto.parseOne = function parseOne(comment) {
         var data = {};
         try {
-            data.stime = parseInt(comment.getAttribute('stime'));
-            data.mode = parseInt(comment.getAttribute('mode'));
-            data.size = parseInt(comment.getAttribute('size'));
-            data.color = parseInt(comment.getAttribute('color'));
+            data.stime = parseInt(_attribute(comment, 'stime'));
+            data.mode = parseInt(_attribute(comment, 'mode'));
+            data.size = parseInt(_attribute(comment, 'size'));
+            data.color = parseInt(_attribute(comment, 'color'));
             data.text = comment.textContent;
         } catch (e) {
             return null;

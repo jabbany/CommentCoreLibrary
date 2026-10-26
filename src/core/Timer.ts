@@ -49,7 +49,7 @@ export class IntervalTimer implements ITimer {
 export class AnimationFrameTimer implements ITimer {
   private _handle:number = 0;
   // Identifies the running tick loop so that a stopped loop never reschedules
-  private _token:Object = null;
+  private _token:Object | null = null;
 
   private static _request(callback:() => void):number {
     if (typeof window.requestAnimationFrame === 'function') {
