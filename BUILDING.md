@@ -28,7 +28,9 @@ CommentCoreLibrary在运行时没有任何依赖关系，开发环境的依赖�
 
 即可清空并重新生成 `dist/` 目录下的全部产物。除此之外，你还可以改变编译目标：
 
-- `pnpm build:core` ： 只编译弹幕核心（包括 CommentProvider、过滤器和各种解析器）以及 CSS
+- `pnpm build:core` ： 只编译弹幕库（不包括代码弹幕支持）以及 CSS。注意：与旧版 Grunt 的
+    `build:core` 不同，弹幕库总是包含 CommentProvider、过滤器和各种解析器。如果不需要这些模块，
+    请使用 ES Module 版本，打包工具（webpack / Rollup / Vite）会通过 tree-shaking 自动去掉未使用的部分
 - `pnpm build:scripting` ： 只编译代码弹幕支持（`dist/scripting/`）
 - `pnpm watch` ： 看管 `src` 源码文件夹，并且在产生变化的时候自动重新编译
 

@@ -23,7 +23,7 @@ CCL の導入と開発はそれほど難しくありません。まず、ロー�
 GitHub から CCL を Zip 形式でダウンロードすることもできますが、開発や更新が難しくなるため
 お勧めしません。CCL を利用・拡張するには、次のいずれかの方法をお勧めします。
 
-- 外部ライブラリとして npm または bower から導入する： `npm install comment-core-library --save`
+- 外部ライブラリとして npm から導入する： `npm install comment-core-library --save`
     を実行するだけで、最新の安定版 CCL を入手できます。必要なファイルは
     `node_modules/comment-core-library/dist/` から参照できます。
 - Git リポジトリを直接クローンする： `git clone https://github.com/jabbany/CommentCoreLibrary.git`

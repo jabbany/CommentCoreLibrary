@@ -35,7 +35,7 @@ export class JSONParser {
         // Do some text normalization on low complexity comments
         data.text = comment.m.replace(/(\/n|\\n|\n|\r\n|\\r)/g,"\n");
         data.text = data.text.replace(/\r/g,"\n");
-        data.text = data.text.replace(/\s/g," ");
+        data.text = data.text.replace(/\s/g,"\u00a0");
       } else {
         var x;
         try {
@@ -49,7 +49,7 @@ export class JSONParser {
         }
         data.position = "relative";
         data.text = x.n; /*.replace(/\r/g,"\n");*/
-        data.text = data.text.replace(/\ /g," ");
+        data.text = data.text.replace(/\ /g,"\u00a0");
         if (typeof x.a === 'number') {
           data.opacity = x.a;
         } else {

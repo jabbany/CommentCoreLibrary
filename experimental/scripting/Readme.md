@@ -2,9 +2,10 @@ Scripting
 ===================================
 
 The scripting module is no longer experimental. It is now in the main branch. 
-The demo/corresponding tests are now in demo/scripting and tests/scripting.
+The demo/corresponding tests are now in demo/scripting and spec/dist (with
+test data in spec/fixtures/scripting).
 
 代码弹幕支持
 ===================================
-代码弹幕支持功能已经脱离“实验性”分支，并被纳入了主线研发。有关的demo和测试，在相应的demo，
-和tests文件夹里。
+代码弹幕支持功能已经脱离“实验性”分支，并被纳入了主线研发。有关的demo和测试，在 demo/scripting
+和 spec/dist 文件夹里（测试数据在 spec/fixtures/scripting）。

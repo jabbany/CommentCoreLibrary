@@ -1526,9 +1526,10 @@ var CommentManager = /*#__PURE__*/ function() {
     _proto._preprocess = function _preprocess(data) {
         if (data.mode === 8) {
             // This comment is not managed by the comment manager
-            console.log(data);
             if (this.scripting) {
-                console.log(this.scripting.eval(data.code));
+                this.scripting.eval(data.code);
+            } else {
+                console.warn('CCL: Dropped scripting comment since no scripting ' + 'engine is attached.');
             }
             return null;
         }
@@ -2234,7 +2235,7 @@ var XMLParser$1 = /*#__PURE__*/ function() {
             }
         }
         if (comment.text !== null && typeof comment.text === 'string') {
-            comment.text = comment.text.replace(/■/g, "█");
+            comment.text = comment.text.replace(/\u25a0/g, "\u2588");
         }
         return comment;
     };
@@ -2360,7 +2361,7 @@ var BilibiliFormat = {
                 // Do some text normalization on low complexity comments
                 data.text = comment.m.replace(/(\/n|\\n|\n|\r\n|\\r)/g, "\n");
                 data.text = data.text.replace(/\r/g, "\n");
-                data.text = data.text.replace(/\s/g, " ");
+                data.text = data.text.replace(/\s/g, "\u00a0");
             } else {
                 var x;
                 try {
@@ -2374,7 +2375,7 @@ var BilibiliFormat = {
                 }
                 data.position = "relative";
                 data.text = x.n; /*.replace(/\r/g,"\n");*/ 
-                data.text = data.text.replace(/\ /g, " ");
+                data.text = data.text.replace(/\ /g, "\u00a0");
                 if (typeof x.a === 'number') {
                     data.opacity = x.a;
                 } else {

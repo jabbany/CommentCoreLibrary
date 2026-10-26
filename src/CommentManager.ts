@@ -218,9 +218,11 @@ export class CommentManager implements ICommentManager {
   private _preprocess(data:any):any {
     if (data.mode === 8) {
       // This comment is not managed by the comment manager
-      console.log(data);
       if (this.scripting) {
-        console.log(this.scripting.eval(data.code));
+        this.scripting.eval(data.code);
+      } else {
+        console.warn('CCL: Dropped scripting comment since no scripting ' +
+          'engine is attached.');
       }
       return null;
     }

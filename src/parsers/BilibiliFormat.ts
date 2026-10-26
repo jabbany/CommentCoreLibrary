@@ -211,7 +211,7 @@ export class XMLParser {
       }
     }
     if (comment.text !== null && typeof comment.text === 'string') {
-      comment.text = comment.text.replace(/■/g,"█");
+      comment.text = comment.text.replace(/\u25a0/g,"\u2588");
     }
     return comment;
   }

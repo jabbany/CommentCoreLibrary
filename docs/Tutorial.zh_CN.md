@@ -22,7 +22,7 @@
 GitHub 有提供以 Zip 方式下载CCL的选项，但是我们不推荐你这样做。正确使用 CCL 或进行二次开发有
 以下几种推荐的方法：
 
-- 作为外部库通过 npm 或者 bower 引入： 只需运行 `npm install comment-core-library --save`
+- 作为外部库通过 npm 引入： 只需运行 `npm install comment-core-library --save`
     即可获取最新版的稳定CCL库。通过 `node_modules/comment-core-library/dist/`
     可以引用需要的文件。
 - 直接 Clone 下 Git 代码仓库： 通过 `git clone https://github.com/jabbany/CommentCoreLibrary.git`

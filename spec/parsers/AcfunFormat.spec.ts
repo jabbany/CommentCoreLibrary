@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { AcfunFormat } from 'comment-core-library';
 
 describe('AcfunFormat', () => {
-  var textfix = (text) => text.replace(/\ /g, ' ');
+  var textfix = (text) => text.replace(/\ /g, '\u00a0');
   it('provides json parser', () => {
     expect(typeof AcfunFormat.JSONParser).toBe('function');
   });

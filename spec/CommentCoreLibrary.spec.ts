@@ -101,6 +101,21 @@ describe('CommentManager', () => {
         manager.send(cmt);
         expect(manager.runline.length).toBe(1);
       });
+
+      it('passes scripting comments to the scripting engine', () => {
+        var engine = { eval: vi.fn() };
+        manager.scripting = engine;
+        manager.send({ stime: 0, mode: 8, code: 'trace(1);' });
+        expect(engine.eval).toHaveBeenCalledWith('trace(1);');
+        expect(manager.runline.length).toBe(0);
+      });
+
+      it('warns when dropping scripting comments without an engine', () => {
+        var spy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+        manager.send({ stime: 0, mode: 8, code: 'trace(1);' });
+        expect(spy).toHaveBeenCalledOnce();
+        expect(manager.runline.length).toBe(0);
+      });
     });
 
     describe('.time', () => {

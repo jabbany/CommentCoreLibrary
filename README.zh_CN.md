@@ -1,6 +1,5 @@
 # 弹幕核心通用构件 CommentCoreLibrary
 [![NPM version](https://badge.fury.io/js/comment-core-library.svg)](http://badge.fury.io/js/comment-core-library)
-[![Bower version](https://badge.fury.io/bo/comment-core-library.svg)](http://badge.fury.io/bo/comment-core-library)
 [![License](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
 [![Build Status](https://github.com/jabbany/CommentCoreLibrary/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/jabbany/CommentCoreLibrary/actions/workflows/ci.yml)
 [![Coverage Status](https://img.shields.io/coveralls/jabbany/CommentCoreLibrary.svg)](https://coveralls.io/r/jabbany/CommentCoreLibrary?branch=master)

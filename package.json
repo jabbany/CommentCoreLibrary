@@ -60,10 +60,11 @@
     "watch": "rollup -c -w",
     "start": "rollup -c -w",
     "typecheck": "tsc -p tsconfig.json && tsc -p spec/tsconfig.json",
+    "check:ascii": "node build/check-ascii.mjs",
     "check:es5": "node build/check-es5.mjs",
     "test": "vitest run --coverage",
     "test:watch": "vitest",
     "test:dist": "vitest run --config vitest.dist.config.mts",
-    "verify": "pnpm typecheck && pnpm build && pnpm check:es5 && pnpm test && pnpm test:dist"
+    "verify": "pnpm typecheck && pnpm check:ascii && pnpm build && pnpm check:es5 && pnpm test && pnpm test:dist"
   }
 }
